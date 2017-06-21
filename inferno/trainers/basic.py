@@ -12,6 +12,7 @@ from ..utils import train_utils as tu
 from ..utils import python_utils as pyu
 from ..extensions import metrics
 from ..extensions import optimizers
+from .callbacks import CallbackEngine
 
 
 class Trainer(object):
@@ -47,9 +48,16 @@ class Trainer(object):
         self._max_num_iterations = None
         self._max_num_epochs = None
 
+        # Bind callbacks
+        self._callback_engine = CallbackEngine().bind_trainer(self)
+
         # Public
         if model is not None:
             self.model = model
+
+    @property
+    def callbacks(self):
+        return self._callback_engine
 
     @property
     def model(self):
@@ -327,6 +335,7 @@ class Trainer(object):
 
     def set_max_num_epochs(self, max_num_epochs):
         self._max_num_epochs = max_num_epochs
+        return self
 
     def fit(self, max_num_iterations=None, max_num_epochs=None):
         # Takes care of:
@@ -376,15 +385,15 @@ class Trainer(object):
             self.print("Training iteration {}.".format(iteration_num))
             # Zero out the grads
             self.optimizer.zero_grad()
-            # Get batch
-            batch = self.fetch_next_batch('train')
-            # Send to device and wrap as variable
-            batch = self.wrap_batch(batch)
-            # Separate inputs from targets
-            inputs, target = batch[0:-1], batch[-1]
             # No interrupts while computing - a SIGINT could shoot down the driver if
-            # done at the wrong time.
+            # done at the wrong time. Not sure if this has something to do with pinned memory
             with tu.delayed_keyboard_interrupt():
+                # Get batch
+                batch = self.fetch_next_batch('train')
+                # Send to device and wrap as variable
+                batch = self.wrap_batch(batch)
+                # Separate inputs from targets
+                inputs, target = batch[0:-1], batch[-1]
                 # Compute prediction
                 prediction = self.model(*inputs)
                 # Compute loss
@@ -419,8 +428,8 @@ class Trainer(object):
 
     def validate_for(self, num_iterations=None):
         # Average over errors
-        error_meter = tu.AverageMeter()
-        loss_meter = tu.AverageMeter()
+        validation_error_meter = tu.AverageMeter()
+        validation_loss_meter = tu.AverageMeter()
         iteration_num = 0
         num_iterations = \
             self._num_validation_iterations if num_iterations is None else num_iterations
@@ -451,37 +460,37 @@ class Trainer(object):
                 break
 
             self.print("Validating iteration {}.".format(iteration_num))
-            # Wrap
-            batch = self.wrap_batch(batch, volatile=True)
-            # Separate
-            inputs, target = batch[0:-1], batch[-1]
             try:
                 # Delay SIGINTs till after computation
                 with tu.delayed_keyboard_interrupt():
+                    # Wrap
+                    batch = self.wrap_batch(batch, volatile=True)
+                    # Separate
+                    inputs, target = batch[0:-1], batch[-1]
                     # Comptue output
                     output = self.model(*inputs)
                     # Compute loss
                     loss = self.criterion(output, target)
-                loss_meter.update(loss.data[0])
-                # Compute error
+                validation_loss_meter.update(loss.data[0])
+                # Compute validation_error
                 if self.metric_is_defined:
-                    error = self.metric(output.data, target.data)
-                    if torch.is_tensor(error):
+                    validation_error = self.metric(output.data, target.data)
+                    if torch.is_tensor(validation_error):
                         # Convert to float
-                        error = error[0]
-                    error_meter.update(error)
+                        validation_error = validation_error[0]
+                    validation_error_meter.update(validation_error)
                 iteration_num += 1
             except RuntimeError:
                 self.print("Out of memory, Skipping.")
                 pass
         self.print("Done validating. Logging results...")
         # Log
-        self.log(validation_loss=loss_meter.val,
-                 validation_error=(error_meter.val if self.metric_is_defined else None))
+        self.log(validation_loss=validation_loss_meter.val,
+                 validation_error=(validation_error_meter.val if self.metric_is_defined else None))
         # Report
         self.record_validation_results(
-            validation_loss=loss_meter.val,
-            validation_error=(error_meter.val if self.metric_is_defined else None))
+            validation_loss=validation_loss_meter.val,
+            validation_error=(validation_error_meter.val if self.metric_is_defined else None))
 
         return self
 
@@ -543,11 +552,13 @@ class Trainer(object):
         self.print("Saved to {}.".format(self._save_to_directory))
         return self
 
-    def load_(self, from_directory=None):
+    def load(self, from_directory=None, best=False):
         from_directory = self._save_to_directory if from_directory is None else from_directory
         assert from_directory is not None, "Nowhere to load from."
+        # Get file name
+        file_name = 'best_checkpoint.pytorch' if best else 'checkpoint.pytorch'
         # Load the dictionary
-        config_dict = torch.load(os.path.join(from_directory, 'checkpoint.pytorch'),
+        config_dict = torch.load(os.path.join(from_directory, file_name),
                                  pickle_module=dill)
         # This is required to prevent an infinite save loop?
         self._is_iteration_with_best_validation_score = False
@@ -555,14 +566,9 @@ class Trainer(object):
         self.set_config(config_dict)
         return self
 
-    @staticmethod
-    def load(from_directory):
-        # ...
-        obj = torch.load(os.path.join(from_directory, 'checkpoint.pytorch'), pickle_module=dill)
-        # This is required to prevent an infinite save loop?
-        obj._is_iteration_with_best_validation_score = False
-        obj.print("Restored from {}.".format(from_directory))
-        return obj
+    def load_(self, *args, **kwargs):
+        # Here for legacy reasons - use load instead.
+        return self.load(*args, **kwargs)
 
     def print(self, message):
         print("[+][{}] {}".format(str(datetime.now()), message))
