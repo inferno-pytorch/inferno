@@ -23,6 +23,7 @@ class Trainer(object):
         self._criterion = None
         self._metric = None
 
+        # TODO: Dummy logger when not logging
         self._logger = None
         self._last_logged = {}
 
@@ -35,6 +36,7 @@ class Trainer(object):
 
         self._use_cuda = False
 
+        self._save_at_best_validation_score = True
         self._best_validation_score = None
         self._is_iteration_with_best_validation_score = False
         self._validate_every = None
@@ -66,8 +68,11 @@ class Trainer(object):
 
     @model.setter
     def model(self, value):
-        assert isinstance(value, torch.nn.Module), "Model must be a torch.nn.Module."
-        self._model = value
+        self.bind_model(value)
+
+    def bind_model(self, model):
+        assert isinstance(model, torch.nn.Module), "Model must be a torch.nn.Module."
+        self._model = model
 
     @property
     def optimizer(self):
@@ -187,10 +192,13 @@ class Trainer(object):
     def saving_every(self):
         return self._save_every
 
+    def save_at_best_validation_score(self, yes=True):
+        self._save_at_best_validation_score = yes
+
     @property
     def save_now(self):
         if self._is_iteration_with_best_validation_score:
-            return True
+            return self._save_at_best_validation_score
         else:
             # Check if we're saving by epoch
             if self._save_every is not None and self._save_every.by_epoch:
