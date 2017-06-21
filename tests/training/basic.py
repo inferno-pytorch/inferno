@@ -4,6 +4,7 @@ from unittest import TestCase
 class TestTrainer(TestCase):
     # Parameters
     ROOT_DIR = None
+    CUDA = True
 
     def test_cifar(self):
         from inferno.trainers.basic import Trainer
@@ -52,5 +53,11 @@ class TestTrainer(TestCase):
             .save_at_best_validation_score()\
             .set_max_num_epochs(200)\
 
-        # Bind trainer to datasets and fit
-        trainer.bind_loader('train', trainloader).bind_loader('validate', testloader).fit()
+        # Bind trainer to datasets
+        trainer.bind_loader('train', trainloader).bind_loader('validate', testloader)
+
+        # Check device and fit
+        if self.CUDA:
+            trainer.cuda().fit()
+        else:
+            trainer.fit()
