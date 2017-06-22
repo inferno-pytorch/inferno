@@ -10,6 +10,7 @@ from tensorboard_logger import Logger
 
 from ..utils import train_utils as tu
 from ..utils import python_utils as pyu
+from ..utils import torch_utils as thu
 from ..extensions import metrics
 from ..extensions import optimizers
 from .callbacks import CallbackEngine
@@ -18,40 +19,57 @@ from .callbacks import CallbackEngine
 class Trainer(object):
     def __init__(self, model=None):
         # Privates
+        # Core
         self._model = None
         self._optimizer = None
         self._criterion = None
         self._metric = None
 
-        # TODO: Dummy logger when not logging
+        # Logging
         self._logger = None
         self._last_logged = {}
+        # Dummy logger when not logging
+        self._dummy_logger = tu.NoLogger
 
+        # Data logistics
         self._loaders = {}
         self._loader_iters = {}
 
+        # Iteration and epoch book-keeping
         self._iteration_count = 0
         self._epoch_count = 0
         self._batch_count = 0
 
+        # GPU business
         self._use_cuda = False
 
+        # Validation
         self._save_at_best_validation_score = True
         self._best_validation_score = None
         self._is_iteration_with_best_validation_score = False
         self._validate_every = None
         self._num_validation_iterations = None
-        self._last_validated_at_epoch = None
+        # We should exclude the zero-th epoch from validation
+        self._last_validated_at_epoch = 0
+        # This is to allow a callback to trigger a validation by setting
+        # trainer.validate_now = True
+        self._validation_externally_triggered = False
 
+        # Checkpointing
         self._save_every = None
         self._save_to_directory = None
-        self._last_saved_at_epoch = None
+        # Nothing to save at epoch 0
+        self._last_saved_at_epoch = 0
+        # This is to allow a callback to trigger a save by setting trainer.save_now = True
+        self._save_externally_triggered = False
 
+        # Stopping conditions
         self._max_num_iterations = None
         self._max_num_epochs = None
 
-        # Bind callbacks
+        # Callbacks and states
         self._callback_engine = CallbackEngine().bind_trainer(self)
+        self._state = {}
 
         # Public
         if model is not None:
@@ -173,8 +191,10 @@ class Trainer(object):
 
     @property
     def logger(self):
-        assert self._logger is not None, "Logger is not set yet."
-        return self._logger
+        if self._logger is None:
+            return self._dummy_logger
+        else:
+            return self._logger
 
     @logger.setter
     def logger(self, value):
@@ -194,10 +214,16 @@ class Trainer(object):
 
     def save_at_best_validation_score(self, yes=True):
         self._save_at_best_validation_score = yes
+        return self
 
     @property
     def save_now(self):
-        if self._is_iteration_with_best_validation_score:
+        if self._save_externally_triggered:
+            # Reset trigger
+            self._save_externally_triggered = False
+            # Save if externally triggered
+            return True
+        elif self._is_iteration_with_best_validation_score:
             return self._save_at_best_validation_score
         else:
             # Check if we're saving by epoch
@@ -213,10 +239,18 @@ class Trainer(object):
                 return self._save_every is not None and \
                    self._save_every.match(iteration_count=self._iteration_count)
 
+    @save_now.setter
+    def save_now(self, value):
+        self._save_externally_triggered = bool(value)
+
     def save_every(self, frequency, to_directory):
         self._save_every = tu.Frequency.build_from(frequency, priority='iterations')
         assert self._save_every.is_consistent
-        assert isinstance(to_directory, str) and os.path.isdir(to_directory)
+        assert isinstance(to_directory, str)
+        if not os.path.exists(to_directory):
+            os.mkdir(to_directory)
+        else:
+            assert os.path.isdir(to_directory)
         self._save_to_directory = to_directory
         return self
 
@@ -226,7 +260,11 @@ class Trainer(object):
 
     @property
     def validate_now(self):
-        if self._validate_every is not None and self._validate_every.by_epoch:
+        if self._validation_externally_triggered:
+            # Reset trigger
+            self._validation_externally_triggered = False
+            return True
+        elif self._validate_every is not None and self._validate_every.by_epoch:
             # Don't validate if we've done so already this epoch
             if self._last_validated_at_epoch == self._epoch_count:
                 return False
@@ -237,6 +275,10 @@ class Trainer(object):
             return self._validate_every is not None and \
                    self._validate_every.match(iteration_count=self._iteration_count)
 
+    @validate_now.setter
+    def validate_now(self, value):
+        self._validation_externally_triggered = bool(value)
+
     def validate_every(self, frequency, for_num_iterations=None):
         self._validate_every = tu.Frequency.build_from(frequency, priority='iterations')
         assert self._validate_every.is_consistent
@@ -244,8 +286,20 @@ class Trainer(object):
         return self
 
     def build_logger(self, log_directory):
+        # Make directory if it doesn't exist
+        if not os.path.exists(log_directory):
+            os.mkdir(log_directory)
+        else:
+            assert os.path.isdir(log_directory)
+        # Setup logger
         self._logger = Logger(logdir=log_directory)
         return self
+
+    def update_state(self, key, value):
+        self._state.update({key: value})
+
+    def get_state(self, key, default=None):
+        return self._state.get(key, default)
 
     def get_current_learning_rate(self):
         learning_rate = self.optimizer.param_groups[0].get('lr', -1.)
@@ -300,8 +354,9 @@ class Trainer(object):
         if of_loader is None:
             of_loader = self._loaders.keys()
         else:
+            assert of_loader in self._loaders.keys(), \
+                "Key {} not in loaders ({})".format(of_loader, list(self._loaders))
             of_loader = pyu.to_iterable(of_loader)
-            # TODO validate of_loader
 
         self._loader_iters.update({from_loader: self._loaders[from_loader].__iter__()
                                    for from_loader in of_loader})
@@ -390,12 +445,13 @@ class Trainer(object):
             if break_callback is not None and break_callback(iteration_num):
                 self.print("Breaking on request from callback.")
                 break
-            self.print("Training iteration {}.".format(iteration_num))
+            self.print("Training iteration {} (batch {} of epoch {})."
+                       .format(iteration_num, self._batch_count, self._epoch_count))
             # Zero out the grads
             self.optimizer.zero_grad()
             # No interrupts while computing - a SIGINT could shoot down the driver if
             # done at the wrong time. Not sure if this has something to do with pinned memory
-            with tu.delayed_keyboard_interrupt():
+            with pyu.delayed_keyboard_interrupt():
                 # Get batch
                 batch = self.fetch_next_batch('train')
                 # Send to device and wrap as variable
@@ -411,9 +467,15 @@ class Trainer(object):
             # Compute metric
             if self.metric_is_defined:
                 error = self.metric(prediction.data, target.data)
+                self.update_state('training_error', thu.unwrap(error))
             else:
                 error = None
-            # Update
+            # Update state
+            self.update_state('training_inputs', thu.unwrap(inputs))
+            self.update_state('training_target', thu.unwrap(target))
+            self.update_state('training_prediction', thu.unwrap(prediction))
+            self.update_state('training_loss', thu.unwrap(loss))
+            # Update parameters
             self.optimizer.step()
             # Log
             self.log(training_loss=loss.data[0], error=error,
@@ -470,7 +532,7 @@ class Trainer(object):
             self.print("Validating iteration {}.".format(iteration_num))
             try:
                 # Delay SIGINTs till after computation
-                with tu.delayed_keyboard_interrupt():
+                with pyu.delayed_keyboard_interrupt():
                     # Wrap
                     batch = self.wrap_batch(batch, volatile=True)
                     # Separate
@@ -479,26 +541,27 @@ class Trainer(object):
                     output = self.model(*inputs)
                     # Compute loss
                     loss = self.criterion(output, target)
-                validation_loss_meter.update(loss.data[0])
+                batch_size = target.size(0)
+                validation_loss_meter.update(loss.data[0], n=batch_size)
                 # Compute validation_error
                 if self.metric_is_defined:
                     validation_error = self.metric(output.data, target.data)
                     if torch.is_tensor(validation_error):
                         # Convert to float
                         validation_error = validation_error[0]
-                    validation_error_meter.update(validation_error)
+                    validation_error_meter.update(validation_error, n=batch_size)
                 iteration_num += 1
             except RuntimeError:
                 self.print("Out of memory, Skipping.")
                 pass
         self.print("Done validating. Logging results...")
         # Log
-        self.log(validation_loss=validation_loss_meter.val,
-                 validation_error=(validation_error_meter.val if self.metric_is_defined else None))
+        self.log(validation_loss=validation_loss_meter.avg,
+                 validation_error=(validation_error_meter.avg if self.metric_is_defined else None))
         # Report
         self.record_validation_results(
-            validation_loss=validation_loss_meter.val,
-            validation_error=(validation_error_meter.val if self.metric_is_defined else None))
+            validation_loss=validation_loss_meter.avg,
+            validation_error=(validation_error_meter.avg if self.metric_is_defined else None))
 
         return self
 
@@ -532,11 +595,14 @@ class Trainer(object):
         # Returns a config dictionary, like __getstate__. Except optionally without the
         # data loaders (which might be yuuuuuge if it contains the data)
         config_dict = {key: val for key, val in self.__dict__.items() if key.startswith('_')}
+        # Callbacks can't be robustly pickled because they might contain function handles
+        config_dict.pop('_callback_engine')
+        # Loader iterators can't be pickled as well
+        if '_loader_iters' in config_dict:
+            config_dict.pop('_loader_iters')
         if exclude_loader:
             if '_loaders' in config_dict:
                 config_dict.pop('_loaders')
-            if '_loader_iters' in config_dict:
-                config_dict.pop('_loader_iters')
         return config_dict
 
     def set_config(self, config_dict):
@@ -560,6 +626,14 @@ class Trainer(object):
         self.print("Saved to {}.".format(self._save_to_directory))
         return self
 
+    def save_model(self, to_directory=None):
+        to_directory = self._save_to_directory if to_directory is None else to_directory
+        # Save the state dictionary
+        torch.save(self.model,
+                   os.path.join(to_directory, 'model.pytorch'),
+                   pickle_module=dill)
+        return self
+
     def load(self, from_directory=None, best=False):
         from_directory = self._save_to_directory if from_directory is None else from_directory
         assert from_directory is not None, "Nowhere to load from."
@@ -572,6 +646,14 @@ class Trainer(object):
         self._is_iteration_with_best_validation_score = False
         # Set config
         self.set_config(config_dict)
+        return self
+
+    def load_model(self, from_directory=None):
+        from_directory = self._save_to_directory if from_directory is None else from_directory
+        # Load the model
+        model = torch.load(from_directory, pickle_module=dill)
+        # Set model
+        self.model = model
         return self
 
     def load_(self, *args, **kwargs):

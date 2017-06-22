@@ -1,7 +1,5 @@
 """Utilities for training."""
 
-import signal
-
 
 class AverageMeter(object):
     """
@@ -135,23 +133,11 @@ class Frequency(object):
             raise NotImplementedError
 
 
-class delayed_keyboard_interrupt(object):
-    """
-    Delays SIGINT over critical code.
-    Borrowed from:
-    https://stackoverflow.com/questions/842557/
-    how-to-prevent-a-block-of-code-from-being-interrupted-by-keyboardinterrupt-in-py
-    """
-    # PEP8: Context manager class in lowercase
-    def __enter__(self):
-        self.signal_received = False
-        self.old_handler = signal.getsignal(signal.SIGINT)
-        signal.signal(signal.SIGINT, self.handler)
+class NoLogger(object):
+    def __init__(self, logdir=None):
+        self.logdir = logdir
 
-    def handler(self, sig, frame):
-        self.signal_received = (sig, frame)
+    def log_value(self, *kwargs):
+        pass
 
-    def __exit__(self, type, value, traceback):
-        signal.signal(signal.SIGINT, self.old_handler)
-        if self.signal_received:
-            self.old_handler(*self.signal_received)
+

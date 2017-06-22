@@ -6,6 +6,21 @@ class TestTrainer(TestCase):
     ROOT_DIR = None
     CUDA = True
 
+    @staticmethod
+    def _make_test_model():
+        import torch.nn as nn
+        from inferno.extensions.layers.reshape import AsMatrix
+
+        toy_net = nn.Sequential(nn.Conv2d(3, 128, 3, 1, 1),
+                                nn.MaxPool2d(2),
+                                nn.Conv2d(128, 128, 3, 1, 1),
+                                nn.MaxPool2d(2),
+                                nn.Conv2d(128, 256, 3, 1, 1),
+                                nn.AdaptiveMaxPool2d((1, 1)),
+                                AsMatrix(),
+                                nn.Linear(256, 10))
+        return toy_net
+
     def test_cifar(self):
         from inferno.trainers.basic import Trainer
         import torch
@@ -40,18 +55,18 @@ class TestTrainer(TestCase):
                                                  num_workers=2)
 
         # Make model
-        resnet = torchvision.models.resnet18()
+        resnet = self._make_test_model()
 
         # Make trainer
         trainer = Trainer(model=resnet)\
             .build_logger(log_directory=os.path.join(self.ROOT_DIR, 'logs'))\
             .build_optimizer('Adam')\
             .build_criterion('CrossEntropyLoss')\
-            .build_metric('CategoricalAccuracy')\
+            .build_metric('CategoricalError')\
             .validate_every((1, 'epochs'))\
-            .save_every((10, 'epochs'), to_directory=os.path.join(self.ROOT_DIR, 'saves'))\
+            .save_every((3, 'epochs'), to_directory=os.path.join(self.ROOT_DIR, 'saves'))\
             .save_at_best_validation_score()\
-            .set_max_num_epochs(200)\
+            .set_max_num_epochs(12)\
 
         # Bind trainer to datasets
         trainer.bind_loader('train', trainloader).bind_loader('validate', testloader)
@@ -61,3 +76,9 @@ class TestTrainer(TestCase):
             trainer.cuda().fit()
         else:
             trainer.fit()
+
+
+if __name__ == '__main__':
+    tester = TestTrainer()
+    tester.ROOT_DIR = '/export/home/nrahaman/Python/Repositories/inferno/tests/training/root'
+    tester.test_cifar()
