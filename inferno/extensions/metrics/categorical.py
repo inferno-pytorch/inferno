@@ -1,8 +1,7 @@
 import torch
-from .base import Metric
 
 
-class CategoricalError(Metric):
+class CategoricalError(object):
     def __init__(self, aggregation_mode='mean'):
         assert aggregation_mode in ['mean', 'sum']
         self.aggregation_mode = aggregation_mode
@@ -28,6 +27,9 @@ class CategoricalError(Metric):
             _, predicted_class = torch.max(prediction, 1)
             incorrect = predicted_class.squeeze(1).type_as(target).ne(target)
             if self.aggregation_mode == 'mean':
-                return incorrect.mean()
+                return incorrect.sum() / incorrect.size(0)
             else:
                 return incorrect.sum()
+
+    def __call__(self, *args):
+        return self.forward(*args)
