@@ -1,9 +1,12 @@
+import torch.nn.init as init
+
 
 class Initializer(object):
     """
     Base class for all initializers.
     """
 
+    # TODO Support LSTMs and GRUs
     VALID_LAYERS = {'Conv1d', 'Conv2d', 'Conv3d',
                     'ConvTranspose1d', 'ConvTranspose2d', 'ConvTranspose3d',
                     'Linear', 'Bilinear',
@@ -54,6 +57,10 @@ class Initialization(Initializer):
             if isinstance(weight_initializer, Initializer):
                 assert weight_initializer.initializes_weight()
                 self.weight_initializer = weight_initializer
+            elif isinstance(weight_initializer, str):
+                init_function = getattr(init, weight_initializer, None)
+                assert init_function is not None
+                self.weight_initializer = WeightInitFunction(init_function=init_function)
             else:
                 # Provison for weight_initializer to be a function
                 assert callable(weight_initializer)
@@ -65,6 +72,10 @@ class Initialization(Initializer):
             if isinstance(bias_initializer, Initializer):
                 assert bias_initializer.initializes_bias
                 self.bias_initializer = bias_initializer
+            elif isinstance(bias_initializer, str):
+                init_function = getattr(init, bias_initializer, None)
+                assert init_function is not None
+                self.bias_initializer = BiasInitFunction(init_function=init_function)
             else:
                 assert callable(bias_initializer)
                 self.bias_initializer = BiasInitFunction(init_function=bias_initializer)
