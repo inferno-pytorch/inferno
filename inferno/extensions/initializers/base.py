@@ -1,7 +1,3 @@
-import numpy as np
-import torch
-from torch.autograd import Variable
-
 
 class Initializer(object):
     """
@@ -55,15 +51,23 @@ class Initialization(Initializer):
         if weight_initializer is None:
             self.weight_initializer = Initializer()
         else:
-            assert isinstance(weight_initializer, Initializer) \
-                   and weight_initializer.initializes_weight
-            self.weight_initializer = weight_initializer
+            if isinstance(weight_initializer, Initializer):
+                assert weight_initializer.initializes_weight()
+                self.weight_initializer = weight_initializer
+            else:
+                # Provison for weight_initializer to be a function
+                assert callable(weight_initializer)
+                self.weight_initializer = WeightInitFunction(init_function=weight_initializer)
+
         if bias_initializer is None:
             self.bias_initializer = Initializer()
         else:
-            assert isinstance(bias_initializer, Initializer) \
-                   and bias_initializer.initializes_bias
-            self.bias_initializer = bias_initializer
+            if isinstance(bias_initializer, Initializer):
+                assert bias_initializer.initializes_bias
+                self.bias_initializer = bias_initializer
+            else:
+                assert callable(bias_initializer)
+                self.bias_initializer = BiasInitFunction(init_function=bias_initializer)
 
     def __call__(self, module):
         module_class_name = module.__class__.__name__
