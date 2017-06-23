@@ -5,7 +5,7 @@ from torch.autograd import Variable
 from .python_utils import delayed_keyboard_interrupt
 
 
-def unwrap(tensor_or_variable):
+def unwrap(tensor_or_variable, as_numpy=False):
     if isinstance(tensor_or_variable, (list, tuple)):
         return type(tensor_or_variable)([unwrap(_t) for _t in tensor_or_variable])
     elif isinstance(tensor_or_variable, Variable):
@@ -20,4 +20,7 @@ def unwrap(tensor_or_variable):
         raise NotImplementedError
     # Transfer to CPU, and then to numpy, and return
     with delayed_keyboard_interrupt():
-        return tensor.cpu().numpy()
+        if as_numpy:
+            return tensor.cpu().numpy()
+        else:
+            return tensor.cpu()
