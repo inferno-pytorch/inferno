@@ -1,2 +1,3 @@
 # inferno
-Tiny package for easy asynchronous (Hogwild) training for Pytorch.
+
+Inferno is a little library providing utilities and convenience functions/classes around [PyTorch](https://github.com/pytorch/pytorch).
