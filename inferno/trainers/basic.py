@@ -40,8 +40,9 @@ class Trainer(object):
         self._epoch_count = 0
         self._batch_count = 0
 
-        # GPU business
+        # GPU and dtype business
         self._use_cuda = False
+        self._dtype = 'float'
 
         # Validation
         self._save_at_best_validation_score = True
@@ -321,6 +322,35 @@ class Trainer(object):
         else:
             return objects.cuda() if self._use_cuda else objects
 
+    def cast(self, objects):
+        if isinstance(objects, (list, tuple)):
+            return type(objects)([self.cast(_object) for _object in objects])
+        else:
+            # Cast only the float types, while leaving the ints alone
+            if objects.__class__.__name__ in ['HalfTensor', 'FloatTensor', 'DoubleTensor']:
+                cast_fn = getattr(objects, self._dtype, None)
+            else:
+                cast_fn = None
+
+            if cast_fn is not None:
+                return cast_fn()
+            else:
+                return objects
+
+    def set_precision(self, dtype):
+        assert dtype in ['double', 'float', 'half']
+        self._dtype = dtype
+        self._model = getattr(self._model, dtype)()
+        return self
+
+    @property
+    def dtype(self):
+        return self._dtype
+
+    @dtype.setter
+    def dtype(self, value):
+        self.set_precision(value)
+
     def bind_loader(self, name, loader):
         assert name in ['train', 'validate']
         assert isinstance(loader, DataLoader)
@@ -365,6 +395,8 @@ class Trainer(object):
     def wrap_batch(self, batch, requires_grad=False, volatile=False):
         # First, send to device
         batch = self.to_device(batch)
+        # Cast to the right dtype
+        batch = self.cast(batch)
         # Second, wrap as variable
         batch = type(batch)([Variable(_batch, requires_grad=requires_grad, volatile=volatile)
                              for _batch in batch])
@@ -390,7 +422,7 @@ class Trainer(object):
             max_num_epochs = self._max_num_epochs \
                 if isinstance(max_num_epochs, str) and max_num_epochs.lower() == 'auto' \
                 else max_num_epochs
-            return self._epoch_count > max_num_epochs
+            return self._epoch_count >= max_num_epochs
 
     def set_max_num_iterations(self, max_num_iterations):
         self._max_num_iterations = max_num_iterations
@@ -461,7 +493,7 @@ class Trainer(object):
                 # Compute prediction
                 prediction = self.model(*inputs)
                 # Compute loss
-                loss = self.criterion(prediction.squeeze(), target.squeeze())
+                loss = self.criterion(prediction, target)
                 # Backprop
                 loss.backward()
             # Compute metric
