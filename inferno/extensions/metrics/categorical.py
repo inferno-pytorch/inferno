@@ -17,17 +17,17 @@ class CategoricalError(object):
         if is_binary:
             # Binary classification
             prediction = prediction > 0.5
-            incorrect = prediction.type_as(target).ne(target)
+            incorrect = prediction.type_as(target).ne(target).float()
             if self.aggregation_mode == 'mean':
-                return incorrect.sum() / incorrect.size(0)
+                return incorrect.mean()
             else:
                 return incorrect.sum()
         else:
             # Multiclass classificiation
             _, predicted_class = torch.max(prediction, 1)
-            incorrect = predicted_class.squeeze(1).type_as(target).ne(target)
+            incorrect = predicted_class.squeeze(1).type_as(target).ne(target).float()
             if self.aggregation_mode == 'mean':
-                return incorrect.sum() / incorrect.size(0)
+                return incorrect.mean()
             else:
                 return incorrect.sum()
 
