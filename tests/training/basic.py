@@ -1,10 +1,13 @@
 from unittest import TestCase
+from unittest import main
+import time
 
 
 class TestTrainer(TestCase):
     # Parameters
-    ROOT_DIR = None
+    ROOT_DIR = __file__
     CUDA = True
+    HALF_PRECISION = True
 
     @staticmethod
     def _make_test_model():
@@ -57,6 +60,8 @@ class TestTrainer(TestCase):
         # Make model
         resnet = self._make_test_model()
 
+        tic = time.time()
+
         # Make trainer
         trainer = Trainer(model=resnet)\
             .build_logger(log_directory=os.path.join(self.ROOT_DIR, 'logs'))\
@@ -64,18 +69,25 @@ class TestTrainer(TestCase):
             .build_criterion('CrossEntropyLoss')\
             .build_metric('CategoricalError')\
             .validate_every((1, 'epochs'))\
-            .save_every((3, 'epochs'), to_directory=os.path.join(self.ROOT_DIR, 'saves'))\
+            .save_every((1, 'epochs'), to_directory=os.path.join(self.ROOT_DIR, 'saves'))\
             .save_at_best_validation_score()\
-            .set_max_num_epochs(12)\
+            .set_max_num_epochs(2)\
 
         # Bind trainer to datasets
         trainer.bind_loader('train', trainloader).bind_loader('validate', testloader)
 
         # Check device and fit
         if self.CUDA:
-            trainer.cuda().fit()
+            if self.HALF_PRECISION:
+                trainer.cuda().set_precision('half').fit()
+            else:
+                trainer.cuda().fit()
         else:
             trainer.fit()
+
+        toc = time.time()
+
+        print("[*] Elapsed time: {} seconds.".format(toc - tic))
 
 
 if __name__ == '__main__':
