@@ -8,7 +8,7 @@ class Zip(SyncableDataset):
     Zip two or more datasets to one dataset. If the datasets implement synchronization primitives,
     they are all synchronized with the first dataset.
     """
-    def __init__(self, *datasets, sync=True, transforms=None):
+    def __init__(self, *datasets, sync=False, transforms=None):
         super(Zip, self).__init__()
         assert len(datasets) >= 1
         assert all([isinstance(dataset, Dataset) for dataset in datasets])
@@ -38,6 +38,7 @@ class Zip(SyncableDataset):
         self.sync_datasets()
 
     def __getitem__(self, index):
+        assert index < len(self)
         fetched = [dataset[index] for dataset in self.datasets]
         if self.transforms is None:
             return fetched

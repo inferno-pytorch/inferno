@@ -37,6 +37,7 @@ class Concatenate(Dataset):
         return dataset_index, index_in_dataset
 
     def __getitem__(self, index):
+        assert index < len(self)
         dataset_index, index_in_dataset = self.map_index(index)
         fetched = self.datasets[dataset_index][index_in_dataset]
         if self.transforms is None:
