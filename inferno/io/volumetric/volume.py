@@ -88,8 +88,17 @@ class HDF5Volume(VolumeLoader):
         else:
             raise NotImplementedError
 
-        if data_slice is None:
+        if data_slice is None or isinstance(data_slice, (str, list)):
             self.data_slice = self.parse_data_slice(data_slice)
+        elif isinstance(data_slice, dict):
+            assert name is not None
+            assert name in data_slice
+            self.data_slice = data_slice.get(name)
+        else:
+            raise NotImplementedError
+
+        if name in slicing_config:
+            slicing_config = slicing_config.get(name)
 
         # Read in volume from file
         volume = iou.fromh5(self.path, self.path_in_h5_dataset, dataslice=data_slice)
