@@ -49,19 +49,27 @@ class VolumeLoader(SyncableDataset):
         else:
             return self.transforms(sliced_volume)
 
-    def clone(self, volume):
+    def clone(self, volume=None, transforms=None, name=None):
         # Make sure the volume shapes check out
         assert volume.shape == self.volume.shape
         # Make a new instance (without initializing)
         new = type(self).__new__(type(self))
         # Update dictionary to initialize
         new_dict = dict(self.__dict__)
-        new_dict.update({'volume': volume})
+        if volume is not None:
+            new_dict.update({'volume': volume})
+        if transforms is not None:
+            new_dict.update({'transforms': transforms})
+        if name is not None:
+            new_dict.update({'name': name})
         new.__dict__.update(new_dict)
         return new
 
+    def __repr__(self):
+        return "{}(shape={}, name={})".format(type(self).__name__, self.volume.shape, self.name)
 
-class HDF5Volume(VolumeLoader):
+
+class HDF5VolumeLoader(VolumeLoader):
     def __init__(self, path, path_in_h5_dataset=None, data_slice=None, transforms=None,
                  name=None, **slicing_config):
         assert 'window_size' in slicing_config
@@ -103,8 +111,8 @@ class HDF5Volume(VolumeLoader):
         # Read in volume from file
         volume = iou.fromh5(self.path, self.path_in_h5_dataset, dataslice=data_slice)
         # Initialize superclass with the volume
-        super(HDF5Volume, self).__init__(volume=volume, name=name, transforms=transforms,
-                                         **slicing_config)
+        super(HDF5VolumeLoader, self).__init__(volume=volume, name=name, transforms=transforms,
+                                               **slicing_config)
 
     @staticmethod
     def parse_data_slice(data_slice):
