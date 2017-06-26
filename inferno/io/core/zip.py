@@ -43,7 +43,7 @@ class Zip(SyncableDataset):
         if self.transforms is None:
             return fetched
         elif callable(self.transforms):
-            return self.transforms(fetched)
+            return self.transforms(*fetched)
         else:
             raise RuntimeError
 
@@ -57,4 +57,7 @@ class Zip(SyncableDataset):
         if len(self.datasets) > 3:
             return "Zip({}xDatasets)".format(len(self.datasets))
         else:
-            return "Zip(" + ", ".join([dataset.__repr__() for dataset in self.datasets]) + ')'
+            return "Zip(" + \
+                   ", ".join([dataset.__repr__() for dataset in self.datasets[:-1]]) + \
+                   self.datasets[-1].__repr__() + \
+                   ')'

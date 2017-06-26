@@ -1,5 +1,6 @@
 import numpy as np
 from torch.utils.data.dataset import Dataset
+from ...utils import python_utils as pyu
 
 
 class Concatenate(Dataset):
@@ -42,8 +43,10 @@ class Concatenate(Dataset):
         fetched = self.datasets[dataset_index][index_in_dataset]
         if self.transforms is None:
             return fetched
+        elif callable(self.transforms):
+            return self.transforms(*pyu.to_iterable(fetched))
         else:
-            return self.transforms(fetched)
+            raise NotImplementedError
 
     def __len__(self):
         return sum([len(dataset) for dataset in self.datasets])
@@ -51,7 +54,8 @@ class Concatenate(Dataset):
     def __repr__(self):
         if len(self.datasets) < 3:
             return "Concatenate(" + \
-                   ", ".join([dataset.__repr__() for dataset in self.datasets]) + \
+                   ", ".join([dataset.__repr__() for dataset in self.datasets[:-1]]) + \
+                   self.datasets[-1].__repr__() + \
                    ")"
         else:
             return "Concatenate({}xDatasets)".format(len(self.datasets))
