@@ -7,6 +7,16 @@ class Transform(object):
         """
         Base class for a Transform. The argument `apply_to` (list) specifies the indices of
         the tensors this transform will be applied to.
+
+        The following methods are recognized (in order of descending priority):
+            - `batch_function`: Applies to all tensors in a batch simultaneously
+            - `tensor_function`: Applies to just __one__ tensor at a time.
+            - `volume_function`: For 3D volumes, applies to just __one__ volume at a time.
+            - `image_function`: For 2D or 3D volumes, applies to just __one__ image at a time.
+
+        For example, if both `volume_function` and `image_function` are defined, this means that
+        only the former will be called. If the inputs are therefore not 5D batch-tensors of 3D
+        volumes, a `NotImplementedError` is raised.
         """
         self._random_variables = {}
         self._apply_to = list(apply_to) if apply_to is not None else None
@@ -45,6 +55,12 @@ class Transform(object):
                            if tensor_index in apply_to else tensor
                            for tensor_index, tensor in enumerate(tensors)]
             return pyu.from_iterable(transformed)
+        elif hasattr(self, 'volume_function'):
+            # Loop over all tensors
+            transformed = [self._apply_volume_function(tensor)
+                           if tensor_index in apply_to else tensor
+                           for tensor_index, tensor in enumerate(tensors)]
+            return pyu.from_iterable(transformed)
         elif hasattr(self, 'image_function'):
             # Loop over all tensors
             transformed = [self._apply_image_function(tensor)
@@ -66,6 +82,28 @@ class Transform(object):
                                                  for image in volume])
                                        for volume in channel_volume])
                              for channel_volume in tensor])
+        elif tensor.ndim == 3:
+            # Assume we have a 3D volume (signature zyx) and apply the image function
+            # on all yx slices.
+            return np.array([getattr(self, 'image_function')(image) for image in tensor])
+        elif tensor.ndim == 2:
+            # Assume we really do have an image.
+            return getattr(self, 'image_function')(tensor)
+        else:
+            raise NotImplementedError
+
+    def _apply_volume_function(self, tensor):
+        # 3D case
+        if tensor.ndim == 5:
+            return np.array([np.array([np.array([getattr(self, 'volume_function')(volume)
+                                                 for volume in channel_volume])
+                                       for channel_volume in batch])
+                             for batch in tensor])
+        elif tensor.ndim == 3:
+            # We're applying the volume function on the volume itself
+            return getattr(self, 'volume_function')(tensor)
+        else:
+            raise NotImplementedError
 
 
 class Compose(object):
