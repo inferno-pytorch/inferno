@@ -107,7 +107,7 @@ class Transform(object):
 
 
 class Compose(object):
-    """Composes multiple callables (including `Transform`s)."""
+    """Composes multiple callables (including but not limited to `Transform` objects)."""
     def __init__(self, *transforms):
         assert all([callable(transform) for transform in transforms])
         self.transforms = list(transforms)
