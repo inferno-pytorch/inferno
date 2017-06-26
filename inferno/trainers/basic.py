@@ -406,8 +406,18 @@ class Trainer(object):
         self._iteration_count += 1
 
     def next_epoch(self):
+        # Callback before the end of epoch
+        self.callbacks.call(self.callbacks.END_OF_EPOCH,
+                            epoch_count=self._epoch_count,
+                            batch_count=self._batch_count,
+                            iteration_count=self._iteration_count)
         self._epoch_count += 1
         self._batch_count = 0
+        # Callback after the start of epoch
+        self.callbacks.call(self.callbacks.BEGIN_OF_EPOCH,
+                            epoch_count=self._epoch_count,
+                            batch_count=self._batch_count,
+                            iteration_count=self._iteration_count)
 
     def stop_fitting(self, max_num_iterations=None, max_num_epochs=None):
         # First priority to iteration count
@@ -444,6 +454,12 @@ class Trainer(object):
 
         max_num_epochs = self._max_num_epochs if max_num_epochs is None else max_num_epochs
 
+        self.callbacks.call(self.callbacks.BEGIN_OF_FIT,
+                            max_num_iterations=max_num_iterations,
+                            max_num_epochs=max_num_epochs)
+
+        # Local clock
+        run_num = 0
         while True:
             if self.stop_fitting(max_num_iterations, max_num_epochs):
                 self.print("Exceeded max number of iterations / epochs, breaking.")
@@ -459,12 +475,22 @@ class Trainer(object):
             if self.save_now:
                 self.print("Saving.")
                 self.save()
+            run_num += 1
+
+        # Call callback
+        self.callbacks.call(self.callbacks.END_OF_FIT,
+                            max_num_iterations=max_num_iterations,
+                            max_num_epochs=max_num_epochs,
+                            num_runs=run_num)
 
         return self
 
     def train_for(self, num_iterations=None, break_callback=None):
         # Switch model to train mode
         self.model.train()
+        # Call callback
+        self.callbacks.call(self.callbacks.BEGIN_OF_TRAINING_RUN,
+                            num_iterations=num_iterations)
         # iteration_num is a local clock. There's the global self._iteration_count that keeps
         # actual track of the number of iterations - this is updated by the call to
         # self.next_iteration().
@@ -479,6 +505,9 @@ class Trainer(object):
                 break
             self.print("Training iteration {} (batch {} of epoch {})."
                        .format(iteration_num, self._batch_count, self._epoch_count))
+            # Call callback
+            self.callbacks.call(self.callbacks.BEGIN_OF_TRAINING_ITERATION,
+                                iteration_num=iteration_num)
             # Zero out the grads
             self.optimizer.zero_grad()
             # No interrupts while computing - a SIGINT could shoot down the driver if
@@ -512,6 +541,9 @@ class Trainer(object):
             # Log
             self.log(training_loss=loss.data[0], error=error,
                      learning_rate=self.get_current_learning_rate())
+            # Call callback
+            self.callbacks.call(self.callbacks.END_OF_TRAINING_ITERATION,
+                                iteration_num=iteration_num)
             # Prepare for next iteration
             self.next_iteration()
             # Break if validating or saving. It's important that the next_iteration() method is
@@ -526,6 +558,7 @@ class Trainer(object):
                 break
             iteration_num += 1
 
+        self.callbacks.call(self.callbacks.END_OF_TRAINING_RUN, num_iterations=num_iterations)
         return self
 
     def validate_for(self, num_iterations=None):
@@ -542,6 +575,10 @@ class Trainer(object):
         # Record the epoch we're validating in
         self._last_validated_at_epoch = self._epoch_count
 
+        self.callbacks.call(self.callbacks.BEGIN_OF_VALIDATION_RUN,
+                            num_iterations=num_iterations,
+                            last_validated_at_epoch=self._last_validated_at_epoch)
+
         # If we don't know num_iterations, we're validating the entire dataset - so we might as
         # well restart the loader now
         if num_iterations is None:
@@ -550,6 +587,9 @@ class Trainer(object):
         while True:
             if num_iterations is not None and iteration_num > num_iterations:
                 break
+
+            self.callbacks.call(self.callbacks.BEGIN_OF_VALIDATION_ITERATION,
+                                iteration_num=iteration_num)
 
             try:
                 batch = self.fetch_next_batch('validate',
@@ -562,32 +602,42 @@ class Trainer(object):
                 break
 
             self.print("Validating iteration {}.".format(iteration_num))
-            try:
-                # Delay SIGINTs till after computation
-                with pyu.delayed_keyboard_interrupt():
-                    # Wrap
-                    batch = self.wrap_batch(batch, volatile=True)
-                    # Separate
-                    inputs, target = batch[0:-1], batch[-1]
-                    # Comptue output
-                    output = self.model(*inputs)
-                    # Compute loss
-                    loss = self.criterion(output, target)
-                batch_size = target.size(0)
-                validation_loss_meter.update(loss.data[0], n=batch_size)
-                # Compute validation_error
-                if self.metric_is_defined:
-                    validation_error = self.metric(output.data, target.data)
-                    if torch.is_tensor(validation_error):
-                        # Convert to float
-                        validation_error = validation_error[0]
-                    validation_error_meter.update(validation_error, n=batch_size)
-                iteration_num += 1
-            except RuntimeError:
-                self.print("Out of memory, Skipping.")
-                pass
+
+            # Delay SIGINTs till after computation
+            with pyu.delayed_keyboard_interrupt():
+                # Wrap
+                batch = self.wrap_batch(batch, volatile=True)
+                # Separate
+                inputs, target = batch[0:-1], batch[-1]
+                # Comptue output
+                output = self.model(*inputs)
+                # Compute loss
+                loss = self.criterion(output, target)
+
+            batch_size = target.size(0)
+            validation_loss_meter.update(loss.data[0], n=batch_size)
+            # Compute validation_error
+            if self.metric_is_defined:
+                validation_error = self.metric(output.data, target.data)
+                if torch.is_tensor(validation_error):
+                    # Convert to float
+                    validation_error = validation_error[0]
+                self.update_state('validation_error', thu.unwrap(validation_error))
+                validation_error_meter.update(validation_error, n=batch_size)
+
+            self.update_state('validation_input', thu.unwrap(inputs))
+            self.update_state('validation_target', thu.unwrap(target))
+            self.update_state('validation_prediction', thu.unwrap(output))
+            self.update_state('validation_loss', thu.unwrap(loss))
+
+            self.callbacks.call(self.callbacks.END_OF_VALIDATION_ITERATION,
+                                iteration_num=iteration_num)
+
+            iteration_num += 1
+
         self.print("Done validating. Logging results...")
         # Log
+        # TODO Set up logging as a callback
         self.log(validation_loss=validation_loss_meter.avg,
                  validation_error=(validation_error_meter.avg if self.metric_is_defined else None))
         # Report
@@ -595,6 +645,10 @@ class Trainer(object):
             validation_loss=validation_loss_meter.avg,
             validation_error=(validation_error_meter.avg if self.metric_is_defined else None))
 
+        self.callbacks.call(self.callbacks.END_OF_VALIDATION_RUN,
+                            validation_loss_meter=validation_loss_meter,
+                            validation_error_meter=
+                            validation_error_meter if self.metric_is_defined else None)
         return self
 
     def record_validation_results(self, validation_loss, validation_error):
