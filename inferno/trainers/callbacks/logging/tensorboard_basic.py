@@ -1,4 +1,4 @@
-import torch
+from ....utils import torch_utils as tu
 from .base import Logger
 try:
     import tensorboard_logger as tflogger
@@ -24,10 +24,10 @@ class BasicTensorboardLogger(Logger):
         training_loss = self.trainer.get_state('training_loss')
         training_error = self.trainer.get_state('training_error')
         # Extract floats from torch tensors if necessary
-        if torch.is_tensor(training_loss):
-            training_loss = training_loss[0]
-        if torch.is_tensor(training_error):
-            training_error = training_error[0]
+        if tu.is_tensor(training_loss):
+            training_loss = training_loss.float()[0]
+        if tu.is_tensor(training_error):
+            training_error = training_error.float()[0]
         # Log
         self.logger.log_value('training_loss', training_loss, self.trainer.iteration_count)
         self.logger.log_value('training_error', training_error, self.trainer.iteration_count)

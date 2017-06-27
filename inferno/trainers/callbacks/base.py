@@ -39,12 +39,16 @@ class CallbackEngine(object):
 
     def __init__(self):
         self._trainer = None
-        self._callback_registry = {trigger: [] for trigger in self.TRIGGERS}
+        self._callback_registry = {trigger: set() for trigger in self.TRIGGERS}
         self._last_known_epoch = None
         self._last_known_iteration = None
 
     def bind_trainer(self, trainer):
         self._trainer = trainer
+        return self
+
+    def unbind_trainer(self):
+        self._trainer = None
         return self
 
     def register_callback(self, callback, trigger='auto', bind_trainer=True):
@@ -58,7 +62,7 @@ class CallbackEngine(object):
         # Validate triggers
         assert trigger in self.TRIGGERS
         # Add to callback registry
-        self._callback_registry.get(trigger).append(callback)
+        self._callback_registry.get(trigger).add(callback)
         # Register trainer with the callback if required
         if bind_trainer and pyu.has_callable_attr(callback, 'bind_trainer'):
             callback.bind_trainer(self._trainer)
@@ -82,6 +86,10 @@ class Callback(object):
 
     def bind_trainer(self, trainer):
         self._trainer = trainer
+        return self
+
+    def unbind_trainer(self):
+        self._trainer = None
         return self
 
     def __call__(self, **kwargs):

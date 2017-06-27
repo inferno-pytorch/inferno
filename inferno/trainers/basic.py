@@ -6,7 +6,8 @@ import subprocess
 import torch
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
-from tensorboard_logger import Logger
+from .callbacks.logging.base import Logger
+from .callbacks.logging import get_logger
 
 from ..utils import train_utils as tu
 from ..utils import python_utils as pyu
@@ -193,21 +194,23 @@ class Trainer(object):
 
     @property
     def logger(self):
-        if self._logger is None:
-            return self._dummy_logger
-        else:
-            return self._logger
+        return self._logger
 
     @logger.setter
     def logger(self, value):
-        if isinstance(value, Logger):
-            self._logger = value
-        elif isinstance(value, str):
-            self.build_logger(log_directory=value)
-        elif isinstance(value, dict):
+        if isinstance(value, dict):
             self.build_logger(**value)
         else:
-            raise NotImplementedError
+            self.build_logger(logger=value)
+
+    @property
+    def log_directory(self):
+        return self._log_directory
+
+    @log_directory.setter
+    def log_directory(self, value):
+        if value is not None:
+            self.set_log_directory(value)
 
     @property
     def saving_every(self):
@@ -244,9 +247,14 @@ class Trainer(object):
     def save_now(self, value):
         self._save_externally_triggered = bool(value)
 
-    def save_every(self, frequency, to_directory):
+    def save_every(self, frequency, to_directory=None):
         self._save_every = tu.Frequency.build_from(frequency, priority='iterations')
         assert self._save_every.is_consistent
+        if to_directory is not None:
+            self.save_to_directory(to_directory)
+        return self
+
+    def save_to_directory(self, to_directory):
         assert isinstance(to_directory, str)
         if not os.path.exists(to_directory):
             os.mkdir(to_directory)
@@ -290,19 +298,35 @@ class Trainer(object):
     def iteration_count(self):
         return self._iteration_count
 
-    def build_logger(self, log_directory=None):
-        log_directory = log_directory if log_directory is not None else self._log_directory
-        # Make directory if it doesn't exist
-        if not os.path.exists(log_directory):
-            os.mkdir(log_directory)
+    def build_logger(self, logger=None, log_directory=None, **kwargs):
+        if isinstance(logger, Logger):
+            # Set logger and register with the callback engine.
+            self._logger = logger
+            self.callbacks.register_callback(self._logger)
+        elif callable(logger):
+            self._logger = logger(**kwargs)
+            self.callbacks.register_callback(self._logger)
+        elif isinstance(logger, str):
+            self._logger = get_logger(logger)(**kwargs)
+            self.callbacks.register_callback(self._logger)
+        elif logger is None:
+            pass
         else:
-            assert os.path.isdir(log_directory)
-        # Setup logger
-        self._logger = Logger(logdir=log_directory)
+            raise NotImplementedError
+
+        if log_directory is not None:
+            self.set_log_directory(log_directory)
+        return self
+
+    def set_log_directory(self, log_directory):
+        self._log_directory = log_directory
+        if self._logger is not None:
+            self._logger.set_log_directory(log_directory)
         return self
 
     def update_state(self, key, value):
         self._state.update({key: value})
+        return self
 
     def get_state(self, key, default=None):
         return self._state.get(key, default)
@@ -543,9 +567,6 @@ class Trainer(object):
             self.update_state('training_loss', thu.unwrap(loss))
             # Update parameters
             self.optimizer.step()
-            # Log
-            self.log(training_loss=loss.data[0], error=error,
-                     learning_rate=self.get_current_learning_rate())
             # Call callback
             self.callbacks.call(self.callbacks.END_OF_TRAINING_ITERATION,
                                 iteration_num=iteration_num)
@@ -641,10 +662,7 @@ class Trainer(object):
             iteration_num += 1
 
         self.print("Done validating. Logging results...")
-        # Log
-        # TODO Set up logging as a callback
-        self.log(validation_loss=validation_loss_meter.avg,
-                 validation_error=(validation_error_meter.avg if self.metric_is_defined else None))
+
         # Report
         self.record_validation_results(
             validation_loss=validation_loss_meter.avg,
@@ -667,27 +685,15 @@ class Trainer(object):
             self._is_iteration_with_best_validation_score = True
             self._best_validation_score = validation_score
 
-    def log(self, **names_and_values):
-        if 'iteration_count' in names_and_values:
-            iteration_count = names_and_values.pop('iteration_count')
-        else:
-            iteration_count = self._iteration_count
-        for name, value in names_and_values.items():
-            # Check if value is not none
-            if value is None:
-                continue
-            # Obtain scalars from torch tensors
-            if torch.is_tensor(value):
-                value = value[0]
-            self._last_logged.update({name: value})
-            self.logger.log_value(name, value, iteration_count)
-
     def get_config(self, exclude_loader=True):
         # Returns a config dictionary, like __getstate__. Except optionally without the
         # data loaders (which might be yuuuuuge if it contains the data)
-        config_dict = {key: val for key, val in self.__dict__.items() if key.startswith('_')}
+        config_dict = dict(self.__dict__)
         # Callbacks can't be robustly pickled because they might contain function handles
         config_dict.pop('_callback_engine')
+        # Loggers are callbacks - they too contain a handle to trainer. But they also define
+        # __getstate__ and __setstate__ methods, so we don't need to do anything about it
+        # right now.
         # Loader iterators can't be pickled as well
         if '_loader_iters' in config_dict:
             config_dict.pop('_loader_iters')
@@ -699,6 +705,9 @@ class Trainer(object):
     def set_config(self, config_dict):
         # TODO some sanity checks on config_dict (e.g. whether the model is actually a model, etc)
         self.__dict__.update(config_dict)
+        # Register logger with the callback engine
+        self.build_logger(logger=self._logger)
+        return self
 
     def save(self, exclude_loader=True, stash_best_checkpoint=True):
         # Log the epoch for save_now
@@ -764,7 +773,7 @@ class Trainer(object):
             trainer.load_()
         else:
             trainer = cls(model) \
-                .build_logger(trainer_config.get('log_directory')) \
+                .build_logger(**trainer_config.get('logger_config')) \
                 .set_max_num_iterations(trainer_config.get('max_num_iterations')) \
                 .build_criterion(**trainer_config.get('criterion_config')) \
                 .build_optimizer(**trainer_config.get('optimizer_config')) \

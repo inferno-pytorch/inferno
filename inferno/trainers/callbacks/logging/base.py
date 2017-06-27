@@ -3,6 +3,13 @@ from ..base import Callback
 
 
 class Logger(Callback):
+    """
+    A special callback for logging.
+
+    Loggers are special because they're required to be serializable, whereas other
+    callbacks have no such guarantees. In this regard, they jointly handled by
+    trainers and the callback engine.
+    """
     def __init__(self, log_directory=None):
         super(Logger, self).__init__()
         self._log_directory = None
@@ -28,3 +35,19 @@ class Logger(Callback):
             assert not os.path.exists(log_directory)
             os.mkdir(log_directory)
         self._log_directory = log_directory
+        return self
+
+    def get_config(self):
+        config_dict = dict(self.__dict__)
+        config_dict.pop('_trainer')
+        return config_dict
+
+    def set_config(self, config_dict):
+        self.__dict__.update(config_dict)
+        return self
+
+    def __getstate__(self):
+        return self.get_config()
+
+    def __setstate__(self, state):
+        self.set_config(state)

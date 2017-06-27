@@ -24,3 +24,16 @@ def unwrap(tensor_or_variable, as_numpy=False):
             return tensor.cpu().numpy()
         else:
             return tensor.cpu()
+
+
+def is_tensor(object_):
+    missed_tensor_classes = {torch.HalfTensor}
+    return torch.is_tensor(object_) or type(object_) in missed_tensor_classes
+
+
+def is_image_tensor(object_):
+    return is_tensor(object_) and object_.dim() == 4
+
+
+def is_volume_tensor(object_):
+    return is_tensor(object_) and object_.dim() == 5
