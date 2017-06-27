@@ -2,13 +2,14 @@ import numpy as np
 import os
 
 from ..core.base import SyncableDataset
+from ..core.base import IndexSpec
 from . import volumetric_utils as vu
 from ...utils import io_utils as iou
 
 
 class VolumeLoader(SyncableDataset):
     def __init__(self, volume, window_size, stride, downsampling_ratio=None,
-                 transforms=None, name=None):
+                 transforms=None, return_index_spec=False, name=None):
         super(VolumeLoader, self).__init__()
         # Validate volume
         assert isinstance(volume, np.ndarray)
@@ -19,6 +20,7 @@ class VolumeLoader(SyncableDataset):
         assert transforms is None or callable(transforms)
 
         self.name = name
+        self.return_index_spec = return_index_spec
         self.volume = volume
         self.window_size = window_size
         self.stride = stride
@@ -42,12 +44,18 @@ class VolumeLoader(SyncableDataset):
                                            shuffle=self.shuffle))
 
     def __getitem__(self, index):
+        # Casting to int would allow index to be IndexSpec objects.
+        index = int(index)
         slices = self.base_sequence[index]
         sliced_volume = self.volume[tuple(slices)]
         if self.transforms is None:
-            return sliced_volume
+            transformed = sliced_volume
         else:
-            return self.transforms(sliced_volume)
+            transformed = self.transforms(sliced_volume)
+        if self.return_index_spec:
+            return transformed, IndexSpec(index=index, base_sequence_at_index=slices)
+        else:
+            return transformed
 
     def clone(self, volume=None, transforms=None, name=None):
         # Make sure the volume shapes check out
