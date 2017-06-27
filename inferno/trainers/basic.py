@@ -28,6 +28,7 @@ class Trainer(object):
         # Logging
         self._logger = None
         self._last_logged = {}
+        self._log_directory = {}
         # Dummy logger when not logging
         self._dummy_logger = tu.NoLogger
 
@@ -202,10 +203,9 @@ class Trainer(object):
         if isinstance(value, Logger):
             self._logger = value
         elif isinstance(value, str):
-            self.build_logger(value)
+            self.build_logger(log_directory=value)
         elif isinstance(value, dict):
-            assert 'log_directory' in value
-            self.build_logger(value.get('log_directory'))
+            self.build_logger(**value)
         else:
             raise NotImplementedError
 
@@ -286,7 +286,12 @@ class Trainer(object):
         self._num_validation_iterations = for_num_iterations
         return self
 
-    def build_logger(self, log_directory):
+    @property
+    def iteration_count(self):
+        return self._iteration_count
+
+    def build_logger(self, log_directory=None):
+        log_directory = log_directory if log_directory is not None else self._log_directory
         # Make directory if it doesn't exist
         if not os.path.exists(log_directory):
             os.mkdir(log_directory)

@@ -16,6 +16,10 @@ def from_iterable(x):
         return x
 
 
+def has_callable_attr(object_, name):
+    return hasattr(object_, name) and callable(getattr(object_, name))
+
+
 class delayed_keyboard_interrupt(object):
     """
     Delays SIGINT over critical code.
