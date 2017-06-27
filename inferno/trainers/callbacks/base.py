@@ -1,3 +1,4 @@
+from ...utils import python_utils as pyu
 
 
 class CallbackEngine(object):
@@ -46,14 +47,20 @@ class CallbackEngine(object):
         self._trainer = trainer
         return self
 
-    def register_callback(self, callback, trigger):
-        assert trigger in self.TRIGGERS
+    def register_callback(self, callback, trigger='auto', bind_trainer=True):
         assert callable(callback)
+        # Automatic callback registration based on their methods
+        if trigger == 'auto':
+            for trigger in self.TRIGGERS:
+                if pyu.has_callable_attr(callback, trigger):
+                    self.register_callback(callback, trigger, bind_trainer)
+            return self
+        # Validate triggers
+        assert trigger in self.TRIGGERS
         # Add to callback registry
         self._callback_registry.get(trigger).append(callback)
         # Register trainer with the callback if required
-        if hasattr(callback, 'bind_trainer') and \
-                callable(getattr(callback, 'bind_trainer')):
+        if bind_trainer and pyu.has_callable_attr(callback, 'bind_trainer'):
             callback.bind_trainer(self._trainer)
         return self
 
