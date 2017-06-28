@@ -37,3 +37,11 @@ def is_image_tensor(object_):
 
 def is_volume_tensor(object_):
     return is_tensor(object_) and object_.dim() == 5
+
+
+def is_image_or_volume_tensor(object_):
+    return is_image_tensor(object_) or is_volume_tensor(object_)
+
+
+def is_matrix_tensor(object_):
+    return is_tensor(object_) and object_.dim() == 2

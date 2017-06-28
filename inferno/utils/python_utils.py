@@ -20,6 +20,15 @@ def has_callable_attr(object_, name):
     return hasattr(object_, name) and callable(getattr(object_, name))
 
 
+def is_maybe_list_of(check_function):
+    def decorated_function(object_, **kwargs):
+        if isinstance(object_, (list, tuple)):
+            return all([check_function(_object, **kwargs) for _object in object_])
+        else:
+            return check_function(object_, **kwargs)
+    return decorated_function
+
+
 class delayed_keyboard_interrupt(object):
     """
     Delays SIGINT over critical code.

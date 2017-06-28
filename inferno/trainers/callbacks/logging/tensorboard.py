@@ -12,19 +12,26 @@ except ImportError:
     plt = None
 
 import numpy as np
+from scipy.misc import toimage
 
 from .base import Logger
 from ....utils import torch_utils as tu
+from ....utils import python_utils as pyu
 
 
 class TensorboardLogger(Logger):
-    # Borrowed from https://gist.github.com/gyglim/1f8dfb1b5c82627ae3efcfbbadb9f514
-    def __init__(self, log_directory=None, **config):
+    # Borrowed from https://gist.github.com/gyglim/1f8dfb1b5c82627ae3efcfbbadb9f514 and
+    # https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/04-utils/tensorboard/logger.py
+    def __init__(self, log_directory=None,
+                 send_image_at_batch_indices='all', send_image_at_channel_indices='all',
+                 send_volume_at_z_indices='mid'):
         assert tf is not None
         assert plt is not None
         super(TensorboardLogger, self).__init__(log_directory=log_directory)
         self._writer = None
-        self._config = config
+        self._config = {'image_batch_indices': send_image_at_batch_indices,
+                        'image_channel_indices': send_image_at_channel_indices,
+                        'volume_z_indices': send_volume_at_z_indices}
 
     @property
     def writer(self):
@@ -39,6 +46,7 @@ class TensorboardLogger(Logger):
         training_prediction = self.trainer.get_state('training_prediction')
         training_inputs = self.trainer.get_state('training_inputs')
         training_target = self.trainer.get_state('training_target')
+
         # Extract floats from torch tensors if necessary
         if tu.is_tensor(training_loss):
             training_loss = training_loss.float()[0]
@@ -47,12 +55,88 @@ class TensorboardLogger(Logger):
         self.log_scalar('training_loss', training_loss, self.trainer.iteration_count)
         self.log_scalar('training_error', training_error, self.trainer.iteration_count)
 
+        # Extract images and log if possible
+        # Training prediction
+        if pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(training_prediction):
+            self.log_image_or_volume_batch('training_prediction', training_prediction)
+        # Training inputs
+        if pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(training_inputs):
+            self.log_image_or_volume_batch('training_input', training_inputs)
+        # Training target
+        if pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(training_target):
+            self.log_image_or_volume_batch('training_target', training_target)
+
     def extract_images_from_batch(self, batch):
-        if tu.is_image_tensor(batch):
-            # Convert to numpy
-            batch = batch.numpy()
-            # TODO Continue
-        pass
+        # Special case when batch is a list or tuple of batches
+        if isinstance(batch, (list, tuple)):
+            image_list = []
+            for _batch in batch:
+                image_list.extend(self.extract_images_from_batch(_batch))
+            return image_list
+        # `batch` really is a tensor from now on.
+        batch_is_image_tensor = tu.is_image_tensor(batch)
+        batch_is_volume_tensor = tu.is_volume_tensor(batch)
+        assert batch_is_volume_tensor != batch_is_image_tensor, \
+            "Batch must either be a image or a volume tensor."
+        # Convert to numpy
+        batch = batch.float().numpy()
+        # Get the indices of the batches we want to send to tensorboard
+        batch_indices = self._config.get('image_batch_indices', 'all')
+        if batch_indices == 'all':
+            batch_indices = list(range(batch.shape[0]))
+        elif isinstance(batch_indices, (list, tuple)):
+            pass
+        elif isinstance(batch_indices, int):
+            batch_indices = [batch_indices]
+        else:
+            raise NotImplementedError
+        # Get the indices of the channels we want to send to tensorboard
+        channel_indices = self._config.get('image_channel_indices', 'all')
+        if channel_indices == 'all':
+            channel_indices = list(range(batch.shape[1]))
+        elif isinstance(channel_indices, (list, tuple)):
+            pass
+        elif isinstance(channel_indices, int):
+            channel_indices = [channel_indices]
+        else:
+            raise NotImplementedError
+        # Trim batch to what we want to send to tensorboard
+        trimmed_batch = batch[batch_indices, channel_indices, ...]
+        # Extract images from trimmed batch
+        if batch_is_image_tensor:
+            # Get batch spatial shape (i.e. 01 of NC01)
+            _0, _1 = trimmed_batch.shape[-2:]
+            # Reshape away
+            reshaped_batch = trimmed_batch.reshape((-1, _0, _1))
+            # Make list of images
+            image_list = list(reshaped_batch)
+        else:
+            assert batch_is_volume_tensor
+            # Trim away along the z axis
+            z_indices = self._config.get('volume_z_indices', 'mid')
+            if z_indices == 'all':
+                z_indices = list(range(trimmed_batch.shape[2]))
+            elif z_indices == 'mid':
+                z_indices = [trimmed_batch.shape[2] // 2]
+            elif isinstance(z_indices, (list, tuple)):
+                pass
+            elif isinstance(z_indices, int):
+                z_indices = [z_indices]
+            else:
+                raise NotImplementedError
+            trimmed_batch = trimmed_batch[:, :, z_indices, ...]
+            # Get spatial shape (T01 of NCT01) and reshape batch to make a list of images
+            Z, _0, _1 = trimmed_batch.shape[-3:]
+            reshaped_batch = trimmed_batch.reshape((-1, _0, _1))
+            image_list = list(reshaped_batch)
+        # Done.
+        return image_list
+
+    def log_image_or_volume_batch(self, tag, batch, step=None):
+        assert pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(batch)
+        step = step or self.trainer.iteration_count
+        image_list = self.extract_images_from_batch(batch)
+        self.log_images(tag, image_list, step)
 
     def log_scalar(self, tag, value, step):
         """
@@ -74,8 +158,9 @@ class TensorboardLogger(Logger):
         image_summaries = []
         for image_num, image in enumerate(images):
             # Write the image to a string
+            # FIXME Debug this
             s = StringIO()
-            plt.imsave(s, image, format='png')
+            toimage(image).save(s, format="png")
 
             # Create an Image object
             img_sum = tf.Summary.Image(encoded_image_string=s.getvalue(),
