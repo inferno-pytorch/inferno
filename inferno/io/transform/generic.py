@@ -1,3 +1,4 @@
+import numpy as np
 from .base import Transform
 
 
@@ -20,3 +21,21 @@ class NormalizeRange(Transform):
 
     def tensor_function(self, tensor):
         return tensor / self.normalize_by
+
+
+class Cast(Transform):
+    """Casts inputs to a specified datatype."""
+    DTYPE_MAPPING = {'float32': 'float32',
+                     'float': 'float32',
+                     'double': 'float64',
+                     'float64': 'float64',
+                     'half': 'float16',
+                     'float16': 'float16'}
+
+    def __init__(self, dtype='float', **super_kwargs):
+        super(Cast, self).__init__(**super_kwargs)
+        assert dtype in self.DTYPE_MAPPING.keys()
+        self.dtype = self.DTYPE_MAPPING.get(dtype)
+
+    def tensor_function(self, tensor):
+        return getattr(np, self.dtype)(tensor)
