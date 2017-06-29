@@ -5,7 +5,7 @@ except ImportError:
 try:
     from StringIO import StringIO
 except ImportError:
-    from io import StringIO
+    from io import StringIO, BytesIO
 try:
     import matplotlib.pyplot as plt
 except ImportError:
@@ -17,21 +17,28 @@ from scipy.misc import toimage
 from .base import Logger
 from ....utils import torch_utils as tu
 from ....utils import python_utils as pyu
+from ....utils import train_utils as tru
 
 
 class TensorboardLogger(Logger):
     # Borrowed from https://gist.github.com/gyglim/1f8dfb1b5c82627ae3efcfbbadb9f514 and
     # https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/04-utils/tensorboard/logger.py
-    def __init__(self, log_directory=None,
+    def __init__(self, log_directory=None, log_scalars_every=None, log_images_every=None,
                  send_image_at_batch_indices='all', send_image_at_channel_indices='all',
                  send_volume_at_z_indices='mid'):
         assert tf is not None
         assert plt is not None
         super(TensorboardLogger, self).__init__(log_directory=log_directory)
+        self._log_scalars_every = None
+        self._log_images_every = None
         self._writer = None
         self._config = {'image_batch_indices': send_image_at_batch_indices,
                         'image_channel_indices': send_image_at_channel_indices,
                         'volume_z_indices': send_volume_at_z_indices}
+        if log_scalars_every is not None:
+            self.log_scalars_every = log_scalars_every
+        if log_images_every is not None:
+            self.log_images_every = log_images_every
 
     @property
     def writer(self):
@@ -39,7 +46,49 @@ class TensorboardLogger(Logger):
             self._writer = tf.summary.FileWriter(self.log_directory)
         return self._writer
 
+    @property
+    def log_scalars_every(self):
+        if self._log_scalars_every is None:
+            self._log_scalars_every = tru.Frequency(1, 'iterations')
+        return self._log_scalars_every
+
+    @log_scalars_every.setter
+    def log_scalars_every(self, value):
+        self._log_scalars_every = tru.Frequency.build_from(value)
+
+    @property
+    def log_scalars_now(self):
+        # Using persistent=True in a property getter is probably not a very good idea...
+        # We need to make sure that this getter is called only once per callback-call.
+        return self.log_scalars_every.match(iteration_count=self.trainer.iteration_count,
+                                            epoch_count=self.trainer.epoch_count,
+                                            persistent=True)
+
+    @property
+    def log_images_every(self):
+        if self._log_images_every is None:
+            self._log_images_every = tru.Frequency(1, 'iterations')
+        return self._log_images_every
+
+    @log_images_every.setter
+    def log_images_every(self, value):
+        self._log_images_every = tru.Frequency.build_from(value)
+
+    @property
+    def log_images_now(self):
+        # Using persistent=True in a property getter is probably not a very good idea...
+        # We need to make sure that this getter is called only once per callback-call.
+        return self.log_images_every.match(iteration_count=self.trainer.iteration_count,
+                                           epoch_count=self.trainer.epoch_count,
+                                           persistent=True)
+
     def end_of_training_iteration(self, **_):
+        # This is very necessary - see comments in the respective property getters.
+        log_scalars_now = self.log_scalars_now
+        log_images_now = self.log_images_now
+        if not log_scalars_now and not log_images_now:
+            # Nothing to log, so we won't bother
+            return
         # Fetch from trainer
         training_loss = self.trainer.get_state('training_loss')
         training_error = self.trainer.get_state('training_error')
@@ -47,24 +96,26 @@ class TensorboardLogger(Logger):
         training_inputs = self.trainer.get_state('training_inputs')
         training_target = self.trainer.get_state('training_target')
 
-        # Extract floats from torch tensors if necessary
-        if tu.is_tensor(training_loss):
-            training_loss = training_loss.float()[0]
-        if tu.is_tensor(training_error):
-            training_error = training_error.float()[0]
-        self.log_scalar('training_loss', training_loss, self.trainer.iteration_count)
-        self.log_scalar('training_error', training_error, self.trainer.iteration_count)
+        if log_scalars_now:
+            # Extract floats from torch tensors if necessary
+            if tu.is_tensor(training_loss):
+                training_loss = training_loss.float()[0]
+            if tu.is_tensor(training_error):
+                training_error = training_error.float()[0]
+            self.log_scalar('training_loss', training_loss, self.trainer.iteration_count)
+            self.log_scalar('training_error', training_error, self.trainer.iteration_count)
 
-        # Extract images and log if possible
-        # Training prediction
-        if pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(training_prediction):
-            self.log_image_or_volume_batch('training_prediction', training_prediction)
-        # Training inputs
-        if pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(training_inputs):
-            self.log_image_or_volume_batch('training_input', training_inputs)
-        # Training target
-        if pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(training_target):
-            self.log_image_or_volume_batch('training_target', training_target)
+        if log_images_now:
+            # Extract images and log if possible
+            # Training prediction
+            if pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(training_prediction):
+                self.log_image_or_volume_batch('training_prediction', training_prediction)
+            # Training inputs
+            if pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(training_inputs):
+                self.log_image_or_volume_batch('training_input', training_inputs)
+            # Training target
+            if pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(training_target):
+                self.log_image_or_volume_batch('training_target', training_target)
 
     def extract_images_from_batch(self, batch):
         # Special case when batch is a list or tuple of batches
@@ -158,10 +209,14 @@ class TensorboardLogger(Logger):
         image_summaries = []
         for image_num, image in enumerate(images):
             # Write the image to a string
-            # FIXME Debug this
-            s = StringIO()
-            toimage(image).save(s, format="png")
-
+            try:
+                # Python 2.7
+                s = StringIO()
+                toimage(image).save(s, format="png")
+            except TypeError:
+                # Python 3.X
+                s = BytesIO()
+                toimage(image).save(s, format="png")
             # Create an Image object
             img_sum = tf.Summary.Image(encoded_image_string=s.getvalue(),
                                        height=image.shape[0],
@@ -203,3 +258,10 @@ class TensorboardLogger(Logger):
         summary = tf.Summary(value=[tf.Summary.Value(tag=tag, histo=hist)])
         self.writer.add_summary(summary, step)
         self.writer.flush()
+
+    def get_config(self):
+        # Apparently, some SwigPyObject objects cannot be pickled - so we need to build the
+        # writer on the fly.
+        config = super(TensorboardLogger, self).get_config()
+        config.pop('_writer')
+        return config

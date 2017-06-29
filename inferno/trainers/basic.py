@@ -298,6 +298,10 @@ class Trainer(object):
     def iteration_count(self):
         return self._iteration_count
 
+    @property
+    def epoch_count(self):
+        return self._epoch_count
+
     def build_logger(self, logger=None, log_directory=None, **kwargs):
         if isinstance(logger, Logger):
             # Set logger and register with the callback engine.

@@ -14,12 +14,14 @@ class TestTensorboard(unittest.TestCase):
 
     @staticmethod
     def _make_test_model():
-
         toy_net = nn.Sequential(nn.Conv2d(3, 128, 3, 1, 1),
+                                nn.ELU(),
                                 nn.MaxPool2d(2),
                                 nn.Conv2d(128, 128, 3, 1, 1),
+                                nn.ELU(),
                                 nn.MaxPool2d(2),
                                 nn.Conv2d(128, 256, 3, 1, 1),
+                                nn.ELU(),
                                 nn.AdaptiveMaxPool2d((1, 1)),
                                 AsMatrix(),
                                 nn.Linear(256, 10))
@@ -32,7 +34,8 @@ class TestTensorboard(unittest.TestCase):
         # Build trainer
         self.trainer = Trainer(net)\
             .build_logger(TensorboardLogger(send_image_at_batch_indices=0,
-                                            send_image_at_channel_indices='all'),
+                                            send_image_at_channel_indices='all',
+                                            log_images_every=(20, 'iterations')),
                           log_directory=os.path.join(self.ROOT_DIR, 'logs'))\
             .build_criterion('CrossEntropyLoss')\
             .build_metric('CategoricalError')\

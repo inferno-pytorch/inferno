@@ -64,6 +64,9 @@ class CLUI(object):
 
 class Frequency(object):
     def __init__(self, value=None, units=None):
+        # Private
+        self._last_match_value = None
+        # Public
         self.value = value
         self.units = units
 
@@ -92,9 +95,17 @@ class Frequency(object):
         self.value = value
         return self
 
-    def match(self, iteration_count=None, epoch_count=None):
+    def match(self, iteration_count=None, epoch_count=None, persistent=False):
         match_value = {'iterations': iteration_count, 'epochs': epoch_count}.get(self.units)
-        return match_value is not None and match_value % self.value == 0
+        match = match_value is not None and match_value % self.value == 0
+        if persistent and match and self._last_match_value == match_value:
+            # Last matched value is the current matched value, i.e. we've matched once already,
+            # and don't need to match again
+            match = False
+        if match:
+            # Record current match value as the last known match value to maintain persistency
+            self._last_match_value = match_value
+        return match
 
     def __mod__(self, other):
         if isinstance(other, int):
