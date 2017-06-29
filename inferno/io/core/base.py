@@ -17,3 +17,17 @@ class SyncableDataset(Dataset):
                                "__len__ method.".format(self.__class__.__name__))
         else:
             return len(self.base_sequence)
+
+
+class IndexSpec(object):
+    """
+    Class to wrap any extra index information a `Dataset` object might want to send back.
+    This could be useful in (say) inference, where we would wish to (asynchronously) know
+    more about the current input.
+    """
+    def __init__(self, index=None, base_sequence_at_index=None):
+        self.index = index
+        self.base_sequence_at_index = base_sequence_at_index
+
+    def __int__(self):
+        return int(self.index)
