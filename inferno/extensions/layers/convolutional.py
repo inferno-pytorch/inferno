@@ -93,3 +93,25 @@ class StridedConvELU3D(ConvActivation):
                                                stride=stride,
                                                dim=3,
                                                activation='ELU')
+
+
+class DilatedConvELU2D(ConvActivation):
+    """2D dilated convolutional layer with 'SAME' padding and ELU."""
+    def __init__(self, in_channels, out_channels, kernel_size, dilation=2):
+        super(DilatedConvELU2D, self).__init__(in_channels=in_channels,
+                                               out_channels=out_channels,
+                                               kernel_size=kernel_size,
+                                               dilation=dilation,
+                                               dim=2,
+                                               activation='ELU')
+
+
+class DilatedConvELU3D(ConvActivation):
+    """3D dilated convolutional layer with 'SAME' padding and ELU."""
+    def __init__(self, in_channels, out_channels, kernel_size, dilation=2):
+        super(DilatedConvELU3D, self).__init__(in_channels=in_channels,
+                                               out_channels=out_channels,
+                                               kernel_size=kernel_size,
+                                               dilation=dilation,
+                                               dim=3,
+                                               activation='ELU')

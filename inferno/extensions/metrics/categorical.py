@@ -1,7 +1,9 @@
 import torch
+from .base import Metric
 
 
-class CategoricalError(object):
+class CategoricalError(Metric):
+    """Categorical error."""
     def __init__(self, aggregation_mode='mean'):
         assert aggregation_mode in ['mean', 'sum']
         self.aggregation_mode = aggregation_mode
@@ -31,5 +33,8 @@ class CategoricalError(object):
             else:
                 return incorrect.sum()
 
-    def __call__(self, *args):
-        return self.forward(*args)
+
+class IOU(Metric):
+    """Intersection over Union."""
+    # TODO
+    pass
