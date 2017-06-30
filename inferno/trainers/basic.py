@@ -18,7 +18,29 @@ from .callbacks import CallbackEngine
 
 
 class Trainer(object):
+    """A basic trainer.
+
+    Given a torch model, this class encapsulates the training and validation loops,
+    checkpoint creation, logging, CPU <-> GPU transfers and managing data-loaders.
+
+    In addition, this class interacts with the callback engine (found at
+    `inferno.trainers.callbacks.base.CallbackEngine`), which manages callbacks at
+    certain preset events.
+
+    Notes
+    -----
+    Logging is implemented as a special callback, in the sense that it's jointly
+    managed by the this class and the callback engine. This is primarily because
+    general callbacks are not intended to be serializable, but not being able to
+    serialize the logger is a nuisance.
+    """
     def __init__(self, model=None):
+        """
+        Parameters
+        ----------
+        model : torch.nn.Module
+            Torch model to bind to.
+        """
         # Privates
         # Core
         self._model = None
@@ -80,10 +102,32 @@ class Trainer(object):
 
     @property
     def callbacks(self):
+        """Gets the callback engine."""
         return self._callback_engine
+
+    def register_callback(self, callback, trigger='auto'):
+        """
+        Registers a callback with the internal callback engine.
+
+        Parameters
+        ----------
+        callback : callable
+            Callback to register.
+        trigger : str
+            Specify the event that triggers the callback. Leave at 'auto' to have the
+            callback-engine figure out the triggers. See
+            `inferno.training.callbacks.base.CallbackEngine` documentation for more on this.
+        Returns
+        -------
+        Trainer
+            self.
+        """
+        self._callback_engine.register_callback(callback, trigger=trigger)
+        return self
 
     @property
     def model(self):
+        """Gets the model."""
         assert self._model is not None, "Model is not defined yet."
         return self._model
 
@@ -92,11 +136,26 @@ class Trainer(object):
         self.bind_model(value)
 
     def bind_model(self, model):
+        """
+        Binds a model to the trainer. Equivalent to setting model.
+
+        Parameters
+        ----------
+        model : torch.nn.Module
+            Model to bind.
+
+        Returns
+        -------
+        Trainer
+            self.
+        """
         assert isinstance(model, torch.nn.Module), "Model must be a torch.nn.Module."
         self._model = model
+        return self
 
     @property
     def optimizer(self):
+        """Gets the optimizer."""
         assert self._optimizer is not None, "Optimizer is not set yet."
         return self._optimizer
 
@@ -110,6 +169,30 @@ class Trainer(object):
             raise NotImplementedError
 
     def build_optimizer(self, method, **kwargs):
+        """
+        Builds the optimizer for training.
+
+        Parameters
+        ----------
+        method : str or callable
+            Name of the optimizer when str, handle to the optimizer class when callable.
+            If a name is provided, this method looks for the optimizer in `torch.optim`
+            module first and in inferno.extensions.optimizers second.
+        kwargs : dict
+            Keyword arguments to the optimizer.
+
+        Returns
+        -------
+        Trainer
+            self.
+
+        Raises
+        ------
+        AssertionError
+            if optimizer is not found
+        NotImplementedError
+            if method is not str or callable.
+        """
         if isinstance(method, str):
             optimizer_class = getattr(torch.optim, method, None)
             if optimizer_class is None:
@@ -125,6 +208,7 @@ class Trainer(object):
 
     @property
     def criterion(self):
+        """Gets the loss criterion."""
         assert self._criterion is not None, "Criterion is not set yet."
         return self._criterion
 
@@ -138,6 +222,29 @@ class Trainer(object):
             raise NotImplementedError
 
     def build_criterion(self, method, **kwargs):
+        """
+        Builds the loss criterion for training.
+
+        Parameters
+        ----------
+        method : str or callable
+            Name of the criterion when str, criterion class when callable.
+            If a name is provided, this method looks for the criterion in `torch.nn`.
+        kwargs : dict
+            Keyword arguments to the criterion.
+
+        Returns
+        -------
+        Trainer
+            self.
+
+        Raises
+        ------
+        AssertionError
+            if criterion is not found.
+        NotImplementedError
+            if method is neither a str nor a callable.
+        """
         if isinstance(method, str):
             criterion_class = getattr(torch.nn, method)
             assert criterion_class is not None, "Criterion {} not found.".format(method)
@@ -150,6 +257,7 @@ class Trainer(object):
 
     @property
     def metric(self):
+        """Gets the evaluation metric."""
         assert self._metric is not None, "Metric is not set yet."
         return self._metric
 
@@ -161,8 +269,27 @@ class Trainer(object):
             raise NotImplementedError
 
     def build_metric(self, method):
+        """
+        Builds the metric for evaluation.
+
+        Parameters
+        ----------
+        method : callable or str
+            Name of the metric when string, metric class when callable.
+            If a name is provided, this method looks for the metric in
+            `inferno.extensions.metrics`.
+
+        Returns
+        -------
+        Trainer
+            self.
+
+        Raises
+        ------
+        AssertionError: if the metric is not found.
+        """
         if callable(method):
-            self._metric = method
+            self._metric = method()
         elif isinstance(method, str):
             assert hasattr(metrics, method)
             self._metric = getattr(metrics, method)()
@@ -170,6 +297,7 @@ class Trainer(object):
 
     @property
     def metric_is_defined(self):
+        """Checks if the metric is defined."""
         return self._metric is not None
 
     @property
@@ -194,6 +322,7 @@ class Trainer(object):
 
     @property
     def logger(self):
+        """Gets the logger."""
         return self._logger
 
     @logger.setter
@@ -205,6 +334,7 @@ class Trainer(object):
 
     @property
     def log_directory(self):
+        """Gets the log directory."""
         return self._log_directory
 
     @log_directory.setter
@@ -217,6 +347,7 @@ class Trainer(object):
         return self._save_every
 
     def save_at_best_validation_score(self, yes=True):
+        """Sets whether to save when the validation score is the best seen."""
         self._save_at_best_validation_score = yes
         return self
 

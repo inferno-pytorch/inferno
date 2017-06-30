@@ -1,6 +1,7 @@
 import os
 import h5py as h5
 import numpy as np
+import yaml
 
 
 # Function to load in a dataset from a h5file
@@ -52,3 +53,13 @@ def toh5(data, path, datapath='data'):
     """
     with h5.File(path, 'w') as f:
         f.create_dataset(datapath, data=data)
+
+
+# Yaml to dict reader
+def yaml2dict(path):
+    if isinstance(path, dict):
+        # Forgivable mistake that path is a dict already
+        return path
+    with open(path, 'r') as f:
+        readict = yaml.load(f)
+    return readict

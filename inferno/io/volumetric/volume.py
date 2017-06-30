@@ -8,7 +8,7 @@ from ...utils import io_utils as iou
 
 
 class VolumeLoader(SyncableDataset):
-    def __init__(self, volume, window_size, stride, downsampling_ratio=None,
+    def __init__(self, volume, window_size, stride, downsampling_ratio=None, padding=None,
                  transforms=None, return_index_spec=False, name=None):
         super(VolumeLoader, self).__init__()
         # Validate volume
@@ -35,7 +35,22 @@ class VolumeLoader(SyncableDataset):
         else:
             raise NotImplementedError
 
+        if padding is None:
+            self.padding = [[0, 0]] * self.volume.ndim
+        else:
+            self.padding = padding
+            self.pad_volume()
+
         self.base_sequence = self.make_sliding_windows()
+
+    def pad_volume(self, padding=None):
+        if padding is None:
+            return self.volume
+        else:
+            self.volume = np.pad(self.volume,
+                                 pad_width=self.padding,
+                                 mode='reflect')
+            return self.volume
 
     def make_sliding_windows(self):
         return list(vu.slidingwindowslices(shape=list(self.volume.shape),
@@ -80,8 +95,6 @@ class VolumeLoader(SyncableDataset):
 class HDF5VolumeLoader(VolumeLoader):
     def __init__(self, path, path_in_h5_dataset=None, data_slice=None, transforms=None,
                  name=None, **slicing_config):
-        assert 'window_size' in slicing_config
-        assert 'stride' in slicing_config
 
         if isinstance(path, dict):
             assert name is not None
@@ -113,14 +126,22 @@ class HDF5VolumeLoader(VolumeLoader):
         else:
             raise NotImplementedError
 
-        if name in slicing_config:
-            slicing_config = slicing_config.get(name)
+        slicing_config_for_name = {}
+        for key, val in slicing_config.items():
+            if isinstance(val, dict) and name in val:
+                # we leave the slicing_config validation to classes higher up in MRO
+                slicing_config_for_name.update({key: val.get(name)})
+            else:
+                slicing_config_for_name.update({key: val})
+
+        assert 'window_size' in slicing_config_for_name
+        assert 'stride' in slicing_config_for_name
 
         # Read in volume from file
         volume = iou.fromh5(self.path, self.path_in_h5_dataset, dataslice=data_slice)
         # Initialize superclass with the volume
         super(HDF5VolumeLoader, self).__init__(volume=volume, name=name, transforms=transforms,
-                                               **slicing_config)
+                                               **slicing_config_for_name)
 
     @staticmethod
     def parse_data_slice(data_slice):

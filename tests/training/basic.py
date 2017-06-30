@@ -26,6 +26,7 @@ class TestTrainer(TestCase):
 
     def test_cifar(self):
         from inferno.trainers.basic import Trainer
+        from inferno.trainers.callbacks.essentials import NaNDetector
         import torch
         import torchvision
         from torchvision import transforms
@@ -64,15 +65,13 @@ class TestTrainer(TestCase):
 
         # Make trainer
         trainer = Trainer(model=net)\
-            .build_logger(logger='BasicTensorboardLogger',
-                          log_directory=os.path.join(self.ROOT_DIR, 'logs'))\
             .build_optimizer('Adam')\
             .build_criterion('CrossEntropyLoss')\
             .build_metric('CategoricalError')\
             .validate_every((1, 'epochs'))\
             .save_every((1, 'epochs'), to_directory=os.path.join(self.ROOT_DIR, 'saves'))\
             .save_at_best_validation_score()\
-            .set_max_num_epochs(2)
+            .set_max_num_epochs(2)\
 
         # Bind trainer to datasets
         trainer.bind_loader('train', trainloader).bind_loader('validate', testloader)
@@ -98,8 +97,6 @@ class TestTrainer(TestCase):
         net = self._make_test_model()
         # Make trainer
         trainer = Trainer(model=net) \
-            .build_logger(logger='BasicTensorboardLogger',
-                          log_directory=os.path.join(self.ROOT_DIR, 'logs')) \
             .build_optimizer('Adam') \
             .build_criterion('CrossEntropyLoss') \
             .build_metric('CategoricalError') \
@@ -120,5 +117,5 @@ class TestTrainer(TestCase):
 if __name__ == '__main__':
     tester = TestTrainer()
     tester.ROOT_DIR = '/export/home/nrahaman/Python/Repositories/inferno/tests/training/root'
-    # tester.test_cifar()
-    tester.test_serialization()
+    tester.test_cifar()
+    # tester.test_serialization()

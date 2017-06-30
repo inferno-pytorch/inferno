@@ -3,20 +3,27 @@ import numpy as np
 
 
 class Transform(object):
+    """
+    Base class for a Transform. The argument `apply_to` (list) specifies the indices of
+    the tensors this transform will be applied to.
+
+    The following methods are recognized (in order of descending priority):
+        - `batch_function`: Applies to all tensors in a batch simultaneously
+        - `tensor_function`: Applies to just __one__ tensor at a time.
+        - `volume_function`: For 3D volumes, applies to just __one__ volume at a time.
+        - `image_function`: For 2D or 3D volumes, applies to just __one__ image at a time.
+
+    For example, if both `volume_function` and `image_function` are defined, this means that
+    only the former will be called. If the inputs are therefore not 5D batch-tensors of 3D
+    volumes, a `NotImplementedError` is raised.
+    """
     def __init__(self, apply_to=None):
         """
-        Base class for a Transform. The argument `apply_to` (list) specifies the indices of
-        the tensors this transform will be applied to.
-
-        The following methods are recognized (in order of descending priority):
-            - `batch_function`: Applies to all tensors in a batch simultaneously
-            - `tensor_function`: Applies to just __one__ tensor at a time.
-            - `volume_function`: For 3D volumes, applies to just __one__ volume at a time.
-            - `image_function`: For 2D or 3D volumes, applies to just __one__ image at a time.
-
-        For example, if both `volume_function` and `image_function` are defined, this means that
-        only the former will be called. If the inputs are therefore not 5D batch-tensors of 3D
-        volumes, a `NotImplementedError` is raised.
+        Parameters
+        ----------
+        apply_to : list or tuple
+            Indices of tensors to apply this transform to. The indices are with respect
+            to the list of arguments this object is called with.
         """
         self._random_variables = {}
         self._apply_to = list(apply_to) if apply_to is not None else None
@@ -109,8 +116,19 @@ class Transform(object):
 class Compose(object):
     """Composes multiple callables (including but not limited to `Transform` objects)."""
     def __init__(self, *transforms):
+        """
+        Parameters
+        ----------
+        transforms : list of callable or tuple of callable
+            Transforms to compose.
+        """
         assert all([callable(transform) for transform in transforms])
         self.transforms = list(transforms)
+
+    def add(self, transform):
+        assert callable(transform)
+        self.transforms.append(transform)
+        return self
 
     def __call__(self, *tensors):
         intermediate = tensors
