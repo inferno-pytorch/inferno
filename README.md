@@ -46,6 +46,14 @@ if USE_CUDA:
 trainer.fit()
 ```
 
+To visualize the training progress, navigate to `LOG_DIRECTORY` and fire up tensorboard with 
+
+```
+$ tensorboard --logdir=${PWD} --port=6007
+```
+
+and navigate to `localhost:6007` with your browser.
+
 ## Future Features: 
 Planned features include: 
 * a class to encapsulate Hogwild! training over multiple GPUs, 
