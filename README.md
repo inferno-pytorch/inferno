@@ -12,6 +12,40 @@ Current features include:
 * [various utility layers](https://github.com/nasimrahaman/inferno/tree/master/inferno/extensions/layers) with more underway,
 * [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/io/volumetric) for volumetric datasets, and more!
 
+## Show me the Code!
+```python
+from inferno.io.box.cifar10 import get_cifar10_loaders
+from inferno.trainers.basic import Trainer
+from inferno.trainers.callbacks.logging.tensorboard import Tensorboard
+
+# Build torch model
+model = build_my_torch_model()
+# Load loaders
+train_loader, validate_loader = get_cifar10_loaders()
+
+# Build trainer
+trainer = Trainer(model) \
+  .build_criterion('CrossEntropyLoss') \
+  .build_metric('CategoricalError') \
+  .build_optimizer('Adam') \
+  .validate_every((2, 'epochs')) \
+  .save_every((10, 'epochs')) \
+  .set_max_num_epochs(100) \
+  .build_logger(TensorboardLogger(), log_directory=LOG_DIRECTORY)
+
+# Bind loaders
+trainer
+  .bind_loader('train', train_loader) \
+  .bind_loader('validate', validate_loader)
+
+# Use GPU
+if USE_CUDA:
+  trainer.cuda().set_precision('half')
+
+# Go!
+trainer.fit()
+```
+
 ## Future Features: 
 Planned features include: 
 * a class to encapsulate Hogwild! training over multiple GPUs, 
