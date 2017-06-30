@@ -2,23 +2,14 @@ import os
 import h5py as h5
 import numpy as np
 import yaml
+from scipy.misc import imsave
 
 
 # Function to load in a dataset from a h5file
 def fromh5(path, datapath=None, dataslice=None, asnumpy=True, preptrain=None):
     """
-    Opens a hdf5 file at path, loads in the dataset at datapath, and returns dataset as a numpy array.
-    :type path: str
-    :param path: Path to h5 file
-
-    :type datapath: str
-    :param datapath: Path in h5 file (of the dataset). If not provided, returns the first dataset found.
-
-    :type asnumpy: bool
-    :param asnumpy: Whether to return as a numpy array (or a h5 dataset object)
-
-    :type preptrain: prepkit.preptrain
-    :param preptrain: Train of preprocessing functions to be applied on the dataset before being returned
+    Opens a hdf5 file at path, loads in the dataset at datapath, and returns dataset
+    as a numpy array.
     """
     # Check if path exists (thanks Lukas!)
     assert os.path.exists(path), "Path {} does not exist.".format(path)
@@ -39,18 +30,7 @@ def fromh5(path, datapath=None, dataslice=None, asnumpy=True, preptrain=None):
 
 
 def toh5(data, path, datapath='data'):
-    """
-    Write `data` to a HDF5 volume.
-
-    :type data: numpy.ndarray
-    :param data: Data to write.
-
-    :type path: str
-    :param path: Path to the volume.
-
-    :type datapath: str
-    :param datapath: Path to the volume in the HDF5 volume.
-    """
+    """Write `data` to a HDF5 volume."""
     with h5.File(path, 'w') as f:
         f.create_dataset(datapath, data=data)
 
@@ -63,3 +43,22 @@ def yaml2dict(path):
     with open(path, 'r') as f:
         readict = yaml.load(f)
     return readict
+
+
+def print_tensor(tensor, prefix, directory):
+    """Prints a image or volume tensor to file as images."""
+    def _print_image(image, prefix, batch, channel, z=None):
+        if z is None:
+            file_name = "{}--B-{}--CH-{}.png".format(prefix, batch, channel)
+        else:
+            file_name = "{}--B-{}--CH-{}--Z-{}.png".format(prefix, batch, channel, z)
+        full_file_name = os.path.join(directory, file_name)
+        imsave(arr=image, name=full_file_name)
+
+    for batch in range(tensor.shape[0]):
+        for channel in range(tensor.shape[1]):
+            if tensor.ndim == 4:
+                _print_image(tensor[batch, channel, ...], prefix, batch, channel)
+            else:
+                for plane in range(tensor.shape[2]):
+                    _print_image(tensor[batch, channel, plane, ...], prefix, batch, channel, plane)

@@ -32,6 +32,9 @@ class VolumeLoader(SyncableDataset):
             self.downsampling_ratio = [1] * self.volume.ndim
         elif isinstance(downsampling_ratio, int):
             self.downsampling_ratio = [downsampling_ratio] * self.volume.ndim
+        elif isinstance(downsampling_ratio, (list, tuple)):
+            assert len(downsampling_ratio) == self.volume.ndim
+            self.downsampling_ratio = list(downsampling_ratio)
         else:
             raise NotImplementedError
 
@@ -44,6 +47,7 @@ class VolumeLoader(SyncableDataset):
         self.base_sequence = self.make_sliding_windows()
 
     def pad_volume(self, padding=None):
+        padding = self.padding if padding is None else padding
         if padding is None:
             return self.volume
         else:
@@ -122,7 +126,7 @@ class HDF5VolumeLoader(VolumeLoader):
         elif isinstance(data_slice, dict):
             assert name is not None
             assert name in data_slice
-            self.data_slice = data_slice.get(name)
+            self.data_slice = self.parse_data_slice(data_slice.get(name))
         else:
             raise NotImplementedError
 
@@ -138,7 +142,8 @@ class HDF5VolumeLoader(VolumeLoader):
         assert 'stride' in slicing_config_for_name
 
         # Read in volume from file
-        volume = iou.fromh5(self.path, self.path_in_h5_dataset, dataslice=data_slice)
+        volume = iou.fromh5(self.path, self.path_in_h5_dataset,
+                            dataslice=tuple(self.data_slice))
         # Initialize superclass with the volume
         super(HDF5VolumeLoader, self).__init__(volume=volume, name=name, transforms=transforms,
                                                **slicing_config_for_name)

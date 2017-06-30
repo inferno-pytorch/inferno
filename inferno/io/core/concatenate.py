@@ -54,7 +54,7 @@ class Concatenate(Dataset):
     def __repr__(self):
         if len(self.datasets) < 3:
             return "Concatenate(" + \
-                   ", ".join([dataset.__repr__() for dataset in self.datasets[:-1]]) + \
+                   ", ".join([dataset.__repr__() for dataset in self.datasets[:-1]]) + ", " + \
                    self.datasets[-1].__repr__() + \
                    ")"
         else:

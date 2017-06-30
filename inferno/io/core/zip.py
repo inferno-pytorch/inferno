@@ -58,6 +58,6 @@ class Zip(SyncableDataset):
             return "Zip({}xDatasets)".format(len(self.datasets))
         else:
             return "Zip(" + \
-                   ", ".join([dataset.__repr__() for dataset in self.datasets[:-1]]) + \
+                   ", ".join([dataset.__repr__() for dataset in self.datasets[:-1]]) + ", " + \
                    self.datasets[-1].__repr__() + \
                    ')'

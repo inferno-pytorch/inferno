@@ -7,8 +7,12 @@ from .base import Transform
 
 class ElasticTransform(Transform):
     """Random Elastic Transformation."""
+    NATIVE_DTYPES = {'float32', 'float64'}
+    PREFERRED_DTYPE = 'float32'
+
     def __init__(self, alpha, sigma, order=1, invert=False, rng=np.random.RandomState(42),
                  **super_kwargs):
+        self._initial_dtype = None
         super(ElasticTransform, self).__init__(**super_kwargs)
         self.alpha = alpha
         self.sigma = sigma
@@ -20,7 +24,21 @@ class ElasticTransform(Transform):
         self.set_random_variable('random_field_x', self.rng.uniform(-1, 1, kwargs.get('imshape')))
         self.set_random_variable('random_field_y', self.rng.uniform(-1, 1, kwargs.get('imshape')))
 
+    def cast(self, image):
+        if image.dtype not in self.NATIVE_DTYPES:
+            self._initial_dtype = image.dtype
+            image = image.astype(self.PREFERRED_DTYPE)
+        return image
+
+    def uncast(self, image):
+        if self._initial_dtype is not None:
+            image = image.astype(self._initial_dtype)
+        self._initial_dtype = None
+        return image
+
     def image_function(self, image):
+        # Cast image to one of the native dtypes (one which that is supported by scipy)
+        image = self.cast(image)
         # Take measurements
         imshape = image.shape
         # Make random fields
@@ -38,6 +56,8 @@ class ElasticTransform(Transform):
         # Map cooordinates from image to distorted index set
         transformed_image = map_coordinates(image, distinds,
                                             mode='reflect', order=self.order).reshape(imshape)
+        # Uncast image to the original dtype
+        transformed_image = self.uncast(transformed_image)
         return transformed_image
 
 
