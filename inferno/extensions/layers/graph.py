@@ -18,9 +18,15 @@ class Identity(nn.Module):
 
 
 class Graph(nn.Module):
-    def __init__(self):
+    def __init__(self, graph=None):
         super(Graph, self).__init__()
-        self._graph = NNGraph()
+        if graph is not None:
+            assert isinstance(graph, nx.DiGraph)
+            assert graph.node_dict_factory == OrderedDict
+            assert graph.adjlist_dict_factory == OrderedDict
+            self._graph = graph
+        else:
+            self._graph = NNGraph()
 
     def is_node_in_graph(self, name):
         return name in self._graph.node
@@ -107,6 +113,9 @@ class Graph(nn.Module):
         # Distribute outputs to outgoing payloads if required
         if not self.is_sink_node(name):
             outgoing_edges = self._graph.out_edges(name)
+            if len(outputs) == 1:
+                # Support for replication
+                outputs *= len(outgoing_edges)
             # Make sure the number of outputs check out
             assert len(outputs) == len(outgoing_edges), \
                 "Number of outputs from the model ({}) does not match the number " \
