@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 
 
@@ -78,3 +79,38 @@ class As2D(nn.Module):
             # We make singleton dimensions
             b, c = list(input.size())
             return input.view(b, c, 1, 1)
+
+
+class Concatenate(nn.Module):
+    """Concatenate input tensors along a specified dimension."""
+    def __init__(self, dim=1):
+        super(Concatenate, self).__init__()
+        self.dim = dim
+
+    def forward(self, *inputs):
+        return torch.cat(inputs, dim=self.dim)
+
+
+class Sum(nn.Module):
+    """Sum all inputs."""
+    def forward(self, *inputs):
+        return torch.stack(inputs, dim=0).sum(0).squeeze(0)
+
+
+class SplitChannels(nn.Module):
+    """Split input at a given index along the channel axis."""
+    def __init__(self, channel_index):
+        super(SplitChannels, self).__init__()
+        self.channel_index = channel_index
+
+    def forward(self, input):
+        if isinstance(self.channel_index, int):
+            split_location = self.channel_index
+        elif self.channel_index == 'half':
+            split_location = input.size(1) // 2
+        else:
+            raise NotImplementedError
+        assert split_location < input.size(1)
+        split_0 = input[:, 0:split_location, ...]
+        split_1 = input[:, split_location:, ...]
+        return split_0, split_1
