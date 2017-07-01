@@ -40,8 +40,8 @@ class TestGraph(unittest.TestCase):
         # Build graph
         model = Graph()
         model.add_input_node('input_0')
-        model.add_node('conv0_0', DummyNamedModule('conv0_0', history))
         model.add_input_node('input_1')
+        model.add_node('conv0_0', DummyNamedModule('conv0_0', history))
         model.add_node('conv0_1', DummyNamedModule('conv0_1', history))
         model.add_node('conv1', DummyNamedModule('conv1', history, 2))
         model.add_node('conv2', DummyNamedModule('conv2', history))
@@ -56,8 +56,8 @@ class TestGraph(unittest.TestCase):
         input_0 = Variable(torch.rand(10, 10))
         input_1 = Variable(torch.rand(10, 10))
         output = model(input_0, input_1)
-
-        self.assertEqual(['conv0_0', 'conv0_1', 'conv1', 'conv2'], history)
+        self.assertTrue(history == ['conv0_0', 'conv0_1', 'conv1', 'conv2'] or
+                        history == ['conv0_1', 'conv0_0', 'conv1', 'conv2'])
 
 
 if __name__ == '__main__':
