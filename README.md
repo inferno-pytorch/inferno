@@ -1,10 +1,11 @@
 # inferno
 
-Inferno is a little library providing utilities and convenience functions/classes around [PyTorch](https://github.com/pytorch/pytorch). It's a work-in-progress, hang on tight! 
+Inferno is a little library providing utilities and convenience functions/classes around [PyTorch](https://github.com/pytorch/pytorch). It's a work-in-progress and the API might change (for the better!) without much of a warning, so hang in tight! 
 
 ## Current Features
 Current features include: 
 * a basic [Trainer class](https://github.com/nasimrahaman/inferno/blob/master/inferno/trainers/basic.py) to encapsulate the training boilerplate (iteration/epoch loops, validation and checkpoint creation),
+* a [graph API](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/layers/graph.py) for building models with complex architectures, powered by [networkx](https://github.com/networkx/networkx). 
 * [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/initializers) for `torch.nn.Module`-level parameter initialization,
 * [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/io/transform) for data preprocessing / transforms,
 * [support](https://github.com/nasimrahaman/inferno/blob/master/inferno/trainers/callbacks/logging/tensorboard.py) for [Tensorboard](https://www.tensorflow.org/get_started/summaries_and_tensorboard) (best with atleast [tensorflow-cpu](https://github.com/tensorflow/tensorflow) installed),
@@ -57,6 +58,8 @@ and navigate to `localhost:6007` with your browser.
 ## Future Features: 
 Planned features include: 
 * a class to encapsulate Hogwild! training over multiple GPUs, 
+* minimal shape inference with a dry-run,
+* proper packaging and documentation,
 * cutting-edge fresh-off-the-press implementations of what the future has in store. :)
 
 ## Contributing
