@@ -12,7 +12,7 @@ class Constant(Initializer):
 
     def call_on_tensor(self, tensor):
         if isinstance(tensor, Variable):
-            self.call_on_bias(tensor.data)
+            self.call_on_tensor(tensor.data)
             return tensor
         tensor.fill_(self.constant)
         return tensor
