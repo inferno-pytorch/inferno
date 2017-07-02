@@ -80,23 +80,6 @@ class Initialization(Initializer):
                 assert callable(bias_initializer)
                 self.bias_initializer = BiasInitFunction(init_function=bias_initializer)
 
-    def __call__(self, module):
-        module_class_name = module.__class__.__name__
-        if 'Conv' in module_class_name or 'Linear' in module_class_name:
-            # Apply to weight and bias
-            try:
-                self.weight_initializer.call_on_weight(module.weight.data)
-            except NotImplementedError:
-                # Don't cry if it's not implemented
-                pass
-
-            try:
-                self.bias_initializer.call_on_bias(module.bias.data)
-            except NotImplementedError:
-                pass
-
-        return module
-
     def call_on_weight(self, tensor):
         return self.weight_initializer.call_on_weight(tensor)
 
