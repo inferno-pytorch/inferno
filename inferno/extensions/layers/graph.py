@@ -13,12 +13,51 @@ class NNGraph(nx.DiGraph):
 
 
 class Identity(nn.Module):
+    """A torch.nn.Module to do nothing."""
     def forward(self, input):
         return input
 
 
 class Graph(nn.Module):
+    """
+    A graph structure to build networks with complex architectures. The resulting graph model
+    can be used like any other `torch.nn.Module`. The graph structure used behind the scenes
+    is a `networkx.DiGraph`. This internal graph is exposed by the `apply_on_graph` method,
+    which can be used with any NetworkX function (e.g. for plotting with matplotlib or GraphViz).
+
+    Examples
+    --------
+    The naive inception module (without the max-pooling for simplicity) with ELU-layers of 64 units
+    can be built as following, (assuming 64 input channels):
+
+        >>> from inferno.extensions.layers.reshape import Concatenate
+        >>> from inferno.extensions.layers.convolutional import ConvELU2D
+        >>> import torch
+        >>> from torch.autograd import Variable
+        >>> # Build the model
+        >>> inception_module = Graph()
+        >>> inception_module.add_input_node('input')
+        >>> inception_module.add_node('conv1x1', ConvELU2D(64, 64, 3), previous='input')
+        >>> inception_module.add_node('conv3x3', ConvELU2D(64, 64, 3), previous='input')
+        >>> inception_module.add_node('conv5x5', ConvELU2D(64, 64, 3), previous='input')
+        >>> inception_module.add_node('cat', Concatenate(),
+        >>>                           previous=['conv1x1', 'conv3x3', 'conv5x5'])
+        >>> inception_module.add_output_node('output', 'cat')
+        >>> # Build dummy variable
+        >>> input = Variable(torch.rand(1, 64, 100, 100))
+        >>> # Get output
+        >>> output = inception_module(input)
+
+    """
     def __init__(self, graph=None):
+        """
+        Construct the graph object.
+
+        Parameters
+        ----------
+            graph : networkx.DiGraph or NNGraph
+                Graph to build the object from (optional).
+        """
         super(Graph, self).__init__()
         if graph is not None:
             assert isinstance(graph, nx.DiGraph)
@@ -29,28 +68,95 @@ class Graph(nn.Module):
             self._graph = NNGraph()
 
     def is_node_in_graph(self, name):
+        """
+        Checks whether a node is in the graph.
+
+        Parameters
+        ----------
+        name : str
+            Name of the node.
+
+        Returns
+        -------
+        bool
+        """
         return name in self._graph.node
 
     def is_source_node(self, name):
+        """
+        Checks whether a given node (by name) is a source node.
+        A source node has no incoming edges.
+
+        Parameters
+        ----------
+        name : str
+            Name of the node.
+
+        Returns
+        -------
+        bool
+
+        Raises
+        ------
+        AssertionError
+            if node is not found in the graph.
+        """
         assert self.is_node_in_graph(name)
         return self._graph.in_degree(name) == 0
 
     def is_sink_node(self, name):
+        """
+        Checks whether a given node (by name) is a sink node.
+        A sink node has no outgoing edges.
+
+        Parameters
+        ----------
+        name : str
+            Name of the node.
+
+        Returns
+        -------
+        bool
+
+        Raises
+        ------
+        AssertionError
+            if node is not found in the graph.
+        """
         assert self.is_node_in_graph(name)
         return self._graph.out_degree(name) == 0
 
     @property
     def output_nodes(self):
+        """
+        Gets a list of output nodes. The order is relevant and is the same as that
+        in which the forward method returns its outputs.
+
+        Returns
+        -------
+        list
+            A list of names (str) of the output nodes.
+        """
         return [name for name, node_attributes in self._graph.node.items()
                 if node_attributes.get('is_output_node', False)]
 
     @property
     def input_nodes(self):
+        """
+        Gets a list of input nodes. The order is relevant and is the same as that
+        in which the forward method accepts its inputs.
+
+        Returns
+        -------
+        list
+            A list of names (str) of the input nodes.
+        """
         return [name for name, node_attributes in self._graph.node.items()
                 if node_attributes.get('is_input_node', False)]
 
     @property
     def graph_is_valid(self):
+        """Checks if the graph is valid."""
         # Check if the graph is a DAG
         is_dag = is_directed_acyclic_graph(self._graph)
         # Check if output nodes are sinks
@@ -63,6 +169,7 @@ class Graph(nn.Module):
         return is_valid
 
     def assert_graph_is_valid(self):
+        """Asserts that the graph is valid."""
         assert is_directed_acyclic_graph(self._graph), "Graph is not a DAG."
         for name in self.output_nodes:
             assert self.is_sink_node(name), "Output node {} is not a sink.".format(name)
@@ -74,6 +181,25 @@ class Graph(nn.Module):
                                                 "Make sure it's connected.".format(name)
 
     def add_node(self, name, module, previous=None):
+        """
+        Add a node to the graph.
+
+        Parameters
+        ----------
+        name : str
+            Name of the node. Nodes are identified by their names.
+
+        module : torch.nn.Module
+            Torch module for this node.
+
+        previous : str or list of str
+            (List of) name(s) of the previous node(s).
+
+        Returns
+        -------
+        Graph
+            self
+        """
         assert isinstance(module, nn.Module)
         self.add_module(name, module)
         self._graph.add_node(name, module=module)
@@ -83,10 +209,38 @@ class Graph(nn.Module):
         return self
 
     def add_input_node(self, name):
+        """
+        Add an input to the graph. The order in which input nodes are added is the
+        order in which the forward method accepts its inputs.
+
+        Parameters
+        ----------
+        name : str
+            Name of the input node.
+
+        Returns
+        -------
+        Graph
+            self
+        """
         self._graph.add_node(name, module=Identity(), is_input_node=True)
         return self
 
     def add_output_node(self, name, previous=None):
+        """
+        Add an output to the graph. The order in which output nodes are added is the
+        order in which the forward method returns its outputs.
+
+        Parameters
+        ----------
+        name : str
+            Name of the output node.
+
+        Returns
+        -------
+        Graph
+            self
+        """
         self._graph.add_node(name, is_output_node=True)
         if previous is not None:
             for _previous in pyu.to_iterable(previous):
@@ -94,11 +248,36 @@ class Graph(nn.Module):
         return self
 
     def add_edge(self, from_node, to_node):
+        """
+        Add an edge between two nodes.
+
+        Parameters
+        ----------
+        from_node : str
+            Name of the source node.
+        to_node : str
+            Name of the target node.
+
+        Returns
+        -------
+        Graph
+            self
+
+        Raises
+        ------
+        AssertionError
+            if either of the two nodes is not in the graph,
+            or if the edge is not 'legal'.
+        """
         assert self.is_node_in_graph(from_node)
         assert self.is_node_in_graph(to_node)
         self._graph.add_edge(from_node, to_node)
         assert self.graph_is_valid
         return self
+
+    def apply_on_graph(self, function, *args, **kwargs):
+        """Applies a `function` on the internal graph."""
+        return function(self, *args, **kwargs)
 
     def forward_through_node(self, name, input=None):
         # If input is a tuple/list, it will NOT be unpacked.
