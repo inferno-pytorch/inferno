@@ -59,6 +59,30 @@ class TestGraph(unittest.TestCase):
         self.assertTrue(history == ['conv0_0', 'conv0_1', 'conv1', 'conv2'] or
                         history == ['conv0_1', 'conv0_0', 'conv1', 'conv2'])
 
+    def test_graph_inception(self):
+        import torch
+        from torch.autograd import Variable
+        from inferno.extensions.layers.graph import Graph
+
+        if not hasattr(self, 'DummyNamedModule'):
+            self.setUp()
+
+        DummyNamedModule = self.DummyNamedModule
+
+        history = []
+        # Build graph
+        model = Graph()
+        model.add_input_node('input_0')
+        model.add_node('conv0', DummyNamedModule('conv0', history), 'input_0')
+        model.add_node('conv1_0', DummyNamedModule('conv1_0', history), 'conv0')
+        model.add_node('conv1_1', DummyNamedModule('conv1_1', history), 'conv0')
+        model.add_node('conv2', DummyNamedModule('conv2', history, 2),
+                       ['conv1_0', 'conv1_1'])
+        model.add_output_node('output_0', 'conv2')
+        input_0 = Variable(torch.rand(10, 10))
+        output = model(input_0)
+        self.assertTrue(history == ['conv0', 'conv1_0', 'conv1_1', 'conv2'] or
+                        history == ['conv0', 'conv1_1', 'conv1_2', 'conv2'])
 
 if __name__ == '__main__':
     TestGraph().test_graph_basic()

@@ -73,18 +73,24 @@ class Graph(nn.Module):
             assert not self.is_sink_node(name), "Input node {} is a sink node. " \
                                                 "Make sure it's connected.".format(name)
 
-    def add_node(self, name, module):
+    def add_node(self, name, module, previous=None):
         assert isinstance(module, nn.Module)
         self.add_module(name, module)
         self._graph.add_node(name, module=module)
+        if previous is not None:
+            for _previous in pyu.to_iterable(previous):
+                self.add_edge(_previous, name)
         return self
 
     def add_input_node(self, name):
         self._graph.add_node(name, module=Identity(), is_input_node=True)
         return self
 
-    def add_output_node(self, name):
+    def add_output_node(self, name, previous=None):
         self._graph.add_node(name, is_output_node=True)
+        if previous is not None:
+            for _previous in pyu.to_iterable(previous):
+                self.add_edge(_previous, name)
         return self
 
     def add_edge(self, from_node, to_node):
