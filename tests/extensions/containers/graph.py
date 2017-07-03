@@ -29,7 +29,7 @@ class TestGraph(unittest.TestCase):
     def test_graph_basic(self):
         import torch
         from torch.autograd import Variable
-        from inferno.extensions.layers.graph import Graph
+        from inferno.extensions.containers.graph import Graph
 
         if not hasattr(self, 'DummyNamedModule'):
             self.setUp()
@@ -62,7 +62,7 @@ class TestGraph(unittest.TestCase):
     def test_graph_inception(self):
         import torch
         from torch.autograd import Variable
-        from inferno.extensions.layers.graph import Graph
+        from inferno.extensions.containers.graph import Graph
 
         if not hasattr(self, 'DummyNamedModule'):
             self.setUp()

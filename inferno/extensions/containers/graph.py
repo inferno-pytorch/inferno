@@ -1,9 +1,10 @@
-import torch.nn as nn
-import networkx as nx
-from networkx.algorithms.dag import is_directed_acyclic_graph, topological_sort
 from collections import OrderedDict
 
-from ...utils import python_utils as pyu
+import networkx as nx
+from networkx import is_directed_acyclic_graph, topological_sort
+from torch import nn as nn
+
+from inferno.utils import python_utils as pyu
 
 
 class NNGraph(nx.DiGraph):
