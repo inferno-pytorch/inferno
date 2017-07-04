@@ -182,13 +182,20 @@ class HDF5VolumeLoader(VolumeLoader):
         return slices
 
 
-class tifVolumeLoader(VolumeLoader):
-    """
-    Loader for volumes stored in .tif files
-    For example for the data of the ISBI 2012 segmentation challenge
-    """
+class TIFVolumeLoader(VolumeLoader):
+    """Loader for volumes stored in .tif files."""
     def __init__(self, path, transforms=None, **slicing_config):
-
+        """
+        Parameters
+        ----------
+        path : str
+            Path to the volume.
+        transforms : callable
+            Transforms to apply on the read volume.
+        slicing_config : dict
+            Dictionary specifying the sliding window. Must contain keys 'window_size'
+            and 'stride'.
+        """
         assert isinstance(path, str) and os.path.exists(path)
         self.path = path
         assert 'window_size' in slicing_config
@@ -196,4 +203,5 @@ class tifVolumeLoader(VolumeLoader):
         # Read in volume from file
         volume = skimage.io.imread(self.path)
         # Initialize superclass with the volume
-        super(tifVolumeLoader, self).__init__(volume=volume, transforms=transforms, **slicing_config)
+        super(TIFVolumeLoader, self).__init__(volume=volume, transforms=transforms,
+                                              **slicing_config)

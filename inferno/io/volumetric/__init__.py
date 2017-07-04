@@ -1,1 +1,1 @@
-from .volume import VolumeLoader, HDF5VolumeLoader, tifVolumeLoader
+from .volume import VolumeLoader, HDF5VolumeLoader, TIFVolumeLoader
