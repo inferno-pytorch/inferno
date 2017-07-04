@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import skimage.io
 
 from ..core.base import SyncableDataset
 from ..core.base import IndexSpec
@@ -180,3 +181,19 @@ class HDF5VolumeLoader(VolumeLoader):
         # Done.
         return slices
 
+
+class tifVolumeLoader(VolumeLoader):
+    """
+    Loader for volumes stored in .tif files
+    For example for the data of the ISBI 2012 segmentation challenge
+    """
+    def __init__(self, path, transforms=None, **slicing_config):
+
+        assert isinstance(path, str) and os.path.exists(path)
+        self.path = path
+        assert 'window_size' in slicing_config
+        assert 'stride' in slicing_config
+        # Read in volume from file
+        volume = skimage.io.imread(self.path)
+        # Initialize superclass with the volume
+        super(tifVolumeLoader, self).__init__(volume=volume, transforms=transforms, **slicing_config)
