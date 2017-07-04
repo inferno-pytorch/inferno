@@ -37,15 +37,21 @@ class ConvActivation(nn.Module):
             raise NotImplementedError
 
         if isinstance(activation, str):
-            self.activation = getattr(nn, activation)
+            self.activation = getattr(nn, activation)()
         elif isinstance(activation, nn.Module):
             self.activation = activation
+        elif activation is None:
+            self.activation = None
         else:
             raise NotImplementedError
 
     def forward(self, input):
         conved = self.conv(input)
-        activated = self.activation(conved)
+        if self.activation is not None:
+            activated = self.activation(conved)
+        else:
+            # No activation
+            activated = conved
         return activated
 
     def _pair_or_triplet(self, object_):
@@ -67,7 +73,7 @@ class ConvActivation(nn.Module):
         dilation = self._pair_or_triplet(dilation)
         padding = [self._get_padding(_kernel_size, _dilation)
                    for _kernel_size, _dilation in zip(kernel_size, dilation)]
-        return padding
+        return tuple(padding)
 
 
 class ConvELU2D(ConvActivation):
@@ -174,3 +180,31 @@ class DilatedConvELU3D(ConvActivation):
                                                dim=3,
                                                activation='ELU',
                                                initialization=OrthogonalWeightsZeroBias())
+
+
+class Conv2D(ConvActivation):
+    """
+    2D convolutional layer with same padding and orthogonal weight initialization.
+    This layer does not apply an activation function.
+    """
+    def __init__(self, in_channels, out_channels, kernel_size):
+        super(Conv2D, self).__init__(in_channels=in_channels,
+                                     out_channels=out_channels,
+                                     kernel_size=kernel_size,
+                                     dim=2,
+                                     activation=None,
+                                     initialization=OrthogonalWeightsZeroBias())
+
+
+class Conv3D(ConvActivation):
+    """
+    3D convolutional layer with same padding and orthogonal weight initialization.
+    This layer does not apply an activation function.
+    """
+    def __init__(self, in_channels, out_channels, kernel_size):
+        super(Conv3D, self).__init__(in_channels=in_channels,
+                                     out_channels=out_channels,
+                                     kernel_size=kernel_size,
+                                     dim=3,
+                                     activation=None,
+                                     initialization=OrthogonalWeightsZeroBias())

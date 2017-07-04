@@ -285,7 +285,8 @@ class Graph(nn.Module):
         # Make sure the node is in the graph
         if input is None:
             # Make sure the node is not a source node
-            assert not self.is_source_node(name)
+            assert not self.is_source_node(name), \
+                "Node '{}' did not get an input but is a source node.".format(name)
             # Get input from payload
             incoming_edges = self._graph.in_edges(name)
             input = [self._graph[incoming][this]['payload']
@@ -305,9 +306,9 @@ class Graph(nn.Module):
             # Make sure the number of outputs check out
             assert len(outputs) == len(outgoing_edges), \
                 "Number of outputs from the model ({}) does not match the number " \
-                "of out-edges ({}) in the graph for this node ({}).".format(len(outputs),
-                                                                            len(outgoing_edges),
-                                                                            name)
+                "of out-edges ({}) in the graph for this node ('{}').".format(len(outputs),
+                                                                              len(outgoing_edges),
+                                                                              name)
             for (this, outgoing), output in zip(outgoing_edges, outputs):
                 self._graph[this][outgoing].update({'payload': output})
         # Return outputs
