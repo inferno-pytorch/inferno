@@ -61,6 +61,22 @@ class ElasticTransform(Transform):
         return transformed_image
 
 
+class AdditiveGaussianNoise(Transform):
+    """Add gaussian noise to the input."""
+    def __init__(self, sigma, rng=np.random.RandomState(42), **super_kwargs):
+        super(AdditiveGaussianNoise, self).__init__(**super_kwargs)
+        self.sigma = sigma
+        self.rng = rng
+
+    def build_random_variables(self, **kwargs):
+        self.set_random_variable('noise', self.rng.normal(loc=0, scale=self.sigma,
+                                                          size=kwargs.get('imshape')))
+
+    def image_function(self, image):
+        image = image + self.get_random_variable('noise', imshape=image.shape)
+        return image
+
+
 class RandomRotate(Transform):
     """Random 90-degree rotations."""
     def __init__(self, rng=np.random.RandomState(42), **super_kwargs):
