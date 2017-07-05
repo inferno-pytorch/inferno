@@ -934,6 +934,12 @@ class Trainer(object):
                 trainer.save_every(**trainer_config.get('checkpoint_config'))
             if 'validation_config' in trainer_config:
                 trainer.validate_every(**trainer_config.get('validation_config'))
+            if 'max_num_iterations' in trainer_config:
+                trainer.set_max_num_iterations(trainer_config.get('max_num_iterations'))
+            if 'max_num_epochs' in trainer_config:
+                trainer.set_max_num_epochs(trainer_config.get('max_num_epochs'))
+            if 'training_precision' in trainer_config:
+                trainer.set_precision(trainer_config.get('trainer_precision'))
             if trainer_config.get('use_cuda'):
                 devices = trainer_config.get('use_cuda').get('devices') \
                     if isinstance(trainer_config.get('use_cuda'), dict) else None
