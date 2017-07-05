@@ -6,6 +6,7 @@ import subprocess
 import torch
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
+from torch.nn.parallel.data_parallel import data_parallel
 from .callbacks.logging.base import Logger
 from .callbacks.logging import get_logger
 
@@ -67,6 +68,7 @@ class Trainer(object):
         # GPU and dtype business
         self._use_cuda = False
         self._dtype = 'float'
+        self._devices = None
 
         # Validation
         self._save_at_best_validation_score = True
@@ -472,9 +474,10 @@ class Trainer(object):
             learning_rate = learning_rate[0]
         return learning_rate
 
-    def cuda(self):
+    def cuda(self, devices=None):
         self.model.cuda()
         self._use_cuda = True
+        self._devices = devices
         return self
 
     def is_cuda(self):
@@ -485,6 +488,12 @@ class Trainer(object):
             return type(objects)([self.to_device(_object) for _object in objects])
         else:
             return objects.cuda() if self._use_cuda else objects
+
+    def apply_model(self, *inputs):
+        if self._devices is not None:
+            return data_parallel(self.model, inputs, list(self._devices))
+        else:
+            return self.model(*inputs)
 
     def cast(self, objects):
         if isinstance(objects, (list, tuple)):
@@ -684,7 +693,7 @@ class Trainer(object):
                 # Separate inputs from targets
                 inputs, target = batch[0:-1], batch[-1]
                 # Compute prediction
-                prediction = self.model(*inputs)
+                prediction = self.apply_model(*inputs)
                 # Compute loss
                 loss = self.criterion(prediction, target)
                 # Backprop
@@ -771,7 +780,7 @@ class Trainer(object):
                 # Separate
                 inputs, target = batch[0:-1], batch[-1]
                 # Comptue output
-                output = self.model(*inputs)
+                output = self.apply_model(*inputs)
                 # Compute loss
                 loss = self.criterion(output, target)
 
@@ -917,6 +926,8 @@ class Trainer(object):
                 .validate_every(**trainer_config.get('validation_config'))
 
             if trainer_config.get('use_cuda'):
-                trainer.cuda()
+                devices = trainer_config.get('use_cuda').get('devices') \
+                    if isinstance(trainer_config.get('use_cuda'), dict) else None
+                trainer.cuda(devices=devices)
 
         return trainer
