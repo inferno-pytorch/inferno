@@ -1,4 +1,5 @@
 from .tensorboard_basic import BasicTensorboardLogger
+from .tensorboard import TensorboardLogger
 
 
 def get_logger(name):

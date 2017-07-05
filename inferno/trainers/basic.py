@@ -15,6 +15,7 @@ from ..utils import python_utils as pyu
 from ..utils import torch_utils as thu
 from ..extensions import metrics
 from ..extensions import optimizers
+from ..extensions import criteria
 from .callbacks import CallbackEngine
 
 
@@ -248,7 +249,11 @@ class Trainer(object):
             if method is neither a str nor a callable.
         """
         if isinstance(method, str):
-            criterion_class = getattr(torch.nn, method)
+            # Look for criteria in torch
+            criterion_class = getattr(torch.nn, method, None)
+            if criterion_class is None:
+                # Look for it in extensions
+                criterion_class = getattr(criteria, method, None)
             assert criterion_class is not None, "Criterion {} not found.".format(method)
         elif callable(method) and isinstance(method, type):
             criterion_class = method
@@ -916,18 +921,21 @@ class Trainer(object):
             trainer = cls(model).save_every(**trainer_config.get('checkpoint_config'))
             trainer.load_()
         else:
-            trainer = cls(model) \
-                .build_logger(**trainer_config.get('logger_config')) \
-                .set_max_num_iterations(trainer_config.get('max_num_iterations')) \
-                .build_criterion(**trainer_config.get('criterion_config')) \
-                .build_optimizer(**trainer_config.get('optimizer_config')) \
-                .build_metric(**trainer_config.get('metric_config')) \
-                .save_every(**trainer_config.get('checkpoint_config')) \
-                .validate_every(**trainer_config.get('validation_config'))
-
+            trainer = cls(model)
+            if 'logger_config' in trainer_config:
+                trainer.build_logger(**trainer_config.get('logger_config'))
+            if 'criterion_config' in trainer_config:
+                trainer.build_criterion(**trainer_config.get('criterion_config'))
+            if 'optimizer_config' in trainer_config:
+                trainer.build_optimizer(**trainer_config.get('optimizer_config'))
+            if 'metric_config' in trainer_config:
+                trainer.build_metric(**trainer_config.get('metric_config'))
+            if 'checkpoint_config' in trainer_config:
+                trainer.save_every(**trainer_config.get('checkpoint_config'))
+            if 'validation_config' in trainer_config:
+                trainer.validate_every(**trainer_config.get('validation_config'))
             if trainer_config.get('use_cuda'):
                 devices = trainer_config.get('use_cuda').get('devices') \
                     if isinstance(trainer_config.get('use_cuda'), dict) else None
                 trainer.cuda(devices=devices)
-
         return trainer
