@@ -184,7 +184,7 @@ class HDF5VolumeLoader(VolumeLoader):
 
 class TIFVolumeLoader(VolumeLoader):
     """Loader for volumes stored in .tif files."""
-    def __init__(self, path, transforms=None, **slicing_config):
+    def __init__(self, path, data_slice=None, transforms=None, **slicing_config):
         """
         Parameters
         ----------
@@ -200,8 +200,52 @@ class TIFVolumeLoader(VolumeLoader):
         self.path = path
         assert 'window_size' in slicing_config
         assert 'stride' in slicing_config
+
+        if data_slice is None or isinstance(data_slice, (str, list)):
+            self.data_slice = self.parse_data_slice(data_slice)
+        elif isinstance(data_slice, dict):
+            assert name is not None
+            assert name in data_slice
+            self.data_slice = self.parse_data_slice(data_slice.get(name))
+        else:
+            raise NotImplementedError
+
         # Read in volume from file
         volume = skimage.io.imread(self.path)
+        # and slice it
+        volume = volume[self.data_slice] if self.data_slice is not None else volume
         # Initialize superclass with the volume
         super(TIFVolumeLoader, self).__init__(volume=volume, transforms=transforms,
                                               **slicing_config)
+
+    @staticmethod
+    def parse_data_slice(data_slice):
+        if data_slice is None:
+            return data_slice
+        elif isinstance(data_slice, (list, tuple)) and \
+                all([isinstance(_slice, slice) for _slice in data_slice]):
+            return list(data_slice)
+        else:
+            assert isinstance(data_slice, str)
+        # Get rid of whitespace
+        data_slice = data_slice.replace(' ', '')
+        # Split by commas
+        dim_slices = data_slice.split(',')
+        # Build slice objects
+        slices = []
+        for dim_slice in dim_slices:
+            indices = dim_slice.split(':')
+            if len(indices) == 2:
+                start, stop, step = indices[0], indices[1], None
+            elif len(indices) == 3:
+                start, stop, step = indices
+            else:
+                raise RuntimeError
+            # Convert to ints
+            start = int(start) if start != '' else None
+            stop = int(stop) if stop != '' else None
+            step = int(step) if step is not None and step != '' else None
+            # Build slices
+            slices.append(slice(start, stop, step))
+        # Done.
+        return slices
