@@ -1015,7 +1015,7 @@ class Trainer(object):
             if 'max_num_epochs' in trainer_config:
                 trainer.set_max_num_epochs(trainer_config.get('max_num_epochs'))
             if 'training_precision' in trainer_config:
-                trainer.set_precision(trainer_config.get('trainer_precision'))
+                trainer.set_precision(trainer_config.get('training_precision'))
             if trainer_config.get('use_cuda'):
                 devices = trainer_config.get('use_cuda').get('devices') \
                     if isinstance(trainer_config.get('use_cuda'), dict) else None
