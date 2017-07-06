@@ -24,12 +24,13 @@ class AnnealedAdam(Adam):
 
     def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8,
                  weight_decay=0, lr_decay=1.):
+        params = list(params)
         super(AnnealedAdam, self).__init__(params=params, lr=lr, betas=betas, eps=eps,
                                            weight_decay=weight_decay)
         defaults = dict(lr=lr, betas=betas, eps=eps,
                         weight_decay=weight_decay, lr_decay=lr_decay)
         # We need to initialize the superclass of Adam
-        super(Adam, super(AnnealedAdam, self)).__init__(params, defaults=defaults)
+        super(Adam, self).__init__(params, defaults=defaults)
 
     def step(self, closure=None):
         """Performs a single optimization step.
