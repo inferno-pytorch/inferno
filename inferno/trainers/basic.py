@@ -346,11 +346,13 @@ class Trainer(object):
 
     @log_directory.setter
     def log_directory(self, value):
+        """Sets the log directory,"""
         if value is not None:
             self.set_log_directory(value)
 
     @property
     def saving_every(self):
+        """Gets the frequency at which checkpoints are made."""
         return self._save_every
 
     def save_at_best_validation_score(self, yes=True):
@@ -383,9 +385,25 @@ class Trainer(object):
 
     @save_now.setter
     def save_now(self, value):
+        """Can be set to true to trigger a checkpoint creation.."""
         self._save_externally_triggered = bool(value)
 
     def save_every(self, frequency, to_directory=None):
+        """
+        Set checkpoint creation frequency.
+
+        Parameters
+        ----------
+        frequency : inferno.utils.train_utils.Frequency or tuple or str
+            Checkpoint creation frequency. Examples: '100 iterations' or '1 epochs'.
+        to_directory : str
+            Directory where the checkpoints are to be created.
+
+        Returns
+        -------
+        Trainer
+            self.
+        """
         self._save_every = tu.Frequency.build_from(frequency, priority='iterations')
         assert self._save_every.is_consistent
         if to_directory is not None:
@@ -441,11 +459,29 @@ class Trainer(object):
         return self._epoch_count
 
     def build_logger(self, logger=None, log_directory=None, **kwargs):
+        """
+        Build the logger.
+
+        Parameters
+        ----------
+        logger : inferno.trainers.callbacks.logging.base.Logger or str or type
+            Must either be a Logger object or the name of a logger or the class of a logger.
+        log_directory : str
+            Path to the directory where the log files are to be stored.
+        kwargs : dict
+            Keyword arguments to the logger class.
+
+        Returns
+        -------
+        Trainer
+            self
+        """
         if isinstance(logger, Logger):
             # Set logger and register with the callback engine.
             self._logger = logger
             self.callbacks.register_callback(self._logger)
         elif callable(logger):
+            kwargs.update({'log_directory': log_directory})
             self._logger = logger(**kwargs)
             self.callbacks.register_callback(self._logger)
         elif isinstance(logger, str):
@@ -461,6 +497,19 @@ class Trainer(object):
         return self
 
     def set_log_directory(self, log_directory):
+        """
+        Set the directory where the log files are to be stored.
+
+        Parameters
+        ----------
+        log_directory : str
+            Directory where the log files are to be stored.
+
+        Returns
+        -------
+        Trainer
+            self
+        """
         self._log_directory = log_directory
         if self._logger is not None:
             self._logger.set_log_directory(log_directory)
@@ -480,12 +529,26 @@ class Trainer(object):
         return learning_rate
 
     def cuda(self, devices=None):
+        """
+        Train on the GPU.
+
+        Parameters
+        ----------
+        devices : list
+            Specify the ordinals of the devices to use.
+
+        Returns
+        -------
+        Trainer
+            self
+        """
         self.model.cuda()
         self._use_cuda = True
         self._devices = devices
         return self
 
     def is_cuda(self):
+        """Returns whether using GPU for training."""
         return self._use_cuda
 
     def to_device(self, objects):
@@ -516,6 +579,19 @@ class Trainer(object):
                 return objects
 
     def set_precision(self, dtype):
+        """
+        Set training precision.
+
+        Parameters
+        ----------
+        dtype : {'double', 'float', 'half'}
+            Training precision.
+
+        Returns
+        -------
+        Trainer
+            self
+        """
         assert dtype in ['double', 'float', 'half']
         self._dtype = dtype
         self._model = getattr(self._model, dtype)()
