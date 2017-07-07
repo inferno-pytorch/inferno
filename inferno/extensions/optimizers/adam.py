@@ -1,7 +1,7 @@
 import math
 from torch.optim import Optimizer
 
-class Adam_L1L2(Optimizer):
+class Adam(Optimizer):
 	"""Implements Adam algorithm with the option of adding a L1 penalty.
 
 	It has been proposed in `Adam: A Method for Stochastic Optimization`_.
@@ -21,11 +21,11 @@ class Adam_L1L2(Optimizer):
 	"""
 
 	def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8,
-				 weight_decay_L1=0, weight_decay_L2=0, **kwargs):
+				 lambda_l1=0, weight_decay=0, **kwargs):
 		defaults = dict(lr=lr, betas=betas, eps=eps,
-						weight_decay_L1=weight_decay_L1, weight_decay_L2=weight_decay_L2,
+						lambda_l1=lambda_l1, weight_decay=weight_decay,
 						**kwargs)
-		super(Adam_L1L2, self).__init__(params, defaults)
+		super(Adam, self).__init__(params, defaults)
 
 	def step(self, closure=None):
 		"""Performs a single optimization step.
@@ -58,10 +58,10 @@ class Adam_L1L2(Optimizer):
 
 				state['step'] += 1
 
-				if group['weight_decay_L1'] != 0:
-					grad.add_(group['weight_decay_L1'], p.sign().data)
-				if group['weight_decay_L2'] != 0:
-					grad.add_(group['weight_decay_L2'], p.data)
+				if group['lambda_l1'] != 0:
+					grad.add_(group['lambda_l1'], p.data.sign())
+				if group['weight_decay'] != 0:
+					grad.add_(group['weight_decay'], p.data)
 				
 				# Decay the first and second moment running average coefficient
 				exp_avg.mul_(beta1).add_(1 - beta1, grad)
