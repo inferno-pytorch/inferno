@@ -114,9 +114,34 @@ class TestTrainer(TestCase):
         # Make sure everything survived (especially the logger)
         self.assertEqual(trainer._logger.__class__.__name__, 'BasicTensorboardLogger')
 
+    def test_multi_gpu(self):
+        from inferno.trainers.basic import Trainer
+        from inferno.io.box.cifar10 import get_cifar10_loaders
+        import os
+
+        # Make model
+        net = self._make_test_model()
+        # Make trainer
+        trainer = Trainer(model=net) \
+            .build_optimizer('Adam') \
+            .build_criterion('CrossEntropyLoss') \
+            .build_metric('CategoricalError') \
+            .validate_every((1, 'epochs')) \
+            .save_every((1, 'epochs'), to_directory=os.path.join(self.ROOT_DIR, 'saves')) \
+            .save_at_best_validation_score() \
+            .set_max_num_epochs(2)\
+            .cuda(devices=[0, 1, 2, 3])
+
+        train_loader, validate_loader = get_cifar10_loaders(root_directory=self.ROOT_DIR,
+                                                            download=True)
+        trainer.bind_loader('train', train_loader)
+        trainer.bind_loader('validate', validate_loader)
+
+        trainer.fit()
+
 
 if __name__ == '__main__':
     tester = TestTrainer()
     tester.ROOT_DIR = '/export/home/nrahaman/Python/Repositories/inferno/tests/training/root'
-    tester.test_cifar()
+    tester.test_multi_gpu()
     # tester.test_serialization()
