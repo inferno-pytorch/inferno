@@ -1,4 +1,5 @@
-from .adam import Adam
+from torch.optim import Adam
+
 
 class AnnealedAdam(Adam):
     """Implements Adam algorithm with learning rate annealing and optional L1 penalty.
