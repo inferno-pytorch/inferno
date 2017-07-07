@@ -95,6 +95,7 @@ class TensorboardLogger(Logger):
         training_prediction = self.trainer.get_state('training_prediction')
         training_inputs = self.trainer.get_state('training_inputs')
         training_target = self.trainer.get_state('training_target')
+        learning_rates = pyu.to_iterable(self.trainer.get_current_learning_rate())
 
         if log_scalars_now:
             # Extract floats from torch tensors if necessary
@@ -102,8 +103,14 @@ class TensorboardLogger(Logger):
                 training_loss = training_loss.float()[0]
             if tu.is_tensor(training_error):
                 training_error = training_error.float()[0]
-            self.log_scalar('training_loss', training_loss, self.trainer.iteration_count)
+            # We might have multiple learning rates for multiple groups
+            for group_num, learning_rate in enumerate(learning_rates):
+                if tu.is_tensor(learning_rate):
+                    learning_rate = learning_rate.float()[0]
+                self.log_scalar('learning_rate_group_{}'.format(group_num),
+                                learning_rate, self.trainer.iteration_count)
             self.log_scalar('training_error', training_error, self.trainer.iteration_count)
+            self.log_scalar('training_loss', training_loss, self.trainer.iteration_count)
 
         if log_images_now:
             # Extract images and log if possible
@@ -151,35 +158,34 @@ class TensorboardLogger(Logger):
             channel_indices = [channel_indices]
         else:
             raise NotImplementedError
-        # Trim batch to what we want to send to tensorboard
-        trimmed_batch = batch[batch_indices, channel_indices, ...]
-        # Extract images from trimmed batch
+        # Extract images from batch
         if batch_is_image_tensor:
-            # Get batch spatial shape (i.e. 01 of NC01)
-            _0, _1 = trimmed_batch.shape[-2:]
-            # Reshape away
-            reshaped_batch = trimmed_batch.reshape((-1, _0, _1))
-            # Make list of images
-            image_list = list(reshaped_batch)
+            image_list = [image
+                          for instance_num, instance in enumerate(batch)
+                          for channel_num, image in enumerate(instance)
+                          if instance_num in batch_indices and channel_num in channel_indices]
         else:
             assert batch_is_volume_tensor
             # Trim away along the z axis
             z_indices = self._config.get('volume_z_indices', 'mid')
             if z_indices == 'all':
-                z_indices = list(range(trimmed_batch.shape[2]))
+                z_indices = list(range(batch.shape[2]))
             elif z_indices == 'mid':
-                z_indices = [trimmed_batch.shape[2] // 2]
+                z_indices = [batch.shape[2] // 2]
             elif isinstance(z_indices, (list, tuple)):
                 pass
             elif isinstance(z_indices, int):
                 z_indices = [z_indices]
             else:
                 raise NotImplementedError
-            trimmed_batch = trimmed_batch[:, :, z_indices, ...]
-            # Get spatial shape (T01 of NCT01) and reshape batch to make a list of images
-            Z, _0, _1 = trimmed_batch.shape[-3:]
-            reshaped_batch = trimmed_batch.reshape((-1, _0, _1))
-            image_list = list(reshaped_batch)
+            # I'm going to hell for this.
+            image_list = [image
+                          for instance_num, instance in enumerate(batch)
+                          for channel_num, volume in enumerate(instance)
+                          for slice_num, image in enumerate(volume)
+                          if instance_num in batch_indices and
+                          channel_num in channel_indices and
+                          slice_num in z_indices]
         # Done.
         return image_list
 

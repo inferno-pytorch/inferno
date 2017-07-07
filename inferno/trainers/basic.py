@@ -171,7 +171,7 @@ class Trainer(object):
         else:
             raise NotImplementedError
 
-    def build_optimizer(self, method, **kwargs):
+    def build_optimizer(self, method, param_groups=None, **kwargs):
         """
         Builds the optimizer for training.
 
@@ -181,6 +181,8 @@ class Trainer(object):
             Name of the optimizer when str, handle to the optimizer class when callable.
             If a name is provided, this method looks for the optimizer in `torch.optim`
             module first and in inferno.extensions.optimizers second.
+        param_groups : list of dict
+            Specifies the parameter group. Defaults to model.parameters() if None.
         kwargs : dict
             Keyword arguments to the optimizer.
 
@@ -206,7 +208,8 @@ class Trainer(object):
             optimizer_class = method
         else:
             raise NotImplementedError
-        self._optimizer = optimizer_class(self.model.parameters(), **kwargs)
+        param_groups = self.model.parameters() if param_groups is None else param_groups
+        self._optimizer = optimizer_class(param_groups, **kwargs)
         return self
 
     @property
@@ -523,10 +526,19 @@ class Trainer(object):
         return self._state.get(key, default)
 
     def get_current_learning_rate(self):
-        learning_rate = self.optimizer.param_groups[0].get('lr', -1.)
-        if torch.is_tensor(learning_rate):
-            learning_rate = learning_rate[0]
-        return learning_rate
+        """
+        Gets the current learning rate.
+        Returns
+        -------
+        list or float
+            List of learning rates if there are multiple parameter groups, or a float
+            if there's just one.
+        """
+        learning_rate = [param_group.get('lr', -1.)
+                         for param_group in self.optimizer.param_groups]
+        learning_rate = [_learning_rate[0] if thu.is_tensor(_learning_rate) else _learning_rate
+                         for _learning_rate in learning_rate]
+        return pyu.from_iterable(learning_rate)
 
     def cuda(self, devices=None):
         """
@@ -606,7 +618,7 @@ class Trainer(object):
         self.set_precision(value)
 
     def bind_loader(self, name, loader):
-        assert name in ['train', 'validate']
+        assert name in ['train', 'validate', 'test']
         assert isinstance(loader, DataLoader)
         self._loaders.update({name: loader})
         return self
