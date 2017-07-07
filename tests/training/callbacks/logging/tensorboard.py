@@ -24,7 +24,8 @@ class TestTensorboard(unittest.TestCase):
                                 nn.ELU(),
                                 nn.AdaptiveMaxPool2d((1, 1)),
                                 AsMatrix(),
-                                nn.Linear(256, 10))
+                                nn.Linear(256, 10),
+                                nn.Softmax())
         return toy_net
 
     def setUp(self):

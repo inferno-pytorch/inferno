@@ -21,7 +21,8 @@ class TestTrainer(TestCase):
                                 nn.Conv2d(128, 256, 3, 1, 1),
                                 nn.AdaptiveMaxPool2d((1, 1)),
                                 AsMatrix(),
-                                nn.Linear(256, 10))
+                                nn.Linear(256, 10),
+                                nn.Softmax())
         return toy_net
 
     def test_cifar(self):
