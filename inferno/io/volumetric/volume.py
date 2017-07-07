@@ -123,11 +123,11 @@ class HDF5VolumeLoader(VolumeLoader):
             raise NotImplementedError
 
         if data_slice is None or isinstance(data_slice, (str, list)):
-            self.data_slice = self.parse_data_slice(data_slice)
+            self.data_slice = vu.parse_data_slice(data_slice)
         elif isinstance(data_slice, dict):
             assert name is not None
             assert name in data_slice
-            self.data_slice = self.parse_data_slice(data_slice.get(name))
+            self.data_slice = vu.parse_data_slice(data_slice.get(name))
         else:
             raise NotImplementedError
 
@@ -149,42 +149,10 @@ class HDF5VolumeLoader(VolumeLoader):
         super(HDF5VolumeLoader, self).__init__(volume=volume, name=name, transforms=transforms,
                                                **slicing_config_for_name)
 
-    @staticmethod
-    def parse_data_slice(data_slice):
-        if data_slice is None:
-            return data_slice
-        elif isinstance(data_slice, (list, tuple)) and \
-                all([isinstance(_slice, slice) for _slice in data_slice]):
-            return list(data_slice)
-        else:
-            assert isinstance(data_slice, str)
-        # Get rid of whitespace
-        data_slice = data_slice.replace(' ', '')
-        # Split by commas
-        dim_slices = data_slice.split(',')
-        # Build slice objects
-        slices = []
-        for dim_slice in dim_slices:
-            indices = dim_slice.split(':')
-            if len(indices) == 2:
-                start, stop, step = indices[0], indices[1], None
-            elif len(indices) == 3:
-                start, stop, step = indices
-            else:
-                raise RuntimeError
-            # Convert to ints
-            start = int(start) if start != '' else None
-            stop = int(stop) if stop != '' else None
-            step = int(step) if step is not None and step != '' else None
-            # Build slices
-            slices.append(slice(start, stop, step))
-        # Done.
-        return slices
-
 
 class TIFVolumeLoader(VolumeLoader):
     """Loader for volumes stored in .tif files."""
-    def __init__(self, path, data_slice=None, transforms=None, **slicing_config):
+    def __init__(self, path, data_slice=None, transforms=None, name=None, **slicing_config):
         """
         Parameters
         ----------
@@ -196,17 +164,25 @@ class TIFVolumeLoader(VolumeLoader):
             Dictionary specifying the sliding window. Must contain keys 'window_size'
             and 'stride'.
         """
-        assert isinstance(path, str) and os.path.exists(path)
-        self.path = path
+        if isinstance(path, dict):
+            assert name in path.keys()
+            assert os.path.exists(path.get(name))
+            self.path = path.get(name)
+        elif isinstance(path, str):
+            assert os.path.exists(path)
+            self.path = path
+        else:
+            raise NotImplementedError
+
         assert 'window_size' in slicing_config
         assert 'stride' in slicing_config
 
         if data_slice is None or isinstance(data_slice, (str, list)):
-            self.data_slice = self.parse_data_slice(data_slice)
+            self.data_slice = vu.parse_data_slice(data_slice)
         elif isinstance(data_slice, dict):
             assert name is not None
             assert name in data_slice
-            self.data_slice = self.parse_data_slice(data_slice.get(name))
+            self.data_slice = vu.parse_data_slice(data_slice.get(name))
         else:
             raise NotImplementedError
 
@@ -217,35 +193,3 @@ class TIFVolumeLoader(VolumeLoader):
         # Initialize superclass with the volume
         super(TIFVolumeLoader, self).__init__(volume=volume, transforms=transforms,
                                               **slicing_config)
-
-    @staticmethod
-    def parse_data_slice(data_slice):
-        if data_slice is None:
-            return data_slice
-        elif isinstance(data_slice, (list, tuple)) and \
-                all([isinstance(_slice, slice) for _slice in data_slice]):
-            return list(data_slice)
-        else:
-            assert isinstance(data_slice, str)
-        # Get rid of whitespace
-        data_slice = data_slice.replace(' ', '')
-        # Split by commas
-        dim_slices = data_slice.split(',')
-        # Build slice objects
-        slices = []
-        for dim_slice in dim_slices:
-            indices = dim_slice.split(':')
-            if len(indices) == 2:
-                start, stop, step = indices[0], indices[1], None
-            elif len(indices) == 3:
-                start, stop, step = indices
-            else:
-                raise RuntimeError
-            # Convert to ints
-            start = int(start) if start != '' else None
-            stop = int(stop) if stop != '' else None
-            step = int(step) if step is not None and step != '' else None
-            # Build slices
-            slices.append(slice(start, stop, step))
-        # Done.
-        return slices
