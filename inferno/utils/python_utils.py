@@ -49,3 +49,14 @@ class delayed_keyboard_interrupt(object):
         signal.signal(signal.SIGINT, self.old_handler)
         if self.signal_received:
             self.old_handler(*self.signal_received)
+
+
+def get_config_for_name(config, name):
+    config_for_name = {}
+    for key, val in config.items():
+        if isinstance(val, dict) and name in val:
+            # we leave the slicing_config validation to classes higher up in MRO
+            config_for_name.update({key: val.get(name)})
+        else:
+            config_for_name.update({key: val})
+    return config_for_name

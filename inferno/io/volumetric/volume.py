@@ -6,6 +6,7 @@ from ..core.base import SyncableDataset
 from ..core.base import IndexSpec
 from . import volumetric_utils as vu
 from ...utils import io_utils as iou
+from ...utils import python_utils as pyu
 
 
 class VolumeLoader(SyncableDataset):
@@ -131,13 +132,7 @@ class HDF5VolumeLoader(VolumeLoader):
         else:
             raise NotImplementedError
 
-        slicing_config_for_name = {}
-        for key, val in slicing_config.items():
-            if isinstance(val, dict) and name in val:
-                # we leave the slicing_config validation to classes higher up in MRO
-                slicing_config_for_name.update({key: val.get(name)})
-            else:
-                slicing_config_for_name.update({key: val})
+        slicing_config_for_name = pyu.get_config_for_name(slicing_config, name)
 
         assert 'window_size' in slicing_config_for_name
         assert 'stride' in slicing_config_for_name
