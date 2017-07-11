@@ -108,3 +108,16 @@ class RandomFlip(Transform):
         return image
 
 
+class CenterCrop(Transform):
+    """ Crop patch of size `size` from the center of the image """
+    def __init__(self, size, **super_kwargs):
+        super(CenterCrop, self).__init__(**super_kwargs)
+        assert isinstance(size, (int, tuple))
+        self.size = (size, size) if isinstance(size, int) else size
+
+    def image_function(self, image):
+        h,  w  = image.shape
+        th, tw = self.size
+        x1 = int(round((w - tw) / 2.))
+        y1 = int(round((h - th) / 2.))
+        return image[x1:x1+tw, y1:y1+th]
