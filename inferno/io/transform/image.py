@@ -83,10 +83,7 @@ class RandomRotate(Transform):
 
     def build_random_variables(self, **kwargs):
         np.random.seed()
-        k = np.random.randint(0, 4)
-        print('RAND ROT RANDVAR:', k)
-
-        self.set_random_variable('k', k)
+        self.set_random_variable('k', np.random.randint(0, 4))
 
     def image_function(self, image):
         return np.rot90(image, k=self.get_random_variable('k'))
