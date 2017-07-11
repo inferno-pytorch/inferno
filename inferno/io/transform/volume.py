@@ -7,6 +7,7 @@ class RandomFlip3D(Transform):
         super(RandomFlip3D, self).__init__(**super_kwargs)
 
     def build_random_variables(self, **kwargs):
+        np.random.seed()
         self.set_random_variable('flip_lr', np.random.uniform() > 0.5)
         self.set_random_variable('flip_ud', np.random.uniform() > 0.5)
         self.set_random_variable('flip_z', np.random.uniform() > 0.5)
