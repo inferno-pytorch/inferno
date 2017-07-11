@@ -10,19 +10,17 @@ class ElasticTransform(Transform):
     NATIVE_DTYPES = {'float32', 'float64'}
     PREFERRED_DTYPE = 'float32'
 
-    def __init__(self, alpha, sigma, order=1, invert=False, rng=np.random.RandomState(42),
-                 **super_kwargs):
+    def __init__(self, alpha, sigma, order=1, invert=False, **super_kwargs):
         self._initial_dtype = None
         super(ElasticTransform, self).__init__(**super_kwargs)
         self.alpha = alpha
         self.sigma = sigma
         self.order = order
         self.invert = invert
-        self.rng = rng
 
     def build_random_variables(self, **kwargs):
-        self.set_random_variable('random_field_x', self.rng.uniform(-1, 1, kwargs.get('imshape')))
-        self.set_random_variable('random_field_y', self.rng.uniform(-1, 1, kwargs.get('imshape')))
+        self.set_random_variable('random_field_x', np.random.uniform(-1, 1, kwargs.get('imshape')))
+        self.set_random_variable('random_field_y', np.random.uniform(-1, 1, kwargs.get('imshape')))
 
     def cast(self, image):
         if image.dtype not in self.NATIVE_DTYPES:
@@ -63,14 +61,13 @@ class ElasticTransform(Transform):
 
 class AdditiveGaussianNoise(Transform):
     """Add gaussian noise to the input."""
-    def __init__(self, sigma, rng=np.random.RandomState(42), **super_kwargs):
+    def __init__(self, sigma, **super_kwargs):
         super(AdditiveGaussianNoise, self).__init__(**super_kwargs)
         self.sigma = sigma
-        self.rng = rng
 
     def build_random_variables(self, **kwargs):
-        self.set_random_variable('noise', self.rng.normal(loc=0, scale=self.sigma,
-                                                          size=kwargs.get('imshape')))
+        self.set_random_variable('noise', np.random.normal(loc=0, scale=self.sigma,
+                                                           size=kwargs.get('imshape')))
 
     def image_function(self, image):
         image = image + self.get_random_variable('noise', imshape=image.shape)
@@ -79,12 +76,11 @@ class AdditiveGaussianNoise(Transform):
 
 class RandomRotate(Transform):
     """Random 90-degree rotations."""
-    def __init__(self, rng=np.random.RandomState(42), **super_kwargs):
+    def __init__(self, **super_kwargs):
         super(RandomRotate, self).__init__(**super_kwargs)
-        self.rng = rng
 
     def build_random_variables(self, **kwargs):
-        self.set_random_variable('k', self.rng.randint(0, 4))
+        self.set_random_variable('k', np.random.randint(0, 4))
 
     def image_function(self, image):
         return np.rot90(image, k=self.get_random_variable('k'))
@@ -92,13 +88,12 @@ class RandomRotate(Transform):
 
 class RandomFlip(Transform):
     """Random left-right or up-down flips."""
-    def __init__(self, rng=np.random.RandomState(42), **super_kwargs):
+    def __init__(self, **super_kwargs):
         super(RandomFlip, self).__init__(**super_kwargs)
-        self.rng = rng
 
     def build_random_variables(self, **kwargs):
-        self.set_random_variable('flip_lr', self.rng.uniform() > 0.5)
-        self.set_random_variable('flip_ud', self.rng.uniform() > 0.5)
+        self.set_random_variable('flip_lr', np.random.uniform() > 0.5)
+        self.set_random_variable('flip_ud', np.random.uniform() > 0.5)
 
     def image_function(self, image):
         if self.get_random_variable('flip_lr'):
