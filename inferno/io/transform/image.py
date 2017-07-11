@@ -19,6 +19,7 @@ class ElasticTransform(Transform):
         self.invert = invert
 
     def build_random_variables(self, **kwargs):
+        np.random.seed()
         self.set_random_variable('random_field_x', np.random.uniform(-1, 1, kwargs.get('imshape')))
         self.set_random_variable('random_field_y', np.random.uniform(-1, 1, kwargs.get('imshape')))
 
@@ -66,6 +67,7 @@ class AdditiveGaussianNoise(Transform):
         self.sigma = sigma
 
     def build_random_variables(self, **kwargs):
+        np.random.seed()
         self.set_random_variable('noise', np.random.normal(loc=0, scale=self.sigma,
                                                            size=kwargs.get('imshape')))
 
@@ -80,7 +82,11 @@ class RandomRotate(Transform):
         super(RandomRotate, self).__init__(**super_kwargs)
 
     def build_random_variables(self, **kwargs):
-        self.set_random_variable('k', np.random.randint(0, 4))
+        np.random.seed()
+        k = np.random.randint(0, 4)
+        print('RAND ROT RANDVAR:', k)
+
+        self.set_random_variable('k', k)
 
     def image_function(self, image):
         return np.rot90(image, k=self.get_random_variable('k'))
@@ -92,6 +98,7 @@ class RandomFlip(Transform):
         super(RandomFlip, self).__init__(**super_kwargs)
 
     def build_random_variables(self, **kwargs):
+        np.random.seed()
         self.set_random_variable('flip_lr', np.random.uniform() > 0.5)
         self.set_random_variable('flip_ud', np.random.uniform() > 0.5)
 
