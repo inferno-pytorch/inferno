@@ -6,6 +6,7 @@ Inferno is a little library providing utilities and convenience functions/classe
 Current features include: 
 * a basic [Trainer class](https://github.com/nasimrahaman/inferno/blob/master/inferno/trainers/basic.py) to encapsulate the training boilerplate (iteration/epoch loops, validation and checkpoint creation),
 * a [graph API](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/layers/graph.py) for building models with complex architectures, powered by [networkx](https://github.com/networkx/networkx). 
+* [easy data-parallelism](https://github.com/nasimrahaman/inferno/blob/master/tests/training/basic.py#L117) over multiple GPUs, 
 * [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/initializers) for `torch.nn.Module`-level parameter initialization,
 * [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/io/transform) for data preprocessing / transforms,
 * [support](https://github.com/nasimrahaman/inferno/blob/master/inferno/trainers/callbacks/logging/tensorboard.py) for [Tensorboard](https://www.tensorflow.org/get_started/summaries_and_tensorboard) (best with atleast [tensorflow-cpu](https://github.com/tensorflow/tensorflow) installed),
@@ -39,9 +40,10 @@ trainer
   .bind_loader('train', train_loader) \
   .bind_loader('validate', validate_loader)
 
-# Use GPU
+# Use GPUs 0, 1, 2, 3 of a multi-gpu machine
 if USE_CUDA:
-  trainer.cuda().set_precision('half')
+  # Call trainer.cuda() without the devices keyword to only use gpu 0
+  trainer.cuda(devices=[0, 1, 2, 3]).set_precision('half')
 
 # Go!
 trainer.fit()
