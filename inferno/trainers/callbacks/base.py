@@ -51,28 +51,66 @@ class CallbackEngine(object):
         self._trainer = None
         return self
 
+    @property
+    def trainer_is_bound(self):
+        return self._trainer is not None
+
     def register_callback(self, callback, trigger='auto', bind_trainer=True):
         assert callable(callback)
         # Automatic callback registration based on their methods
         if trigger == 'auto':
+            automatic_registration_successful = False
             for trigger in self.TRIGGERS:
                 if pyu.has_callable_attr(callback, trigger):
+                    automatic_registration_successful = True
                     self.register_callback(callback, trigger, bind_trainer)
+            assert automatic_registration_successful, \
+                "Callback could not be auto-registered: no triggers recognized."
             return self
         # Validate triggers
         assert trigger in self.TRIGGERS
         # Add to callback registry
         self._callback_registry.get(trigger).add(callback)
         # Register trainer with the callback if required
-        if bind_trainer and pyu.has_callable_attr(callback, 'bind_trainer'):
+        bind_trainer_to_callback = self.trainer_is_bound and \
+                                   bind_trainer and \
+                                   pyu.has_callable_attr(callback, 'bind_trainer')
+        if bind_trainer_to_callback:
             callback.bind_trainer(self._trainer)
         return self
+
+    def rebind_trainer_to_all_callbacks(self):
+        # FIXME This makes bind_trainer in register_callback reduntant,
+        # especially if used by the trainer class, so... deprecate bind_traner.
+        for callbacks_at_trigger in self._callback_registry.values():
+            for callback in callbacks_at_trigger:
+                # Register trainer with the callback if required
+                bind_trainer_to_callback = self.trainer_is_bound and \
+                                           pyu.has_callable_attr(callback, 'bind_trainer')
+                if bind_trainer_to_callback:
+                    callback.bind_trainer(self._trainer)
 
     def call(self, trigger, **kwargs):
         assert trigger in self.TRIGGERS
         kwargs.update({'trigger': trigger})
         for callback in self._callback_registry.get(trigger):
             callback(**kwargs)
+
+    def get_config(self):
+        # Pop trainer
+        config_dict = dict(self.__dict__)
+        config_dict.update({'_trainer': None})
+        return config_dict
+
+    def set_config(self, config_dict):
+        self.__dict__.update(config_dict)
+        return self
+
+    def __getstate__(self):
+        return self.get_config()
+
+    def __setstate__(self, state):
+        self.set_config(state)
 
 
 class Callback(object):
@@ -98,3 +136,17 @@ class Callback(object):
                     callable(getattr(self, kwargs.get('trigger'))):
                 getattr(self, kwargs.get('trigger'))(**kwargs)
 
+    def get_config(self):
+        config_dict = dict(self.__dict__)
+        config_dict.update({'_trainer': None})
+        return config_dict
+
+    def set_config(self, config_dict):
+        self.__dict__.update(config_dict)
+        return self
+
+    def __getstate__(self):
+        return self.get_config()
+
+    def __setstate__(self, state):
+        self.set_config(state)

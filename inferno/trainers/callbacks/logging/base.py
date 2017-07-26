@@ -36,18 +36,3 @@ class Logger(Callback):
             os.mkdir(log_directory)
         self._log_directory = log_directory
         return self
-
-    def get_config(self):
-        config_dict = dict(self.__dict__)
-        config_dict.pop('_trainer')
-        return config_dict
-
-    def set_config(self, config_dict):
-        self.__dict__.update(config_dict)
-        return self
-
-    def __getstate__(self):
-        return self.get_config()
-
-    def __setstate__(self, state):
-        self.set_config(state)

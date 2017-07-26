@@ -115,6 +115,10 @@ class TestTrainer(TestCase):
         self.assertEqual(trainer._logger.__class__.__name__, 'BasicTensorboardLogger')
 
     def test_multi_gpu(self):
+        import torch
+        if not torch.cuda.is_available():
+            return
+
         from inferno.trainers.basic import Trainer
         from inferno.io.box.cifar10 import get_cifar10_loaders
         import os
