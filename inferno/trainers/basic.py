@@ -926,24 +926,21 @@ class Trainer(object):
         # Returns a config dictionary, like __getstate__. Except optionally without the
         # data loaders (which might be yuuuuuge if it contains the data)
         config_dict = dict(self.__dict__)
-        # Callbacks can't be robustly pickled because they might contain function handles
-        config_dict.pop('_callback_engine')
-        # Loggers are callbacks - they too contain a handle to trainer. But they also define
-        # __getstate__ and __setstate__ methods, so we don't need to do anything about it
-        # right now.
-        # Loader iterators can't be pickled as well
+        # Loader iterators can't be pickled
         if '_loader_iters' in config_dict:
-            config_dict.pop('_loader_iters')
+            config_dict.update({'_loader_iters', {}})
         if exclude_loader:
             if '_loaders' in config_dict:
-                config_dict.pop('_loaders')
+                config_dict.update({'_loaders', {}})
         return config_dict
 
     def set_config(self, config_dict):
         # TODO some sanity checks on config_dict (e.g. whether the model is actually a model, etc)
         self.__dict__.update(config_dict)
-        # Register logger with the callback engine
-        self.build_logger(logger=self._logger)
+        # Rebind trainer to callback engine
+        self.callbacks.bind_trainer(self)
+        # Have callback engine rebind all callbacks to trainer
+        self.callbacks.rebind_trainer_to_all_callbacks()
         return self
 
     def save(self, exclude_loader=True, stash_best_checkpoint=True):

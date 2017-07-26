@@ -269,5 +269,5 @@ class TensorboardLogger(Logger):
         # Apparently, some SwigPyObject objects cannot be pickled - so we need to build the
         # writer on the fly.
         config = super(TensorboardLogger, self).get_config()
-        config.pop('_writer')
+        config.update({'_writer': None})
         return config

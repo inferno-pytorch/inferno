@@ -64,6 +64,20 @@ class TestTensorboard(unittest.TestCase):
         # Print info for check
         self.trainer.print("Inspect logs at: {}".format(self.trainer.log_directory))
 
+    def test_serialization(self):
+        if not hasattr(self, 'trainer'):
+            self.setUp()
+        # Serialize
+        self.trainer.save()
+        # Unserialize
+        trainer = Trainer().load(os.path.join(self.ROOT_DIR, 'saves'))
+        train_loader, test_loader = \
+            get_cifar10_loaders(root_directory=os.path.join(self.ROOT_DIR, 'data'),
+                                download=False)
+        trainer.bind_loader('train', train_loader).bind_loader('validate', test_loader)
+        trainer.fit()
+        trainer.print("Inspect logs at: {}".format(self.trainer.log_directory))
+
 
 if __name__ == '__main__':
-    TestTensorboard().test_tensorboard()
+    unittest.main()
