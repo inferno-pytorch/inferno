@@ -171,6 +171,10 @@ class Trainer(object):
         else:
             raise NotImplementedError
 
+    @property
+    def optimizer_is_defined(self):
+        return self._optimizer is not None
+
     def build_optimizer(self, method, param_groups=None, **kwargs):
         """
         Builds the optimizer for training.
