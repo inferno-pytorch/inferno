@@ -12,3 +12,6 @@ class Sequential2(nn.Sequential):
             input = module(*pyu.to_iterable(input))
         return pyu.from_iterable(input)
 
+    def __len__(self):
+        return len(self._modules.values())
+
