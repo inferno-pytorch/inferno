@@ -932,10 +932,10 @@ class Trainer(object):
         config_dict = dict(self.__dict__)
         # Loader iterators can't be pickled
         if '_loader_iters' in config_dict:
-            config_dict.update({'_loader_iters', {}})
+            config_dict.update({'_loader_iters': {}})
         if exclude_loader:
             if '_loaders' in config_dict:
-                config_dict.update({'_loaders', {}})
+                config_dict.update({'_loaders': {}})
         return config_dict
 
     def set_config(self, config_dict):
