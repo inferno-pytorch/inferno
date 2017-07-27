@@ -16,14 +16,35 @@ Current features include:
 
 ## Show me the Code!
 ```python
+import torch.nn as nn
 from inferno.io.box.cifar10 import get_cifar10_loaders
 from inferno.trainers.basic import Trainer
-from inferno.trainers.callbacks.logging.tensorboard import Tensorboard
+from inferno.trainers.callbacks.logging.tensorboard import TensorboardLogger
+from inferno.extensions.layers.convolutional import ConvELU2D
+from inferno.extensions.layers.reshape import Flatten
+
+# Fill these in:
+LOG_DIRECTORY = '...'
+DATASET_DIRECTORY = '...'
+DOWNLOAD_CIFAR = True
+USE_CUDA = True
 
 # Build torch model
-model = build_my_torch_model()
+model = nn.Sequential(
+    ConvELU2D(in_channels=3, out_channels=256, kernel_size=3),
+    nn.MaxPool2d(kernel_size=2, stride=2),
+    ConvELU2D(in_channels=256, out_channels=256, kernel_size=3),
+    nn.MaxPool2d(kernel_size=2, stride=2),
+    ConvELU2D(in_channels=256, out_channels=256, kernel_size=3),
+    nn.MaxPool2d(kernel_size=2, stride=2),
+    Flatten(),
+    nn.Linear(in_features=(256 * 4 * 4), out_features=10),
+    nn.Softmax()
+)
+
 # Load loaders
-train_loader, validate_loader = get_cifar10_loaders()
+train_loader, validate_loader = get_cifar10_loaders(DATASET_DIRECTORY,
+                                                    download=DOWNLOAD_CIFAR)
 
 # Build trainer
 trainer = Trainer(model) \
@@ -31,19 +52,17 @@ trainer = Trainer(model) \
   .build_metric('CategoricalError') \
   .build_optimizer('Adam') \
   .validate_every((2, 'epochs')) \
-  .save_every((10, 'epochs')) \
-  .set_max_num_epochs(100) \
+  .save_every((5, 'epochs')) \
+  .set_max_num_epochs(10) \
   .build_logger(TensorboardLogger(), log_directory=LOG_DIRECTORY)
 
 # Bind loaders
-trainer
-  .bind_loader('train', train_loader) \
-  .bind_loader('validate', validate_loader)
+trainer \
+    .bind_loader('train', train_loader) \
+    .bind_loader('validate', validate_loader)
 
-# Use GPUs 0, 1, 2, 3 of a multi-gpu machine
 if USE_CUDA:
-  # Call trainer.cuda() without the devices keyword to only use gpu 0
-  trainer.cuda(devices=[0, 1, 2, 3]).set_precision('half')
+  trainer.cuda()
 
 # Go!
 trainer.fit()
