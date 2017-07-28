@@ -152,3 +152,18 @@ class NoLogger(object):
         pass
 
 
+def set_state(module, key, value):
+    """Writes `key`-`value` pair to `module`'s state hook."""
+    if hasattr(module, '_state_hooks'):
+        state_hooks = getattr(module, '_state_hooks')
+        assert isinstance(state_hooks, dict), \
+            "State hook (i.e. module._state_hooks) is not a dictionary."
+        state_hooks.update({key: value})
+    else:
+        setattr(module, '_state_hooks', {key: value})
+    return module
+
+
+def get_state(module, key, default=None):
+    """Gets key from `module`'s state hooks."""
+    return getattr(module, '_state_hooks', {}).get(key, default)
