@@ -526,6 +526,14 @@ class Trainer(object):
         self._state.update({key: value})
         return self
 
+    def update_state_from_model_state_hooks(self):
+        if hasattr(self.model, '_state_hooks'):
+            state_hooks = getattr(self.model, '_state_hooks')
+            if isinstance(state_hooks, dict):
+                # Unwrap variables (or tensors) and
+                self._state.update({state_key: thu.unwrap(state)
+                                    for state_key, state in state_hooks.items()})
+
     def get_state(self, key, default=None):
         return self._state.get(key, default)
 
@@ -801,11 +809,13 @@ class Trainer(object):
                 self.update_state('training_error', thu.unwrap(error))
             else:
                 error = None
-            # Update state
+            # Update state from computation
             self.update_state('training_inputs', thu.unwrap(inputs))
             self.update_state('training_target', thu.unwrap(target))
             self.update_state('training_prediction', thu.unwrap(prediction))
             self.update_state('training_loss', thu.unwrap(loss))
+            # Update state from model's state hooks
+            self.update_state_from_model_state_hooks()
             # Update parameters
             self.optimizer.step()
             # Call callback
@@ -896,6 +906,8 @@ class Trainer(object):
             self.update_state('validation_target', thu.unwrap(target))
             self.update_state('validation_prediction', thu.unwrap(output))
             self.update_state('validation_loss', thu.unwrap(loss))
+            # Update from model's state hooks
+            self.update_state_from_model_state_hooks()
 
             self.callbacks.call(self.callbacks.END_OF_VALIDATION_ITERATION,
                                 iteration_num=iteration_num)
