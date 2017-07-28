@@ -47,6 +47,10 @@ def is_matrix_tensor(object_):
     return is_tensor(object_) and object_.dim() == 2
 
 
+def is_scalar_tensor(object_):
+    return is_tensor(object_) and object_.dim() == 1 and object_.numel() == 1
+
+
 def where(condition, if_true, if_false):
     """
     Torch equivalent of numpy.where.

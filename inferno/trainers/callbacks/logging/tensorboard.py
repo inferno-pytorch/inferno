@@ -35,6 +35,13 @@ class TensorboardLogger(Logger):
         self._config = {'image_batch_indices': send_image_at_batch_indices,
                         'image_channel_indices': send_image_at_channel_indices,
                         'volume_z_indices': send_volume_at_z_indices}
+        # We ought to know the trainer states we're observing (and plotting to tensorboard).
+        # These are the defaults
+        self._trainer_states_being_observed = {'training_loss',
+                                               'training_error',
+                                               'training_prediction',
+                                               'training_inputs',
+                                               'training_target'}
         if log_scalars_every is not None:
             self.log_scalars_every = log_scalars_every
         if log_images_every is not None:
@@ -82,7 +89,58 @@ class TensorboardLogger(Logger):
                                            epoch_count=self.trainer.epoch_count,
                                            persistent=True)
 
+    def observe_state(self, key):
+        assert isinstance(key, str), \
+            "State key must be a string, got {} instead.".format(type(key).__name__)
+        self._trainer_states_being_observed.add(key)
+        return self
+
+    def observe_states(self, keys):
+        for key in keys:
+            self.observe_state(key)
+        return self
+
+    def log_object(self, tag, object_, allow_scalar_logging=True, allow_image_logging=True):
+        assert isinstance(tag, str)
+        if isinstance(object_, (list, tuple)):
+            for object_num, _object in enumerate(object_):
+                self.log_object("{}_{}".format(tag, object_num),
+                                _object,
+                                allow_scalar_logging,
+                                allow_image_logging)
+            return
+        # Check whether object is a scalar
+        if tu.is_scalar_tensor(object_) and allow_scalar_logging:
+            # Log scalar
+            value = object_.float()[0]
+            self.log_scalar(tag, value, step=self.trainer.iteration_count)
+        elif isinstance(object_, (float, int)) and allow_scalar_logging:
+            value = float(object_)
+            self.log_scalar(tag, value, step=self.trainer.iteration_count)
+        elif tu.is_image_or_volume_tensor(object_) and allow_image_logging:
+            # Log images
+            self.log_image_or_volume_batch(tag, object_, self.trainer.iteration_count)
+        else:
+            # Object is neither a scalar nor an image, there's nothing we can do
+            pass
+
     def end_of_training_iteration(self, **_):
+        log_scalars_now = self.log_scalars_now
+        log_images_now = self.log_images_now
+        if not log_scalars_now and not log_images_now:
+            # Nothing to log, so we won't bother
+            return
+        # Read states
+        for state_key in self._trainer_states_being_observed:
+            state = self.trainer.get_state(state_key, default=None)
+            if state is None:
+                # State not found in trainer but don't throw a hissy fit
+                continue
+            self.log_object(state_key, state,
+                            allow_scalar_logging=log_scalars_now,
+                            allow_image_logging=log_images_now)
+
+    def _legacy_end_of_training_iteration(self, **_):
         # This is very necessary - see comments in the respective property getters.
         log_scalars_now = self.log_scalars_now
         log_images_now = self.log_images_now
