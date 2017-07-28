@@ -5,9 +5,10 @@ from torch.autograd import Variable
 from .python_utils import delayed_keyboard_interrupt
 
 
-def unwrap(tensor_or_variable, as_numpy=False):
+def unwrap(tensor_or_variable, to_cpu=True, as_numpy=False):
     if isinstance(tensor_or_variable, (list, tuple)):
-        return type(tensor_or_variable)([unwrap(_t) for _t in tensor_or_variable])
+        return type(tensor_or_variable)([unwrap(_t, to_cpu=to_cpu, as_numpy=as_numpy)
+                                         for _t in tensor_or_variable])
     elif isinstance(tensor_or_variable, Variable):
         tensor = tensor_or_variable.data
     elif torch.is_tensor(tensor_or_variable):
@@ -18,12 +19,15 @@ def unwrap(tensor_or_variable, as_numpy=False):
         return tensor_or_variable
     else:
         raise NotImplementedError
-    # Transfer to CPU, and then to numpy, and return
-    with delayed_keyboard_interrupt():
-        if as_numpy:
-            return tensor.cpu().numpy()
-        else:
-            return tensor.cpu()
+    # Transfer to CPU if required
+    if to_cpu:
+        with delayed_keyboard_interrupt():
+            tensor = tensor.cpu()
+    # Convert to numpy if required
+    if as_numpy:
+        return tensor.cpu().numpy()
+    else:
+        return tensor
 
 
 def is_tensor(object_):
@@ -45,6 +49,10 @@ def is_image_or_volume_tensor(object_):
 
 def is_matrix_tensor(object_):
     return is_tensor(object_) and object_.dim() == 2
+
+
+def is_scalar_tensor(object_):
+    return is_tensor(object_) and object_.dim() == 1 and object_.numel() == 1
 
 
 def where(condition, if_true, if_false):
