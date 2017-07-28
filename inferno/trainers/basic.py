@@ -60,6 +60,7 @@ class Trainer(object):
         # Data logistics
         self._loaders = {}
         self._loader_iters = {}
+        self._loader_specs = {}
 
         # Iteration and epoch book-keeping
         self._iteration_count = 0
@@ -629,11 +630,22 @@ class Trainer(object):
     def dtype(self, value):
         self.set_precision(value)
 
-    def bind_loader(self, name, loader):
+    def bind_loader(self, name, loader, num_inputs=None, num_targets=1):
         assert name in ['train', 'validate', 'test']
         assert isinstance(loader, DataLoader)
         self._loaders.update({name: loader})
+        # Trainers loaded from pickle files might not have '_loader_specs', therefore:
+        if not hasattr(self, '_loader_specs'):
+            setattr(self, '_loader_specs', {})
+        self._loader_specs.update({name: {'num_inputs': num_inputs,
+                                          'num_targets': num_targets}})
         return self
+
+    def get_loader_specs(self, name):
+        assert name in self._loader_specs.keys(), \
+            "Could not find specs about loader '{}'. Valid loader names are: {}" \
+                .format(name, set(self._loader_specs.keys()))
+        return self._loader_specs.get(name)
 
     def fetch_next_batch(self, from_loader='train', restart_exhausted_generators=True,
                          update_batch_count=True, update_epoch_count_if_generator_exhausted=True):
@@ -642,7 +654,10 @@ class Trainer(object):
             self._loader_iters.update({from_loader: self._loaders[from_loader].__iter__()})
         # Try to fetch from iterator
         try:
+            # Fetch
             next_batch = next(self._loader_iters[from_loader])
+            # Verify
+            self.verify_batch(next_batch, from_loader)
             if update_batch_count:
                 self._batch_count += 1
             return next_batch
@@ -657,6 +672,41 @@ class Trainer(object):
                                              update_batch_count=update_batch_count)
             else:
                 raise
+
+    def verify_batch(self, batch, from_loader):
+        loader_specs = self.get_loader_specs(from_loader)
+        num_inputs = loader_specs.get('num_inputs')
+        num_targets = loader_specs.get('num_targets')
+        if None not in [num_inputs, num_targets]:
+            assert len(batch) == num_inputs + num_targets, \
+                "Was expecting a batch with {} (= num_inputs) + {} (= num_targets) tensors, " \
+                "got one with {} tensors.".format(num_inputs, num_targets, len(batch))
+        if num_inputs is not None:
+            assert len(batch) > num_inputs, \
+                "Expecting {} inputs, but the batch contains only {} tensors." \
+                    .format(num_inputs, len(batch))
+        if num_targets is not None:
+            assert len(batch) > num_targets, \
+                "Expecting {} outputs, but the batch contains only {} tensors." \
+                    .format(num_targets, len(batch))
+        return batch
+
+    def split_batch(self, batch, from_loader):
+        loader_specs = self.get_loader_specs(from_loader)
+        num_inputs = loader_specs.get('num_inputs')
+        num_targets = loader_specs.get('num_targets')
+        assert not (num_targets is None and num_inputs is None), \
+            "Can not split batch if both the number of inputs and targets is not known."
+        if num_inputs is None:
+            # Unknown number of inputs
+            inputs, targets = batch[:-num_targets], batch[-num_targets:]
+        elif num_targets is None:
+            # Unknown number of targets
+            inputs, targets = batch[:num_inputs], batch[num_inputs:]
+        else:
+            # Known number of inputs and targets
+            inputs, targets = batch[:num_inputs], batch[-num_targets:]
+        return inputs, pyu.from_iterable(targets)
 
     def restart_generators(self, of_loader=None):
         if of_loader is None:
@@ -796,7 +846,7 @@ class Trainer(object):
                 # Send to device and wrap as variable
                 batch = self.wrap_batch(batch)
                 # Separate inputs from targets
-                inputs, target = batch[0:-1], batch[-1]
+                inputs, target = self.split_batch(batch, from_loader='train')
                 # Compute prediction
                 prediction = self.apply_model(*inputs)
                 # Compute loss
@@ -805,7 +855,8 @@ class Trainer(object):
                 loss.backward()
             # Compute metric
             if self.metric_is_defined:
-                error = self.metric(prediction.data, target.data)
+                error = self.metric(thu.unwrap(prediction, to_cpu=False),
+                                    thu.unwrap(target, to_cpu=False))
                 self.update_state('training_error', thu.unwrap(error))
             else:
                 error = None
@@ -885,7 +936,7 @@ class Trainer(object):
                 # Wrap
                 batch = self.wrap_batch(batch, volatile=True)
                 # Separate
-                inputs, target = batch[0:-1], batch[-1]
+                inputs, target = self.split_batch(batch, from_loader='validate')
                 # Comptue output
                 output = self.apply_model(*inputs)
                 # Compute loss
@@ -895,7 +946,8 @@ class Trainer(object):
             validation_loss_meter.update(loss.data[0], n=batch_size)
             # Compute validation_error
             if self.metric_is_defined:
-                validation_error = self.metric(output.data, target.data)
+                validation_error = self.metric(thu.unwrap(output, to_cpu=False),
+                                               thu.unwrap(target, to_cpu=False))
                 if torch.is_tensor(validation_error):
                     # Convert to float
                     validation_error = validation_error[0]
