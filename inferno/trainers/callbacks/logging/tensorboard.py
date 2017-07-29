@@ -41,7 +41,8 @@ class TensorboardLogger(Logger):
                                                'training_error',
                                                'training_prediction',
                                                'training_inputs',
-                                               'training_target'}
+                                               'training_target',
+                                               'learning_rate'}
         if log_scalars_every is not None:
             self.log_scalars_every = log_scalars_every
         if log_images_every is not None:
