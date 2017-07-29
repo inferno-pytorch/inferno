@@ -320,7 +320,8 @@ class Trainer(object):
             else:
                 self._metric = method
         elif isinstance(method, str):
-            assert hasattr(metrics, method)
+            assert hasattr(metrics, method), \
+                "Could not find the metric '{}'.".format(method)
             self._metric = getattr(metrics, method)()
         else:
             raise NotImplementedError
@@ -539,7 +540,14 @@ class Trainer(object):
             self._logger.set_log_directory(log_directory)
         return self
 
+    # States that are fetched dynamically from the trainer object via properties are
+    # dynamic states. Such states can not be updated.
+    # The following dictionary maps state keys to the corresponding trainer attribute
+    DYNAMIC_STATES = {'learning_rate': 'current_learning_rate'}
+
     def update_state(self, key, value):
+        assert key not in self.DYNAMIC_STATES, \
+            "State at key '{}' cannot be updated because it's dynamic.".format(key)
         self._state.update({key: value})
         return self
 
@@ -552,7 +560,14 @@ class Trainer(object):
                                     for state_key, state in state_hooks.items()})
 
     def get_state(self, key, default=None):
-        return self._state.get(key, default)
+        if key in self.DYNAMIC_STATES:
+            return getattr(self, self.DYNAMIC_STATES.get(key), default)
+        else:
+            return self._state.get(key, default)
+
+    @property
+    def current_learning_rate(self):
+        return self.get_current_learning_rate()
 
     def get_current_learning_rate(self):
         """
