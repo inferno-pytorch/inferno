@@ -42,7 +42,7 @@ CIFAR-10 works out-of-the-`box` (pun very much intended) with all the fancy data
 
 ## Preparing the Trainer
 
-With our model and data loaders good to go, it's finally time to build the trainer. To start, let's initialize a trainer. 
+With our model and data loaders good to go, it's finally time to build the trainer. To start, let's initialize a one. 
 
 ```python
 from inferno.trainers.basic import Trainer
@@ -57,9 +57,21 @@ When training a model for days, it's usually a good idea to store the current tr
 ```python
 trainer.save_to_directory('path/to/save/directory').save_every((25, 'epochs'))
 ```
-So we're saving once every 25 epochs. That's fair, but we might also want to create a checkpoint when the validation score is the best. Easy as 1, 2,
+So we're saving once every 25 epochs. But what if an epoch takes forever, and you don't wish to wait that long? 
+```python
+trainer.save_every((1000, 'iterations'))
+```
+In this setting, you're saving once every 1000 iterations (= batches). But we might also want to create a checkpoint when the validation score is the best. Easy as 1, 2,
 ```python
 trainer.save_at_best_validation_score()
+```
+Remember that a checkpoint contains the entire training state, and not just the model. Everything is included in the checkpoint file, including optimizer, criterion, and callbacks but __not the data loaders__. 
+
+### Setting up Validation
+Let's say you wish to validate once every 2 epochs.
+
+```python
+trainer.validate_every((2, 'epochs'))
 ```
 
 ### Setting up the Criterion and Optimizer
@@ -77,18 +89,51 @@ or
 ```python
 trainer.build_criterion(nn.CrossEntropyLoss())
 ```
-What this means is that if you have your own loss criterion that has the same API as any of the criteria found in `torch.nn`, you should be fine just plugging it in. 
+What this means is that if you have your own loss criterion that has the same API as any of the criteria found in `torch.nn`, you should be fine by just plugging it in. 
 
-### Training with Tensorboard Support
+The same holds for the optimizer: 
+```python
+trainer.build_optimizer('Adam', weight_decay=0.0005)
+```
+Like for criteria, the `trainer` looks for a `'Adam'` in `torch.optim` (among other places), and initializes it with `model`'s parameters. Any keywords you might use for `torch.optim.Adam`, you could pass them to the `build_optimizer` method. 
+
+Or alternatively, you could use:
+```python
+from torch.optim import Adam
+
+trainer.build_optimizer(Adam, weight_decay=0.0005)
+```
+
+If you implemented your own optimizer (by subclassing `torch.optim.Optimizer`), you should be able to use it instead of `Adam`. Alternatively, if you already have an optimizer *instance*, you could do:
+
+```python
+optimizer = MyOptimizer(model.parameters(), **optimizer_kwargs)
+trainer.build_optimizer(optimizer)
+```
+
+### Setting up Training Duration
+You probably don't want to train forever, in which case you must specify: 
+```python
+trainer.set_max_num_epochs(100)
+```
+or 
+```python
+trainer.set_max_num_iterations(10000)
+```
+I usually like to train till I'm happy with the validation results - by setting `max_num_epochs` to a ridiculously large integer (yes, this is embarassing and will be fixed in the near future). 
+
+### Setting up Callbacks
 ...
+
+### Using Tensorboard
+...
+
+## Cherries
 
 ### Building Complex Models with the Graph API
 ...
 
-### Cherries: Parameter Initialization and Callbacks
-...
-
-### Data Logistics
+### Parameter Initialization
 ...
 
 ## Support
