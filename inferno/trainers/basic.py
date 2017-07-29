@@ -182,10 +182,11 @@ class Trainer(object):
 
         Parameters
         ----------
-        method : str or callable
-            Name of the optimizer when str, handle to the optimizer class when callable.
-            If a name is provided, this method looks for the optimizer in `torch.optim`
-            module first and in inferno.extensions.optimizers second.
+        method : str or callable or torch.optim.Optimizer
+            Name of the optimizer when str, handle to the optimizer class when callable,
+            or a torch.optim.Optimizer instance. If a name is provided, this method looks
+            for the optimizer in `torch.optim` module first and in
+            inferno.extensions.optimizers second.
         param_groups : list of dict
             Specifies the parameter group. Defaults to model.parameters() if None.
         kwargs : dict
@@ -209,8 +210,11 @@ class Trainer(object):
                 # Look for optimizer in extensions
                 optimizer_class = getattr(optimizers, method, None)
             assert optimizer_class is not None, "Optimizer {} not found.".format(method)
-        elif callable(method):
+        elif callable(method) and isinstance(method, type):
             optimizer_class = method
+        elif isinstance(method, torch.optim.Optimizer):
+            self._optimizer = method
+            return self
         else:
             raise NotImplementedError
         param_groups = self.model.parameters() if param_groups is None else param_groups
@@ -238,11 +242,12 @@ class Trainer(object):
 
         Parameters
         ----------
-        method : str or callable
-            Name of the criterion when str, criterion class when callable.
-            If a name is provided, this method looks for the criterion in `torch.nn`.
+        method : str or callable or torch.nn.Module
+            Name of the criterion when str, criterion class when callable, or a
+            torch.nn.Module instance. If a name is provided, this method looks
+            for the criterion in `torch.nn`.
         kwargs : dict
-            Keyword arguments to the criterion.
+            Keyword arguments to the criterion class' constructor if applicable.
 
         Returns
         -------
@@ -265,6 +270,9 @@ class Trainer(object):
             assert criterion_class is not None, "Criterion {} not found.".format(method)
         elif callable(method) and isinstance(method, type):
             criterion_class = method
+        elif isinstance(method, torch.nn.Module):
+            self._criterion = method
+            return self
         else:
             raise NotImplementedError
         self._criterion = criterion_class(**kwargs)
@@ -283,16 +291,19 @@ class Trainer(object):
         else:
             raise NotImplementedError
 
-    def build_metric(self, method):
+    def build_metric(self, method, **kwargs):
         """
         Builds the metric for evaluation.
 
         Parameters
         ----------
         method : callable or str
-            Name of the metric when string, metric class when callable.
-            If a name is provided, this method looks for the metric in
+            Name of the metric when string, metric class or a callable object
+            when callable. If a name is provided, this method looks for the metric in
             `inferno.extensions.metrics`.
+
+        kwargs : dict
+            Keyword arguments to the metric class' constructor, if applicable.
 
         Returns
         -------
@@ -304,10 +315,15 @@ class Trainer(object):
         AssertionError: if the metric is not found.
         """
         if callable(method):
-            self._metric = method()
+            if isinstance(method, type):
+                self._metric = method(**kwargs)
+            else:
+                self._metric = method
         elif isinstance(method, str):
             assert hasattr(metrics, method)
             self._metric = getattr(metrics, method)()
+        else:
+            raise NotImplementedError
         return self
 
     @property
