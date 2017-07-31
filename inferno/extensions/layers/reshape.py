@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from ...utils.exceptions import assert_, ShapeError
 
 
 class View(nn.Module):
@@ -35,9 +36,10 @@ class Flatten(View):
 
 
 class As3D(nn.Module):
-    def __init__(self, channel_as_z=False):
+    def __init__(self, channel_as_z=False, num_channels_or_num_z_slices=1):
         super(As3D, self).__init__()
         self.channel_as_z = channel_as_z
+        self.num_channels_or_num_z_slices = num_channels_or_num_z_slices
 
     def forward(self, input):
         if input.dim() == 5:
@@ -46,12 +48,19 @@ class As3D(nn.Module):
         elif input.dim() == 4:
             # If input is a batch of 2D images, reshape
             b, c, _0, _1 = list(input.size())
+            assert_(c % self.num_channels_or_num_z_slices == 0,
+                    "Number of channels of the 4D image tensor (= {}) must be "
+                    "divisible by the set number of channels or number of z slices "
+                    "of the 5D volume tensor (= {})."
+                    .format(c, self.num_channels_or_num_z_slices),
+                    ShapeError)
+            c //= self.num_channels_or_num_z_slices
             if self.channel_as_z:
                 # Move channel axis to z
-                return input.view(b, 1, c, _0, _1)
+                return input.view(b, self.num_channels_or_num_z_slices, c, _0, _1)
             else:
                 # Keep channel axis where it is, but add a singleton dimension for z
-                return input.view(b, c, 1, _0, _1)
+                return input.view(b, c, self.num_channels_or_num_z_slices, _0, _1)
         elif input.dim() == 2:
             # We have a matrix which we wish to turn to a 3D batch
             b, c = list(input.size())

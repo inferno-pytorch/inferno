@@ -38,6 +38,7 @@ class TestReshape(unittest.TestCase):
 
     def test_as_3d(self):
         from inferno.extensions.layers.reshape import As3D
+        from inferno.utils.exceptions import ShapeError
 
         as_3d = As3D()
 
@@ -53,6 +54,14 @@ class TestReshape(unittest.TestCase):
         as_3d.channel_as_z = True
         output_shape = as_3d(self._get_input_variable(10, 20, 30, 30)).size()
         self.assertEqual(list(output_shape), [10, 1, 20, 30, 30])
+
+        as_3d.num_channels_or_num_z_slices = 2
+        output_shape = as_3d(self._get_input_variable(10, 40, 30, 30)).size()
+        self.assertEqual(list(output_shape), [10, 2, 20, 30, 30])
+
+        with self.assertRaises(ShapeError):
+            output_shape = as_3d(self._get_input_variable(10, 41, 30, 30)).size()
+            self.assertEqual(list(output_shape), [10, 2, 20, 30, 30])
 
 if __name__ == '__main__':
     unittest.main()
