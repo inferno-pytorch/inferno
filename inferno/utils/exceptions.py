@@ -9,3 +9,7 @@ def assert_(condition, message='', exception_type=AssertionError):
 
 class ShapeError(ValueError):
     pass
+
+
+class NotTorchModuleError(TypeError):
+    pass
