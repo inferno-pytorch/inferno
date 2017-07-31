@@ -87,6 +87,6 @@ Planned features include:
 Got an idea? Awesome! Start a discussion by opening an issue or contribute with a pull request.  
 
 ## Who's Who?
-As of today, this library is maintained by Nasim Rahaman and Maurice Weiler @
+As of today, this library is maintained by Nasim Rahaman with sizeable contributions from Maurice Weiler and Steffen Wolf @
 [Image Analysis and Learning Lab](https://hci.iwr.uni-heidelberg.de/mip),
 [Heidelberg Collaboratory for Image Processing](https://hci.iwr.uni-heidelberg.de/). 
