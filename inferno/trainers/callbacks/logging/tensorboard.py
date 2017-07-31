@@ -42,6 +42,7 @@ class TensorboardLogger(Logger):
                                                'training_prediction',
                                                'training_inputs',
                                                'training_target',
+                                               'validation_error',
                                                'learning_rate'}
         if log_scalars_every is not None:
             self.log_scalars_every = log_scalars_every
