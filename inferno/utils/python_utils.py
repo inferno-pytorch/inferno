@@ -60,3 +60,9 @@ def get_config_for_name(config, name):
         else:
             config_for_name.update({key: val})
     return config_for_name
+
+
+def assert_(condition, message, exception_type=AssertionError):
+    """Like assert, but with arbitrary exception types."""
+    if not condition:
+        raise exception_type(message)
