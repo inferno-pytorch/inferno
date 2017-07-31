@@ -844,6 +844,16 @@ class Trainer(object):
 
         return self
 
+    def apply_model_and_loss(self, inputs, target, backward=True):
+        # Compute prediction
+        prediction = self.apply_model(*inputs)
+        # Compute loss
+        loss = self.criterion(prediction, target)
+        if backward:
+            # Backprop if required
+            loss.backward()
+        return prediction, loss
+
     def train_for(self, num_iterations=None, break_callback=None):
         # Switch model to train mode
         self.model.train()
@@ -878,12 +888,8 @@ class Trainer(object):
                 batch = self.wrap_batch(batch)
                 # Separate inputs from targets
                 inputs, target = self.split_batch(batch, from_loader='train')
-                # Compute prediction
-                prediction = self.apply_model(*inputs)
-                # Compute loss
-                loss = self.criterion(prediction, target)
-                # Backprop
-                loss.backward()
+                # Apply model, compute loss and backprop
+                prediction, loss = self.apply_model_and_loss(inputs, target, backward=True)
             # Compute metric
             if self.metric_is_defined:
                 error = self.metric(thu.unwrap(prediction, to_cpu=False),
@@ -968,11 +974,8 @@ class Trainer(object):
                 batch = self.wrap_batch(batch, volatile=True)
                 # Separate
                 inputs, target = self.split_batch(batch, from_loader='validate')
-                # Comptue output
-                output = self.apply_model(*inputs)
-                # Compute loss
-                loss = self.criterion(output, target)
-
+                # Apply model, compute loss
+                output, loss = self.apply_model_and_loss(inputs, target, backward=False)
             batch_size = target.size(0)
             validation_loss_meter.update(loss.data[0], n=batch_size)
             # Compute validation_error
