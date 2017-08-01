@@ -18,6 +18,7 @@ from .base import Logger
 from ....utils import torch_utils as tu
 from ....utils import python_utils as pyu
 from ....utils import train_utils as tru
+from ....utils.exceptions import assert_
 
 
 class TensorboardLogger(Logger):
@@ -37,14 +38,14 @@ class TensorboardLogger(Logger):
                         'volume_z_indices': send_volume_at_z_indices}
         # We ought to know the trainer states we're observing (and plotting to tensorboard).
         # These are the defaults.
-        # The mapping points to the id of the last logged object to prevent stale logging.
-        self._trainer_states_being_observed = {'training_loss': None,
-                                               'training_error': None,
-                                               'training_prediction': None,
-                                               'training_inputs': None,
-                                               'training_target': None,
-                                               'validation_error': None,
-                                               'learning_rate': None}
+        self._trainer_states_being_observed_while_training = {'training_loss',
+                                                              'training_error',
+                                                              'training_prediction',
+                                                              'training_inputs',
+                                                              'training_target',
+                                                              'learning_rate'}
+        self._trainer_states_being_observed_while_validating = {'validation_error_averaged',
+                                                                'validation_loss_averaged'}
         if log_scalars_every is not None:
             self.log_scalars_every = log_scalars_every
         if log_images_every is not None:
@@ -92,15 +93,32 @@ class TensorboardLogger(Logger):
                                            epoch_count=self.trainer.epoch_count,
                                            persistent=True)
 
-    def observe_state(self, key):
-        assert isinstance(key, str), \
-            "State key must be a string, got {} instead.".format(type(key).__name__)
-        self._trainer_states_being_observed.update({key: None})
+    def observe_state(self, key, observe_while='training'):
+        # Validate arguments
+        keyword_mapping = {'train': 'training',
+                           'training': 'training',
+                           'validation': 'validating',
+                           'validating': 'validating'}
+        observe_while = keyword_mapping.get(observe_while)
+        assert_(observe_while is not None,
+                "The keyword observe_while must be one of: {}."
+                .format(set(keyword_mapping.keys())),
+                ValueError)
+        assert_(isinstance(key, str),
+                "State key must be a string, got {} instead.".format(type(key).__name__),
+                TypeError)
+        # Add to set of observed states
+        if observe_while == 'training':
+            self._trainer_states_being_observed_while_training.add(key)
+        elif observe_while == 'validating':
+            self._trainer_states_being_observed_while_validating.add(key)
+        else:
+            raise NotImplementedError
         return self
 
-    def observe_states(self, keys):
+    def observe_states(self, keys, observe_while='training'):
         for key in keys:
-            self.observe_state(key)
+            self.observe_state(key, observe_while=observe_while)
         return self
 
     def log_object(self, tag, object_, allow_scalar_logging=True, allow_image_logging=True):
@@ -134,64 +152,26 @@ class TensorboardLogger(Logger):
             # Nothing to log, so we won't bother
             return
         # Read states
-        for state_key in self._trainer_states_being_observed.keys():
+        for state_key in self._trainer_states_being_observed_while_training:
             state = self.trainer.get_state(state_key, default=None)
             if state is None:
                 # State not found in trainer but don't throw a hissy fit
                 continue
-            # Check if state is stale
-            if self._trainer_states_being_observed.get(state_key) == id(state):
-                # State is stale, it has been logged before
-                continue
-            else:
-                # State is not stale, it'll be logged for the first time
-                # noinspection PyTypeChecker
-                self._trainer_states_being_observed.update({state_key: id(state)})
             self.log_object(state_key, state,
                             allow_scalar_logging=log_scalars_now,
                             allow_image_logging=log_images_now)
 
-    def _legacy_end_of_training_iteration(self, **_):
-        # This is very necessary - see comments in the respective property getters.
-        log_scalars_now = self.log_scalars_now
-        log_images_now = self.log_images_now
-        if not log_scalars_now and not log_images_now:
-            # Nothing to log, so we won't bother
-            return
-        # Fetch from trainer
-        training_loss = self.trainer.get_state('training_loss')
-        training_error = self.trainer.get_state('training_error')
-        training_prediction = self.trainer.get_state('training_prediction')
-        training_inputs = self.trainer.get_state('training_inputs')
-        training_target = self.trainer.get_state('training_target')
-        learning_rates = pyu.to_iterable(self.trainer.get_current_learning_rate())
-
-        if log_scalars_now:
-            # Extract floats from torch tensors if necessary
-            if tu.is_tensor(training_loss):
-                training_loss = training_loss.float()[0]
-            if tu.is_tensor(training_error):
-                training_error = training_error.float()[0]
-            # We might have multiple learning rates for multiple groups
-            for group_num, learning_rate in enumerate(learning_rates):
-                if tu.is_tensor(learning_rate):
-                    learning_rate = learning_rate.float()[0]
-                self.log_scalar('learning_rate_group_{}'.format(group_num),
-                                learning_rate, self.trainer.iteration_count)
-            self.log_scalar('training_error', training_error, self.trainer.iteration_count)
-            self.log_scalar('training_loss', training_loss, self.trainer.iteration_count)
-
-        if log_images_now:
-            # Extract images and log if possible
-            # Training prediction
-            if pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(training_prediction):
-                self.log_image_or_volume_batch('training_prediction', training_prediction)
-            # Training inputs
-            if pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(training_inputs):
-                self.log_image_or_volume_batch('training_input', training_inputs)
-            # Training target
-            if pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(training_target):
-                self.log_image_or_volume_batch('training_target', training_target)
+    def end_of_validation_run(self, **_):
+        # Log everything
+        # Read states
+        for state_key in self._trainer_states_being_observed_while_validating:
+            state = self.trainer.get_state(state_key, default=None)
+            if state is None:
+                # State not found in trainer but don't throw a hissy fit
+                continue
+            self.log_object(state_key, state,
+                            allow_scalar_logging=True,
+                            allow_image_logging=True)
 
     def extract_images_from_batch(self, batch):
         # Special case when batch is a list or tuple of batches

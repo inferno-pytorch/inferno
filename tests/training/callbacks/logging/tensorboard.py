@@ -11,6 +11,7 @@ from inferno.extensions.layers.reshape import AsMatrix
 class TestTensorboard(unittest.TestCase):
     ROOT_DIR = os.path.dirname(__file__)
     PRECISION = 'half'
+    DOWNLOAD_CIFAR = True
 
     @staticmethod
     def _make_test_model():
@@ -50,7 +51,7 @@ class TestTensorboard(unittest.TestCase):
         # Load CIFAR10 data
         train_loader, test_loader = \
             get_cifar10_loaders(root_directory=os.path.join(self.ROOT_DIR, 'data'),
-                                download=False)
+                                download=self.DOWNLOAD_CIFAR)
 
         # Bind loaders
         self.trainer.bind_loader('train', train_loader).bind_loader('validate', test_loader)
@@ -73,7 +74,7 @@ class TestTensorboard(unittest.TestCase):
         trainer = Trainer().load(os.path.join(self.ROOT_DIR, 'saves'))
         train_loader, test_loader = \
             get_cifar10_loaders(root_directory=os.path.join(self.ROOT_DIR, 'data'),
-                                download=False)
+                                download=self.DOWNLOAD_CIFAR)
         trainer.bind_loader('train', train_loader).bind_loader('validate', test_loader)
         trainer.fit()
         trainer.print("Inspect logs at: {}".format(self.trainer.log_directory))
