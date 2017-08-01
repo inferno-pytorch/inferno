@@ -1,6 +1,6 @@
 # inferno
 
-Inferno is a little library providing utilities and convenience functions/classes around [PyTorch](https://github.com/pytorch/pytorch). It's a work-in-progress and the API might change (for the better!) without much of a warning, so hang in tight! 
+Inferno is a little library providing utilities and convenience functions/classes around [PyTorch](https://github.com/pytorch/pytorch). It's a work-in-progress, but the first release is underway! 
 
 ## Current Features
 Current features include: 
