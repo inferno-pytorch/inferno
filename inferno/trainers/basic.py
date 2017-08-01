@@ -1014,10 +1014,12 @@ class Trainer(object):
         return self
 
     def record_validation_results(self, validation_loss, validation_error):
+        # Update state
+        self.update_state('validation_loss_averaged', thu.unwrap(validation_loss))
+        self.update_state('validation_error_averaged', thu.unwrap(validation_error))
         # Prefer the error metric (if provided). This should be handled with care -
         # validation error should either always not be None, or otherwise.
         validation_score = validation_loss if validation_error is None else validation_error
-
         # Check if validation error is less than the best so far
         if self._best_validation_score is None or validation_score < self._best_validation_score:
             # Best score so far. The following flag will trigger a save
