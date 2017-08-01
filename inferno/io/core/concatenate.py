@@ -8,7 +8,11 @@ class Concatenate(Dataset):
     Concatenates mutliple datasets to one. This class does not implement
     synchronization primitives.
     """
-    def __init__(self, *datasets, transforms=None):
+
+    # use **kwargs and then get with default arguments instead of *datasets followed by keyword
+    # arguments, becuase the former is NOT python 2.7 compatible
+    def __init__(self, *datasets, **kwargs):
+        transforms = kwargs.get('transforms', None)
         assert all([isinstance(dataset, Dataset) for dataset in datasets])
         assert len(datasets) >= 1
         assert transforms is None or callable(transforms)
