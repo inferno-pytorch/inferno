@@ -36,14 +36,15 @@ class TensorboardLogger(Logger):
                         'image_channel_indices': send_image_at_channel_indices,
                         'volume_z_indices': send_volume_at_z_indices}
         # We ought to know the trainer states we're observing (and plotting to tensorboard).
-        # These are the defaults
-        self._trainer_states_being_observed = {'training_loss',
-                                               'training_error',
-                                               'training_prediction',
-                                               'training_inputs',
-                                               'training_target',
-                                               'validation_error',
-                                               'learning_rate'}
+        # These are the defaults.
+        # The mapping points to the id of the last logged object to prevent stale logging.
+        self._trainer_states_being_observed = {'training_loss': None,
+                                               'training_error': None,
+                                               'training_prediction': None,
+                                               'training_inputs': None,
+                                               'training_target': None,
+                                               'validation_error': None,
+                                               'learning_rate': None}
         if log_scalars_every is not None:
             self.log_scalars_every = log_scalars_every
         if log_images_every is not None:
@@ -94,7 +95,7 @@ class TensorboardLogger(Logger):
     def observe_state(self, key):
         assert isinstance(key, str), \
             "State key must be a string, got {} instead.".format(type(key).__name__)
-        self._trainer_states_being_observed.add(key)
+        self._trainer_states_being_observed.update({key: None})
         return self
 
     def observe_states(self, keys):
@@ -133,11 +134,19 @@ class TensorboardLogger(Logger):
             # Nothing to log, so we won't bother
             return
         # Read states
-        for state_key in self._trainer_states_being_observed:
+        for state_key in self._trainer_states_being_observed.keys():
             state = self.trainer.get_state(state_key, default=None)
             if state is None:
                 # State not found in trainer but don't throw a hissy fit
                 continue
+            # Check if state is stale
+            if self._trainer_states_being_observed.get(state_key) == id(state):
+                # State is stale, it has been logged before
+                continue
+            else:
+                # State is not stale, it'll be logged for the first time
+                # noinspection PyTypeChecker
+                self._trainer_states_being_observed.update({state_key: id(state)})
             self.log_object(state_key, state,
                             allow_scalar_logging=log_scalars_now,
                             allow_image_logging=log_images_now)
