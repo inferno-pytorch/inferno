@@ -54,8 +54,6 @@ class Trainer(object):
         self._logger = None
         self._last_logged = {}
         self._log_directory = {}
-        # Dummy logger when not logging
-        self._dummy_logger = tu.NoLogger
 
         # Data logistics
         self._loaders = {}

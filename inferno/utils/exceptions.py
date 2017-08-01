@@ -7,9 +7,23 @@ def assert_(condition, message='', exception_type=AssertionError):
         raise exception_type(message)
 
 
+# ------ VALUE ERRORS ------
+
+
 class ShapeError(ValueError):
     pass
 
 
+class FrequencyValueError(ValueError):
+    pass
+
+
+# ------ TYPE ERRORS ------
+
+
 class NotTorchModuleError(TypeError):
+    pass
+
+
+class FrequencyTypeError(TypeError):
     pass

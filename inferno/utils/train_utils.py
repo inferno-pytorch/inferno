@@ -1,4 +1,6 @@
 """Utilities for training."""
+import numpy as np
+from .exceptions import assert_, FrequencyTypeError, FrequencyValueError
 
 
 class AverageMeter(object):
@@ -63,16 +65,72 @@ class CLUI(object):
 
 
 class Frequency(object):
+
     def __init__(self, value=None, units=None):
         # Private
         self._last_match_value = None
+        self._value = None
+        self._units = None
         # Public
         self.value = value
         self.units = units
 
     @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        # If value is not being set, make sure the frequency never matches muhahaha
+        if value is None:
+            value = np.inf
+        self.assert_value_consistent(value)
+        self._value = value
+
+    UNIT_PRIORITY = 'iterations'
+    VALID_UNIT_NAME_MAPPING = {'iterations': 'iterations',
+                               'iteration': 'iterations',
+                               'epochs': 'epochs',
+                               'epoch': 'epochs'}
+
+    @property
+    def units(self):
+        return self._units
+
+    @units.setter
+    def units(self, value):
+        if value is None:
+            value = self.UNIT_PRIORITY
+        self.assert_units_consistent(value)
+        self._units = self.VALID_UNIT_NAME_MAPPING.get(value)
+
+    def assert_value_consistent(self, value=None):
+        value = value or self.value
+        # Make sure that value is an integer or inf
+        assert_(isinstance(value, (int, float)),
+                "Value must be an integer or np.inf, got {} instead."
+                .format(type(value).__name__),
+                FrequencyTypeError)
+        if isinstance(value, float):
+            assert_(value == np.inf,
+                    "Provided value must be numpy.inf if a float, got {}.".format(value),
+                    FrequencyValueError)
+
+    def assert_units_consistent(self, units=None):
+        units = units or self.units
+        # Map
+        units = self.VALID_UNIT_NAME_MAPPING.get(units)
+        assert_(units is not None, "Unit '{}' not understood.".format(units),
+                FrequencyValueError)
+
+    @property
     def is_consistent(self):
-        return isinstance(self.value, int) and self.units in ['epochs', 'iterations']
+        try:
+            self.assert_value_consistent()
+            self.assert_units_consistent()
+            return True
+        except (FrequencyValueError, FrequencyTypeError):
+            return False
 
     def epoch(self):
         self.units = 'epochs'
@@ -91,7 +149,6 @@ class Frequency(object):
         return self.units == 'iterations'
 
     def every(self, value):
-        assert isinstance(value, int), "Frequency must be an integer."
         self.value = value
         return self
 
@@ -107,17 +164,6 @@ class Frequency(object):
             self._last_match_value = match_value
         return match
 
-    def __mod__(self, other):
-        if isinstance(other, int):
-            return self.value % other
-        elif isinstance(other, Frequency):
-            # Check if units match
-            assert self.units == other.units, "Units don't match."
-            return self.value % other.value
-        else:
-            raise NotImplementedError("Can't compute modulo of a {} with Frequency."
-                                      .format(type(other)))
-
     def __str__(self):
         return "{} {}".format(self.value, self.units)
 
@@ -126,9 +172,18 @@ class Frequency(object):
 
     @classmethod
     def from_string(cls, string):
-        value, unit = string.split(' ')
-        assert unit in ['epochs', 'iterations']
-        return cls(int(value), unit)
+        assert_(isinstance(string, str), "`string` must be a string, got {} instead."
+                .format(type(string).__name__), TypeError)
+        if string == 'never':
+            return cls(np.inf, 'iterations')
+        else:
+            value_and_unit = string.split(' ')
+            assert_(len(value_and_unit) == 2,
+                    "Was expecting a string 'value units' with one white-space "
+                    "between 'value' and 'units'.", ValueError)
+            value, unit = value_and_unit
+            value = np.inf if value == 'inf' else int(value)
+            return cls(value, unit)
 
     @classmethod
     def build_from(cls, args, priority='iterations'):
