@@ -209,12 +209,12 @@ class Conv2D(ConvActivation):
     2D convolutional layer with same padding and orthogonal weight initialization.
     This layer does not apply an activation function.
     """
-    def __init__(self, in_channels, out_channels, kernel_size):
+    def __init__(self, in_channels, out_channels, kernel_size, activation=None):
         super(Conv2D, self).__init__(in_channels=in_channels,
                                      out_channels=out_channels,
                                      kernel_size=kernel_size,
                                      dim=2,
-                                     activation=None,
+                                     activation=activation,
                                      initialization=OrthogonalWeightsZeroBias())
 
 
@@ -223,10 +223,10 @@ class Conv3D(ConvActivation):
     3D convolutional layer with same padding and orthogonal weight initialization.
     This layer does not apply an activation function.
     """
-    def __init__(self, in_channels, out_channels, kernel_size):
+    def __init__(self, in_channels, out_channels, kernel_size, activation=None):
         super(Conv3D, self).__init__(in_channels=in_channels,
                                      out_channels=out_channels,
                                      kernel_size=kernel_size,
                                      dim=3,
-                                     activation=None,
+                                     activation=activation,
                                      initialization=OrthogonalWeightsZeroBias())
