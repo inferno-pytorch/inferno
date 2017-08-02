@@ -19,6 +19,7 @@ class ModelTester(object):
 
     def cuda(self):
         self._is_cuda = True
+        return self
 
     def get_input(self):
         if not self._is_cuda:
