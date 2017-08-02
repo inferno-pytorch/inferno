@@ -18,6 +18,10 @@ class FrequencyValueError(ValueError):
     pass
 
 
+class DeviceError(ValueError):
+    pass
+
+
 # ------ TYPE ERRORS ------
 
 
