@@ -4,6 +4,7 @@ import os
 import subprocess
 
 import torch
+from numpy import inf
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torch.nn.parallel.data_parallel import data_parallel
@@ -17,6 +18,7 @@ from ..extensions import metrics
 from ..extensions import optimizers
 from ..extensions import criteria
 from .callbacks import CallbackEngine
+from ..utils.exceptions import assert_
 
 
 class Trainer(object):
@@ -468,6 +470,24 @@ class Trainer(object):
         self._validation_externally_triggered = bool(value)
 
     def validate_every(self, frequency, for_num_iterations=None):
+        """
+        Set validation frequency.
+
+        Parameters
+        ----------
+        frequency : inferno.utils.train_utils.Frequency or str or tuple or list or int
+            Validation frequency. If str, it could be (say) '10 iterations' or '1 epoch'.
+            If tuple (or list), it could be (10, 'iterations') or (1, 'epoch'). If int
+            (say 10), it's interpreted as (10, 'iterations').
+        for_num_iterations : int
+            Number of iterations to validate for. If not set, the model is validated on
+            the entire dataset (i.e. till the data loader is exhausted).
+
+        Returns
+        -------
+        Trainer
+            self
+        """
         self._validate_every = tu.Frequency.build_from(frequency, priority='iterations')
         assert self._validate_every.is_consistent
         self._num_validation_iterations = for_num_iterations
@@ -589,7 +609,7 @@ class Trainer(object):
         Parameters
         ----------
         devices : list
-            Specify the ordinals of the devices to use.
+            Specify the ordinals of the devices to use for dataparallel training.
 
         Returns
         -------
@@ -660,8 +680,40 @@ class Trainer(object):
         self.set_precision(value)
 
     def bind_loader(self, name, loader, num_inputs=None, num_targets=1):
-        assert name in ['train', 'validate', 'test']
-        assert isinstance(loader, DataLoader)
+        """
+        Bind a data loader to the trainer.
+
+        Parameters
+        ----------
+        name : {'train', 'validate', 'test'}
+            Name of the loader, i.e. what it should be used for.
+        loader : torch.utils.data.DataLoader
+            DataLoader object.
+        num_inputs : int
+            Number of input tensors from the `loader`.
+        num_targets : int
+            Number of target tensors from the `loader`.
+
+        Returns
+        -------
+        Trainer
+            self
+
+        Raises
+        ------
+        KeyError
+            if name is invalid.
+        TypeError
+            if loader is not a DataLoader instance.
+        """
+        assert_(name in ['train', 'validate', 'test'],
+                "`name` must be one of ['train', 'validate', 'test']. "
+                "Got {} instead.".format(name),
+                KeyError)
+        assert_(isinstance(loader, DataLoader),
+                "`loader` must be a DataLoader object. "
+                "Got {} instead.".format(type(loader).__name__),
+                TypeError)
         self._loaders.update({name: loader})
         # Trainers loaded from pickle files might not have '_loader_specs', therefore:
         if not hasattr(self, '_loader_specs'):
@@ -781,7 +833,9 @@ class Trainer(object):
         if max_num_iterations is not None or max_num_epochs is None:
             max_num_iterations = \
                 self._max_num_iterations if max_num_iterations is None else max_num_iterations
-            assert max_num_iterations is not None
+            assert_(max_num_iterations is not None,
+                    "Neither max_num_iterations nor max_num_epochs was set.",
+                    RuntimeError)
             return self._iteration_count >= max_num_iterations
         else:
             # max_num_epochs is specified. It could be 'auto', in which case we read from the
@@ -791,24 +845,88 @@ class Trainer(object):
                 else max_num_epochs
             return self._epoch_count >= max_num_epochs
 
+    INF_STRINGS = {'inf', 'infinity', 'infty'}
+
     def set_max_num_iterations(self, max_num_iterations):
+        """
+        Set the maximum number of training iterations.
+
+        Parameters
+        ----------
+        max_num_iterations : int or float or str
+            Maximum number of training iterations. If float, it should equal numpy.inf.
+            If str, it should be one of {'inf', 'infinity', 'infty'}.
+
+        Returns
+        -------
+        Trainer
+            self
+        """
+        max_num_iterations = \
+            inf if max_num_iterations in self.INF_STRINGS else max_num_iterations
+        # Validate type
+        assert_(isinstance(max_num_iterations, int) or max_num_iterations == inf,
+                "max_num_iterations must be an integer or numpy.inf, got {} instead."
+                .format(type(max_num_iterations).__name__),
+                TypeError)
         self._max_num_iterations = max_num_iterations
         return self
 
     def set_max_num_epochs(self, max_num_epochs):
+        """
+        Set the maximum number of training epochs.
+
+        Parameters
+        ----------
+        max_num_epochs : int or float or str
+            Maximum number of training epochs. If float, it should equal numpy.inf.
+            If str, it should be one of {'inf', 'infinity', 'infty'}.
+
+        Returns
+        -------
+        Trainer
+            self
+        """
+        max_num_epochs = inf if max_num_epochs in self.INF_STRINGS else max_num_epochs
+        assert_(isinstance(max_num_epochs, int) or max_num_epochs == inf,
+                "max_num_epochs must be an integer or numpy.inf, got {} instead."
+                .format(type(max_num_epochs).__name__),
+                TypeError)
         self._max_num_epochs = max_num_epochs
         return self
 
     def fit(self, max_num_iterations=None, max_num_epochs=None):
+        """
+        Fit model.
+
+        Parameters
+        ----------
+        max_num_iterations : int or float or str
+            (Optional) Maximum number of training iterations. Overrides the value set by
+            `Trainer.set_max_num_iterations`. If float, it should equal numpy.inf.
+            If str, it should be one of {'inf', 'infinity', 'infty'}.
+        max_num_epochs : int or float or str
+            (Optional) Maximum number of training epochs. Overrides the value set by
+            `Trainer.set_max_num_epochs`. If float, it should equal numpy.inf.
+            If str, it should be one of {'inf', 'infinity', 'infty'}.
+
+        Returns
+        -------
+        Trainer
+            self
+
+        """
         # Takes care of:
         #   - dispatching train
         #   - validation
         #   - learning rate scheduling
         #   - saving
 
+        max_num_iterations = inf if max_num_iterations in self.INF_STRINGS else max_num_iterations
         max_num_iterations = self._max_num_iterations if max_num_iterations is None \
             else max_num_iterations
 
+        max_num_epochs = inf if max_num_epochs in self.INF_STRINGS else max_num_epochs
         max_num_epochs = self._max_num_epochs if max_num_epochs is None else max_num_epochs
 
         self.callbacks.call(self.callbacks.BEGIN_OF_FIT,
@@ -1071,6 +1189,23 @@ class Trainer(object):
         return self
 
     def load(self, from_directory=None, best=False):
+        """
+        Load the trainer from checkpoint.
+
+        Parameters
+        ----------
+        from_directory : str
+            Path to the directory where the checkpoint is located. The filename should be
+            'checkpoint.pytorch' if best=False, or 'best_checkpoint.pytorch' if best=True.
+        best : str
+            Whether to load the best checkpoint. The filename in `from_directory` should be
+            'best_checkpoint.pytorch'.
+
+        Returns
+        -------
+        Trainer
+            self
+        """
         from_directory = self._save_to_directory if from_directory is None else from_directory
         assert from_directory is not None, "Nowhere to load from."
         # Get file name
