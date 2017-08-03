@@ -106,6 +106,10 @@ class Transform(object):
                                                  for volume in channel_volume])
                                        for channel_volume in batch])
                              for batch in tensor])
+        elif tensor.ndim == 4:
+            # We're applying the volume function on a czyx tensor
+            return np.array([getattr(self, 'volume_function')(volume)
+                             for volume in tensor])
         elif tensor.ndim == 3:
             # We're applying the volume function on the volume itself
             return getattr(self, 'volume_function')(tensor)
