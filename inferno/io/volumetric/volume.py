@@ -139,7 +139,9 @@ class HDF5VolumeLoader(VolumeLoader):
 
         # Read in volume from file
         volume = iou.fromh5(self.path, self.path_in_h5_dataset,
-                            dataslice=tuple(self.data_slice))
+                            dataslice=(tuple(self.data_slice)
+                                       if self.data_slice is not None
+                                       else None))
         # Initialize superclass with the volume
         super(HDF5VolumeLoader, self).__init__(volume=volume, name=name, transforms=transforms,
                                                **slicing_config_for_name)
