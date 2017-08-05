@@ -1,8 +1,10 @@
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
+from scipy.ndimage.morphology import binary_dilation, binary_erosion
 
 from .base import Transform
+from ...utils.exceptions import assert_
 
 
 class ElasticTransform(Transform):
@@ -115,8 +117,66 @@ class CenterCrop(Transform):
         self.size = (size, size) if isinstance(size, int) else size
 
     def image_function(self, image):
-        h,  w  = image.shape
+        h, w = image.shape
         th, tw = self.size
         x1 = int(round((w - tw) / 2.))
         y1 = int(round((h - th) / 2.))
         return image[x1:x1+tw, y1:y1+th]
+
+
+class BinaryMorphology(Transform):
+    """
+    Apply a binary morphology operation on an image. Supported operations are dilation
+    and erosion.
+    """
+    def __init__(self, mode, num_iterations=1, morphology_kwargs=None, **super_kwargs):
+        """
+        Parameters
+        ----------
+        mode : {'dilate', 'erode'}
+            Whether to dilate or erode.
+        num_iterations : int
+            Number of iterations to apply the operation for.
+        morphology_kwargs: dict
+            Keyword arguments to the morphology function
+            (i.e. `scipy.ndimage.morphology.binary_erosion` or
+            `scipy.ndimage.morphology.binary_erosion`)
+        super_kwargs : dict
+            Keyword arguments to the superclass.
+        """
+        super(BinaryMorphology, self).__init__(**super_kwargs)
+        # Validate and assign mode
+        assert_(mode in ['dilate', 'erode'],
+                "Mode must be one of ['dilate', 'erode']. Got {} instead.".format(mode),
+                ValueError)
+        self.mode = mode
+        self.num_iterations = num_iterations
+        self.morphology_kwargs = {} if morphology_kwargs is None else dict(morphology_kwargs)
+
+    def image_function(self, image):
+        if self.mode == 'dilate':
+            transformed_image = binary_dilation(image, iterations=self.num_iterations,
+                                                **self.morphology_kwargs)
+        elif self.mode == 'erode':
+            transformed_image = binary_erosion(image, iterations=self.num_iterations,
+                                               **self.morphology_kwargs)
+        else:
+            raise ValueError
+        # Cast transformed image to the right dtype and return
+        return transformed_image.astype(image.dtype)
+
+
+class BinaryDilation(BinaryMorphology):
+    """Apply a binary dilation operation on an image."""
+    def __init__(self, num_iterations=1, morphology_kwargs=None, **super_kwargs):
+        super(BinaryDilation, self).__init__(mode='dilate', num_iterations=num_iterations,
+                                             morphology_kwargs=morphology_kwargs,
+                                             **super_kwargs)
+
+
+class BinaryErosion(BinaryMorphology):
+    """Apply a binary erosion operation on an image."""
+    def __init__(self, num_iterations=1, morphology_kwargs=None, **super_kwargs):
+        super(BinaryErosion, self).__init__(mode='erode', num_iterations=num_iterations,
+                                            morphology_kwargs=morphology_kwargs,
+                                            **super_kwargs)
