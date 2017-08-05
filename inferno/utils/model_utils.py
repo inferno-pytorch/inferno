@@ -35,7 +35,7 @@ class ModelTester(object):
                 "Model is not a torch module.",
                 NotTorchModuleError)
         # Transfer to cuda if required
-        if not is_model_cuda(model):
+        if not is_model_cuda(model) and self._is_cuda:
             model.cuda()
         input_ = self.get_input()
         output = model(input_)
