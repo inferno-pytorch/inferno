@@ -42,12 +42,14 @@ CIFAR-10 works out-of-the-`box` (pun very much intended) with all the fancy data
 
 ## Preparing the Trainer
 
-With our model and data loaders good to go, it's finally time to build the trainer. To start, let's initialize a one. 
+With our model and data loaders good to go, it's finally time to build the trainer. To start, let's initialize one. 
 
 ```python
 from inferno.trainers.basic import Trainer
 
 trainer = Trainer(model)
+# Tell trainer about the data loaders
+trainer.bind_loader('train', train_loader).bind_loader('validate', validate_loader)
 ```
 
 Now to the things we could do with it. 
@@ -181,6 +183,8 @@ After you've started training, use a bash shell to fire up tensorboard with:
 $ tensorboard --logdir=/path/to/log/directory --port=6007
 ```
 and navigate to `localhost:6007` with your favorite browser.
+
+Fine print: missing the `log_images_every` keyword argument to `TensorboardLogger` will result in images being logged every iteration. If you don't have a fast hard drive, this might actually slow down the training. To not log images, just use `log_images_every='never'`. 
 
 ### One more thing
 
