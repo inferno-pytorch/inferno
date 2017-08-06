@@ -120,13 +120,75 @@ or
 ```python
 trainer.set_max_num_iterations(10000)
 ```
-I usually like to train till I'm happy with the validation results - by setting `max_num_epochs` to a ridiculously large integer (yes, this is embarassing and will be fixed in the near future). 
+
+If you like to train indefinitely (or until you're happy with the results), use:
+```python
+trainer.set_max_num_iterations('inf')
+```
+In this case, you'll need to interrupt the training manually with a `KeyboardInterrupt`. 
 
 ### Setting up Callbacks
-...
+Callbacks are pretty handy when it comes to interacting with the `Trainer`. More precisely: `Trainer` defines a number of events as 'triggers' for callbacks. Currently, these are: 
+```python
+BEGIN_OF_FIT,
+END_OF_FIT,
+BEGIN_OF_TRAINING_RUN,
+END_OF_TRAINING_RUN,
+BEGIN_OF_EPOCH,
+END_OF_EPOCH,
+BEGIN_OF_TRAINING_ITERATION,
+END_OF_TRAINING_ITERATION,
+BEGIN_OF_VALIDATION_RUN,
+END_OF_VALIDATION_RUN,
+BEGIN_OF_VALIDATION_ITERATION,
+END_OF_VALIDATION_ITERATION
+```
+
+As an example, let's build a simple callback to interrupt the training on NaNs. We check at the end of every training iteration whether the training loss is NaN, and accordingly raise a `RuntimeError`. 
+```python
+import numpy as np
+from inferno.trainers.callbacks.base import Callback
+
+class NaNDetector(Callback):
+    def end_of_training_iteration(self, **_):
+        # The callback object has the trainer as an attribute. 
+        # The trainer populates its 'states' with torch tensors (NOT VARIABLES!)
+        training_loss = self.trainer.get_state('training_loss')
+        # Extract float from torch tensor
+        training_loss = training_loss[0]
+        if np.isnan(training_loss):
+            raise RuntimeError("NaNs detected!")
+```
+
+With the callback defined, all we need to do is register it with the trainer:
+```python
+trainer.register_callback(NaNDetector())
+```
+So the next time you get `RuntimeError: "NaNs detected!`, you know the drill. 
 
 ### Using Tensorboard
-...
+Inferno supports logging scalars and images to Tensorboard out-of-the-box, though this requires you have at least [tensorflow-cpu](https://github.com/tensorflow/tensorflow) installed. Let's say you want to log scalars every iteration and images every 20 iterations:
+
+```python
+from inferno.trainers.callbacks.logging.tensorboard import TensorboardLogger
+
+trainer.build_logger(TensorboardLogger(log_scalars_every=(1, 'iteration'), 
+                                       log_images_every=(20, 'iterations')),
+                     log_directory='/path/to/log/directory')
+```
+After you've started training, use a bash shell to fire up tensorboard with:
+```bash
+$ tensorboard --logdir=/path/to/log/directory --port=6007
+```
+and navigate to `localhost:6007` with your favorite browser.
+
+### One more thing
+
+Once you have everything configured, use 
+```python
+trainer.fit()
+```
+to commence training! This last step is kinda important. :wink:
 
 ## Cherries
 
