@@ -22,11 +22,41 @@ from ....utils.exceptions import assert_
 
 
 class TensorboardLogger(Logger):
+    """Class to enable logging of training progress to Tensorboard.
+
+    Currently supports logging scalars and images.
+    """
     # Borrowed from https://gist.github.com/gyglim/1f8dfb1b5c82627ae3efcfbbadb9f514 and
     # https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/04-utils/tensorboard/logger.py
     def __init__(self, log_directory=None, log_scalars_every=None, log_images_every=None,
                  send_image_at_batch_indices='all', send_image_at_channel_indices='all',
                  send_volume_at_z_indices='mid'):
+        """
+        Parameters
+        ----------
+        log_directory : str
+            Path to the directory where the log files will be placed.
+        log_scalars_every : str or tuple or inferno.utils.train_utils.Frequency
+            How often scalars should be logged to Tensorboard. By default, once every iteration.
+        log_images_every : str or tuple or inferno.utils.train_utils.Frequency
+            How often images should be logged to Tensorboard. By default, once every iteration.
+        send_image_at_batch_indices : list or str
+            The indices of the batches to be logged. An `image_batch` usually has the shape
+            (num_samples, num_channels, num_rows, num_cols). By setting this argument to say
+            [0, 2], only images corresponding to `image_batch[0]` and `image_batch[2]` are
+            logged. When a str, it should be 'all', in which case, all samples are logged.
+        send_image_at_channel_indices : list or str
+            Similar to `send_image_at_batch_indices`, but applying to channels.
+        send_volume_at_z_indices : list or str
+            For 3D batches of shape (num_samples, num_channels, num_z_slices, num_rows, num_cols),
+            select the indices of the z slices to be logged. When a str, it could be 'all' or
+            'mid' (to log the central z slice).
+
+        Warnings
+        --------
+        Leaving log_images_every to the default (i.e. once every iteration) might generate a
+        large logfile and/or slow down the training.
+        """
         assert tf is not None
         assert plt is not None
         super(TensorboardLogger, self).__init__(log_directory=log_directory)
