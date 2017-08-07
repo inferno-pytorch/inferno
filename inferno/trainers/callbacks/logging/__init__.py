@@ -1,4 +1,3 @@
-from .tensorboard_basic import BasicTensorboardLogger
 from .tensorboard import TensorboardLogger
 
 
