@@ -435,6 +435,10 @@ class Trainer(object):
             self.save_to_directory(to_directory)
         return self
 
+    @property
+    def save_directory(self):
+        return self._save_to_directory
+
     def save_to_directory(self, to_directory):
         assert isinstance(to_directory, str)
         if not os.path.exists(to_directory):
