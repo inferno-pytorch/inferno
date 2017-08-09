@@ -57,14 +57,13 @@ def adapted_rand(seg, gt):
     logger = logging.getLogger(__name__)
 
     if np.any(seg == 0):
-        logger.warning("Zeros in segmentation, treating as background.")
+        logger.debug("Zeros in segmentation, treating as background.")
     if np.any(gt == 0):
-        logger.warning("Zeros in ground truth, 0's will be ignored.")
+        logger.debug("Zeros in ground truth, 0's will be ignored.")
 
     if np.all(seg == 0) or np.all(gt == 0):
-        logger.error("all labels 0: fake rand, this should not be here. "
-                     "Check in segmentation script.")
-        return 0
+        logger.error("Either segmentation or groundtruth are all zeros.")
+        return [0, 0, 0]
 
     # segA is truth, segB is query
     segA = np.ravel(gt)

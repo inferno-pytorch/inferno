@@ -435,6 +435,10 @@ class Trainer(object):
             self.save_to_directory(to_directory)
         return self
 
+    @property
+    def save_directory(self):
+        return self._save_to_directory
+
     def save_to_directory(self, to_directory):
         assert isinstance(to_directory, str)
         if not os.path.exists(to_directory):
@@ -714,7 +718,15 @@ class Trainer(object):
                 "`loader` must be a DataLoader object. "
                 "Got {} instead.".format(type(loader).__name__),
                 TypeError)
+        # Check to see if the loader is actually new. This should usually be True.
+        is_new_loader = loader is not self._loaders.get(name)
         self._loaders.update({name: loader})
+        # We also need to account for the case when a loader is being replaced. When this happens,
+        # the old DataLoaderIter might still have processes running, which we need to kill.
+        if is_new_loader and name in self._loader_iters:
+            # This is when the previous loader already has a DataLoaderIter running.
+            # The DataLoaderIter implements a __del__ method, which shuts down workers.
+            del self._loader_iters[name]
         # Trainers loaded from pickle files might not have '_loader_specs', therefore:
         if not hasattr(self, '_loader_specs'):
             setattr(self, '_loader_specs', {})
