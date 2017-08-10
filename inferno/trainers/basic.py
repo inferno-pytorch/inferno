@@ -51,6 +51,7 @@ class Trainer(object):
         self._optimizer = None
         self._criterion = None
         self._metric = None
+        self._apply_metric_every = None
 
         # Logging
         self._logger = None
@@ -290,6 +291,37 @@ class Trainer(object):
             self.build_metric(value)
         else:
             raise NotImplementedError
+
+    @property
+    def applying_metric_every(self):
+        return self._apply_metric_every
+
+    def apply_metric_every(self, frequency):
+        """
+        Set frequency of metric evaluation.
+
+        Parameters
+        ----------
+        frequency : inferno.utils.train_utils.Frequency or str or tuple or list or int
+            Validation frequency. If str, it could be (say) '10 iterations' or '1 epoch'.
+            If tuple (or list), it could be (10, 'iterations') or (1, 'epoch'). If int
+            (say 10), it's interpreted as (10, 'iterations').
+
+        Returns
+        -------
+        Trainer
+            self
+        """
+        self._apply_metric_every = tu.Frequency.build_from(frequency, priority='iterations')
+        assert self._apply_metric_every.is_consistent
+        return self
+
+    @property
+    def apply_metric_now(self):
+        if self._apply_metric_every is None:
+            return True
+        else:
+            return self._apply_metric_every.match(iteration_count=self._iteration_count)
 
     def build_metric(self, method, **kwargs):
         """
@@ -1020,9 +1052,10 @@ class Trainer(object):
                 prediction, loss = self.apply_model_and_loss(inputs, target, backward=True)
             # Compute metric
             if self.metric_is_defined:
-                error = self.metric(thu.unwrap(prediction, to_cpu=False),
-                                    thu.unwrap(target, to_cpu=False))
-                self.update_state('training_error', thu.unwrap(error))
+                if self.apply_metric_now:
+                    error = self.metric(thu.unwrap(prediction, to_cpu=False),
+                                        thu.unwrap(target, to_cpu=False))
+                    self.update_state('training_error', thu.unwrap(error))
             else:
                 error = None
             # Update state from computation
