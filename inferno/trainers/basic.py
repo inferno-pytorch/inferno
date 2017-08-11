@@ -50,8 +50,12 @@ class Trainer(object):
         self._model = None
         self._optimizer = None
         self._criterion = None
+
+        # Metric evaluation
         self._metric = None
-        self._apply_metric_every = None
+        self._evaluate_metric_every = None
+        self._metric_evaluation_externally_triggered = False
+        self._last_metric_evaluated_at_epoch = 0
 
         # Logging
         self._logger = None
@@ -293,17 +297,17 @@ class Trainer(object):
             raise NotImplementedError
 
     @property
-    def applying_metric_every(self):
-        return self._apply_metric_every
+    def evaluating_metric_every(self):
+        return self._evaluate_metric_every
 
-    def apply_metric_every(self, frequency):
+    def evaluate_metric_every(self, frequency):
         """
-        Set frequency of metric evaluation.
+        Set frequency of metric evaluation __during training__ (and not during validation).
 
         Parameters
         ----------
         frequency : inferno.utils.train_utils.Frequency or str or tuple or list or int
-            Validation frequency. If str, it could be (say) '10 iterations' or '1 epoch'.
+            Metric evaluation frequency. If str, it could be (say) '10 iterations' or '1 epoch'.
             If tuple (or list), it could be (10, 'iterations') or (1, 'epoch'). If int
             (say 10), it's interpreted as (10, 'iterations').
 
@@ -312,16 +316,34 @@ class Trainer(object):
         Trainer
             self
         """
-        self._apply_metric_every = tu.Frequency.build_from(frequency, priority='iterations')
-        assert self._apply_metric_every.is_consistent
+        self._evaluate_metric_every = tu.Frequency.build_from(frequency, priority='iterations')
+        assert self._evaluate_metric_every.is_consistent
         return self
 
     @property
-    def apply_metric_now(self):
-        if self._apply_metric_every is None:
+    def evaluate_metric_now(self):
+        if self._metric_evaluation_externally_triggered:
+            # Reset trigger
+            self._metric_evaluation_externally_triggered = False
             return True
+        elif self._evaluate_metric_every is None:
+            # By default, evaluate metric every time
+            return True
+        elif self._evaluate_metric_every is not None and self._evaluate_metric_every.by_epoch:
+            # Don't evaluate if we've done so already this epoch
+            if self._last_metric_evaluated_at_epoch == self._epoch_count:
+                return False
+            else:
+                # If we haven't evaluated this epoch, check if we should
+                return self._evaluate_metric_every.match(epoch_count=self._epoch_count)
         else:
-            return self._apply_metric_every.match(iteration_count=self._iteration_count)
+            # This is reached when evaluate_metric_every is defined and matching by
+            # iteration count
+            return self._evaluate_metric_every.match(iteration_count=self._iteration_count)
+
+    @evaluate_metric_now.setter
+    def evaluate_metric_now(self, value):
+        self._metric_evaluation_externally_triggered = bool(value)
 
     def build_metric(self, method, **kwargs):
         """
@@ -1051,11 +1073,11 @@ class Trainer(object):
                 # Apply model, compute loss and backprop
                 prediction, loss = self.apply_model_and_loss(inputs, target, backward=True)
             # Compute metric
-            if self.metric_is_defined:
-                if self.apply_metric_now:
-                    error = self.metric(thu.unwrap(prediction, to_cpu=False),
-                                        thu.unwrap(target, to_cpu=False))
-                    self.update_state('training_error', thu.unwrap(error))
+            if self.metric_is_defined and self.evaluate_metric_now:
+                self._last_metric_evaluated_at_epoch = self._epoch_count
+                error = self.metric(thu.unwrap(prediction, to_cpu=False),
+                                    thu.unwrap(target, to_cpu=False))
+                self.update_state('training_error', thu.unwrap(error))
             else:
                 error = None
             # Update state from computation
