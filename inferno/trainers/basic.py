@@ -2,6 +2,7 @@ import dill
 from datetime import datetime
 import os
 import subprocess
+import logging
 
 import torch
 from numpy import inf
@@ -933,17 +934,21 @@ class Trainer(object):
         #   - validation
         #   - learning rate scheduling
         #   - saving
+        logger = logging.getLogger('Trainer.fit')
 
         max_num_iterations = inf if max_num_iterations in self.INF_STRINGS else max_num_iterations
         max_num_iterations = self._max_num_iterations if max_num_iterations is None \
             else max_num_iterations
+        logger.debug('max_num_iterations = {}'.format(max_num_iterations))
 
         max_num_epochs = inf if max_num_epochs in self.INF_STRINGS else max_num_epochs
         max_num_epochs = self._max_num_epochs if max_num_epochs is None else max_num_epochs
+        logger.debug('max_num_epochs = {}'.format(max_num_epochs))
 
         self.callbacks.call(self.callbacks.BEGIN_OF_FIT,
                             max_num_iterations=max_num_iterations,
                             max_num_epochs=max_num_epochs)
+        logger.debug('Called BEGIN_OF_FIT callback.')
 
         # Local clock
         run_num = 0
@@ -951,6 +956,7 @@ class Trainer(object):
             if self.stop_fitting(max_num_iterations, max_num_epochs):
                 self.print("Exceeded max number of iterations / epochs, breaking.")
                 break
+            logger.debug("Entering training loop.")
             # Train
             self.train_for(break_callback=lambda *args: self.stop_fitting(max_num_iterations,
                                                                           max_num_epochs))
@@ -983,11 +989,14 @@ class Trainer(object):
         return prediction, loss
 
     def train_for(self, num_iterations=None, break_callback=None):
+        logger = logging.getLogger('Trainer.train_for')
         # Switch model to train mode
         self.model.train()
+        logger.debug("Switched model to train mode.")
         # Call callback
         self.callbacks.call(self.callbacks.BEGIN_OF_TRAINING_RUN,
                             num_iterations=num_iterations)
+        logger.debug("Called BEGIN_OF_TRAINING_RUN callbacks.")
         # iteration_num is a local clock. There's the global self._iteration_count that keeps
         # actual track of the number of iterations - this is updated by the call to
         # self.next_iteration().
@@ -1005,40 +1014,56 @@ class Trainer(object):
             # Call callback
             self.callbacks.call(self.callbacks.BEGIN_OF_TRAINING_ITERATION,
                                 iteration_num=iteration_num)
+            logger.debug("Called BEGIN_OF_TRAINING_ITERATION callbacks.")
             # Zero out the grads
             self.optimizer.zero_grad()
+            logger.debug("Zeroed out grads.")
             # No interrupts while computing - a SIGINT could shoot down the driver if
             # done at the wrong time. Not sure if this has something to do with pinned memory
             with pyu.delayed_keyboard_interrupt():
+                logger.debug("Trying to fetch next batch from the 'train' loader.")
                 # Get batch
                 batch = self.fetch_next_batch('train')
+                logger.debug("Fetched {} elements from the loader.".format(len(batch)))
                 # Send to device and wrap as variable
                 batch = self.wrap_batch(batch)
+                logger.debug("Wrapped batch.")
                 # Separate inputs from targets
                 inputs, target = self.split_batch(batch, from_loader='train')
+                logger.debug("Split batch to {} inputs and {} targets."
+                             .format(pyu.robust_len(inputs),
+                                     pyu.robust_len(target)))
                 # Apply model, compute loss and backprop
                 prediction, loss = self.apply_model_and_loss(inputs, target, backward=True)
+                logger.debug("Applied model, computed loss and ran backward pass.")
             # Compute metric
             if self.metric_is_defined:
                 error = self.metric(thu.unwrap(prediction, to_cpu=False),
                                     thu.unwrap(target, to_cpu=False))
+                logger.debug("Computed metric, updating state.")
                 self.update_state('training_error', thu.unwrap(error))
             else:
+                logger.debug("Skipped metric computation.")
                 error = None
             # Update state from computation
             self.update_state('training_inputs', thu.unwrap(inputs))
             self.update_state('training_target', thu.unwrap(target))
             self.update_state('training_prediction', thu.unwrap(prediction))
             self.update_state('training_loss', thu.unwrap(loss))
+            logger.debug("Updated training states.")
             # Update state from model's state hooks
             self.update_state_from_model_state_hooks()
+            logger.debug("Updated state from model state hooks.")
             # Update parameters
             self.optimizer.step()
+            logger.debug("Optimizer stepped.")
             # Call callback
             self.callbacks.call(self.callbacks.END_OF_TRAINING_ITERATION,
                                 iteration_num=iteration_num)
+            logger.debug("Called END_OF_TRAINING_ITERATION callbacks.")
             # Prepare for next iteration
             self.next_iteration()
+            logger.debug("Prepared for next iteration.")
             # Break if validating or saving. It's important that the next_iteration() method is
             # called before checking validate_now and save_now - because otherwise, the iteration
             # counter is never updated after the first save and validate, resulting in an infinite
@@ -1052,6 +1077,7 @@ class Trainer(object):
             iteration_num += 1
 
         self.callbacks.call(self.callbacks.END_OF_TRAINING_RUN, num_iterations=num_iterations)
+        logger.debug("Called END_OF_TRAINING_RUN callbacks.")
         return self
 
     def validate_for(self, num_iterations=None):
