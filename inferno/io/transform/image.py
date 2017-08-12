@@ -21,9 +21,24 @@ class ElasticTransform(Transform):
         self.invert = invert
 
     def build_random_variables(self, **kwargs):
+        # All this is done just once per batch (i.e. until `clear_random_variables` is called)
         np.random.seed()
-        self.set_random_variable('random_field_x', np.random.uniform(-1, 1, kwargs.get('imshape')))
-        self.set_random_variable('random_field_y', np.random.uniform(-1, 1, kwargs.get('imshape')))
+        imshape = kwargs.get('imshape')
+        # Build and scale random fields
+        random_field_x = np.random.uniform(-1, 1, imshape) * self.alpha
+        random_field_y = np.random.uniform(-1, 1, imshape) * self.alpha
+        # Smooth random field (this has to be done just once per reset)
+        sdx = gaussian_filter(random_field_x, self.sigma, mode='reflect')
+        sdy = gaussian_filter(random_field_y, self.sigma, mode='reflect')
+        # Make meshgrid
+        x, y = np.meshgrid(np.arange(imshape[1]), np.arange(imshape[0]))
+        # Make inversion coefficient
+        _inverter = 1. if not self.invert else -1.
+        # Distort meshgrid indices (invert if required)
+        flow_y, flow_x = (y + _inverter * sdy).reshape(-1, 1), (x + _inverter * sdx).reshape(-1, 1)
+        # Set random states
+        self.set_random_variable('flow_x', flow_x)
+        self.set_random_variable('flow_y', flow_y)
 
     def cast(self, image):
         if image.dtype not in self.NATIVE_DTYPES:
@@ -42,20 +57,11 @@ class ElasticTransform(Transform):
         image = self.cast(image)
         # Take measurements
         imshape = image.shape
-        # Make random fields
-        dx = self.get_random_variable('random_field_x', imshape=imshape) * self.alpha
-        dy = self.get_random_variable('random_field_y', imshape=imshape) * self.alpha
-        # Smooth dx and dy
-        sdx = gaussian_filter(dx, sigma=self.sigma, mode='reflect')
-        sdy = gaussian_filter(dy, sigma=self.sigma, mode='reflect')
-        # Make meshgrid
-        x, y = np.meshgrid(np.arange(imshape[1]), np.arange(imshape[0]))
-        # Make inversion coefficient
-        _inverter = 1. if not self.invert else -1.
-        # Distort meshgrid indices (invert if required)
-        distinds = (y + _inverter * sdy).reshape(-1, 1), (x + _inverter * sdx).reshape(-1, 1)
+        # Obtain flows
+        flows = self.get_random_variable('flow_y', imshape=imshape), \
+                self.get_random_variable('flow_x', imshape=imshape)
         # Map cooordinates from image to distorted index set
-        transformed_image = map_coordinates(image, distinds,
+        transformed_image = map_coordinates(image, flows,
                                             mode='reflect', order=self.order).reshape(imshape)
         # Uncast image to the original dtype
         transformed_image = self.uncast(transformed_image)
