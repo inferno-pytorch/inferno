@@ -1,0 +1,6 @@
+dill
+pyyaml
+scipy
+tensorflow>=1.0.0
+h5py
+scikit-image
