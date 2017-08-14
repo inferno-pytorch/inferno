@@ -78,8 +78,9 @@ $ tensorboard --logdir=${PWD} --port=6007
 
 and navigate to `localhost:6007` with your browser.
 
-## Install (Developers) on Linux and OSX
+## Install on Linux and OSX
 
+### Developers
 First, make sure [you have Pytorch installed](http://pytorch.org/). 
 
 Then, clone this repository with: 
@@ -95,16 +96,16 @@ $ cd inferno
 $ pip install -r requirements.txt
 ```
 
-### If you use python from the shell: 
+#### If you use python from the shell: 
 
 Finally, add *inferno* to your `PYTHONPATH` with: 
 ```bash
 source add2path.sh
 ```
-### If you use PyCharm:
+#### If you use PyCharm:
 Refer to this [QA](https://askubuntu.com/questions/684550/importing-a-python-module-works-from-command-line-but-not-from-pycharm) about setting up paths with Pycharm.
 
-## Install (Users)
+### Users
 Installation with `pip` will be ready when the release is.
 
 ## Future Features: 
