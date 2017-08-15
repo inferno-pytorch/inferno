@@ -7,6 +7,26 @@ from .base import Transform
 from ...utils.exceptions import assert_
 
 
+class PILImage2NumPyArray(Transform):
+    """Convert a PIL Image object to a numpy array.
+
+    For images with multiple channels (say RGB), the channel axis is moved to front. Therefore,
+    a (100, 100, 3) RGB image becomes an array of shape (3, 100, 100).
+    """
+    def tensor_function(self, tensor):
+        tensor = np.asarray(tensor)
+        if tensor.ndim == 3:
+            # There's a channel axis - we move it to front
+            tensor = np.moveaxis(tensor, source=-1, destination=0)
+        elif tensor.ndim == 2:
+            pass
+        else:
+            raise NotImplementedError("Expected tensor to be a 2D or 3D "
+                                      "numpy array, got a {}D array instead."
+                                      .format(tensor.ndim))
+        return tensor
+
+
 class ElasticTransform(Transform):
     """Random Elastic Transformation."""
     NATIVE_DTYPES = {'float32', 'float64'}
@@ -99,8 +119,10 @@ class RandomRotate(Transform):
 
 class RandomFlip(Transform):
     """Random left-right or up-down flips."""
-    def __init__(self, **super_kwargs):
+    def __init__(self, allow_lr_flips=True, allow_ud_flips=True, **super_kwargs):
         super(RandomFlip, self).__init__(**super_kwargs)
+        self.allow_lr_flips = allow_lr_flips
+        self.allow_ud_flips = allow_ud_flips
 
     def build_random_variables(self, **kwargs):
         np.random.seed()
@@ -108,9 +130,9 @@ class RandomFlip(Transform):
         self.set_random_variable('flip_ud', np.random.uniform() > 0.5)
 
     def image_function(self, image):
-        if self.get_random_variable('flip_lr'):
+        if self.allow_lr_flips and self.get_random_variable('flip_lr'):
             image = np.fliplr(image)
-        if self.get_random_variable('flip_ud'):
+        if self.allow_ud_flips and self.get_random_variable('flip_ud'):
             image = np.flipud(image)
         return image
 
