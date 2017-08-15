@@ -76,6 +76,28 @@ Let's say you wish to validate once every 2 epochs.
 trainer.validate_every((2, 'epochs'))
 ```
 
+To be able to validate, you'll need to specify a validation metric.
+
+```python
+trainer.build_metric('CategoricalError')
+```
+Inferno looks for a metric `'CategoricalError'` in `inferno.extensions.metrics`. To specify your own metric, subclass `inferno.extensions.metrics.base.Metric` and implement the `forward` method. With that done, you could:
+
+```python
+trainer.build_metric(MyMetric)
+```
+or 
+```python
+trainer.build_metric(MyMetric, **my_metric_kwargs)
+```
+
+Note that the metric applies to `torch.Tensor`s, and not on `torch.autograd.Variable`s. Also, a metric might be way too expensive to evaluate every training iteration without slowing down the training. If this is the case and you'd like to evaluate the metric every (say) 10 *training* iterations:
+
+```python
+trainer.evaluate_metric_every((10, 'iterations'))
+```
+However, while validating, the metric is evaluated once every iteration.
+
 ### Setting up the Criterion and Optimizer
 With that out of the way, let's set up a training criterion and an optimizer. 
 
