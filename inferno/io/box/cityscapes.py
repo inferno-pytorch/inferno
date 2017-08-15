@@ -1,10 +1,12 @@
 import numpy as np
 import zipfile
 import os, io
+import torch.utils.data as data
 from PIL import Image
 from scipy import ndimage
 from os import listdir
-from os.path import join
+from os.path import join, split
+from ...utils.exceptions import assert_
 
 CITYSCAPES_CLASSES = {
      0: 'unlabeled'            ,
@@ -59,9 +61,9 @@ CITYSCAPES_STD = [0.18696375, 0.19017339, 0.18720214]
 
 def get_matching_labelimage_file(f):
     fs = f.split('/')
-    fn[0] = "gtFine"
-    fn[-1] = str.replace(fn[-1], 'leftImg8bit', 'gtFine_labelIds')
-    return join(fn)
+    fs[0] = "gtFine"
+    fs[-1] = str.replace(fs[-1], 'leftImg8bit', 'gtFine_labelIds')
+    return '/'.join(fs)
 
 def make_dataset(image_zip_file, split):
     images = []
@@ -69,11 +71,11 @@ def make_dataset(image_zip_file, split):
         fn = f.filename.split('/')
         if fn[-1].endswith('.png') and fn[1] == split:
             # use first folder name to identify train/val/test images
-            fl = get_matching_labelimage_file(f)
+            fl = get_matching_labelimage_file(f.filename)
             images.append((f, fl))
     return images
 
-def get_image(archive, image_path):
+def extract_image(archive, image_path):
     # read image directly from zipfile
     return np.array(Image.open(io.BytesIO(zipfile.ZipFile(archive, 'r').read(image_path))))
 
@@ -87,7 +89,6 @@ class Cityscapes(data.Dataset):
                           'test': 'test',
                           'testing': 'test'}
     # Dataset statistics
-    CLASS_WEIGHTS = CITYSCAPES_CLASS_WEIGHTS
     CLASSES = CITYSCAPES_CLASSES
     MEAN = CITYSCAPES_MEAN
     STD = CITYSCAPES_STD
@@ -100,9 +101,9 @@ class Cityscapes(data.Dataset):
                gtFine_trainvaltest.zip archives.
         split: name of dataset spilt (i.e. 'train', 'val' or 'test') 
         """
+        self.image_zip_file = join(root_folder,'leftImg8bit_trainvaltest.zip')
+        self.label_zip_file = join(root_folder,'gtFine_trainvaltest.zip')
 
-        self.image_zip_file = join(root_folder,'/leftImg8bit_trainvaltest.zip')
-        self.label_zip_file = join(root_folder,'/gtFine_trainvaltest.zip')
         assert_(split in self.SPLIT_NAME_MAPPING.keys(),
                 "`split` must be one of {}".format(set(self.SPLIT_NAME_MAPPING.keys())),
                 KeyError)
@@ -112,12 +113,12 @@ class Cityscapes(data.Dataset):
         self.label_transform = label_transform
         self.joint_transform = joint_transform
         # Make list with paths to the images
-        self.image_paths = self.make_dataset(self.root_folder, self.split)
+        self.image_paths = make_dataset(self.image_zip_file, self.split)
 
     def __getitem__(self, index):
         pi, pl = self.image_paths[index]
-        image = self.get_image(self.image_zip_file, pi)
-        label = self.get_image(self.label_zip_file, pl)
+        image = extract_image(self.image_zip_file, pi)
+        label = extract_image(self.label_zip_file, pl)
         # Apply transforms
         if self.image_transform is not None:
             image = self.image_transform(image)
