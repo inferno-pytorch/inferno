@@ -11,7 +11,7 @@ class Zip(SyncableDataset):
     def __init__(self, *datasets, sync=False, transforms=None):
         super(Zip, self).__init__()
         assert len(datasets) >= 1
-        assert all([isinstance(dataset, Dataset) for dataset in datasets])
+        assert all([isinstance(dataset, Dataset) for dataset in datasets]), "%s" % ' '.join([str(type(dataset)) for dataset in datasets])
         assert transforms is None or callable(transforms)
         self.datasets = datasets
         self.sync = sync
