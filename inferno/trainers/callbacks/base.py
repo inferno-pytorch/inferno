@@ -43,6 +43,10 @@ class CallbackEngine(object):
         self._last_known_epoch = None
         self._last_known_iteration = None
 
+    def register_new_trigger(self, trigger_name):
+        self.TRIGGERS.add(trigger_name)
+        self._callback_registry.update({trigger_name: set()})
+
     def bind_trainer(self, trainer):
         self._trainer = trainer
         return self
