@@ -5,7 +5,7 @@ Inferno is a little library providing utilities and convenience functions/classe
 ## Current Features
 Current features include: 
 * a basic [Trainer class](https://github.com/nasimrahaman/inferno/blob/master/inferno/trainers/basic.py) to encapsulate the training boilerplate (iteration/epoch loops, validation and checkpoint creation),
-* a [graph API](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/layers/graph.py) for building models with complex architectures, powered by [networkx](https://github.com/networkx/networkx). 
+* a [graph API](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/containers/graph.py) for building models with complex architectures, powered by [networkx](https://github.com/networkx/networkx). 
 * [easy data-parallelism](https://github.com/nasimrahaman/inferno/blob/master/tests/training/basic.py#L117) over multiple GPUs, 
 * [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/initializers) for `torch.nn.Module`-level parameter initialization,
 * [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/io/transform) for data preprocessing / transforms,
