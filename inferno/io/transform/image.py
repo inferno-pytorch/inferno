@@ -1,10 +1,11 @@
 import numpy as np
+from scipy.ndimage import zoom
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.morphology import binary_dilation, binary_erosion
 
 from .base import Transform
-from ...utils.exceptions import assert_
+from ...utils.exceptions import assert_, ShapeError
 
 
 class PILImage2NumPyArray(Transform):
@@ -25,6 +26,238 @@ class PILImage2NumPyArray(Transform):
                                       "numpy array, got a {}D array instead."
                                       .format(tensor.ndim))
         return tensor
+
+
+class Scale(Transform):
+    """Scales an image to a given size with spline interpolation of requested order.
+
+    Unlike torchvision.transforms.Scale, this does not depend on PIL and therefore works
+    with numpy arrays. If you do have a PIL image and wish to use this transform, consider
+    applying `PILImage2NumPyArray` first.
+
+    Warnings
+    --------
+    This transform uses `scipy.ndimage.zoom` and requires scipy >= 0.13.0 to work correctly.
+    """
+    def __init__(self, output_image_shape, interpolation_order=3, zoom_kwargs=None, **super_kwargs):
+        """
+        Parameters
+        ----------
+        output_image_shape : list or tuple or int
+            Target size of the output image. Aspect ratio may not be preserved.
+        interpolation_order : int
+            Interpolation order for the spline interpolation.
+        zoom_kwargs : dict
+            Keyword arguments for `scipy.ndimage.zoom`.
+        super_kwargs : dict
+            Keyword arguments for the superclass.
+        """
+        super(Scale, self).__init__(**super_kwargs)
+        output_image_shape = (output_image_shape, output_image_shape) \
+            if isinstance(output_image_shape, int) else tuple(output_image_shape)
+        assert_(len(output_image_shape) == 2,
+                "`output_image_shape` must be an integer or a tuple of length 2.",
+                ValueError)
+        self.output_image_shape = output_image_shape
+        self.interpolation_order = interpolation_order
+        self.zoom_kwargs = {} if zoom_kwargs is None else dict(zoom_kwargs)
+
+    def image_function(self, image):
+        source_height, source_width = image.shape
+        target_height, target_width = self.output_image_shape
+        # We're on Python 3 - take a deep breath and relax.
+        zoom_height, zoom_width = (target_height / source_height), (target_width / source_width)
+        rescaled_image = zoom(image, (zoom_height, zoom_width),
+                              order=self.interpolation_order, **self.zoom_kwargs)
+        # This should never happen
+        assert_(rescaled_image.shape == (target_height, target_width),
+                "Shape mismatch that shouldn't have happened if you were on scipy > 0.13.0. "
+                "Are you on scipy > 0.13.0?",
+                ShapeError)
+        return rescaled_image
+
+
+class RandomCrop(Transform):
+    """Crop input to a given size.
+
+    This is similar to torchvision.transforms.RandomCrop, except that it operates on
+    numpy arrays instead of PIL images. If you do have a PIL image and wish to use this
+    transform, consider applying `PILImage2NumPyArray` first.
+
+    Warnings
+    --------
+    If `output_image_shape` is larger than the image itself, the image is not cropped
+    (along the relevant dimensions).
+    """
+    def __init__(self, output_image_shape, **super_kwargs):
+        """
+        Parameters
+        ----------
+        output_image_shape : tuple or list or int
+            Expected shape of the output image. Could be an integer, (say) 100, in
+            which case it's interpreted as `(100, 100)`. Note that if the image shape
+            along some (or all) dimension is smaller, say `(50, 200)`, the resulting
+            output images will have the shape `(50, 100)`.
+        super_kwargs : dict
+            Keywords to the super class.
+        """
+        super(RandomCrop, self).__init__(**super_kwargs)
+        # Privates
+        self._image_shape_cache = None
+        # Publics
+        output_image_shape = (output_image_shape, output_image_shape) \
+            if isinstance(output_image_shape, int) else tuple(output_image_shape)
+        assert_(len(output_image_shape) == 2,
+                "`output_image_shape` must be an integer or a tuple of length 2.",
+                ValueError)
+        self.output_image_shape = output_image_shape
+
+    def clear_random_variables(self):
+        self._image_shape_cache = None
+        super(RandomCrop, self).clear_random_variables()
+
+    def build_random_variables(self, height_leeway, width_leeway):
+        self.set_random_variable('height_location',
+                                 np.random.randint(low=0, high=height_leeway + 1))
+        self.set_random_variable('width_location',
+                                 np.random.randint(low=0, high=width_leeway + 1))
+
+    def image_function(self, image):
+        # Validate image shape
+        if self._image_shape_cache is not None:
+            assert_(self._image_shape_cache == image.shape,
+                    "RandomCrop works on multiple images simultaneously only "
+                    "if they have the same shape. Was expecting an image of "
+                    "shape {}, got one of shape {} instead."
+                    .format(self._image_shape_cache, image.shape),
+                    ShapeError)
+        else:
+            self._image_shape_cache = image.shape
+        source_height, source_width = image.shape
+        crop_height, crop_width = self.output_image_shape
+        height_leeway = source_height - crop_height
+        width_leeway = source_width - crop_width
+        if height_leeway > 0:
+            # Crop height
+            height_location = self.get_random_variable('height_location',
+                                                       height_leeway=height_leeway,
+                                                       width_leeway=width_leeway)
+            cropped = image[height_location:(height_location + crop_height), :]
+        else:
+            cropped = image
+        if width_leeway > 0:
+            # Crop width
+            width_location = self.get_random_variable('height_location',
+                                                      height_leeway=height_leeway,
+                                                      width_leeway=width_leeway)
+            cropped = cropped[:, width_location:(width_location + crop_width)]
+        assert cropped.shape == self.output_image_shape, "Well, shit."
+        return cropped
+
+
+class RandomSizedCrop(Transform):
+    """Extract a randomly sized crop from the image.
+
+    The ratio of the sizes of the cropped and the original image can be limited within
+    specified bounds along both axes. To resize back to a constant sized image, compose
+    with `Scale`.
+    """
+    def __init__(self, ratio_between=None, height_ratio_between=None, width_ratio_between=None,
+                 preserve_aspect_ratio=False, **super_kwargs):
+        """
+        Parameters
+        ----------
+        ratio_between : tuple
+            Specify the bounds between which to sample the crop ratio. This applies to
+            both height and width if not overriden. Can be None if both height and width
+            ratios are specified individually.
+        height_ratio_between : tuple
+            Specify the bounds between which to sample the vertical crop ratio.
+            Can be None if `ratio_between` is not None.
+        width_ratio_between : tuple
+            Specify the bounds between which to sample the horizontal crop ratio.
+            Can be None if `ratio_between` is not None.
+        preserve_aspect_ratio : bool
+            Whether to preserve aspect ratio. If both `height_ratio_between`
+            and `width_ratio_between` are specified, the former is used if this
+            is set to True.
+        super_kwargs : dict
+            Keyword arguments for the super class.
+        """
+        super(RandomSizedCrop, self).__init__(**super_kwargs)
+        # Privates
+        self._image_shape_cache = None
+        # Publics
+        height_ratio_between = tuple(height_ratio_between) \
+            if height_ratio_between is not None else tuple(ratio_between)
+        width_ratio_between = tuple(width_ratio_between) \
+            if width_ratio_between is not None else tuple(ratio_between)
+        assert_(height_ratio_between is not None,
+                "`height_ratio_between` is not specified.",
+                ValueError)
+        assert_(width_ratio_between is not None,
+                "`width_ratio_between` is not specified.",
+                ValueError)
+        self.height_ratio_between = height_ratio_between
+        self.width_ratio_between = width_ratio_between
+        self.preserve_aspect_ratio = preserve_aspect_ratio
+
+    def build_random_variables(self, image_shape):
+        # Seed RNG
+        np.random.seed()
+        # Compute random variables
+        source_height, source_width = image_shape
+        height_ratio = np.random.uniform(low=self.height_ratio_between[0],
+                                         high=self.height_ratio_between[1])
+        if self.preserve_aspect_ratio:
+            width_ratio = height_ratio
+        else:
+            width_ratio = np.random.uniform(low=self.width_ratio_between[0],
+                                            high=self.width_ratio_between[1])
+        crop_height = int(np.round(height_ratio * source_height))
+        crop_width = int(np.round(width_ratio * source_height))
+        height_leeway = source_height - crop_height
+        width_leeway = source_width - crop_width
+        # Set random variables
+        if height_leeway > 0:
+            self.set_random_variable('height_location',
+                                     np.random.randint(low=0, high=height_leeway + 1))
+        if width_leeway > 0:
+            self.set_random_variable('width_location',
+                                     np.random.randint(low=0, high=width_leeway + 1))
+        self.set_random_variable('crop_height', crop_height)
+        self.set_random_variable('crop_width', crop_width)
+        self.set_random_variable('height_leeway', height_leeway)
+        self.set_random_variable('width_leeway', width_leeway)
+
+    def image_function(self, image):
+        # Validate image shape
+        if self._image_shape_cache is not None:
+            assert_(self._image_shape_cache == image.shape,
+                    "RandomCrop works on multiple images simultaneously only "
+                    "if they have the same shape. Was expecting an image of "
+                    "shape {}, got one of shape {} instead."
+                    .format(self._image_shape_cache, image.shape),
+                    ShapeError)
+        else:
+            self._image_shape_cache = image.shape
+        height_leeway = self.get_random_variable('height_leeway', image_shape=image.shape)
+        width_leeway = self.get_random_variable('width_leeway', image_shape=image.shape)
+        if height_leeway > 0:
+            height_location = self.get_random_variable('height_location',
+                                                       image_shape=image.shape)
+            crop_height = self.get_random_variable('crop_height',
+                                                   image_shape=image.shape)
+            cropped = image[height_location:(height_location + crop_height), :]
+        else:
+            cropped = image
+        if width_leeway > 0:
+            width_location = self.get_random_variable('width_location',
+                                                      image_shape=image.shape)
+            crop_width = self.get_random_variable('crop_width',
+                                                  image_shape=image.shape)
+            cropped = cropped[:, width_location:(width_location + crop_width)]
+        return cropped
 
 
 class ElasticTransform(Transform):
