@@ -22,6 +22,10 @@ class DeviceError(ValueError):
     pass
 
 
+class NotSetError(ValueError):
+    pass
+
+
 # ------ TYPE ERRORS ------
 
 
@@ -30,4 +34,11 @@ class NotTorchModuleError(TypeError):
 
 
 class FrequencyTypeError(TypeError):
+    pass
+
+
+# ------ LOOKUP ERRORS ------
+
+
+class ClassNotFoundError(LookupError):
     pass

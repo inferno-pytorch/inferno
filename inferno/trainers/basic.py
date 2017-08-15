@@ -18,7 +18,7 @@ from ..extensions import metrics
 from ..extensions import optimizers
 from ..extensions import criteria
 from .callbacks import CallbackEngine
-from ..utils.exceptions import assert_
+from ..utils.exceptions import assert_, NotSetError, NotTorchModuleError
 
 
 class Trainer(object):
@@ -137,7 +137,7 @@ class Trainer(object):
     @property
     def model(self):
         """Gets the model."""
-        assert self._model is not None, "Model is not defined yet."
+        assert_(self._model is not None, "Model is not defined yet.", NotSetError)
         return self._model
 
     @model.setter
@@ -158,14 +158,23 @@ class Trainer(object):
         Trainer
             self.
         """
-        assert isinstance(model, torch.nn.Module), "Model must be a torch.nn.Module."
+        assert_(isinstance(model, torch.nn.Module),
+                "Model must be a torch.nn.Module.",
+                NotTorchModuleError)
         self._model = model
+        # Transfer model to GPU if required
+        if self._use_cuda:
+            self._model.cuda()
         return self
+
+    @property
+    def model_is_defined(self):
+        return self._model is not None
 
     @property
     def optimizer(self):
         """Gets the optimizer."""
-        assert self._optimizer is not None, "Optimizer is not set yet."
+        assert_(self._optimizer is not None, "Optimizer is not set yet.", NotSetError)
         return self._optimizer
 
     @optimizer.setter
@@ -229,7 +238,7 @@ class Trainer(object):
     @property
     def criterion(self):
         """Gets the loss criterion."""
-        assert self._criterion is not None, "Criterion is not set yet."
+        assert_(self._criterion is not None, "Criterion is not set yet.", NotSetError)
         return self._criterion
 
     @criterion.setter
@@ -281,12 +290,20 @@ class Trainer(object):
         else:
             raise NotImplementedError
         self._criterion = criterion_class(**kwargs)
+        # Transfer criterion to GPU if required. This is necessary for e.g. weighted loss,
+        # where the weight is registered as a buffer.
+        if self._use_cuda:
+            self._criterion.cuda()
         return self
+
+    @property
+    def criterion_is_defined(self):
+        return self._criterion is not None
 
     @property
     def metric(self):
         """Gets the evaluation metric."""
-        assert self._metric is not None, "Metric is not set yet."
+        assert_(self._metric is not None, "Metric is not set yet.", NotSetError)
         return self._metric
 
     @metric.setter
@@ -674,7 +691,11 @@ class Trainer(object):
         Trainer
             self
         """
-        self.model.cuda()
+        # Move model and criterion to CUDA if necessary
+        if self.model_is_defined:
+            self.model.cuda()
+        if self.criterion_is_defined:
+            self.criterion.cuda()
         self._use_cuda = True
         self._devices = devices
         return self
