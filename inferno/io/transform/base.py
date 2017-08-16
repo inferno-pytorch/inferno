@@ -48,71 +48,71 @@ class Transform(object):
     def set_random_variable(self, key, value):
         self._random_variables.update({key: value})
 
-    def __call__(self, *tensors):
+    def __call__(self, *tensors, **kwargs):
         tensors = pyu.to_iterable(tensors)
         # Get the list of the indices of the tensors to which we're going to apply the transform
         apply_to = list(range(len(tensors))) if self._apply_to is None else self._apply_to
         # Flush random variables and assume they're built by image_function
         self.clear_random_variables()
         if hasattr(self, 'batch_function'):
-            transformed = self.batch_function(tensors)
+            transformed = self.batch_function(tensors, **kwargs)
             return pyu.from_iterable(transformed)
         elif hasattr(self, 'tensor_function'):
-            transformed = [getattr(self, 'tensor_function')(tensor)
+            transformed = [self.tensor_function(tensor, **kwargs)
                            if tensor_index in apply_to else tensor
                            for tensor_index, tensor in enumerate(tensors)]
             return pyu.from_iterable(transformed)
         elif hasattr(self, 'volume_function'):
             # Loop over all tensors
-            transformed = [self._apply_volume_function(tensor)
+            transformed = [self._apply_volume_function(tensor, **kwargs)
                            if tensor_index in apply_to else tensor
                            for tensor_index, tensor in enumerate(tensors)]
             return pyu.from_iterable(transformed)
         elif hasattr(self, 'image_function'):
             # Loop over all tensors
-            transformed = [self._apply_image_function(tensor)
+            transformed = [self._apply_image_function(tensor, **kwargs)
                            if tensor_index in apply_to else tensor
                            for tensor_index, tensor in enumerate(tensors)]
             return pyu.from_iterable(transformed)
         else:
             raise NotImplementedError
 
-    def _apply_image_function(self, tensor):
+    def _apply_image_function(self, tensor, **kwargs):
         # 2D case
         if tensor.ndim == 4:
-            return np.array([np.array([getattr(self, 'image_function')(image)
+            return np.array([np.array([self.image_function(image, **kwargs)
                                        for image in channel_image])
                              for channel_image in tensor])
         # 3D case
         elif tensor.ndim == 5:
-            return np.array([np.array([np.array([getattr(self, 'image_function')(image)
+            return np.array([np.array([np.array([self.image_function(image, **kwargs)
                                                  for image in volume])
                                        for volume in channel_volume])
                              for channel_volume in tensor])
         elif tensor.ndim == 3:
             # Assume we have a 3D volume (signature zyx) and apply the image function
             # on all yx slices.
-            return np.array([getattr(self, 'image_function')(image) for image in tensor])
+            return np.array([self.image_function(image, **kwargs) for image in tensor])
         elif tensor.ndim == 2:
             # Assume we really do have an image.
-            return getattr(self, 'image_function')(tensor)
+            return self.image_function(tensor, **kwargs)
         else:
             raise NotImplementedError
 
-    def _apply_volume_function(self, tensor):
+    def _apply_volume_function(self, tensor, **kwargs):
         # 3D case
         if tensor.ndim == 5:
-            return np.array([np.array([np.array([getattr(self, 'volume_function')(volume)
+            return np.array([np.array([np.array([self.volume_function(volume, **kwargs)
                                                  for volume in channel_volume])
                                        for channel_volume in batch])
                              for batch in tensor])
         elif tensor.ndim == 4:
             # We're applying the volume function on a czyx tensor
-            return np.array([getattr(self, 'volume_function')(volume)
+            return np.array([self.volume_function(volume, **kwargs)
                              for volume in tensor])
         elif tensor.ndim == 3:
             # We're applying the volume function on the volume itself
-            return getattr(self, 'volume_function')(tensor)
+            return self.volume_function(tensor, **kwargs)
         else:
             raise NotImplementedError
 
