@@ -1,58 +1,60 @@
-import numpy as np
 import zipfile
-import os, io
+import io
 import torch.utils.data as data
 from PIL import Image
-from scipy import ndimage
-from os import listdir
-from os.path import join, split
+from os.path import join
 from ...utils.exceptions import assert_
+from ..transform.base import Compose
+from ..transform.generic import Normalize, NormalizeRange, Cast, AsTorchBatch
+from ..transform.image import \
+    RandomSizedCrop, RandomGammaCorrection, RandomFlip, Scale, PILImage2NumPyArray
 
 CITYSCAPES_CLASSES = {
-     0: 'unlabeled'            ,
-     1: 'ego vehicle'          ,
-     2: 'rectification border' ,
-     3: 'out of roi'           ,
-     4: 'static'               ,
-     5: 'dynamic'              ,
-     6: 'ground'               ,
-     7: 'road'                 ,
-     8: 'sidewalk'             ,
-     9: 'parking'              ,
-    10: 'rail track'           ,
-    11: 'building'             ,
-    12: 'wall'                 ,
-    13: 'fence'                ,
-    14: 'guard rail'           ,
-    15: 'bridge'               ,
-    16: 'tunnel'               ,
-    17: 'pole'                 ,
-    18: 'polegroup'            ,
-    19: 'traffic light'        ,
-    20: 'traffic sign'         ,
-    21: 'vegetation'           ,
-    22: 'terrain'              ,
-    23: 'sky'                  ,
-    24: 'person'               ,
-    25: 'rider'                ,
-    26: 'car'                  ,
-    27: 'truck'                ,
-    28: 'bus'                  ,
-    29: 'caravan'              ,
-    30: 'trailer'              ,
-    31: 'train'                ,
-    32: 'motorcycle'           ,
-    33: 'bicycle'              ,
-    -1: 'license plate'        
+    0: 'unlabeled',
+    1: 'ego vehicle',
+    2: 'rectification border',
+    3: 'out of roi',
+    4: 'static',
+    5: 'dynamic',
+    6: 'ground',
+    7: 'road',
+    8: 'sidewalk',
+    9: 'parking',
+    10: 'rail track',
+    11: 'building',
+    12: 'wall',
+    13: 'fence',
+    14: 'guard rail',
+    15: 'bridge',
+    16: 'tunnel',
+    17: 'pole',
+    18: 'polegroup',
+    19: 'traffic light',
+    20: 'traffic sign',
+    21: 'vegetation',
+    22: 'terrain',
+    23: 'sky',
+    24: 'person',
+    25: 'rider',
+    26: 'car',
+    27: 'truck',
+    28: 'bus',
+    29: 'caravan',
+    30: 'trailer',
+    31: 'train',
+    32: 'motorcycle',
+    33: 'bicycle',
+    -1: 'license plate'
 }
 
-#0:void 1:flat  2:construction  3:object  4:nature  5:sky  6:human  7:vehicle
-CITYSCAPES_CATEGORIES = [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, \
+# 0:void 1:flat  2:construction  3:object  4:nature  5:sky  6:human  7:vehicle
+CITYSCAPES_CATEGORIES = [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2,
                          3, 3, 3, 3, 4, 4, 5, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7]
 
-CITYSCAPES_IGNORE_IN_EVAL = [True, True, True, True, True, True, True, False, False, True, True, \
-    False, False, False, True, True, True, False, True, False, False, False, False, False, False,\
-    False, False, False, False, True, True, False, False, False, True]
+CITYSCAPES_IGNORE_IN_EVAL = [True, True, True, True, True, True, True, False, False, True, True,
+                             False, False, False, True, True, True, False, True, False, False,
+                             False, False, False, False,
+                             False, False, False, False, True, True, False, False, False, True]
 
 # mean and std
 CITYSCAPES_MEAN = [0.28689554, 0.32513303, 0.28389177]
@@ -65,6 +67,7 @@ def get_matching_labelimage_file(f):
     fs[-1] = str.replace(fs[-1], 'leftImg8bit', 'gtFine_labelIds')
     return '/'.join(fs)
 
+
 def make_dataset(image_zip_file, split):
     images = []
     for f in zipfile.ZipFile(image_zip_file, 'r').filelist:
@@ -75,9 +78,10 @@ def make_dataset(image_zip_file, split):
             images.append((f, fl))
     return images
 
+
 def extract_image(archive, image_path):
     # read image directly from zipfile
-    return np.array(Image.open(io.BytesIO(zipfile.ZipFile(archive, 'r').read(image_path))))
+    return Image.open(io.BytesIO(zipfile.ZipFile(archive, 'r').read(image_path)))
 
 
 class Cityscapes(data.Dataset):
@@ -101,8 +105,8 @@ class Cityscapes(data.Dataset):
                gtFine_trainvaltest.zip archives.
         split: name of dataset spilt (i.e. 'train', 'val' or 'test') 
         """
-        self.image_zip_file = join(root_folder,'leftImg8bit_trainvaltest.zip')
-        self.label_zip_file = join(root_folder,'gtFine_trainvaltest.zip')
+        self.image_zip_file = join(root_folder, 'leftImg8bit_trainvaltest.zip')
+        self.label_zip_file = join(root_folder, 'gtFine_trainvaltest.zip')
 
         assert_(split in self.SPLIT_NAME_MAPPING.keys(),
                 "`split` must be one of {}".format(set(self.SPLIT_NAME_MAPPING.keys())),
@@ -133,5 +137,44 @@ class Cityscapes(data.Dataset):
 
     def download(self):
         # TODO: please download the dataset from
-        # https://github.com/alexgkendall/SegNet-Tutorial/tree/master/CitYscapes
+        # https://www.cityscapes-dataset.com/
         raise NotImplementedError
+
+
+def get_cityscapes_loader(root_directory, image_shape=(1024, 2048),
+                          train_batch_size=1, validate_batch_size=1, num_workers=2):
+    # Make transforms
+    image_transforms = Compose(PILImage2NumPyArray(),
+                               NormalizeRange(),
+                               RandomGammaCorrection(),
+                               Normalize(mean=CITYSCAPES_MEAN, std=CITYSCAPES_STD))
+    label_transforms = PILImage2NumPyArray()
+    joint_transforms = Compose(RandomSizedCrop(ratio_between=(0.6, 1.0),
+                                               preserve_aspect_ratio=True),
+                               # Scale raw image back to the original shape
+                               Scale(output_image_shape=image_shape,
+                                     interpolation_order=3, apply_to=[0]),
+                               # Scale segmentation back to the original shape
+                               # (without interpolation)
+                               Scale(output_image_shape=image_shape,
+                                     interpolation_order=0, apply_to=[1]),
+                               RandomFlip(allow_ud_flips=False),
+                               # Cast raw image to float
+                               Cast('float', apply_to=[0]),
+                               # Cast label image to long
+                               Cast('long', apply_to=[1]),
+                               AsTorchBatch(2, add_channel_axis_if_necessary=False))
+    # Build datasets
+    train_dataset = Cityscapes(root_directory, split='train',
+                               image_transform=image_transforms,
+                               label_transform=label_transforms,
+                               joint_transform=joint_transforms)
+    validate_dataset = Cityscapes(root_directory, split='validate',
+                                  image_transform=image_transforms,
+                                  joint_transform=joint_transforms)
+    # Build loaders
+    train_loader = data.DataLoader(train_dataset, batch_size=train_batch_size,
+                                   shuffle=True, num_workers=num_workers, pin_memory=True)
+    validate_loader = data.DataLoader(validate_dataset, batch_size=validate_batch_size,
+                                      shuffle=True, num_workers=num_workers, pin_memory=True)
+    return train_loader, validate_loader
