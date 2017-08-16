@@ -27,8 +27,7 @@ class Normalize(Transform):
         mean = np.asarray(tensor.mean()) if self.mean is None else self.mean
         std = np.asarray(tensor.std()) if self.std is None else self.std
         # Figure out how to reshape mean and std
-        reshape_as = [1] * tensor.ndim
-        reshape_as[1] = -1
+        reshape_as = [-1] + [1] * (tensor.ndim - 1)
         # Normalize
         tensor = (tensor - mean.reshape(*reshape_as))/(std.reshape(*reshape_as) + self.eps)
         return tensor
@@ -59,7 +58,13 @@ class Cast(Transform):
                      'double': 'float64',
                      'float64': 'float64',
                      'half': 'float16',
-                     'float16': 'float16'}
+                     'float16': 'float16',
+                     'long': 'int64',
+                     'int64': 'int64',
+                     'byte': 'uint8',
+                     'uint8': 'uint8',
+                     'int': 'int32',
+                     'int32': 'int32'}
 
     def __init__(self, dtype='float', **super_kwargs):
         """
@@ -86,25 +91,31 @@ class AsTorchBatch(Transform):
     `(1, 100, 100)`. The collate function will add the leading batch axis to obtain
     a tensor of shape `(N, 1, 100, 100)`, where `N` is the batch-size.
     """
-    def __init__(self, dimensionality, **super_kwargs):
+    def __init__(self, dimensionality, add_channel_axis_if_necessary=True, **super_kwargs):
         """
         Parameters
         ----------
         dimensionality : {1, 2, 3}
             Dimensionality of the data: 1 if vector, 2 if image, 3 if volume.
+        add_channel_axis_if_necessary : bool
+            Whether to add a channel axis where necessary. For example, if `dimensionality = 2`
+            and the input temperature has 2 dimensions (i.e. an image), setting
+            `add_channel_axis_if_necessary` to True results in the output being a 3 dimensional
+            tensor, where the leading dimension is a singleton and corresponds to `channel`.
         super_kwargs : dict
             Kwargs to the superclass `inferno.io.transform.base.Transform`.
         """
         super(AsTorchBatch, self).__init__(**super_kwargs)
         assert dimensionality in [1, 2, 3]
         self.dimensionality = dimensionality
+        self.add_channel_axis_if_necessary = bool(add_channel_axis_if_necessary)
 
     def tensor_function(self, tensor):
         assert isinstance(tensor, np.ndarray)
         if self.dimensionality == 3:
             # We're dealing with a volume. tensor can either be 3D or 4D
             assert tensor.ndim in [3, 4]
-            if tensor.ndim == 3:
+            if tensor.ndim == 3 and self.add_channel_axis_if_necessary:
                 # Add channel axis
                 return torch.from_numpy(tensor[None, ...])
             else:
@@ -113,7 +124,7 @@ class AsTorchBatch(Transform):
         elif self.dimensionality == 2:
             # We're dealing with an image. tensor can either be 2D or 3D
             assert tensor.ndim in [2, 3]
-            if tensor.ndim == 2:
+            if tensor.ndim == 2 and self.add_channel_axis_if_necessary:
                 # Add channel axis
                 return torch.from_numpy(tensor[None, ...])
             else:

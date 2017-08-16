@@ -1,8 +1,11 @@
+from _socket import gaierror
+
 import numpy as np
 from scipy.ndimage import zoom
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.morphology import binary_dilation, binary_erosion
+from skimage.exposure import adjust_gamma
 
 from .base import Transform
 from ...utils.exceptions import assert_, ShapeError
@@ -258,6 +261,43 @@ class RandomSizedCrop(Transform):
                                                   image_shape=image.shape)
             cropped = cropped[:, width_location:(width_location + crop_width)]
         return cropped
+
+
+class RandomGammaCorrection(Transform):
+    """Applies gamma correction [1] with a random gamma.
+
+    This transform uses `skimage.exposure.adjust_gamma`, which requires the input be positive.
+
+    References
+    ----------
+    [1] https://en.wikipedia.org/wiki/Gamma_correction
+    """
+    def __init__(self, gamma_between=(0.5, 2.), gain=1, **super_kwargs):
+        """
+        Parameters
+        ----------
+        gamma_between : tuple or list
+            Specifies the range within which to sample gamma (uniformly).
+        gain : int or float
+            The resulting gamma corrected image is multiplied by this `gain`.
+        super_kwargs : dict
+            Keyword arguments for the superclass.
+        """
+        super(RandomGammaCorrection, self).__init__(**super_kwargs)
+        self.gamma_between = list(gamma_between)
+        self.gain = gain
+
+    def build_random_variables(self):
+        np.random.seed()
+        self.set_random_variable('gamma',
+                                 np.random.uniform(low=self.gamma_between[0],
+                                                   high=self.gamma_between[1]))
+
+    def image_function(self, image):
+        gamma_adjusted = adjust_gamma(image,
+                                      gamma=self.get_random_variable('gamma'),
+                                      gain=self.gain)
+        return gamma_adjusted
 
 
 class ElasticTransform(Transform):
