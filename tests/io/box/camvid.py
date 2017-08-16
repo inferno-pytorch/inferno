@@ -25,7 +25,7 @@ class TestCamvid(unittest.TestCase):
         self.assertSequenceEqual(label.shape, (360, 480))
         self.assertLessEqual(label.max(), 11)
 
-    def test_camvid_dataset_with_transforms(self):
+    def _test_camvid_dataset_with_transforms(self):
         from inferno.io.box.camvid import CamVid
         from inferno.io.transform.base import Compose
         from inferno.io.transform.image import PILImage2NumPyArray, RandomSizedCrop, Scale
@@ -59,6 +59,27 @@ class TestCamvid(unittest.TestCase):
             assert isdir(self.PLOT_DIRECTORY)
         print_tensor(image[None, ...], prefix='IMG--', directory=self.PLOT_DIRECTORY)
         print_tensor(label[None, None, ...], prefix='LAB--', directory=self.PLOT_DIRECTORY)
+        print("[+] Inspect images at {}".format(self.PLOT_DIRECTORY))
+
+    def test_camvid_dataset_with_transforms(self):
+        from inferno.io.box.camvid import get_camvid_loaders
+        from inferno.utils.io_utils import print_tensor
+
+        train_loader, validate_loader, test_loader = get_camvid_loaders(self.get_camvid_root())
+        train_dataset = train_loader.dataset
+        image, label = train_dataset[0]
+        # Make sure the shapes checkout
+        self.assertSequenceEqual(image.size(), (3, 360, 480))
+        self.assertSequenceEqual(label.size(), (360, 480))
+        self.assertEqual(image.type(), 'torch.FloatTensor')
+        self.assertEqual(label.type(), 'torch.LongTensor')
+        # Print tensors to make sure they look legit
+        if not exists(self.PLOT_DIRECTORY):
+            os.mkdir(self.PLOT_DIRECTORY)
+        else:
+            assert isdir(self.PLOT_DIRECTORY)
+        print_tensor(image.numpy()[None, ...], prefix='IMG--', directory=self.PLOT_DIRECTORY)
+        print_tensor(label.numpy()[None, None, ...], prefix='LAB--', directory=self.PLOT_DIRECTORY)
         print("[+] Inspect images at {}".format(self.PLOT_DIRECTORY))
 
 if __name__ == '__main__':
