@@ -25,3 +25,7 @@ class TestLogger(unittest.TestCase):
             next(iter(trainer.callbacks._callback_registry['end_of_training_iteration']))
         self.assertIs(logger_from_trainer, logger_from_callback_engine)
         self.assertIs(logger_from_callback_engine.trainer, trainer)
+
+
+if __name__ == '__main__':
+    unittest.main()

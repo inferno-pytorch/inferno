@@ -17,3 +17,7 @@ class TransferTest(unittest.TestCase):
         self.assertFalse(y.data.is_cuda)
         self.assertIsNotNone(x.grad)
         self.assertTrue(x.grad.data.is_cuda)
+
+
+if __name__ == '__main__':
+    unittest.main()

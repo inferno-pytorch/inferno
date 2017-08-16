@@ -8,3 +8,7 @@ class ActivationTest(unittest.TestCase):
         x = torch.autograd.Variable(torch.rand(100))
         y = activations.SELU()(x)
         self.assertEqual(list(x.size()), list(y.size()))
+
+
+if __name__ == '__main__':
+    unittest.main()

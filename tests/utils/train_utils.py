@@ -30,3 +30,7 @@ class FrequencyTest(unittest.TestCase):
         frequency = tu.Frequency()
         self.assertEqual(frequency.value, np.inf)
         self.assertEqual(frequency.units, frequency.UNIT_PRIORITY)
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -85,4 +85,4 @@ class TestGraph(unittest.TestCase):
                         history == ['conv0', 'conv1_1', 'conv1_2', 'conv2'])
 
 if __name__ == '__main__':
-    TestGraph().test_graph_basic()
+    unittest.main()
