@@ -77,7 +77,9 @@ class Transform(object):
         else:
             raise NotImplementedError
 
+    # noinspection PyUnresolvedReferences
     def _apply_image_function(self, tensor, **transform_function_kwargs):
+        assert pyu.has_callable_attr(self, 'image_function')
         # 2D case
         if tensor.ndim == 4:
             return np.array([np.array([self.image_function(image, **transform_function_kwargs)
@@ -85,24 +87,29 @@ class Transform(object):
                              for channel_image in tensor])
         # 3D case
         elif tensor.ndim == 5:
-            return np.array([np.array([np.array([self.image_function(image, **transform_function_kwargs)
+            return np.array([np.array([np.array([self.image_function(image,
+                                                                     **transform_function_kwargs)
                                                  for image in volume])
                                        for volume in channel_volume])
                              for channel_volume in tensor])
         elif tensor.ndim == 3:
             # Assume we have a 3D volume (signature zyx) and apply the image function
             # on all yx slices.
-            return np.array([self.image_function(image, **transform_function_kwargs) for image in tensor])
+            return np.array([self.image_function(image, **transform_function_kwargs)
+                             for image in tensor])
         elif tensor.ndim == 2:
             # Assume we really do have an image.
             return self.image_function(tensor, **transform_function_kwargs)
         else:
             raise NotImplementedError
 
+    # noinspection PyUnresolvedReferences
     def _apply_volume_function(self, tensor, **transform_function_kwargs):
+        assert pyu.has_callable_attr(self, 'volume_function')
         # 3D case
         if tensor.ndim == 5:
-            return np.array([np.array([np.array([self.volume_function(volume, **transform_function_kwargs)
+            return np.array([np.array([np.array([self.volume_function(volume,
+                                                                      **transform_function_kwargs)
                                                  for volume in channel_volume])
                                        for channel_volume in batch])
                              for batch in tensor])
