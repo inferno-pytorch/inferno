@@ -5,20 +5,32 @@ from .base import Transform
 
 class Normalize(Transform):
     """Normalizes input to zero mean unit variance."""
-    def __init__(self, eps=1e-4, **super_kwargs):
+    def __init__(self, eps=1e-4, mean=None, std=None, **super_kwargs):
         """
         Parameters
         ----------
         eps : float
             A small epsilon for numerical stability.
+        mean : list or float or numpy.ndarray
+            Global dataset mean for all channels.
+        std : list or float or numpy.ndarray
+            Global dataset std for all channels.
         super_kwargs : dict
             Kwargs to the superclass `inferno.io.transform.base.Transform`.
         """
         super(Normalize, self).__init__(**super_kwargs)
         self.eps = eps
+        self.mean = np.asarray(mean) if mean is not None else None
+        self.std = np.asarray(std) if std is not None else None
 
     def tensor_function(self, tensor):
-        tensor = (tensor - tensor.mean())/(tensor.std() + self.eps)
+        mean = np.asarray(tensor.mean()) if self.mean is None else self.mean
+        std = np.asarray(tensor.std()) if self.std is None else self.std
+        # Figure out how to reshape mean and std
+        reshape_as = [1] * tensor.ndim
+        reshape_as[1] = -1
+        # Normalize
+        tensor = (tensor - mean.reshape(*reshape_as))/(std.reshape(*reshape_as) + self.eps)
         return tensor
 
 
