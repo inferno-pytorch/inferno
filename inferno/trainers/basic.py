@@ -709,7 +709,10 @@ class Trainer(object):
         Trainer
             self
         """
-        self.model.cpu()
+        if self.model_is_defined:
+            self.model.cpu()
+        if self.criterion_is_defined:
+            self.criterion.cpu()
         self._use_cuda = False
         self._devices = None
         return self 
