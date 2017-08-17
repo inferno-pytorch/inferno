@@ -220,7 +220,7 @@ For multi-GPU data-parallel training, simply pass `trainer.cuda` a list of devic
 trainer.cuda(devices=[0, 1, 2, 3])
 ```
 
-__Pro-tip__: Say you only want to use GPUs 0, 3, 5 and 7 (your colleagues might love you for that). Before running your training script, simply: 
+__Pro-tip__: Say you only want to use GPUs 0, 3, 5 and 7 (your colleagues might love you for this). Before running your training script, simply: 
 ```bash
 $ export CUDA_VISIBLE_DEVICES=0,3,5,7
 $ python train.py
