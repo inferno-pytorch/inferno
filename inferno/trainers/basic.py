@@ -714,6 +714,23 @@ class Trainer(object):
         self._use_cuda = True
         self._devices = devices
         return self
+    
+    def cpu(self):
+        """
+        Train on the CPU.
+
+        Returns
+        -------
+        Trainer
+            self
+        """
+        if self.model_is_defined:
+            self.model.cpu()
+        if self.criterion_is_defined:
+            self.criterion.cpu()
+        self._use_cuda = False
+        self._devices = None
+        return self 
 
     def is_cuda(self):
         """Returns whether using GPU for training."""
