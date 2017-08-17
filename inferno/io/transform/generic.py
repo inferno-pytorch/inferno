@@ -5,20 +5,31 @@ from .base import Transform
 
 class Normalize(Transform):
     """Normalizes input to zero mean unit variance."""
-    def __init__(self, eps=1e-4, **super_kwargs):
+    def __init__(self, eps=1e-4, mean=None, std=None, **super_kwargs):
         """
         Parameters
         ----------
         eps : float
             A small epsilon for numerical stability.
+        mean : list or float or numpy.ndarray
+            Global dataset mean for all channels.
+        std : list or float or numpy.ndarray
+            Global dataset std for all channels.
         super_kwargs : dict
             Kwargs to the superclass `inferno.io.transform.base.Transform`.
         """
         super(Normalize, self).__init__(**super_kwargs)
         self.eps = eps
+        self.mean = np.asarray(mean) if mean is not None else None
+        self.std = np.asarray(std) if std is not None else None
 
     def tensor_function(self, tensor):
-        tensor = (tensor - tensor.mean())/(tensor.std() + self.eps)
+        mean = np.asarray(tensor.mean()) if self.mean is None else self.mean
+        std = np.asarray(tensor.std()) if self.std is None else self.std
+        # Figure out how to reshape mean and std
+        reshape_as = [-1] + [1] * (tensor.ndim - 1)
+        # Normalize
+        tensor = (tensor - mean.reshape(*reshape_as))/(std.reshape(*reshape_as) + self.eps)
         return tensor
 
 
@@ -40,6 +51,31 @@ class NormalizeRange(Transform):
         return tensor / self.normalize_by
 
 
+class Project(Transform):
+    """
+    Given a projection mapping (i.e. a dict) and an input tensor, this transform replaces
+    all values in the tensor that equal a key in the mapping with the value corresponding to
+    the key.
+    """
+    def __init__(self, projection, **super_kwargs):
+        """
+        Parameters
+        ----------
+        projection : dict
+            The projection mapping.
+        super_kwargs : dict
+            Keywords to the super class.
+        """
+        super(Project, self).__init__(**super_kwargs)
+        self.projection = dict(projection)
+
+    def tensor_function(self, tensor):
+        output = np.zeros_like(tensor)
+        for source, target in self.projection.items():
+            output[tensor == source] = target
+        return output
+
+
 class Cast(Transform):
     """Casts inputs to a specified datatype."""
     DTYPE_MAPPING = {'float32': 'float32',
@@ -47,7 +83,13 @@ class Cast(Transform):
                      'double': 'float64',
                      'float64': 'float64',
                      'half': 'float16',
-                     'float16': 'float16'}
+                     'float16': 'float16',
+                     'long': 'int64',
+                     'int64': 'int64',
+                     'byte': 'uint8',
+                     'uint8': 'uint8',
+                     'int': 'int32',
+                     'int32': 'int32'}
 
     def __init__(self, dtype='float', **super_kwargs):
         """
@@ -74,25 +116,31 @@ class AsTorchBatch(Transform):
     `(1, 100, 100)`. The collate function will add the leading batch axis to obtain
     a tensor of shape `(N, 1, 100, 100)`, where `N` is the batch-size.
     """
-    def __init__(self, dimensionality, **super_kwargs):
+    def __init__(self, dimensionality, add_channel_axis_if_necessary=True, **super_kwargs):
         """
         Parameters
         ----------
         dimensionality : {1, 2, 3}
             Dimensionality of the data: 1 if vector, 2 if image, 3 if volume.
+        add_channel_axis_if_necessary : bool
+            Whether to add a channel axis where necessary. For example, if `dimensionality = 2`
+            and the input temperature has 2 dimensions (i.e. an image), setting
+            `add_channel_axis_if_necessary` to True results in the output being a 3 dimensional
+            tensor, where the leading dimension is a singleton and corresponds to `channel`.
         super_kwargs : dict
             Kwargs to the superclass `inferno.io.transform.base.Transform`.
         """
         super(AsTorchBatch, self).__init__(**super_kwargs)
         assert dimensionality in [1, 2, 3]
         self.dimensionality = dimensionality
+        self.add_channel_axis_if_necessary = bool(add_channel_axis_if_necessary)
 
     def tensor_function(self, tensor):
         assert isinstance(tensor, np.ndarray)
         if self.dimensionality == 3:
             # We're dealing with a volume. tensor can either be 3D or 4D
             assert tensor.ndim in [3, 4]
-            if tensor.ndim == 3:
+            if tensor.ndim == 3 and self.add_channel_axis_if_necessary:
                 # Add channel axis
                 return torch.from_numpy(tensor[None, ...])
             else:
@@ -101,7 +149,7 @@ class AsTorchBatch(Transform):
         elif self.dimensionality == 2:
             # We're dealing with an image. tensor can either be 2D or 3D
             assert tensor.ndim in [2, 3]
-            if tensor.ndim == 2:
+            if tensor.ndim == 2 and self.add_channel_axis_if_necessary:
                 # Add channel axis
                 return torch.from_numpy(tensor[None, ...])
             else:
