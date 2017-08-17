@@ -1273,6 +1273,13 @@ class Trainer(object):
                    self._fname_checkpoint,
                    pickle_module=dill)
 
+        self.callbacks.call(self.callbacks.END_OF_SAVE,
+                            save_to_directory=self._save_to_directory,
+                            epoch_count=self._epoch_count,
+                            batch_count=self._batch_count,
+                            iteration_count=self._iteration_count,
+                            is_iteration_with_best_validation_score=self._is_iteration_with_best_validation_score)
+
         if self._is_iteration_with_best_validation_score and stash_best_checkpoint:
             # Do the stashin'
             shutil.copyfile(self._fname_checkpoint, self._fname_best)
