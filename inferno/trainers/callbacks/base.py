@@ -23,6 +23,8 @@ class CallbackEngine(object):
     END_OF_VALIDATION_RUN = 'end_of_validation_run'
     BEGIN_OF_VALIDATION_ITERATION = 'begin_of_validation_iteration'
     END_OF_VALIDATION_ITERATION = 'end_of_validation_iteration'
+    BEGIN_OF_SAVE = 'begin_of_save'
+    END_OF_SAVE = 'end_of_save'
 
     TRIGGERS = {BEGIN_OF_FIT,
                 END_OF_FIT,
@@ -35,7 +37,9 @@ class CallbackEngine(object):
                 BEGIN_OF_VALIDATION_RUN,
                 END_OF_VALIDATION_RUN,
                 BEGIN_OF_VALIDATION_ITERATION,
-                END_OF_VALIDATION_ITERATION}
+                END_OF_VALIDATION_ITERATION,
+                BEGIN_OF_SAVE,
+                END_OF_SAVE}
 
     def __init__(self):
         self._trainer = None
