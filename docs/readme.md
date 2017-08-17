@@ -208,6 +208,25 @@ and navigate to `localhost:6007` with your favorite browser.
 
 Fine print: missing the `log_images_every` keyword argument to `TensorboardLogger` will result in images being logged every iteration. If you don't have a fast hard drive, this might actually slow down the training. To not log images, just use `log_images_every='never'`. 
 
+### Using GPUs
+
+To use just one GPU: 
+```python
+trainer.cuda()
+```
+
+For multi-GPU data-parallel training, simply pass `trainer.cuda` a list of devices: 
+```python
+trainer.cuda(devices=[0, 1, 2, 3])
+```
+
+__Pro-tip__: Say you only want to use GPUs 0, 3, 5 and 7 (your colleagues might love you for that). Before running your training script, simply: 
+```bash
+$ export CUDA_VISIBLE_DEVICES=0,3,5,7
+$ python train.py
+```
+This maps device 0 to 0, 3 to 1, 5 to 2 and 7 to 3. 
+
 ### One more thing
 
 Once you have everything configured, use 
