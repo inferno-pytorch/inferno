@@ -130,6 +130,31 @@ class CenterCrop(Transform):
         return image[x1:x1+tw, y1:y1+th]
 
 
+class RandomCrop(Transform):
+    """ Crop patch of size `size` from a random position of the image """
+    def __init__(self, size, **super_kwargs):
+        super(RandomCrop, self).__init__(**super_kwargs)
+        assert isinstance(size, (int, tuple))
+        self.size = (size, size) if isinstance(size, int) else size
+
+    def build_random_variables(self, **kwargs):
+        np.random.seed()
+        self.set_random_variable('x0', np.random.uniform())
+        self.set_random_variable('y0', np.random.uniform())
+
+    def image_function(self, image):
+        h, w = image.shape
+        th, tw = self.size
+
+        safe_ymax = h - th
+        safe_xmax = w - tw
+
+        x0 = int(round(safe_xmax * self.get_random_variable('x0')))
+        y0 = int(round(safe_ymax * self.get_random_variable('y0')))
+
+        return image[x0:x0+tw, y0:y0+th]
+
+
 class BinaryMorphology(Transform):
     """
     Apply a binary morphology operation on an image. Supported operations are dilation
