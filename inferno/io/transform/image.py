@@ -1,11 +1,10 @@
-from _socket import gaierror
-
 import numpy as np
 from scipy.ndimage import zoom
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.morphology import binary_dilation, binary_erosion
 from skimage.exposure import adjust_gamma
+from warnings import catch_warnings, simplefilter
 
 from .base import Transform
 from ...utils.exceptions import assert_, ShapeError
@@ -70,8 +69,11 @@ class Scale(Transform):
         target_height, target_width = self.output_image_shape
         # We're on Python 3 - take a deep breath and relax.
         zoom_height, zoom_width = (target_height / source_height), (target_width / source_width)
-        rescaled_image = zoom(image, (zoom_height, zoom_width),
-                              order=self.interpolation_order, **self.zoom_kwargs)
+        with catch_warnings():
+            # Ignore warning that scipy should be > 0.13 (it's 0.19 these days)
+            simplefilter('ignore')
+            rescaled_image = zoom(image, (zoom_height, zoom_width),
+                                  order=self.interpolation_order, **self.zoom_kwargs)
         # This should never happen
         assert_(rescaled_image.shape == (target_height, target_width),
                 "Shape mismatch that shouldn't have happened if you were on scipy > 0.13.0. "
@@ -218,7 +220,7 @@ class RandomSizedCrop(Transform):
             width_ratio = np.random.uniform(low=self.width_ratio_between[0],
                                             high=self.width_ratio_between[1])
         crop_height = int(np.round(height_ratio * source_height))
-        crop_width = int(np.round(width_ratio * source_height))
+        crop_width = int(np.round(width_ratio * source_width))
         height_leeway = source_height - crop_height
         width_leeway = source_width - crop_width
         # Set random variables
