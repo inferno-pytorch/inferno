@@ -160,6 +160,14 @@ class TestTrainer(TestCase):
 
         trainer.fit()
 
+    def test_save(self):
+        from inferno.trainers.basic import Trainer
+        trainer = Trainer().save_to_directory(to_directory=self.ROOT_DIR,
+                                              checkpoint_filename='dummy.pytorch')
+        trainer.save()
+        # Instantiate new trainer and load
+        trainer = Trainer().load(from_directory=self.ROOT_DIR, filename='dummy.pytorch')
+
 
 if __name__ == '__main__':
     tester = TestTrainer()

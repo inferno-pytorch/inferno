@@ -92,8 +92,9 @@ class Trainer(object):
         # Checkpointing
         self._save_every = None
         self._save_to_directory = None
-        self._fname_checkpoint = None
-        self._fname_best = None
+        # Defaults for file names
+        self._checkpoint_filename = 'checkpoint.pytorch'
+        self._best_checkpoint_filename = 'best_checkpoint.pytorch'
 
         # Nothing to save at epoch 0
         self._last_saved_at_epoch = 0
@@ -487,7 +488,8 @@ class Trainer(object):
         """Can be set to true to trigger a checkpoint creation.."""
         self._save_externally_triggered = bool(value)
 
-    def save_every(self, frequency, to_directory=None):
+    def save_every(self, frequency, to_directory=None,
+                   checkpoint_filename=None, best_checkpoint_filename=None):
         """
         Set checkpoint creation frequency.
 
@@ -497,7 +499,10 @@ class Trainer(object):
             Checkpoint creation frequency. Examples: '100 iterations' or '1 epochs'.
         to_directory : str
             Directory where the checkpoints are to be created.
-
+        checkpoint_filename : str
+            Name of the checkpoint file.
+        best_checkpoint_filename : str
+            Name of the best checkpoint file.
         Returns
         -------
         Trainer
@@ -505,21 +510,28 @@ class Trainer(object):
         """
         self._save_every = tu.Frequency.build_from(frequency, priority='iterations')
         assert self._save_every.is_consistent
-        if to_directory is not None:
-            self.save_to_directory(to_directory)
+        self.save_to_directory(to_directory, checkpoint_filename, best_checkpoint_filename)
         return self
 
     @property
     def save_directory(self):
         return self._save_to_directory
 
-    def save_to_directory(self, to_directory):
-        assert isinstance(to_directory, str)
-        if not os.path.exists(to_directory):
-            os.mkdir(to_directory)
-        else:
-            assert os.path.isdir(to_directory)
-        self._save_to_directory = to_directory
+    def save_to_directory(self, to_directory=None, checkpoint_filename=None,
+                          best_checkpoint_filename=None):
+        if to_directory is not None:
+            assert_(isinstance(to_directory, str), exception_type=TypeError)
+            if not os.path.exists(to_directory):
+                os.mkdir(to_directory)
+            else:
+                assert os.path.isdir(to_directory)
+            self._save_to_directory = to_directory
+        if checkpoint_filename is not None:
+            assert_(isinstance(checkpoint_filename, str), exception_type=TypeError)
+            self._checkpoint_filename = checkpoint_filename
+        if best_checkpoint_filename is not None:
+            assert_(isinstance(best_checkpoint_filename, str), exception_type=TypeError)
+            self._best_checkpoint_filename = best_checkpoint_filename
         return self
 
     @property
@@ -1258,11 +1270,13 @@ class Trainer(object):
         # Log the epoch for save_now
         self._last_saved_at_epoch = self._epoch_count
 
-        self._fname_checkpoint = os.path.join(self._save_to_directory, 'checkpoint.pytorch')
-        self._fname_best = os.path.join(self._save_to_directory, 'best_checkpoint.pytorch')
+        checkpoint_path = os.path.join(self._save_to_directory, self._checkpoint_filename)
+        best_checkpoint_path = os.path.join(self._save_to_directory, self._best_checkpoint_filename)
 
         self.callbacks.call(self.callbacks.BEGIN_OF_SAVE,
                             save_to_directory=self._save_to_directory,
+                            checkpoint_path=checkpoint_path,
+                            best_checkpoint_path=best_checkpoint_path,
                             epoch_count=self._epoch_count,
                             batch_count=self._batch_count,
                             iteration_count=self._iteration_count,
@@ -1270,11 +1284,13 @@ class Trainer(object):
 
         # Save the state dictionary
         torch.save(self.get_config(exclude_loader=exclude_loader),
-                   self._fname_checkpoint,
+                   checkpoint_path,
                    pickle_module=dill)
 
         self.callbacks.call(self.callbacks.END_OF_SAVE,
                             save_to_directory=self._save_to_directory,
+                            checkpoint_path=checkpoint_path,
+                            best_checkpoint_path=best_checkpoint_path,
                             epoch_count=self._epoch_count,
                             batch_count=self._batch_count,
                             iteration_count=self._iteration_count,
@@ -1282,7 +1298,7 @@ class Trainer(object):
 
         if self._is_iteration_with_best_validation_score and stash_best_checkpoint:
             # Do the stashin'
-            shutil.copyfile(self._fname_checkpoint, self._fname_best)
+            shutil.copyfile(checkpoint_path, best_checkpoint_path)
 
         # This is required to prevent an infinite save loop?
         self._is_iteration_with_best_validation_score = False
@@ -1297,7 +1313,7 @@ class Trainer(object):
                    pickle_module=dill)
         return self
 
-    def load(self, from_directory=None, best=False, custom_file_name=None):
+    def load(self, from_directory=None, best=False, filename=None):
         """
         Load the trainer from checkpoint.
 
@@ -1309,7 +1325,7 @@ class Trainer(object):
         best : str
             Whether to load the best checkpoint. The filename in `from_directory` should be
             'best_checkpoint.pytorch'.
-        custom_file_name : str
+        filename : str
             Overrides the default filename.
 
         Returns
@@ -1320,12 +1336,10 @@ class Trainer(object):
         from_directory = self._save_to_directory if from_directory is None else from_directory
         assert from_directory is not None, "Nowhere to load from."
         # Get file name
-        if custom_file_name: file_name = custom_file_name
-        elif best: file_name = 'best_checkpoint.pytorch'
-        else: file_name = 'checkpoint.pytorch'
-
+        if filename is None:
+            filename = self._best_checkpoint_filename if best else self._checkpoint_filename
         # Load the dictionary
-        config_dict = torch.load(os.path.join(from_directory, file_name),
+        config_dict = torch.load(os.path.join(from_directory, filename),
                                  pickle_module=dill)
         # This is required to prevent an infinite save loop?
         self._is_iteration_with_best_validation_score = False
@@ -1333,10 +1347,11 @@ class Trainer(object):
         self.set_config(config_dict)
         return self
 
-    def load_model(self, from_directory=None):
+    def load_model(self, from_directory=None, filename=None):
         from_directory = self._save_to_directory if from_directory is None else from_directory
+        filename = 'model.pytorch' if filename is None else filename
         # Load the model
-        model = torch.load(from_directory, pickle_module=dill)
+        model = torch.load(os.path.join(from_directory, filename), pickle_module=dill)
         # Set model
         self.model = model
         return self
