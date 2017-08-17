@@ -51,6 +51,31 @@ class NormalizeRange(Transform):
         return tensor / self.normalize_by
 
 
+class Project(Transform):
+    """
+    Given a projection mapping (i.e. a dict) and an input tensor, this transform replaces
+    all values in the tensor that equal a key in the mapping with the value corresponding to
+    the key.
+    """
+    def __init__(self, projection, **super_kwargs):
+        """
+        Parameters
+        ----------
+        projection : dict
+            The projection mapping.
+        super_kwargs : dict
+            Keywords to the super class.
+        """
+        super(Project, self).__init__(**super_kwargs)
+        self.projection = dict(projection)
+
+    def tensor_function(self, tensor):
+        output = np.zeros_like(tensor)
+        for source, target in self.projection.items():
+            output[tensor == source] = target
+        return output
+
+
 class Cast(Transform):
     """Casts inputs to a specified datatype."""
     DTYPE_MAPPING = {'float32': 'float32',
