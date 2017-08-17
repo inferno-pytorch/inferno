@@ -2,6 +2,7 @@ import os
 from os.path import join, dirname, exists, isdir
 import unittest
 import numpy as np
+import time
 
 
 class TestCityscapes(unittest.TestCase):
@@ -31,10 +32,13 @@ class TestCityscapes(unittest.TestCase):
 
         train_loader, validate_loader = get_cityscapes_loader(self.get_cityscapes_root())
         train_dataset = train_loader.dataset
+        tic = time.time()
         image, label = train_dataset[0]
+        toc = time.time()
+        print("[+] Loaded sample in {} seconds.".format(toc - tic))
         # Make sure the shapes checkout
-        self.assertSequenceEqual(image.size(), (3, 360, 480))
-        self.assertSequenceEqual(label.size(), (360, 480))
+        self.assertSequenceEqual(image.size(), (3, 1024, 2048))
+        self.assertSequenceEqual(label.size(), (1024, 2048))
         self.assertEqual(image.type(), 'torch.FloatTensor')
         self.assertEqual(label.type(), 'torch.LongTensor')
         # Print tensors to make sure they look legit
@@ -43,10 +47,15 @@ class TestCityscapes(unittest.TestCase):
         else:
             assert isdir(self.PLOT_DIRECTORY)
         print_tensor(image.numpy()[None, ...], prefix='IMG--', directory=self.PLOT_DIRECTORY)
-        print_tensor(label.numpy()[None, None, ...], prefix='LAB--', directory=self.PLOT_DIRECTORY)
+        for class_id in np.unique(label.numpy()):
+            print_tensor((label.numpy()[None, None, ...] == class_id).astype('float32'),
+                         prefix='LAB-{}--'.format(class_id),
+                         directory=self.PLOT_DIRECTORY)
+        print_tensor(label.numpy()[None, None, ...],
+                     prefix='LAB--',
+                     directory=self.PLOT_DIRECTORY)
         print("[+] Inspect images at {}".format(self.PLOT_DIRECTORY))
 
 if __name__ == '__main__':
-    tester = TestCityscapes()
-    tester.CITYSCAPES_ROOT = '/export/home/nrahaman/Python/Repositories/SegNet-Tutorial/CitYscapes'
-    tester.test_cityscapes_dataset_without_transforms()
+    TestCityscapes.CITYSCAPES_ROOT = '/home/nrahaman/BigHeronHDD2/CityScapes'
+    unittest.main()

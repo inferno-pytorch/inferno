@@ -5,7 +5,7 @@ from PIL import Image
 from os.path import join
 from ...utils.exceptions import assert_
 from ..transform.base import Compose
-from ..transform.generic import Normalize, NormalizeRange, Cast, AsTorchBatch
+from ..transform.generic import Normalize, NormalizeRange, Cast, AsTorchBatch, Project
 from ..transform.image import \
     RandomSizedCrop, RandomGammaCorrection, RandomFlip, Scale, PILImage2NumPyArray
 
@@ -45,6 +45,72 @@ CITYSCAPES_CLASSES = {
     32: 'motorcycle',
     33: 'bicycle',
     -1: 'license plate'
+}
+
+IGNORE_CLASS_LABEL = 19
+
+# Class labels to use for training, found here:
+# https://github.com/mcordts/cityscapesScripts/blob/master/cityscapesscripts/helpers/labels.py#L61
+CITYSCAPES_CLASSES_TO_LABELS = {
+    0: IGNORE_CLASS_LABEL,
+    1: IGNORE_CLASS_LABEL,
+    2: IGNORE_CLASS_LABEL,
+    3: IGNORE_CLASS_LABEL,
+    4: IGNORE_CLASS_LABEL,
+    5: IGNORE_CLASS_LABEL,
+    6: IGNORE_CLASS_LABEL,
+    7: 0,
+    8: 1,
+    9: IGNORE_CLASS_LABEL,
+    10: IGNORE_CLASS_LABEL,
+    11: 2,
+    12: 3,
+    13: 4,
+    14: IGNORE_CLASS_LABEL,
+    15: IGNORE_CLASS_LABEL,
+    16: IGNORE_CLASS_LABEL,
+    17: 5,
+    18: IGNORE_CLASS_LABEL,
+    19: 6,
+    20: 7,
+    21: 8,
+    22: 9,
+    23: 10,
+    24: 11,
+    25: 12,
+    26: 13,
+    27: 14,
+    28: 15,
+    29: IGNORE_CLASS_LABEL,
+    30: IGNORE_CLASS_LABEL,
+    31: 16,
+    32: 17,
+    33: 18,
+    -1: IGNORE_CLASS_LABEL
+}
+
+# Weights corresponding to the outputs
+CITYSCAPES_LABEL_WEIGHTS = {
+    0: 1.,
+    1: 1.,
+    2: 1.,
+    3: 1.,
+    4: 1.,
+    5: 1.,
+    6: 1.,
+    7: 1.,
+    8: 1.,
+    9: 1.,
+    10: 1.,
+    11: 1.,
+    12: 1.,
+    13: 1.,
+    14: 1.,
+    15: 1.,
+    16: 1.,
+    17: 1.,
+    18: 1.,
+    19: 0.
 }
 
 # 0:void 1:flat  2:construction  3:object  4:nature  5:sky  6:human  7:vehicle
@@ -148,7 +214,8 @@ def get_cityscapes_loader(root_directory, image_shape=(1024, 2048),
                                NormalizeRange(),
                                RandomGammaCorrection(),
                                Normalize(mean=CITYSCAPES_MEAN, std=CITYSCAPES_STD))
-    label_transforms = PILImage2NumPyArray()
+    label_transforms = Compose(PILImage2NumPyArray(),
+                               Project(projection=CITYSCAPES_CLASSES_TO_LABELS))
     joint_transforms = Compose(RandomSizedCrop(ratio_between=(0.6, 1.0),
                                                preserve_aspect_ratio=True),
                                # Scale raw image back to the original shape
