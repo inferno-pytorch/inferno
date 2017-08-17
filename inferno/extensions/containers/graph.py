@@ -224,7 +224,8 @@ class Graph(nn.Module):
         Graph
             self
         """
-        self._graph.add_node(name, module=Identity(), is_input_node=True)
+        self.add_module(name, Identity())
+        self._graph.add_node(name, is_input_node=True)
         return self
 
     def add_output_node(self, name, previous=None):
@@ -280,6 +281,11 @@ class Graph(nn.Module):
         """Applies a `function` on the internal graph."""
         return function(self, *args, **kwargs)
 
+    def clear_payloads(self):
+        for source, target in self._graph.edges_iter():
+            if 'payload' in self._graph[source][target]:
+                del self._graph[source][target]['payload']
+
     def forward_through_node(self, name, input=None):
         # If input is a tuple/list, it will NOT be unpacked.
         # Make sure the node is in the graph
@@ -296,7 +302,7 @@ class Graph(nn.Module):
             # Convert input to list
             input = [input]
         # Get outputs
-        outputs = pyu.to_iterable(self._graph.node[name]['module'](*input))
+        outputs = pyu.to_iterable(getattr(self, name)(*input))
         # Distribute outputs to outgoing payloads if required
         if not self.is_sink_node(name):
             outgoing_edges = self._graph.out_edges(name)
@@ -339,4 +345,7 @@ class Graph(nn.Module):
             outputs_from_node = [self._graph[incoming][this]['payload']
                                  for incoming, this in self._graph.in_edges(output_node)]
             outputs.append(pyu.from_iterable(outputs_from_node))
+        # Clear payloads for next pass
+        self.clear_payloads()
+        # Done.
         return pyu.from_iterable(outputs)
