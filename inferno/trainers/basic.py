@@ -1,7 +1,7 @@
 import dill
 from datetime import datetime
 import os
-import subprocess
+import shutil
 
 import torch
 from numpy import inf
@@ -92,6 +92,9 @@ class Trainer(object):
         # Checkpointing
         self._save_every = None
         self._save_to_directory = None
+        self._fname_checkpoint = None
+        self._fname_best = None
+
         # Nothing to save at epoch 0
         self._last_saved_at_epoch = 0
         # This is to allow a callback to trigger a save by setting trainer.save_now = True
@@ -1254,15 +1257,26 @@ class Trainer(object):
     def save(self, exclude_loader=True, stash_best_checkpoint=True):
         # Log the epoch for save_now
         self._last_saved_at_epoch = self._epoch_count
+
+        self._fname_checkpoint = os.path.join(self._save_to_directory, 'checkpoint.pytorch')
+        self._fname_best = os.path.join(self._save_to_directory, 'best_checkpoint.pytorch')
+
+        self.callbacks.call(self.callbacks.BEGIN_OF_SAVE,
+                            save_to_directory=self._save_to_directory,
+                            epoch_count=self._epoch_count,
+                            batch_count=self._batch_count,
+                            iteration_count=self._iteration_count,
+                            is_iteration_with_best_validation_score=self._is_iteration_with_best_validation_score)
+
         # Save the state dictionary
         torch.save(self.get_config(exclude_loader=exclude_loader),
-                   os.path.join(self._save_to_directory, 'checkpoint.pytorch'),
+                   self._fname_checkpoint,
                    pickle_module=dill)
+
         if self._is_iteration_with_best_validation_score and stash_best_checkpoint:
             # Do the stashin'
-            subprocess.Popen(['cp',
-                              os.path.join(self._save_to_directory, 'checkpoint.pytorch'),
-                              os.path.join(self._save_to_directory, 'best_checkpoint.pytorch')])
+            shutil.copyfile(self._fname_checkpoint, self._fname_best)
+
         # This is required to prevent an infinite save loop?
         self._is_iteration_with_best_validation_score = False
         self.print("Saved to {}.".format(self._save_to_directory))
@@ -1276,7 +1290,7 @@ class Trainer(object):
                    pickle_module=dill)
         return self
 
-    def load(self, from_directory=None, best=False):
+    def load(self, from_directory=None, best=False, custom_file_name=None):
         """
         Load the trainer from checkpoint.
 
@@ -1288,6 +1302,8 @@ class Trainer(object):
         best : str
             Whether to load the best checkpoint. The filename in `from_directory` should be
             'best_checkpoint.pytorch'.
+        custom_file_name : str
+            Overrides the default filename.
 
         Returns
         -------
@@ -1297,7 +1313,10 @@ class Trainer(object):
         from_directory = self._save_to_directory if from_directory is None else from_directory
         assert from_directory is not None, "Nowhere to load from."
         # Get file name
-        file_name = 'best_checkpoint.pytorch' if best else 'checkpoint.pytorch'
+        if custom_file_name: file_name = custom_file_name
+        elif best: file_name = 'best_checkpoint.pytorch'
+        else: file_name = 'checkpoint.pytorch'
+
         # Load the dictionary
         config_dict = torch.load(os.path.join(from_directory, file_name),
                                  pickle_module=dill)
