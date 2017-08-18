@@ -1287,17 +1287,17 @@ class Trainer(object):
         # Log the epoch for save_now
         self._last_saved_at_epoch = self._epoch_count
 
-        checkpoint_path = os.path.join(self._save_to_directory, self._checkpoint_filename)
-        best_checkpoint_path = os.path.join(self._save_to_directory, self._best_checkpoint_filename)
-
         self.callbacks.call(self.callbacks.BEGIN_OF_SAVE,
                             save_to_directory=self._save_to_directory,
-                            checkpoint_path=checkpoint_path,
-                            best_checkpoint_path=best_checkpoint_path,
                             epoch_count=self._epoch_count,
                             batch_count=self._batch_count,
                             iteration_count=self._iteration_count,
                             is_iteration_with_best_validation_score=self._is_iteration_with_best_validation_score)
+
+        checkpoint_path = os.path.join(self._save_to_directory,
+                                       self._checkpoint_filename)
+        best_checkpoint_path = os.path.join(self._save_to_directory,
+                                            self._best_checkpoint_filename)
 
         # Save the state dictionary
         torch.save(self.get_config(exclude_loader=exclude_loader),
