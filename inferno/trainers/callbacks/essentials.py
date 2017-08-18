@@ -14,8 +14,9 @@ class NaNDetector(Callback):
             raise RuntimeError("NaNs detected!")
 
 
-class SaveFilenameCallback(Callback):
+class PersistentSave(Callback):
     def __init__(self, template='checkpoint.pytorch.epoch{epoch_count}.iteration{iteration_count}'):
+        super(PersistentSave, self).__init__()
         self.template = template
 
     def begin_of_save(self, **kwargs):
