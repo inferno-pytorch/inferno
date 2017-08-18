@@ -25,6 +25,7 @@ from inferno.extensions.layers.reshape import Flatten
 
 # Fill these in:
 LOG_DIRECTORY = '...'
+SAVE_DIRECTORY = '...'
 DATASET_DIRECTORY = '...'
 DOWNLOAD_CIFAR = True
 USE_CUDA = True
@@ -53,6 +54,7 @@ trainer = Trainer(model) \
   .build_optimizer('Adam') \
   .validate_every((2, 'epochs')) \
   .save_every((5, 'epochs')) \
+  .save_to_directory(SAVE_DIRECTORY) \
   .set_max_num_epochs(10) \
   .build_logger(TensorboardLogger(log_scalars_every=(1, 'iteration'),
                                   log_images_every='never'), 
