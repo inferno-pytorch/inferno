@@ -78,7 +78,7 @@ class Trainer(object):
         self._devices = None
 
         # Validation
-        self._save_at_best_validation_score = True
+        self._save_at_best_validation_score = False
         self._best_validation_score = None
         self._is_iteration_with_best_validation_score = False
         self._validate_every = None
