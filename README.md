@@ -54,8 +54,8 @@ trainer = Trainer(model) \
   .validate_every((2, 'epochs')) \
   .save_every((5, 'epochs')) \
   .set_max_num_epochs(10) \
-  .build_logger(TensorboardLogger(log_scalars_every=(1, 'iteration')
-                                  log_images_every='never', 
+  .build_logger(TensorboardLogger(log_scalars_every=(1, 'iteration'),
+                                  log_images_every='never'), 
                 log_directory=LOG_DIRECTORY)
 
 # Bind loaders
