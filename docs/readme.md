@@ -165,7 +165,9 @@ END_OF_TRAINING_ITERATION,
 BEGIN_OF_VALIDATION_RUN,
 END_OF_VALIDATION_RUN,
 BEGIN_OF_VALIDATION_ITERATION,
-END_OF_VALIDATION_ITERATION
+END_OF_VALIDATION_ITERATION,
+BEGIN_OF_SAVE,
+END_OF_SAVE
 ```
 
 As an example, let's build a simple callback to interrupt the training on NaNs. We check at the end of every training iteration whether the training loss is NaN, and accordingly raise a `RuntimeError`. 
