@@ -240,7 +240,19 @@ to commence training! This last step is kinda important. :wink:
 ## Cherries
 
 ### Building Complex Models with the Graph API
-...
+PyTorch provides a [`Sequential`](http://pytorch.org/docs/master/nn.html#torch.nn.Sequential) module to put together multiple modules in a linear chain. With Inferno's graph API, this is extended to arbitrary (directed acyclic) graphs. Let's explore the graph API by constructing a simple inception-like module.
+
+```python
+from inferno.extensions.containers.graph import Graph
+inception_module = Graph()
+inception_module.add_input_node('input')
+inception_module.add_node('conv1x1', ConvELU2D(64, 64, 1), previous='input')
+inception_module.add_node('conv3x3', ConvELU2D(64, 64, 3), previous='input')
+inception_module.add_node('conv5x5', ConvELU2D(64, 64, 5), previous='input')
+inception_module.add_node('cat', Concatenate(),
+                          previous=['conv1x1', 'conv3x3', 'conv5x5'])
+inception_module.add_output_node('output', 'cat')
+```
 
 ### Parameter Initialization
 ...
