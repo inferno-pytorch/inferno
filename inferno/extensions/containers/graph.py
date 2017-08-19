@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import sys
 
 import networkx as nx
 from networkx import is_directed_acyclic_graph, topological_sort
@@ -281,6 +282,43 @@ class Graph(nn.Module):
         """Applies a `function` on the internal graph."""
         return function(self, *args, **kwargs)
 
+    def get_module_for_nodes(self, names):
+        """
+        Gets the `torch.nn.Module` object for nodes corresponding to `names`.
+
+        Parameters
+        ----------
+        names : str or list of str
+            Names of the nodes to fetch the modules of.
+
+        Returns
+        -------
+        list or torch.nn.Module
+            Module or a list of modules corresponding to `names`.
+
+        """
+        names = pyu.to_iterable(names)
+        modules = []
+        for name in names:
+            assert self.is_node_in_graph(name), "Node '{}' is not in graph.".format(name)
+            module = getattr(self, name, None)
+            assert module is not None, "Node '{}' is in the graph but could not find a module " \
+                                       "corresponding to it.".format(name)
+            modules.append(module)
+        return pyu.from_iterable(modules)
+
+    def get_parameters_for_nodes(self, names, named=False):
+        """Get parameters of all nodes listed in `names`."""
+        if not named:
+            parameters = (parameter
+                          for module in pyu.to_iterable(self.get_module_for_nodes(names))
+                          for parameter in module.parameters())
+        else:
+            parameters = ((name, parameter)
+                          for module in pyu.to_iterable(self.get_module_for_nodes(names))
+                          for name, parameter in module.named_parameters())
+        return parameters
+
     def clear_payloads(self):
         for source, target in self._graph.edges_iter():
             if 'payload' in self._graph[source][target]:
@@ -302,7 +340,19 @@ class Graph(nn.Module):
             # Convert input to list
             input = [input]
         # Get outputs
-        outputs = pyu.to_iterable(getattr(self, name)(*input))
+        try:
+            outputs = pyu.to_iterable(getattr(self, name)(*input))
+        except Exception as e:
+            input_spec_string = "\n".join(["--[{}]-{}-->[{}]".format(incoming,
+                                                                     tuple(_input.size()),
+                                                                     this)
+                                           for (incoming, this), _input in
+                                           zip(self._graph.in_edges(name), input)])
+
+            message = "In node '{}': {}\n" \
+                      "Inputs to this node were:\n{}"\
+                .format(name, str(e), input_spec_string)
+            raise type(e)(message).with_traceback(sys.exc_info()[2])
         # Distribute outputs to outgoing payloads if required
         if not self.is_sink_node(name):
             outgoing_edges = self._graph.out_edges(name)
