@@ -13,7 +13,7 @@ class Sequential2(Sequential1):
     Identitcal to torch.nn.Sequential, except that modules may return multiple outputs and
     accept multiple inputs.
     """
-    def forward(self, input):
+    def forward(self, *input):
         for module in self._modules.values():
-            input = module(*pyu.to_iterable(input))
+            input = pyu.to_iterable(module(*pyu.to_iterable(input)))
         return pyu.from_iterable(input)
