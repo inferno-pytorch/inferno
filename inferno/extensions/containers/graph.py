@@ -2,7 +2,6 @@ from collections import OrderedDict
 import sys
 
 import networkx as nx
-from Cython.Compiler.Errors import message
 from networkx import is_directed_acyclic_graph, topological_sort
 from torch import nn as nn
 
