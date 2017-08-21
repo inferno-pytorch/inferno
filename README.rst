@@ -169,8 +169,12 @@ Contributors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In no particular order,
-  *   [Steffen Wolf](https://github.com/Steffen-Wolf) @ [Image Analysis and Learning Lab](https://hci.iwr.uni-heidelberg.de/mip), [Heidelberg Collaboratory for Image Processing](https://hci.iwr.uni-heidelberg.de/), 
-  *  [Maurice Weiler](https://github.com/mauriceweiler) @ [Image Analysis and Learning Lab](https://hci.iwr.uni-heidelberg.de/mip), [Heidelberg Collaboratory for Image Processing](https://hci.iwr.uni-heidelberg.de/),
+  *   `Steffen Wolf <https://github.com/Steffen-Wolf>`_  @ 
+      `Image Analysis and Learning Lab <https://hci.iwr.uni-heidelberg.de/mip>`_ ,
+      `Heidelberg Collaboratory for Image Processing <https://hci.iwr.uni-heidelberg.de/>`_ ,
+  *   `[Maurice Weiler <https://github.com/mauriceweiler>`_  @ 
+      `Image Analysis and Learning Lab <https://hci.iwr.uni-heidelberg.de/mip>`_ ,
+      `Heidelberg Collaboratory for Image Processing <https://hci.iwr.uni-heidelberg.de/>`_ ,
   *   [Constantin Pape](https://github.com/constantinpape) @ [Image Analysis and Learning Lab](https://hci.iwr.uni-heidelberg.de/mip), [Heidelberg Collaboratory for Image Processing](https://hci.iwr.uni-heidelberg.de/), 
   *   [Sven Peter](https://github.com/svenpeter42) @ [Image Analysis and Learning Lab](https://hci.iwr.uni-heidelberg.de/mip), [Heidelberg Collaboratory for Image Processing](https://hci.iwr.uni-heidelberg.de/)
   *   [Manuel Haussmann](https://github.com/manuelhaussmann) @ [Image Analysis and Learning Lab](https://hci.iwr.uni-heidelberg.de/mip), [Heidelberg Collaboratory for Image Processing](https://hci.iwr.uni-heidelberg.de/)
