@@ -111,6 +111,7 @@ Current features include:
 To visualize the training progress, navigate to `LOG_DIRECTORY` and fire up tensorboard with 
 
 .. code:: python
+
   $ tensorboard --logdir=${PWD} --port=6007
 
 
@@ -127,12 +128,14 @@ First, make sure [you have Pytorch installed](http://pytorch.org/).
 Then, clone this repository with: 
 
 .. code:: python
+
   $ git clone https://github.com/nasimrahaman/inferno.git
 
 
 Next, install the dependencies.
 
 .. code:: python
+
   $ cd inferno
   $ pip install -r requirements.txt
 
@@ -140,8 +143,10 @@ Next, install the dependencies.
 If you use python from the shell: 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Finally, add *inferno* to your `PYTHONPATH` with: 
+Finally, add *inferno* to your `PYTHONPATH` with:
+
 .. code:: python
+
   source add2path.sh
 
 If you use PyCharm:
