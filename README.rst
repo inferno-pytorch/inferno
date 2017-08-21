@@ -204,9 +204,7 @@ In no particular order,
 Maintainers
 ------------------------
 
-  *   `Nasim Rahaman <https://github.com/nasimrahaman>`_  @ 
-      `Image Analysis and Learning Lab <https://hci.iwr.uni-heidelberg.de/mip>`_ ,
-      `Heidelberg Collaboratory for Image Processing <https://hci.iwr.uni-heidelberg.de/>`_ ,
+* `Nasim Rahaman <https://github.com/nasimrahaman>`_  @ `Image Analysis and Learning Lab <https://hci.iwr.uni-heidelberg.de/mip>`_ , `Heidelberg Collaboratory for Image Processing <https://hci.iwr.uni-heidelberg.de/>`_ ,
 
 Credits
 ---------
