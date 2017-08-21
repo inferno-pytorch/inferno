@@ -4,7 +4,7 @@ inferno
 
 
 .. image:: https://img.shields.io/pypi/v/inferno.svg
-        :target: https://pypi.python.org/pypi/inferno
+        :target: https://pypi.python.org/pypi/not_yet_inferno
 
 .. image:: https://img.shields.io/travis/nasimrahaman/inferno.svg
         :target: https://travis-ci.org/nasimrahaman/inferno
