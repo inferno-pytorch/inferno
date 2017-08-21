@@ -6,7 +6,7 @@ Usage
 Inferno is a utility library built around [PyTorch](http://pytorch.org/), designed to help you train and even build complex pytorch models. And in this tutorial, we'll see how! If you're new to PyTorch, I highly recommended you work through the [Pytorch tutorials](http://pytorch.org/tutorials/) first.
 
 Building a PyTorch Model
---------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Inferno's training machinery works with just about any valid [Pytorch module](http://pytorch.org/docs/master/nn.html#torch.nn.Module). However, to make things even easier, we also provide pre-configured layers that work out-of-the-box. Let's use them to build a convolutional neural network for Cifar-10.
 
@@ -36,7 +36,7 @@ Inferno's training machinery works with just about any valid [Pytorch module](ht
 Models this size don't win competitions anymore, but it'll do for our purpose. 
 
 Data Logistics 
---------------------------------
+**************************
 
 With our model built, it's time to worry about the data generators. Or is it? 
 
@@ -52,7 +52,7 @@ CIFAR-10 works out-of-the-`box` (pun very much intended) with all the fancy data
 
 
 Preparing the Trainer
---------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 With our model and data loaders good to go, it's finally time to build the trainer. To start, let's initialize one. 
 
@@ -68,7 +68,7 @@ With our model and data loaders good to go, it's finally time to build the train
 Now to the things we could do with it. 
 
 Setting up Checkpointing
-~~~~~~~~~~~~~~~~~~~~~~
+***************************************
 When training a model for days, it's usually a good idea to store the current training state to disk every once in a while. To set this up, we tell `trainer` where to store these *checkpoints* and how often. 
 .. code:: python
     trainer.save_to_directory('path/to/save/directory').save_every((25, 'epochs'))
@@ -84,7 +84,7 @@ In this setting, you're saving once every 1000 iterations (= batches). But we mi
 Remember that a checkpoint contains the entire training state, and not just the model. Everything is included in the checkpoint file, including optimizer, criterion, and callbacks but __not the data loaders__. 
 
 Setting up Validation
-~~~~~~~~~~~~~~~~~~~~~~
+**************************
 Let's say you wish to validate once every 2 epochs.
 
 .. code:: python
@@ -120,7 +120,7 @@ Note that the metric applies to `torch.Tensor`s, and not on `torch.autograd.Vari
 However, while validating, the metric is evaluated once every iteration.
 
 Setting up the Criterion and Optimizer
-~~~~~~~~~~~~~~~~~~~~~~
+***************************************
 With that out of the way, let's set up a training criterion and an optimizer. 
 
 .. code:: python
@@ -166,7 +166,7 @@ If you implemented your own optimizer (by subclassing `torch.optim.Optimizer`), 
 
 
 Setting up Training Duration
-~~~~~~~~~~~~~~~~~~~~~~
+********************************
 You probably don't want to train forever, in which case you must specify: 
 
 .. code:: python
@@ -189,7 +189,7 @@ If you like to train indefinitely (or until you're happy with the results), use:
 In this case, you'll need to interrupt the training manually with a `KeyboardInterrupt`. 
 
 Setting up Callbacks
-~~~~~~~~~~~~~~~~~~~~~~
+*********************
 Callbacks are pretty handy when it comes to interacting with the `Trainer`. More precisely: `Trainer` defines a number of events as 'triggers' for callbacks. Currently, these are: 
 
 .. code:: python
@@ -238,7 +238,7 @@ With the callback defined, all we need to do is register it with the trainer:
 So the next time you get `RuntimeError: "NaNs detected!`, you know the drill. 
 
 Using Tensorboard
-~~~~~~~~~~~~~~~~~~~~~~
+*************
 Inferno supports logging scalars and images to Tensorboard out-of-the-box, though this requires you have at least [tensorflow-cpu](https://github.com/tensorflow/tensorflow) installed. Let's say you want to log scalars every iteration and images every 20 iterations:
 
 .. code:: python
@@ -261,7 +261,7 @@ and navigate to `localhost:6007` with your favorite browser.
 Fine print: missing the `log_images_every` keyword argument to `TensorboardLogger` will result in images being logged every iteration. If you don't have a fast hard drive, this might actually slow down the training. To not log images, just use `log_images_every='never'`. 
 
 Using GPUs
-~~~~~~~~~~~~~~~~~~~~~~
+*************
 
 To use just one GPU: 
 
@@ -287,7 +287,7 @@ __Pro-tip__: Say you only want to use GPUs 0, 3, 5 and 7 (your colleagues might 
 This maps device 0 to 0, 3 to 1, 5 to 2 and 7 to 3. 
 
 One more thing
-~~~~~~~~~~~~~~~~~~~~~~
+*************
 
 Once you have everything configured, use 
 
@@ -298,19 +298,20 @@ Once you have everything configured, use
 to commence training! This last step is kinda important. :wink:
 
 Cherries:
-*************
+~~~~~~~~~~~~~~~~~~~~~~
+
 
 Building Complex Models with the Graph API
-~~~~~~~~~~~~~~~~~~~~~~
+*************
 Work in Progress:
 
 
 Parameter Initialization
-~~~~~~~~~~~~~~~~~~~~~~
+*************
 Work in Progress:
 
 
 Support
-~~~~~~~~~~~~~~~~~~~~~~
+*************
 Work in Progress:
 
