@@ -118,23 +118,28 @@ class Trainer(object):
         """Gets the callback engine."""
         return self._callback_engine
 
-    def register_callback(self, callback, trigger='auto'):
+    def register_callback(self, callback, trigger='auto', **callback_kwargs):
         """
         Registers a callback with the internal callback engine.
 
         Parameters
         ----------
-        callback : callable
+        callback : type or callable
             Callback to register.
         trigger : str
             Specify the event that triggers the callback. Leave at 'auto' to have the
             callback-engine figure out the triggers. See
             `inferno.training.callbacks.base.CallbackEngine` documentation for more on this.
+        callback_kwargs : dict
+            If `callback` is a type, initialize an instance with these keywords to the
+            __init__ method.
         Returns
         -------
         Trainer
             self.
         """
+        if isinstance(callback, type):
+            callback = callback(**callback_kwargs)
         self._callback_engine.register_callback(callback, trigger=trigger)
         return self
 
