@@ -4,6 +4,7 @@
 Installation
 ============
 
+TODO THIS NEEDS TO BE REWRITTEN
 
 Stable release
 --------------
