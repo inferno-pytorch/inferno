@@ -1,2 +1,2 @@
-from .categorical import CategoricalError
+from .categorical import CategoricalError, IOU
 from .arand import ArandScore, ArandError
