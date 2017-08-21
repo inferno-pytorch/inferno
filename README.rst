@@ -151,7 +151,7 @@ Finally, add *inferno* to your `PYTHONPATH` with:
 
 If you use PyCharm:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Refer to this [QA](https://askubuntu.com/questions/684550/importing-a-python-module-works-from-command-line-but-not-from-pycharm) about setting up paths with Pycharm.
+Refer to this `QA <https://askubuntu.com/questions/684550/importing-a-python-module-works-from-command-line-but-not-from-pycharm>`_ about setting up paths with Pycharm.
 
 Users
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -161,12 +161,13 @@ Installation with `pip` will be ready when the release is.
 Future Features: 
 ------------------------
 Planned features include: 
-* a class to encapsulate Hogwild! training over multiple GPUs, 
-* minimal shape inference with a dry-run,
-* proper packaging and documentation,
-* cutting-edge fresh-off-the-press implementations of what the future has in store. :)
+  *   a class to encapsulate Hogwild! training over multiple GPUs, 
+  *   minimal shape inference with a dry-run,
+  *   proper packaging and documentation,
+  *   cutting-edge fresh-off-the-press implementations of what the future has in store. :)
 
-## Contributing
+Contributing:
+------------------------
 Got an idea? Awesome! Start a discussion by opening an issue or contribute with a pull request.
 
 
