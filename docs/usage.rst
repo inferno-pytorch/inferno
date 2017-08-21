@@ -170,7 +170,9 @@ If you implemented your own optimizer (by subclassing `torch.optim.Optimizer`), 
 Setting up Training Duration
 ~~~~~~~~~~~~~~~~~~~~~~
 You probably don't want to train forever, in which case you must specify: 
+
 .. code:: python
+
     trainer.set_max_num_epochs(100)
 
 or 
@@ -191,7 +193,9 @@ In this case, you'll need to interrupt the training manually with a `KeyboardInt
 Setting up Callbacks
 ~~~~~~~~~~~~~~~~~~~~~~
 Callbacks are pretty handy when it comes to interacting with the `Trainer`. More precisely: `Trainer` defines a number of events as 'triggers' for callbacks. Currently, these are: 
+
 .. code:: python
+
     BEGIN_OF_FIT,
     END_OF_FIT,
     BEGIN_OF_TRAINING_RUN,
