@@ -2,6 +2,7 @@ import zipfile
 import io
 import torch.utils.data as data
 from PIL import Image
+import os
 from os.path import join
 from ...utils.exceptions import assert_
 from ..transform.base import Compose
@@ -134,7 +135,7 @@ def get_matching_labelimage_file(f):
     return '/'.join(fs)
 
 
-def make_dataset(image_zip_file, split):
+def make_dataset_from_zip(image_zip_file, split):
     images = []
     for f in zipfile.ZipFile(image_zip_file, 'r').filelist:
         fn = f.filename.split('/')
@@ -143,6 +144,20 @@ def make_dataset(image_zip_file, split):
             fl = get_matching_labelimage_file(f.filename)
             images.append((f, fl))
     return images
+
+
+def make_dataset(directory, split):
+    images = []
+    raw_key = 'leftImg8bit'
+    label_key = 'gtFine'
+    reference_directory = join(directory, raw_key, split)
+    for city in os.listdir(reference_directory):
+        raw_directory_path = join(directory, raw_key, city)
+        label_directory_path = join(directory, label_key, city)
+        images.extend([(raw_path, label_path) for raw_path, label_path in zip(os.listdir())])
+        # TODO Continue
+        pass
+    pass
 
 
 def extract_image(archive, image_path):
@@ -183,7 +198,7 @@ class Cityscapes(data.Dataset):
         self.label_transform = label_transform
         self.joint_transform = joint_transform
         # Make list with paths to the images
-        self.image_paths = make_dataset(self.image_zip_file, self.split)
+        self.image_paths = make_dataset_from_zip(self.image_zip_file, self.split)
 
     def __getitem__(self, index):
         pi, pl = self.image_paths[index]
