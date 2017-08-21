@@ -70,15 +70,21 @@ Now to the things we could do with it.
 Setting up Checkpointing
 ***************************************
 When training a model for days, it's usually a good idea to store the current training state to disk every once in a while. To set this up, we tell `trainer` where to store these *checkpoints* and how often. 
+
 .. code:: python
+
     trainer.save_to_directory('path/to/save/directory').save_every((25, 'epochs'))
 
 So we're saving once every 25 epochs. But what if an epoch takes forever, and you don't wish to wait that long? 
+
 .. code:: python
+
     trainer.save_every((1000, 'iterations'))
 
 In this setting, you're saving once every 1000 iterations (= batches). But we might also want to create a checkpoint when the validation score is the best. Easy as 1, 2,
+
 .. code:: python
+
     trainer.save_at_best_validation_score()
 
 Remember that a checkpoint contains the entire training state, and not just the model. Everything is included in the checkpoint file, including optimizer, criterion, and callbacks but __not the data loaders__. 
@@ -142,7 +148,8 @@ or
 
 What this means is that if you have your own loss criterion that has the same API as any of the criteria found in `torch.nn`, you should be fine by just plugging it in. 
 
-The same holds for the optimizer: 
+The same holds for the optimizer:
+
 .. code:: python
     trainer.build_optimizer('Adam', weight_decay=0.0005)
 
