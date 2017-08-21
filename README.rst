@@ -123,7 +123,7 @@ Install on Linux and OSX
 Developers
 ~~~~~~~~~~~~~~~~~~~~~~
 
-First, make sure [you have Pytorch installed](http://pytorch.org/). 
+First, make sure `you have Pytorch installed <http://pytorch.org/>`_. 
 
 Then, clone this repository with: 
 
