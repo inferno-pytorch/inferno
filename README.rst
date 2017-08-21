@@ -35,7 +35,7 @@ Current features include:
   *   a basic 
       `Trainer class <https://github.com/nasimrahaman/inferno/tree/master/docs#preparing-the-trainer>`_ 
       to encapsulate the training boilerplate (iteration/epoch loops, validation and checkpoint creation),
-  *   a `graph API <https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/containers/graph.py>`_ for building models with complex architectures, powered by [networkx](https://github.com/networkx/networkx). 
+  *   a `graph API <https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/containers/graph.py>`_ for building models with complex architectures, powered by `networkx <https://github.com/networkx/networkx>`_. 
   *   `easy data-parallelism <https://github.com/nasimrahaman/inferno/tree/master/docs#using-gpus>`_ over multiple GPUs, 
   *   `a submodule <https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/initializers>`_ for `torch.nn.Module`-level parameter initialization,
   *   `a submodule <https://github.com/nasimrahaman/inferno/blob/master/inferno/io/transform>`_ for data preprocessing / transforms,
