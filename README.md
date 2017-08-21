@@ -4,15 +4,15 @@ Inferno is a little library providing utilities and convenience functions/classe
 
 ## Current Features
 Current features include: 
-* a basic [Trainer class](https://github.com/nasimrahaman/inferno/tree/master/docs#preparing-the-trainer) to encapsulate the training boilerplate (iteration/epoch loops, validation and checkpoint creation),
-* a [graph API](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/containers/graph.py) for building models with complex architectures, powered by [networkx](https://github.com/networkx/networkx). 
-* [easy data-parallelism](https://github.com/nasimrahaman/inferno/tree/master/docs#using-gpus) over multiple GPUs, 
-* [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/initializers) for `torch.nn.Module`-level parameter initialization,
-* [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/io/transform) for data preprocessing / transforms,
-* [support](https://github.com/nasimrahaman/inferno/tree/master/docs#using-tensorboard) for [Tensorboard](https://www.tensorflow.org/get_started/summaries_and_tensorboard) (best with atleast [tensorflow-cpu](https://github.com/tensorflow/tensorflow) installed),
-* [a callback API](https://github.com/nasimrahaman/inferno/tree/master/docs#setting-up-callbacks) to enable flexible interaction with the trainer,
-* [various utility layers](https://github.com/nasimrahaman/inferno/tree/master/inferno/extensions/layers) with more underway,
-* [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/io/volumetric) for volumetric datasets, and more!
+*   a basic [Trainer class](https://github.com/nasimrahaman/inferno/tree/master/docs#preparing-the-trainer) to encapsulate the training boilerplate (iteration/epoch loops, validation and checkpoint creation),
+*   a [graph API](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/containers/graph.py) for building models with complex architectures, powered by [networkx](https://github.com/networkx/networkx). 
+*   [easy data-parallelism](https://github.com/nasimrahaman/inferno/tree/master/docs#using-gpus) over multiple GPUs, 
+*   [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/initializers) for `torch.nn.Module`-level parameter initialization,
+*   [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/io/transform) for data preprocessing / transforms,
+*   [support](https://github.com/nasimrahaman/inferno/tree/master/docs#using-tensorboard) for [Tensorboard](https://www.tensorflow.org/get_started/summaries_and_tensorboard) (best with atleast [tensorflow-cpu](https://github.com/tensorflow/tensorflow) installed),
+*   [a callback API](https://github.com/nasimrahaman/inferno/tree/master/docs#setting-up-callbacks) to enable flexible interaction with the trainer,
+*   [various utility layers](https://github.com/nasimrahaman/inferno/tree/master/inferno/extensions/layers) with more underway,
+*   [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/io/volumetric) for volumetric datasets, and more!
 
 ## Show me the Code!
 ```python
