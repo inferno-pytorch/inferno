@@ -18,27 +18,32 @@ inferno
      :alt: Updates
 
 
-Inferno is a little library providing utilities and convenience functions/classes around [PyTorch](https://github.com/pytorch/pytorch). It's a work-in-progress, but the first release is underway! 
+Inferno is a little library providing utilities and convenience functions/classes around 
+`PyTorch <https://github.com/pytorch/pytorch>`_. 
+It's a work-in-progress, but the first release is underway! 
 
 
 
 * Free software: Apache Software License 2.0
-* Documentation: https://inferno.readthedocs.io.
+* Documentation: https://not-yet-inferno.readthedocs.io (Work in progress).
 
 
 Features
 --------
 
 Current features include: 
-  *   a basic [Trainer class](https://github.com/nasimrahaman/inferno/tree/master/docs#preparing-the-trainer) to encapsulate the training boilerplate (iteration/epoch loops, validation and checkpoint creation),
-  *   a [graph API](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/containers/graph.py) for building models with complex architectures, powered by [networkx](https://github.com/networkx/networkx). 
-  *   [easy data-parallelism](https://github.com/nasimrahaman/inferno/tree/master/docs#using-gpus) over multiple GPUs, 
-  *   [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/initializers) for `torch.nn.Module`-level parameter initialization,
-  *   [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/io/transform) for data preprocessing / transforms,
-  *   [support](https://github.com/nasimrahaman/inferno/tree/master/docs#using-tensorboard) for [Tensorboard](https://www.tensorflow.org/get_started/summaries_and_tensorboard) (best with atleast [tensorflow-cpu](https://github.com/tensorflow/tensorflow) installed),
-  *   [a callback API](https://github.com/nasimrahaman/inferno/tree/master/docs#setting-up-callbacks) to enable flexible interaction with the trainer,
-  *   [various utility layers](https://github.com/nasimrahaman/inferno/tree/master/inferno/extensions/layers) with more underway,
-  *   [a submodule](https://github.com/nasimrahaman/inferno/blob/master/inferno/io/volumetric) for volumetric datasets, and more!
+  *   a basic 
+      `Trainer class <https://github.com/nasimrahaman/inferno/tree/master/docs#preparing-the-trainer>`_ 
+      to encapsulate the training boilerplate (iteration/epoch loops, validation and checkpoint creation),
+  *   a `graph API <https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/containers/graph.py>`_ 
+    for building models with complex architectures, powered by [networkx](https://github.com/networkx/networkx). 
+  *   `easy data-parallelism <https://github.com/nasimrahaman/inferno/tree/master/docs#using-gpus>`_ over multiple GPUs, 
+  *   `a submodule <https://github.com/nasimrahaman/inferno/blob/master/inferno/extensions/initializers>`_ for `torch.nn.Module`-level parameter initialization,
+  *   `a submodule <https://github.com/nasimrahaman/inferno/blob/master/inferno/io/transform>`_ for data preprocessing / transforms,
+  *   `support <https://github.com/nasimrahaman/inferno/tree/master/docs#using-tensorboard>`_ for `Tensorboard <https://www.tensorflow.org/get_started/summaries_and_tensorboard>`_ (best with atleast `tensorflow-cpu <https://github.com/tensorflow/tensorflow>`_ installed)
+  *   `a callback API <https://github.com/nasimrahaman/inferno/tree/master/docs#setting-up-callbacks>`_ to enable flexible interaction with the trainer,
+  *   `various utility layers <https://github.com/nasimrahaman/inferno/tree/master/inferno/extensions/layers>`_ with more underway,
+  *   `a submodule <https://github.com/nasimrahaman/inferno/blob/master/inferno/io/volumetric>`_ for volumetric datasets, and more!
 
 
 
@@ -140,7 +145,8 @@ Finally, add *inferno* to your `PYTHONPATH` with:
 .. code:: python
   source add2path.sh
 
-#### If you use PyCharm:
+If you use PyCharm:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Refer to this [QA](https://askubuntu.com/questions/684550/importing-a-python-module-works-from-command-line-but-not-from-pycharm) about setting up paths with Pycharm.
 
 Users
