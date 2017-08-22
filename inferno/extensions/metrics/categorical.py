@@ -53,8 +53,8 @@ class IOU(Metric):
         #   target.shape = (N,)
         # First, reshape prediction to (C, -1)
         flattened_prediction = flatten_samples(prediction)
-        # Reshape target to (-1,)
-        flattened_target = target.view(-1)
+        # Reshape target to (1, -1) for it to work with scatter
+        flattened_target = target.view(1, -1)
         # Convert target to onehot with shape (C, -1)
         num_classes, num_samples = flattened_prediction.size()
         # Make sure the target is consistent
