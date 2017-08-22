@@ -1,17 +1,28 @@
 from collections import OrderedDict
 import sys
+import threading
+import torch.multiprocessing as mp
+import copy
 
 import networkx as nx
 from networkx import is_directed_acyclic_graph, topological_sort
 from torch import nn as nn
 
 from ...utils import python_utils as pyu
+from ...utils.exceptions import assert_
 
 
 class NNGraph(nx.DiGraph):
     """A NetworkX DiGraph, except that node and edge ordering matters."""
     node_dict_factory = OrderedDict
     adjlist_dict_factory = OrderedDict
+
+    def copy(self, **init_kwargs):
+        new = type(self).__init__(**init_kwargs)
+        # Remove all attributes and copy only the graph structure
+        for source, target in self.edges_iter():
+            new.add_edge(copy.deepcopy(source), copy.deepcopy(target))
+        return new
 
 
 class Identity(nn.Module):
@@ -61,13 +72,34 @@ class Graph(nn.Module):
                 Graph to build the object from (optional).
         """
         super(Graph, self).__init__()
+        # Privates
+        self._thread_to_graph_mapping = {}
+        self._creator_thread = threading.get_ident()
+        self._creator_pid = mp.current_process().pid
+        # Publics
         if graph is not None:
-            assert isinstance(graph, nx.DiGraph)
-            assert graph.node_dict_factory == OrderedDict
-            assert graph.adjlist_dict_factory == OrderedDict
-            self._graph = graph
+            self.graph = graph
         else:
-            self._graph = NNGraph()
+            self.graph = NNGraph()
+
+    @property
+    def graph(self):
+        # `graph` needs to be different for every thread, because torch.nn.parallel.replicate does
+        # not make a copy.
+        graph = self._thread_to_graph_mapping.get(threading.get_ident())
+        if graph is None:
+            creator_thread_graph = self._thread_to_graph_mapping.get(self._creator_thread)
+            assert creator_thread_graph is not None
+            graph = creator_thread_graph.copy()
+            # We don't need to clear payloads because the copy method of NNGraph copies only the
+            # graph structure and not the attributes
+            self._thread_to_graph_mapping.update({threading.get_ident(): graph})
+        return graph
+
+    @graph.setter
+    def graph(self, value):
+        assert_(isinstance(value, NNGraph), exception_type=TypeError)
+        self._thread_to_graph_mapping.update({threading.get_ident(): value})
 
     def is_node_in_graph(self, name):
         """
@@ -82,7 +114,7 @@ class Graph(nn.Module):
         -------
         bool
         """
-        return name in self._graph.node
+        return name in self.graph.node
 
     def is_source_node(self, name):
         """
@@ -104,7 +136,7 @@ class Graph(nn.Module):
             if node is not found in the graph.
         """
         assert self.is_node_in_graph(name)
-        return self._graph.in_degree(name) == 0
+        return self.graph.in_degree(name) == 0
 
     def is_sink_node(self, name):
         """
@@ -126,7 +158,7 @@ class Graph(nn.Module):
             if node is not found in the graph.
         """
         assert self.is_node_in_graph(name)
-        return self._graph.out_degree(name) == 0
+        return self.graph.out_degree(name) == 0
 
     @property
     def output_nodes(self):
@@ -139,7 +171,7 @@ class Graph(nn.Module):
         list
             A list of names (str) of the output nodes.
         """
-        return [name for name, node_attributes in self._graph.node.items()
+        return [name for name, node_attributes in self.graph.node.items()
                 if node_attributes.get('is_output_node', False)]
 
     @property
@@ -153,14 +185,14 @@ class Graph(nn.Module):
         list
             A list of names (str) of the input nodes.
         """
-        return [name for name, node_attributes in self._graph.node.items()
+        return [name for name, node_attributes in self.graph.node.items()
                 if node_attributes.get('is_input_node', False)]
 
     @property
     def graph_is_valid(self):
         """Checks if the graph is valid."""
         # Check if the graph is a DAG
-        is_dag = is_directed_acyclic_graph(self._graph)
+        is_dag = is_directed_acyclic_graph(self.graph)
         # Check if output nodes are sinks
         output_nodes_are_sinks = all([self.is_sink_node(name) for name in self.output_nodes])
         # Check inf input nodes are sources
@@ -172,7 +204,7 @@ class Graph(nn.Module):
 
     def assert_graph_is_valid(self):
         """Asserts that the graph is valid."""
-        assert is_directed_acyclic_graph(self._graph), "Graph is not a DAG."
+        assert is_directed_acyclic_graph(self.graph), "Graph is not a DAG."
         for name in self.output_nodes:
             assert self.is_sink_node(name), "Output node {} is not a sink.".format(name)
             assert not self.is_source_node(name), "Output node {} is a source node. " \
@@ -204,7 +236,7 @@ class Graph(nn.Module):
         """
         assert isinstance(module, nn.Module)
         self.add_module(name, module)
-        self._graph.add_node(name, module=module)
+        self.graph.add_node(name)
         if previous is not None:
             for _previous in pyu.to_iterable(previous):
                 self.add_edge(_previous, name)
@@ -226,7 +258,7 @@ class Graph(nn.Module):
             self
         """
         self.add_module(name, Identity())
-        self._graph.add_node(name, is_input_node=True)
+        self.graph.add_node(name, is_input_node=True)
         return self
 
     def add_output_node(self, name, previous=None):
@@ -244,7 +276,7 @@ class Graph(nn.Module):
         Graph
             self
         """
-        self._graph.add_node(name, is_output_node=True)
+        self.graph.add_node(name, is_output_node=True)
         if previous is not None:
             for _previous in pyu.to_iterable(previous):
                 self.add_edge(_previous, name)
@@ -274,7 +306,7 @@ class Graph(nn.Module):
         """
         assert self.is_node_in_graph(from_node)
         assert self.is_node_in_graph(to_node)
-        self._graph.add_edge(from_node, to_node)
+        self.graph.add_edge(from_node, to_node)
         assert self.graph_is_valid
         return self
 
@@ -319,10 +351,11 @@ class Graph(nn.Module):
                           for name, parameter in module.named_parameters())
         return parameters
 
-    def clear_payloads(self):
-        for source, target in self._graph.edges_iter():
-            if 'payload' in self._graph[source][target]:
-                del self._graph[source][target]['payload']
+    def clear_payloads(self, graph=None):
+        graph = self.graph if graph is None else graph
+        for source, target in graph.edges_iter():
+            if 'payload' in graph[source][target]:
+                del graph[source][target]['payload']
 
     def forward_through_node(self, name, input=None):
         # If input is a tuple/list, it will NOT be unpacked.
@@ -332,8 +365,8 @@ class Graph(nn.Module):
             assert not self.is_source_node(name), \
                 "Node '{}' did not get an input but is a source node.".format(name)
             # Get input from payload
-            incoming_edges = self._graph.in_edges(name)
-            input = [self._graph[incoming][this]['payload']
+            incoming_edges = self.graph.in_edges(name)
+            input = [self.graph[incoming][this]['payload']
                      for incoming, this in incoming_edges]
         else:
             assert self.is_node_in_graph(name)
@@ -347,7 +380,7 @@ class Graph(nn.Module):
                                                                      tuple(_input.size()),
                                                                      this)
                                            for (incoming, this), _input in
-                                           zip(self._graph.in_edges(name), input)])
+                                           zip(self.graph.in_edges(name), input)])
 
             message = "In node '{}': {}\n" \
                       "Inputs to this node were:\n{}"\
@@ -355,7 +388,7 @@ class Graph(nn.Module):
             raise type(e)(message).with_traceback(sys.exc_info()[2])
         # Distribute outputs to outgoing payloads if required
         if not self.is_sink_node(name):
-            outgoing_edges = self._graph.out_edges(name)
+            outgoing_edges = self.graph.out_edges(name)
             if len(outputs) == 1:
                 # Support for replication
                 outputs *= len(outgoing_edges)
@@ -366,7 +399,7 @@ class Graph(nn.Module):
                                                                               len(outgoing_edges),
                                                                               name)
             for (this, outgoing), output in zip(outgoing_edges, outputs):
-                self._graph[this][outgoing].update({'payload': output})
+                self.graph[this][outgoing].update({'payload': output})
         # Return outputs
         return pyu.from_iterable(outputs)
 
@@ -381,7 +414,7 @@ class Graph(nn.Module):
         for input, input_node in zip(inputs, input_nodes):
             self.forward_through_node(input_node, input=input)
         # Toposort the graph
-        toposorted = topological_sort(self._graph)
+        toposorted = topological_sort(self.graph)
         # Remove all input and output nodes
         toposorted = [name for name in toposorted
                       if name not in input_nodes and name not in output_nodes]
@@ -392,8 +425,8 @@ class Graph(nn.Module):
         outputs = []
         for output_node in output_nodes:
             # Get all incoming edges to output node
-            outputs_from_node = [self._graph[incoming][this]['payload']
-                                 for incoming, this in self._graph.in_edges(output_node)]
+            outputs_from_node = [self.graph[incoming][this]['payload']
+                                 for incoming, this in self.graph.in_edges(output_node)]
             outputs.append(pyu.from_iterable(outputs_from_node))
         # Clear payloads for next pass
         self.clear_payloads()
