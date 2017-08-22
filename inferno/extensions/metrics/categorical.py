@@ -71,3 +71,8 @@ class IOU(Metric):
             (flattened_prediction - onehot_targets).pow_(2).clamp_(min=self.eps).sum(-1).mean()
         iou = (numerator / denominator)
         return iou
+
+
+class NegativeIOU(IOU):
+    def forward(self, prediction, target):
+        return -1 * super(NegativeIOU, self).forward(prediction, target)
