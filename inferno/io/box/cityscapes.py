@@ -238,6 +238,7 @@ def get_cityscapes_loader(root_directory, image_shape=(1024, 2048),
                                joint_transform=joint_transforms)
     validate_dataset = Cityscapes(root_directory, split='validate',
                                   image_transform=image_transforms,
+                                  label_transform=label_transforms,
                                   joint_transform=joint_transforms)
     # Build loaders
     train_loader = data.DataLoader(train_dataset, batch_size=train_batch_size,
