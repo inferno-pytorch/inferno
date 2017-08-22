@@ -1,5 +1,7 @@
 import torch
 from .base import Metric
+from ...utils.torch_utils import flatten_samples
+from ...utils.exceptions import assert_
 
 
 class CategoricalError(Metric):
@@ -35,6 +37,37 @@ class CategoricalError(Metric):
 
 
 class IOU(Metric):
-    """Intersection over Union."""
-    # TODO
-    pass
+    """Intersection over Union. """
+    def __init__(self, eps=1e-6):
+        super(IOU, self).__init__()
+        self.eps = eps
+
+    def forward(self, prediction, target):
+        # Assume that is one of:
+        #   prediction.shape = (N, C, H, W)
+        #   prediction.shape = (N, C, D, H, W)
+        #   prediction.shape = (N, C)
+        # The corresponding target shapes are:
+        #   target.shape = (N, H, W)
+        #   target.shape = (N, D, H, W)
+        #   target.shape = (N,)
+        # First, reshape prediction to (C, -1)
+        flattened_prediction = flatten_samples(prediction)
+        # Reshape target to (-1,)
+        flattened_target = target.view(-1)
+        # Convert target to onehot with shape (C, -1)
+        num_classes, num_samples = flattened_prediction.size()
+        # Make sure the target is consistent
+        assert_(target.max() < num_classes)
+        onehot_targets = flattened_prediction\
+            .new(num_classes, num_samples)\
+            .zero_()\
+            .scatter_(0, flattened_target, 1)
+        # Now to compute the IOU = (a * b).sum()/(a**2 + b**2 - a * b).sum()
+        # = (a * b).sum()/((a - b)**2).sum()
+        # We sum over all samples and average over all classes
+        numerator = (flattened_prediction * onehot_targets).sum(-1).mean()
+        denominator = \
+            (flattened_prediction - onehot_targets).pow_(2).clamp_(min=self.eps).sum(-1).mean()
+        iou = (numerator / denominator)
+        return iou

@@ -1,10 +1,12 @@
 import torch.nn as nn
+from ...utils.torch_utils import flatten_samples
 
 
 class SorensenDiceLoss(nn.Module):
     """
     Computes a loss scalar, which when minimized maximizes the Sorensen-Dice similarity
-    between the input and the target.
+    between the input and the target. For both inputs and targets it must be the case that
+    `input_or_target.size(1) = num_channels`.
     """
     def __init__(self, channelwise=True):
         """
@@ -17,23 +19,6 @@ class SorensenDiceLoss(nn.Module):
         super(SorensenDiceLoss, self).__init__()
         self.channelwise = channelwise
 
-    @staticmethod
-    def flatten_samples(tensor_or_variable):
-        """
-        Flattens a tensor such that the channel axis is first and the sample axis is second.
-        A (N, C, H, W) tensor would be flattened to a (C, N * H * W) tensor, for instance.
-        """
-        # Get number of channels
-        num_channels = tensor_or_variable.size(1)
-        # Permute the channel axis to first
-        permute_axes = list(range(tensor_or_variable.dim()))
-        permute_axes[0], permute_axes[1] = permute_axes[1], permute_axes[0]
-        # For input shape (say) NCHW, this should have the shape CNHW
-        permuted = tensor_or_variable.permute(*permute_axes).contiguous()
-        # Now flatten out all but the first axis and return
-        flattened = permuted.view(num_channels, -1)
-        return flattened
-
     def forward(self, input, target):
         if not self.channelwise:
             numerator = (input * target).sum()
@@ -43,8 +28,8 @@ class SorensenDiceLoss(nn.Module):
             # TODO This should be compatible with Pytorch 0.2, but check
             # Flatten input and target to have the shape (C, N),
             # where N is the number of samples
-            input = self.flatten_samples(input)
-            target = self.flatten_samples(target)
+            input = flatten_samples(input)
+            target = flatten_samples(target)
             # Compute numerator and denominator (by summing over samples and
             # leaving the channels intact)
             numerator = (input * target).sum(-1)

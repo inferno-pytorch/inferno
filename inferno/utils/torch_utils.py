@@ -102,3 +102,28 @@ def where(condition, if_true, if_false):
     casted_condition = condition.type_as(if_true)
     output = casted_condition * if_true + (1 - casted_condition) * if_false
     return output
+
+
+def flatten_samples(tensor_or_variable):
+    """
+    Flattens a tensor or a variable such that the channel axis is first and the sample axis
+    is second. The shapes are transformed as follows:
+        (N, C, H, W) --> (C, N * H * W)
+        (N, C, D, H, W) --> (C, N * D * H * W)
+        (N, C) --> (C, N)
+    The input must be atleast 2d.
+    """
+    assert_(tensor_or_variable.dim() >= 2,
+            "Tensor or variable must be atleast 2D. Got one of dim {}."
+            .format(tensor_or_variable.dim()),
+            ShapeError)
+    # Get number of channels
+    num_channels = tensor_or_variable.size(1)
+    # Permute the channel axis to first
+    permute_axes = list(range(tensor_or_variable.dim()))
+    permute_axes[0], permute_axes[1] = permute_axes[1], permute_axes[0]
+    # For input shape (say) NCHW, this should have the shape CNHW
+    permuted = tensor_or_variable.permute(*permute_axes).contiguous()
+    # Now flatten out all but the first axis and return
+    flattened = permuted.view(num_channels, -1)
+    return flattened
