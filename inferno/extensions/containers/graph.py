@@ -14,14 +14,32 @@ from ...utils.exceptions import assert_
 
 class NNGraph(nx.DiGraph):
     """A NetworkX DiGraph, except that node and edge ordering matters."""
+    # We don't copy torch tensors, only to have them deleted.
+    ATTRIBUTES_TO_NOT_COPY = {'payload'}
     node_dict_factory = OrderedDict
     adjlist_dict_factory = OrderedDict
 
     def copy(self, **init_kwargs):
-        new = type(self).__init__(**init_kwargs)
+        new = type(self)(**init_kwargs)
         # Remove all attributes and copy only the graph structure
         for source, target in self.edges_iter():
+            # Add new nodes
+            new.add_node(source)
+            new.add_node(target)
+            # Copy attributes
+            new.node[source].update(copy.deepcopy({key: value
+                                                   for key, value in self.node[source].items()
+                                                   if key not in self.ATTRIBUTES_TO_NOT_COPY}))
+            new.node[target].update(copy.deepcopy({key: value
+                                                   for key, value in self.node[target].items()
+                                                   if key not in self.ATTRIBUTES_TO_NOT_COPY}))
+            # Add new edge
             new.add_edge(copy.deepcopy(source), copy.deepcopy(target))
+            old_edge_attributes = self[source][target]
+            new_edge_attributes = {key: value for key, value in old_edge_attributes.items()
+                                   if key not in self.ATTRIBUTES_TO_NOT_COPY}
+            new_edge_attributes = copy.deepcopy(new_edge_attributes)
+            new[source][target].update(new_edge_attributes)
         return new
 
 
