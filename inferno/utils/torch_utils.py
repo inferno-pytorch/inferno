@@ -36,6 +36,10 @@ def is_tensor(object_):
     return torch.is_tensor(object_) or type(object_) in missed_tensor_classes
 
 
+def is_label_tensor(object_):
+    return is_tensor(object_) and object_.type() in ['torch.LongTensor', 'torch.cuda.LongTensor']
+
+
 def is_image_tensor(object_):
     return is_tensor(object_) and object_.dim() == 4
 
@@ -46,6 +50,18 @@ def is_volume_tensor(object_):
 
 def is_image_or_volume_tensor(object_):
     return is_image_tensor(object_) or is_volume_tensor(object_)
+
+
+def is_label_image_tensor(object_):
+    return is_label_tensor(object_) and object_.dim() == 3
+
+
+def is_label_volume_tensor(object_):
+    return is_label_tensor(object_) and object_.dim() == 4
+
+
+def is_label_image_or_volume_tensor(object_):
+    return is_label_image_tensor(object_) or is_label_volume_tensor(object_)
 
 
 def is_matrix_tensor(object_):
