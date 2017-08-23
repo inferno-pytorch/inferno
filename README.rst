@@ -1,8 +1,6 @@
 
-.. image:: http://svgshare.com/i/2j7.svg
-
 =======
-inferno
+Inferno
 =======
 
 
