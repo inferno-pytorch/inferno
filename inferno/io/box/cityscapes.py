@@ -247,8 +247,8 @@ class Cityscapes(data.Dataset):
         raise NotImplementedError
 
 
-def get_cityscapes_loader(root_directory, image_shape=(1024, 2048), labels_as_onehot=False,
-                          train_batch_size=1, validate_batch_size=1, num_workers=2):
+def get_cityscapes_loaders(root_directory, image_shape=(1024, 2048), labels_as_onehot=False,
+                           train_batch_size=1, validate_batch_size=1, num_workers=2):
     # Make transforms
     image_transforms = Compose(PILImage2NumPyArray(),
                                NormalizeRange(),
