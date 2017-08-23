@@ -2,6 +2,8 @@
 inferno
 =======
 
+
+
 .. image:: https://img.shields.io/pypi/v/inferno.svg
         :target: https://pypi.python.org/pypi/not_yet_inferno
 
@@ -15,6 +17,13 @@ inferno
 .. image:: https://pyup.io/repos/github/nasimrahaman/inferno/shield.svg
      :target: https://pyup.io/repos/github/nasimrahaman/inferno/
      :alt: Updates
+
+
+
+.. image:: tentative_logo.pdf
+
+
+
 
 
 Inferno is a little library providing utilities and convenience functions/classes around 
