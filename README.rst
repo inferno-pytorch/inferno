@@ -34,7 +34,7 @@ It's a work-in-progress, but the first release is underway!
 
 
 * Free software: Apache Software License 2.0
-* Documentation: https://not-yet-inferno.readthedocs.io (Work in progress).
+* Documentation: https://pytorch-inferno.readthedocs.io (Work in progress).
 
 
 Features
