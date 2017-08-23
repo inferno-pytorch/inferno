@@ -2,7 +2,6 @@
 inferno
 =======
 
-
 .. image:: https://img.shields.io/pypi/v/inferno.svg
         :target: https://pypi.python.org/pypi/not_yet_inferno
 
