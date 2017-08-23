@@ -20,7 +20,7 @@ inferno
 
 
 
-.. image:: graphics/tentative_logo.pdf
+.. image:: docs/graphics/tentative_logo.pdf
 
 
 
