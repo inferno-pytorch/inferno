@@ -68,6 +68,52 @@ extensions = [
     'sphinx.ext.napoleon'
 ]
 
+
+
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    'examples_dirs' : 
+            '../examples',
+    # path where to save gallery generated examples
+    'gallery_dirs'  : 
+            'auto_examples',
+    'backreferences_dir' :  
+            'gen_modules/backreferences',
+    'scan_used_functions':
+        True,
+    'doc_module' : 
+        ('inferno'),
+
+    'docs_resolv': True,
+
+    'parallel_read_safe': True,
+
+    'reference_url':  {
+             # The module you locally document uses a None
+            'inferno': None,
+
+            # External python modules use their documentation websites
+            #'matplotlib': 'http://matplotlib.org',
+            'numpy': 'http://docs.scipy.org/doc/numpy-1.13.0'}
+}
+
+
+
+
+# Napoleon settings
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+napoleon_include_init_with_doc = False
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = True
+napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_notes = False
+napoleon_use_admonition_for_references = False
+napoleon_use_ivar = False
+napoleon_use_param = True
+napoleon_use_rtype = True
+
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
