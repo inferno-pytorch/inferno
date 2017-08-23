@@ -1,4 +1,4 @@
-torch>=0.1.2
+torch
 dill
 pyyaml
 scipy>=0.13.0
