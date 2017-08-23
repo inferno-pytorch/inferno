@@ -1,0 +1,7 @@
+torch>=0.1.2
+dill
+pyyaml
+scipy>=0.13.0
+h5py
+numpy>=1.8
+scikit-image
