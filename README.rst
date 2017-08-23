@@ -1,3 +1,6 @@
+
+.. image:: docs/graphics/plain_tentative_logo.svg
+
 =======
 inferno
 =======
@@ -20,7 +23,7 @@ inferno
 
 
 
-.. image:: http://svgshare.com/i/2j7.svg
+.. image:: docs/graphics/plain_tentative_logo.svg
 
 
 
