@@ -52,10 +52,16 @@ setup(
     install_requires=requirements,
     license="Apache Software License 2.0",
     zip_safe=False,
-    keywords='inferno',
+    keywords='inferno pytorch torch deep learning cnn deep-pyromania',
     classifiers=[
+        # How mature is this project? Common values are\
+        #   2 - Pre-Alpha',
+        #   3 - Alpha,
+        #   4 - Beta,
+        #   5 - Production/Stable
         'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
+        # Indicate who your project is intended for
+        'Intended Audience :: Research',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.5',
