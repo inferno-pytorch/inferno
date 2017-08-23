@@ -20,7 +20,7 @@ inferno
 
 
 
-.. image:: https://github.com/DerThorsten/inferno-1/blob/master/docs/graphics/tentative_logo.pdf
+.. image:: https://github.com/DerThorsten/inferno-1/raw/master/docs/graphics/tentative_logo.pdf
 
 
 
