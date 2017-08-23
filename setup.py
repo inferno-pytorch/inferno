@@ -23,6 +23,7 @@ requirements = [
     "scikit-image"
 ]
 
+
 setup_requirements = [
     # TODO(nasimrahaman): put setup requirements (distutils extensions, etc.) here
 
