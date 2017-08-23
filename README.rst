@@ -20,7 +20,7 @@ inferno
 
 
 
-.. image:: https://raw.githubusercontent.com/DerThorsten/inferno-1/master/docs/graphics/plain_tentative_logo.svg
+.. image:: http://svgshare.com/i/2j7.svg
 
 
 
