@@ -1,6 +1,0 @@
-dill
-pyyaml
-scipy>=0.13.0
-tensorflow>=1.0.0
-h5py
-scikit-image

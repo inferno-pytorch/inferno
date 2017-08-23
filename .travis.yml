@@ -20,10 +20,10 @@ script: tox
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
-  user: nasimrahaman
+  user: DerThorsten
   password:
     secure: PLEASE_REPLACE_ME
   on:
     tags: true
-    repo: nasimrahaman/inferno
+    repo: DerThorsten/inferno-1
     python: 2.7

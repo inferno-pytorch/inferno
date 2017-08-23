@@ -9,9 +9,9 @@ inferno
 .. image:: https://img.shields.io/travis/nasimrahaman/inferno.svg
         :target: https://travis-ci.org/nasimrahaman/inferno
 
-.. image:: https://readthedocs.org/projects/inferno/badge/?version=latest
-        :target: https://inferno.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+.. image:: https://readthedocs.org/projects/pytorch-inferno/badge/?version=latest
+        :target: http://pytorch-inferno.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status               
 
 .. image:: https://pyup.io/repos/github/nasimrahaman/inferno/shield.svg
      :target: https://pyup.io/repos/github/nasimrahaman/inferno/

@@ -13,7 +13,22 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     # TODO: put package requirements here
-    pytorch
+    "pip==8.1.2",
+    "bumpversion==0.5.3",
+    "wheel==0.29.0",
+    "watchdog==0.8.3",
+    "flake8==2.6.0",
+    "tox==2.3.1",
+    "coverage==4.1",
+    "Sphinx==1.4.8",
+    "cryptography==1.7",
+    "PyYAML==3.11",
+    "pytorch>=0.2.0",
+    "dill",
+    "pyyaml",
+    "scipy>=0.13.0",
+    "h5py",
+    "scikit-image"
 ]
 
 setup_requirements = [
@@ -23,7 +38,7 @@ setup_requirements = [
 
 test_requirements = [
     # TODO: put package test requirements here
-    unittest
+    'unittest'
 ]
 
 setup(
