@@ -14,3 +14,5 @@ pyyaml
 scipy>=0.13.0
 h5py
 scikit-image
+sphinx-gallery
+sphinxcontrib-napoleon
