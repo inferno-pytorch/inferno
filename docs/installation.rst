@@ -1,8 +1,63 @@
 .. highlight:: shell
 
-============
+==================================
 Installation
-============
+==================================
+
+Install on Linux and OSX
+------------------------
+
+Developers
+~~~~~~~~~~~~~~~~~~~~~~
+
+First, make sure `you have Pytorch installed <http://pytorch.org/>`_. 
+
+Then, clone this repository with: 
+
+.. code:: python
+
+  $ git clone https://github.com/nasimrahaman/inferno.git
+
+
+Next, install the dependencies.
+
+.. code:: python
+
+  $ cd inferno
+  $ pip install -r requirements.txt
+
+
+If you use python from the shell: 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Finally, add *inferno* to your `PYTHONPATH` with:
+
+.. code:: python
+
+  source add2path.sh
+
+If you use PyCharm:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Refer to this `QA <https://askubuntu.com/questions/684550/importing-a-python-module-works-from-command-line-but-not-from-pycharm>`_ about setting up paths with Pycharm.
+
+Users
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Installation with `pip` will be ready when the release is.
+
+
+
+
+
+
+
+
+
+
+
+==================================
+Installation When Released (TODO)
+==================================
 
 TODO THIS NEEDS TO BE REWRITTEN
 

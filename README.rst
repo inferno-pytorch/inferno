@@ -116,46 +116,7 @@ To visualize the training progress, navigate to `LOG_DIRECTORY` and fire up tens
 
 and navigate to `localhost:6007` with your browser.
 
-Install on Linux and OSX
-------------------------
 
-Developers
-~~~~~~~~~~~~~~~~~~~~~~
-
-First, make sure `you have Pytorch installed <http://pytorch.org/>`_. 
-
-Then, clone this repository with: 
-
-.. code:: python
-
-  $ git clone https://github.com/nasimrahaman/inferno.git
-
-
-Next, install the dependencies.
-
-.. code:: python
-
-  $ cd inferno
-  $ pip install -r requirements.txt
-
-
-If you use python from the shell: 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Finally, add *inferno* to your `PYTHONPATH` with:
-
-.. code:: python
-
-  source add2path.sh
-
-If you use PyCharm:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Refer to this `QA <https://askubuntu.com/questions/684550/importing-a-python-module-works-from-command-line-but-not-from-pycharm>`_ about setting up paths with Pycharm.
-
-Users
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Installation with `pip` will be ready when the release is.
 
 Future Features: 
 ------------------------
@@ -165,50 +126,12 @@ Planned features include:
   *   proper packaging and documentation,
   *   cutting-edge fresh-off-the-press implementations of what the future has in store. :)
 
-Contributing:
-------------------------
-Got an idea? Awesome! Start a discussion by opening an issue or contribute with a pull request.
 
-
-
-
-Who's Who?
-------------------------
-
-Contributors
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In no particular order,
-  *   `Steffen Wolf <https://github.com/Steffen-Wolf>`_  @ 
-      `Image Analysis and Learning Lab <https://hci.iwr.uni-heidelberg.de/mip>`_ ,
-      `Heidelberg Collaboratory for Image Processing <https://hci.iwr.uni-heidelberg.de/>`_ ,
-  *   `Maurice Weiler <https://github.com/mauriceweiler>`_  @ 
-      `Image Analysis and Learning Lab <https://hci.iwr.uni-heidelberg.de/mip>`_ ,
-      `Heidelberg Collaboratory for Image Processing <https://hci.iwr.uni-heidelberg.de/>`_ ,   
-  *   `Constantin Pape <https://github.com/constantinpape>`_  @ 
-      `Image Analysis and Learning Lab <https://hci.iwr.uni-heidelberg.de/mip>`_ ,
-      `Heidelberg Collaboratory for Image Processing <https://hci.iwr.uni-heidelberg.de/>`_ ,
-
-  *   `Sven Peter <https://github.com/svenpeter42>`_  @ 
-      `Image Analysis and Learning Lab <https://hci.iwr.uni-heidelberg.de/mip>`_ ,
-      `Heidelberg Collaboratory for Image Processing <https://hci.iwr.uni-heidelberg.de/>`_ ,
-  *   `Manuel Haussmann <https://github.com/manuelhaussmann>`_  @ 
-      `Image Analysis and Learning Lab <https://hci.iwr.uni-heidelberg.de/mip>`_ ,
-      `Heidelberg Collaboratory for Image Processing <https://hci.iwr.uni-heidelberg.de/>`_ ,
-  *   `Thorsten Beier <https://github.com/DerThorsten>`_  @ 
-      `Image Analysis and Learning Lab <https://hci.iwr.uni-heidelberg.de/mip>`_ ,
-      `Heidelberg Collaboratory for Image Processing <https://hci.iwr.uni-heidelberg.de/>`_ ,
-
-
-Maintainers
-------------------------
-
-* `Nasim Rahaman <https://github.com/nasimrahaman>`_  @ `Image Analysis and Learning Lab <https://hci.iwr.uni-heidelberg.de/mip>`_ , `Heidelberg Collaboratory for Image Processing <https://hci.iwr.uni-heidelberg.de/>`_ ,
 
 Credits
 ---------
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+This package was partially created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
