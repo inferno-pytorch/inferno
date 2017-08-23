@@ -186,9 +186,11 @@ def get_camvid_loaders(root_directory, train_batch_size=1, validate_batch_size=1
                            joint_transform=joint_transforms)
     validate_dataset = CamVid(root_directory, split='validate',
                               image_transform=image_transforms,
+                              label_transform=label_transforms,
                               joint_transform=joint_transforms)
     test_dataset = CamVid(root_directory, split='test',
                           image_transform=image_transforms,
+                          label_transform=label_transforms,
                           joint_transform=joint_transforms)
     # Build loaders
     train_loader = data.DataLoader(train_dataset, batch_size=train_batch_size,
