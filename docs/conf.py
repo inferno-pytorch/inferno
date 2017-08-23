@@ -23,7 +23,7 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
             return MagicMock()
 
-MOCK_MODULES = ['pygtk', 'hdf5', 'skimage', 'argparse', 'pandas']
+MOCK_MODULES = ['pygtk', 'hdf5', 'skimage', 'argparse', 'pandas','torch','torch.nn']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
