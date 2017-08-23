@@ -19,7 +19,8 @@ def unwrap(tensor_or_variable, to_cpu=True, as_numpy=False):
     elif isinstance(tensor_or_variable, (float, int)):
         return tensor_or_variable
     else:
-        raise NotImplementedError
+        raise NotImplementedError("Cannot unwrap a '{}'."
+                                  .format(type(tensor_or_variable).__name__))
     # Transfer to CPU if required
     if to_cpu:
         with delayed_keyboard_interrupt():
