@@ -156,7 +156,7 @@ class CamVid(data.Dataset):
         raise NotImplementedError
 
 
-def get_camvid_loaders(root_directory, labels_as_onehot=False,
+def get_camvid_loaders(root_directory, image_shape=(360, 480), labels_as_onehot=False,
                        train_batch_size=1, validate_batch_size=1, test_batch_size=1,
                        num_workers=2):
     # Make transforms
@@ -168,11 +168,11 @@ def get_camvid_loaders(root_directory, labels_as_onehot=False,
     joint_transforms = Compose(RandomSizedCrop(ratio_between=(0.6, 1.0),
                                                preserve_aspect_ratio=True),
                                # Scale raw image back to the original shape
-                               Scale(output_image_shape=(360, 480),
+                               Scale(output_image_shape=image_shape,
                                      interpolation_order=3, apply_to=[0]),
                                # Scale segmentation back to the original shape
                                # (without interpolation)
-                               Scale(output_image_shape=(360, 480),
+                               Scale(output_image_shape=image_shape,
                                      interpolation_order=0, apply_to=[1]),
                                RandomFlip(allow_ud_flips=False),
                                # Cast raw image to float
@@ -195,9 +195,11 @@ def get_camvid_loaders(root_directory, labels_as_onehot=False,
                            joint_transform=joint_transforms)
     validate_dataset = CamVid(root_directory, split='validate',
                               image_transform=image_transforms,
+                              label_transform=label_transforms,
                               joint_transform=joint_transforms)
     test_dataset = CamVid(root_directory, split='test',
                           image_transform=image_transforms,
+                          label_transform=label_transforms,
                           joint_transform=joint_transforms)
     # Build loaders
     train_loader = data.DataLoader(train_dataset, batch_size=train_batch_size,
