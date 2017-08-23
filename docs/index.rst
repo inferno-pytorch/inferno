@@ -14,6 +14,7 @@ Contents:
    reference
    authors
    history
+   zbibliography
 
 Indices and tables
 ==================
