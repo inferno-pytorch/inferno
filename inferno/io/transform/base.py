@@ -146,3 +146,18 @@ class Compose(object):
         for transform in self.transforms:
             intermediate = pyu.to_iterable(transform(*intermediate))
         return pyu.from_iterable(intermediate)
+
+
+class DTypeMapping(object):
+    DTYPE_MAPPING = {'float32': 'float32',
+                     'float': 'float32',
+                     'double': 'float64',
+                     'float64': 'float64',
+                     'half': 'float16',
+                     'float16': 'float16',
+                     'long': 'int64',
+                     'int64': 'int64',
+                     'byte': 'uint8',
+                     'uint8': 'uint8',
+                     'int': 'int32',
+                     'int32': 'int32'}

@@ -27,10 +27,10 @@ class TestCityscapes(unittest.TestCase):
         self.assertLessEqual(label.max(), 33)
 
     def test_cityscapes_dataset_with_transforms(self):
-        from inferno.io.box.cityscapes import get_cityscapes_loader
+        from inferno.io.box.cityscapes import get_cityscapes_loaders
         from inferno.utils.io_utils import print_tensor
 
-        train_loader, validate_loader = get_cityscapes_loader(self.get_cityscapes_root())
+        train_loader, validate_loader = get_cityscapes_loaders(self.get_cityscapes_root())
         train_dataset = train_loader.dataset
         tic = time.time()
         image, label = train_dataset[0]

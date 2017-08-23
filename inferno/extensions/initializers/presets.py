@@ -23,3 +23,10 @@ class OrthogonalWeightsZeroBias(Initialization):
         super(OrthogonalWeightsZeroBias, self)\
             .__init__(weight_initializer=partial(init.orthogonal, gain=orthogonal_gain),
                       bias_initializer=Constant(0.))
+
+
+class KaimingNormalWeightsZeroBias(Initialization):
+    def __init__(self, relu_leakage=0):
+        super(KaimingNormalWeightsZeroBias, self)\
+            .__init__(weight_initializer=partial(init.kaiming_normal, a=relu_leakage),
+                      bias_initializer=Constant(0.))
