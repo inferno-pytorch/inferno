@@ -151,6 +151,7 @@ What this means is that if you have your own loss criterion that has the same AP
 The same holds for the optimizer:
 
 .. code:: python
+
     trainer.build_optimizer('Adam', weight_decay=0.0005)
 
 Like for criteria, the `trainer` looks for a `'Adam'` in `torch.optim` (among other places), and initializes it with `model`'s parameters. Any keywords you might use for `torch.optim.Adam`, you could pass them to the `build_optimizer` method. 
@@ -245,7 +246,8 @@ With the callback defined, all we need to do is register it with the trainer:
 So the next time you get `RuntimeError: "NaNs detected!`, you know the drill. 
 
 Using Tensorboard
-*************
+**************************
+
 Inferno supports logging scalars and images to Tensorboard out-of-the-box, though this requires you have at least [tensorflow-cpu](https://github.com/tensorflow/tensorflow) installed. Let's say you want to log scalars every iteration and images every 20 iterations:
 
 .. code:: python
@@ -294,7 +296,8 @@ __Pro-tip__: Say you only want to use GPUs 0, 3, 5 and 7 (your colleagues might 
 This maps device 0 to 0, 3 to 1, 5 to 2 and 7 to 3. 
 
 One more thing
-*************
+**************************
+
 
 Once you have everything configured, use 
 
@@ -309,12 +312,16 @@ Cherries:
 
 
 Building Complex Models with the Graph API
-*************
+****************************************************
+
+
+
 Work in Progress:
 
 
 Parameter Initialization
-*************
+**************************
+
 Work in Progress:
 
 

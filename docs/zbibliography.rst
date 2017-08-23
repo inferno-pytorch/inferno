@@ -3,7 +3,7 @@
 Bibliography
 ============================
 
-The API reference documentation for inferno
+The bibliography: 
 
 .. bibliography:: refs.bib
     :style: alpha
