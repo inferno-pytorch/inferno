@@ -80,7 +80,8 @@ class DumpHDF5Every(Callback):
         if pyu.is_listlike(value):
             for value_num, _value in enumerate(value):
                 self.add_to_dump_cache("{}_{}".format(key, value_num), _value)
-        self._dump_cache.update({key: value})
+        else:
+            self._dump_cache.update({key: value})
 
     def clear_dump_cache(self):
         self._dump_cache.clear()
@@ -114,6 +115,13 @@ class DumpHDF5Every(Callback):
         return self
 
     def get_file_path(self, mode):
+        # Make sure the dump directory exists
+        if not os.path.exists(self.dump_directory):
+            os.mkdir(self.dump_directory)
+        else:
+            assert_(os.path.isdir(self.dump_directory),
+                    "Dump directory {} is a file.".format(self.dump_directory),
+                    FileExistsError)
         filename = self.dump_filename_template.format(epoch_count=self.trainer.epoch_count,
                                                       iteration_count=self.trainer.iteration_count,
                                                       mode=mode)
