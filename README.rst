@@ -119,7 +119,7 @@ Current features include:
 
 To visualize the training progress, navigate to `LOG_DIRECTORY` and fire up tensorboard with 
 
-.. code:: python
+.. code:: bash
 
   $ tensorboard --logdir=${PWD} --port=6007
 
@@ -140,8 +140,11 @@ Planned features include:
 
 Credits
 ---------
+All contributors are listed here_. 
 
-This package was partially created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+.. _here: https://pytorch-inferno.readthedocs.io/en/latest/authors.html
+
+This packag was partially generated with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template + lots of work by Thorsten. 
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
