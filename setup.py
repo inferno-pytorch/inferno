@@ -25,13 +25,11 @@ requirements = [
 
 
 setup_requirements = [
-    # TODO(nasimrahaman): put setup requirements (distutils extensions, etc.) here
-
+    'pytest-runner'
 ]
 
 test_requirements = [
-    # TODO: put package test requirements here
-    'unittest'
+    'pytest','unittest'
 ]
 
 dependency_links  = [

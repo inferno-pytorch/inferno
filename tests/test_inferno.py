@@ -9,6 +9,7 @@ import unittest
 from inferno import inferno
 
 
+
 class TestInferno(unittest.TestCase):
     """Tests for `inferno` package."""
 
@@ -20,3 +21,5 @@ class TestInferno(unittest.TestCase):
 
     def test_000_something(self):
         """Test something."""
+
+
