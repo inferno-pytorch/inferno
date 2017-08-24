@@ -12,7 +12,7 @@ install:
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy skimage h5py scipy
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scikit-image h5py scipy
   - conda install pytorch torchvision -c soumith
 
 deploy:
