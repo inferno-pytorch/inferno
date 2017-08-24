@@ -55,11 +55,12 @@ Installation with `pip` will be ready when the release is.
 
 
 
-==================================
-Installation When Released (TODO)
-==================================
+======================================================
+Installation via PyPi / pip / setup.py(Experimental)
+======================================================
 
-TODO THIS NEEDS TO BE REWRITTEN
+You need to install pytorch via pip before installing
+inferno.  Follow the `pytorch installation guide`_.
 
 Stable release
 --------------
@@ -68,7 +69,7 @@ To install inferno, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install inferno
+    $ pip install pytorch-inferno
 
 This is the preferred method to install inferno, as it will always install the most recent stable release. 
 
@@ -77,10 +78,10 @@ you through the process.
 
 .. _pip: https://pip.pypa.io
 .. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
-
+.. _pytorch installation guide: http://pytorch.org/
 
 From sources
-------------
+------------------------
 
 The sources for inferno can be downloaded from the `Github repo`_.
 

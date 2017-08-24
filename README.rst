@@ -6,10 +6,10 @@ Inferno
 
 
 .. image:: https://img.shields.io/pypi/v/inferno.svg
-        :target: https://pypi.python.org/pypi/not_yet_inferno
+        :target: https://pypi.python.org/pypi/pytorch-inferno
 
-.. image:: https://img.shields.io/travis/nasimrahaman/inferno.svg
-        :target: https://travis-ci.org/nasimrahaman/inferno
+.. image:: https://img.shields.io/travis/DerThorsten/inferno.svg
+        :target: https://travis-ci.org/DerThorsten/inferno-1
 
 .. image:: https://readthedocs.org/projects/pytorch-inferno/badge/?version=latest
         :target: http://pytorch-inferno.readthedocs.io/en/latest/?badge=latest

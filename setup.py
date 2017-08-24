@@ -25,29 +25,27 @@ requirements = [
 
 
 setup_requirements = [
-    # TODO(nasimrahaman): put setup requirements (distutils extensions, etc.) here
-
+    'pytest-runner'
 ]
 
 test_requirements = [
-    # TODO: put package test requirements here
-    'unittest'
+    'pytest','unittest'
 ]
 
-# dependency_links  = [
-#     'http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp35-cp35m-manylinux1_x86_64.whl#egg=torch-0.2.0'
-# ]
+dependency_links  = [
+    'http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp35-cp35m-manylinux1_x86_64.whl#egg=torch-0.2.0'
+]
 
 setup(
-    name='inferno',
-    version='0.1.0',
+    name='pytorch-inferno',
+    version='1.1.5',
     description="Inferno is a little library providing utilities and convenience functions/classes around PyTorch.",
     long_description=readme + '\n\n' + history,
     author="Nasim Rahaman",
     author_email='nasim.rahaman@iwr.uni-heidelberg.de',
     url='https://github.com/nasimrahaman/inferno',
     packages=find_packages(include=['inferno']),
-    #dependency_links=dependency_links,
+    dependency_links=dependency_links,
     include_package_data=True,
     install_requires=requirements,
     license="Apache Software License 2.0",
@@ -61,13 +59,13 @@ setup(
         #   5 - Production/Stable
         'Development Status :: 2 - Pre-Alpha',
         # Indicate who your project is intended for
-        'Intended Audience :: Research',
+        'Intended Audience :: Science/Research',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6'
     ],
-    test_suite='tests',
+    test_suite='test',
     tests_require=test_requirements,
     setup_requires=setup_requirements,
 )
