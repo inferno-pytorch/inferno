@@ -46,3 +46,10 @@ class DTypeError(TypeError):
 
 class ClassNotFoundError(LookupError):
     pass
+
+
+# ------ NOT-IMPLEMENTED ERRORS ------
+
+
+class NotUnwrappableError(NotImplementedError):
+    pass
