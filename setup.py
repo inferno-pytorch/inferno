@@ -39,8 +39,8 @@ dependency_links  = [
 ]
 
 setup(
-    name='inferno',
-    version='0.1.0',
+    name='pytorch-inferno',
+    version='0.1.2',
     description="Inferno is a little library providing utilities and convenience functions/classes around PyTorch.",
     long_description=readme + '\n\n' + history,
     author="Nasim Rahaman",
@@ -61,7 +61,7 @@ setup(
         #   5 - Production/Stable
         'Development Status :: 2 - Pre-Alpha',
         # Indicate who your project is intended for
-        'Intended Audience :: Research',
+        'Intended Audience :: Science/Research',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.5',
