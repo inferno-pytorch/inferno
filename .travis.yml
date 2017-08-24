@@ -3,20 +3,20 @@ python:
 - 3.5
 
 install:
-  - pip install http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp35-cp35m-manylinux1_x86_64.whl 
-  - pip install torchvision
+  #- pip install http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp35-cp35m-manylinux1_x86_64.whl 
+  #- pip install torchvision
 
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
+  #- hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scikit-image h5py scipy
-  - conda install pytorch torchvision -c soumith
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION 
+  - conda install pytorch -c soumith
 
 
-  
+
 deploy:
   provider: pypi
   user: DerThorsten
