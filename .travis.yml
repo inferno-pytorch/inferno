@@ -10,7 +10,7 @@ install:
 
 deploy:
   provider: pypi
-  user: "Your username"
+  user: DerThorsten
   password:
     secure: !!binary |
       cFJOVG9kNW0xNjExaWN2UVZWVGl5RVVjUlBBTnAzV2hoNDdPQUh4TUw3QUFVbDNQVWlCV09wZ3Iv
@@ -28,7 +28,7 @@ deploy:
   on:
     all_branches: true
 
-    
+
 script: tox
 
 
