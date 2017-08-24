@@ -84,11 +84,12 @@ class IOU(Metric):
                              "prediction, or one less. Got target.dim() = {} but "
                              "prediction.dim() = {}.".format(target.dim(), prediction.dim()))
         # Now to compute the IOU = (a * b).sum()/(a**2 + b**2 - a * b).sum()
-        # = (a * b).sum()/((a - b)**2).sum()
-        # We sum over all samples and average over all classes
-        numerator = (flattened_prediction * onehot_targets).sum(-1).mean()
+        # We sum over all samples and all classes (sum or average does not matter -
+        # the factors cancel out)
+        numerator = (flattened_prediction * onehot_targets).sum()
         denominator = \
-            (flattened_prediction - onehot_targets).pow_(2).clamp_(min=self.eps).sum(-1).mean()
+            flattened_prediction.sub_(onehot_targets).pow_(2).clamp_(min=self.eps).sum() + \
+            numerator
         iou = (numerator / denominator)
         return iou
 
