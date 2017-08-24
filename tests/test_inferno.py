@@ -21,6 +21,7 @@ from inferno.trainers.callbacks.base import Callback
 from torch import nn
 
 
+
 class TestInferno(unittest.TestCase):
     """Tests for `inferno` package."""
 
@@ -135,6 +136,8 @@ class TestInferno(unittest.TestCase):
         # Go
         trainer.fit()
         self.assertGreater(trainer.get_state('validation_error_averaged'), 0.5)
+
+
 
 if __name__ == '__main__':
     unittest.main()
