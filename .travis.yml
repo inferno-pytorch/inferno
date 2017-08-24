@@ -13,7 +13,7 @@ install:
   - conda update -q conda
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION  h5py numpy scikit-image scipy
   - conda install pytorch torchvision -c soumith
-  - conda install -c anaconda pyyaml 
+  - conda install -c anaconda pyyaml dill 
   - source activate test-environment
 
 
