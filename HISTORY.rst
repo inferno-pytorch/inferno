@@ -23,7 +23,13 @@ History
 
 * Updated Documentation
 
+0.1.4 (2017-08-24)
+------------------
 
-Dev Changes:
---------------------------
-* Fixed Requirements.dev
+* travis auto-deployment on pypi
+
+
+0.1.5 (2017-08-24)
+------------------
+
+* travis changes to run unittest
