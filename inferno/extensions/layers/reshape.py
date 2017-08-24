@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from ...utils.exceptions import assert_, ShapeError
+from ...utils import python_utils as pyu
 
 
 class View(nn.Module):
@@ -98,6 +100,63 @@ class Concatenate(nn.Module):
 
     def forward(self, *inputs):
         return torch.cat(inputs, dim=self.dim)
+
+
+class ResizeAndConcatenate(nn.Module):
+    """
+    Resize input tensors spatially (to a specified target size) before concatenating
+    them along the channel dimension. The downsampling mode can be specified
+    ('average' or 'max'), but the upsampling is always 'nearest'.
+    """
+
+    POOL_MODE_MAPPING = {'avg': 'avg',
+                         'average': 'avg',
+                         'mean': 'avg',
+                         'max': 'max'}
+
+    def __init__(self, target_size, pool_mode='average'):
+        super(ResizeAndConcatenate, self).__init__()
+        self.target_size = target_size
+        assert_(pool_mode in self.POOL_MODE_MAPPING.keys(),
+                "`pool_mode` must be one of {}, got {} instead."
+                .format(self.POOL_MODE_MAPPING.keys(), pool_mode),
+                ValueError)
+        self.pool_mode = pool_mode
+
+    def forward(self, *inputs):
+        dim = inputs[0].dim()
+        assert_(dim in [4, 5],
+                'Input tensors must either be 4 or 5 '
+                'dimensional, but inputs[0] is {}D.'.format(dim),
+                ShapeError)
+        # Get resize function
+        spatial_dim = {4: 2, 5: 3}[dim]
+        resize_function = getattr(F, 'adaptive_{}_pool{}d'.format(self.pool_mode,
+                                                                  spatial_dim))
+        target_size = pyu.as_tuple_of_len(self.target_size, spatial_dim)
+        # Do the resizing
+        resized_inputs = []
+        for input_num, input in enumerate(inputs):
+            # Make sure the dim checks out
+            assert_(input.dim() == dim,
+                    "Expected inputs[{}] to be a {}D tensor, got a {}D "
+                    "tensor instead.".format(input_num, dim, input.dim()),
+                    ShapeError)
+            resized_inputs.append(resize_function(input, target_size))
+        # Concatenate along the channel axis
+        concatenated = torch.cat(tuple(resized_inputs), 1)
+        # Done
+        return concatenated
+
+
+class Cat(Concatenate):
+    """An alias for `Concatenate`. Hey, everyone knows who Cat is."""
+    pass
+
+
+class PoolCat(ResizeAndConcatenate):
+    """Alias for `ResizeAndConcatenate`, just to annoy snarky web developers."""
+    pass
 
 
 class Sum(nn.Module):

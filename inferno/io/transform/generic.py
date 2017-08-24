@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from .base import Transform
+from .base import Transform, DTypeMapping
 
 
 class Normalize(Transform):
@@ -76,21 +76,36 @@ class Project(Transform):
         return output
 
 
-class Cast(Transform):
-    """Casts inputs to a specified datatype."""
-    DTYPE_MAPPING = {'float32': 'float32',
-                     'float': 'float32',
-                     'double': 'float64',
-                     'float64': 'float64',
-                     'half': 'float16',
-                     'float16': 'float16',
-                     'long': 'int64',
-                     'int64': 'int64',
-                     'byte': 'uint8',
-                     'uint8': 'uint8',
-                     'int': 'int32',
-                     'int32': 'int32'}
+class Label2OneHot(Transform, DTypeMapping):
+    """Convert integer labels to one-hot vectors for arbitrary dimensional data."""
+    def __init__(self, num_classes, dtype='float', **super_kwargs):
+        """
+        Parameters
+        ----------
+        num_classes : int
+            Number of classes.
+        dtype : str
+            Datatype of the output.
+        super_kwargs : dict
+            Keyword arguments to the superclass.
+        """
+        super(Label2OneHot, self).__init__(**super_kwargs)
+        self.num_classes = num_classes
+        self.dtype = self.DTYPE_MAPPING.get(dtype)
 
+    def tensor_function(self, tensor):
+        reshaped_arange = np.arange(self.num_classes).reshape(-1, *(1,)*tensor.ndim)
+        output = np.equal(reshaped_arange, tensor).astype(self.dtype)
+        # output = np.zeros(shape=(self.num_classes,) + tensor.shape, dtype=self.dtype)
+        # # Optimizing for simplicity and memory efficiency, because one would usually
+        # # spawn multiple workers
+        # for class_num in range(self.num_classes):
+        #     output[class_num] = tensor == class_num
+        return output
+
+
+class Cast(Transform, DTypeMapping):
+    """Casts inputs to a specified datatype."""
     def __init__(self, dtype='float', **super_kwargs):
         """
         Parameters

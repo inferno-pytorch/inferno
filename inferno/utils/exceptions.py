@@ -37,6 +37,10 @@ class FrequencyTypeError(TypeError):
     pass
 
 
+class DTypeError(TypeError):
+    pass
+
+
 # ------ LOOKUP ERRORS ------
 
 

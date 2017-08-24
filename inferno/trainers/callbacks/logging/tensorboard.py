@@ -168,6 +168,10 @@ class TensorboardLogger(Logger):
         elif isinstance(object_, (float, int)) and allow_scalar_logging:
             value = float(object_)
             self.log_scalar(tag, value, step=self.trainer.iteration_count)
+        elif tu.is_label_image_or_volume_tensor(object_) and allow_image_logging:
+            # Add a channel axis and log as images
+            self.log_image_or_volume_batch(tag, object_[:, None, ...],
+                                           self.trainer.iteration_count)
         elif tu.is_image_or_volume_tensor(object_) and allow_image_logging:
             # Log images
             self.log_image_or_volume_batch(tag, object_, self.trainer.iteration_count)

@@ -9,7 +9,7 @@ from PIL import Image
 from torchvision.datasets.folder import is_image_file, default_loader
 from ...utils.exceptions import assert_
 from ..transform.base import Compose
-from ..transform.generic import Normalize, NormalizeRange, Cast, AsTorchBatch
+from ..transform.generic import Normalize, NormalizeRange, Cast, AsTorchBatch, Label2OneHot
 from ..transform.image import \
     RandomSizedCrop, RandomGammaCorrection, RandomFlip, Scale, PILImage2NumPyArray
 
@@ -156,8 +156,9 @@ class CamVid(data.Dataset):
         raise NotImplementedError
 
 
-def get_camvid_loaders(root_directory, train_batch_size=1, validate_batch_size=1,
-                       test_batch_size=1, num_workers=2):
+def get_camvid_loaders(root_directory, image_shape=(360, 480), labels_as_onehot=False,
+                       train_batch_size=1, validate_batch_size=1, test_batch_size=1,
+                       num_workers=2):
     # Make transforms
     image_transforms = Compose(PILImage2NumPyArray(),
                                NormalizeRange(),
@@ -167,18 +168,26 @@ def get_camvid_loaders(root_directory, train_batch_size=1, validate_batch_size=1
     joint_transforms = Compose(RandomSizedCrop(ratio_between=(0.6, 1.0),
                                                preserve_aspect_ratio=True),
                                # Scale raw image back to the original shape
-                               Scale(output_image_shape=(360, 480),
+                               Scale(output_image_shape=image_shape,
                                      interpolation_order=3, apply_to=[0]),
                                # Scale segmentation back to the original shape
                                # (without interpolation)
-                               Scale(output_image_shape=(360, 480),
+                               Scale(output_image_shape=image_shape,
                                      interpolation_order=0, apply_to=[1]),
                                RandomFlip(allow_ud_flips=False),
                                # Cast raw image to float
-                               Cast('float', apply_to=[0]),
-                               # Cast label image to long
-                               Cast('long', apply_to=[1]),
-                               AsTorchBatch(2, add_channel_axis_if_necessary=False))
+                               Cast('float', apply_to=[0]))
+    if labels_as_onehot:
+        # See cityscapes loader to understand why this is here.
+        joint_transforms\
+            .add(Label2OneHot(num_classes=len(CAMVID_CLASS_WEIGHTS), dtype='bool',
+                              apply_to=[1]))\
+            .add(Cast('float', apply_to=[1]))
+    else:
+        # Cast label image to long
+        joint_transforms.add(Cast('long', apply_to=[1]))
+    # Batchify
+    joint_transforms.add(AsTorchBatch(2, add_channel_axis_if_necessary=False))
     # Build datasets
     train_dataset = CamVid(root_directory, split='train',
                            image_transform=image_transforms,
@@ -186,9 +195,11 @@ def get_camvid_loaders(root_directory, train_batch_size=1, validate_batch_size=1
                            joint_transform=joint_transforms)
     validate_dataset = CamVid(root_directory, split='validate',
                               image_transform=image_transforms,
+                              label_transform=label_transforms,
                               joint_transform=joint_transforms)
     test_dataset = CamVid(root_directory, split='test',
                           image_transform=image_transforms,
+                          label_transform=label_transforms,
                           joint_transform=joint_transforms)
     # Build loaders
     train_loader = data.DataLoader(train_dataset, batch_size=train_batch_size,

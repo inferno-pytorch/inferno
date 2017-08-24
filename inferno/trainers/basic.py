@@ -118,23 +118,28 @@ class Trainer(object):
         """Gets the callback engine."""
         return self._callback_engine
 
-    def register_callback(self, callback, trigger='auto'):
+    def register_callback(self, callback, trigger='auto', **callback_kwargs):
         """
         Registers a callback with the internal callback engine.
 
         Parameters
         ----------
-        callback : callable
+        callback : type or callable
             Callback to register.
         trigger : str
             Specify the event that triggers the callback. Leave at 'auto' to have the
             callback-engine figure out the triggers. See
             `inferno.training.callbacks.base.CallbackEngine` documentation for more on this.
+        callback_kwargs : dict
+            If `callback` is a type, initialize an instance with these keywords to the
+            __init__ method.
         Returns
         -------
         Trainer
             self.
         """
+        if isinstance(callback, type):
+            callback = callback(**callback_kwargs)
         self._callback_engine.register_callback(callback, trigger=trigger)
         return self
 
@@ -1252,7 +1257,8 @@ class Trainer(object):
     def record_validation_results(self, validation_loss, validation_error):
         # Update state
         self.update_state('validation_loss_averaged', thu.unwrap(validation_loss))
-        self.update_state('validation_error_averaged', thu.unwrap(validation_error))
+        if validation_error is not None:
+            self.update_state('validation_error_averaged', thu.unwrap(validation_error))
         # Prefer the error metric (if provided). This should be handled with care -
         # validation error should either always not be None, or otherwise.
         validation_score = validation_loss if validation_error is None else validation_error

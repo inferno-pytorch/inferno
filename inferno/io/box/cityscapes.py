@@ -5,7 +5,8 @@ from PIL import Image
 from os.path import join
 from ...utils.exceptions import assert_
 from ..transform.base import Compose
-from ..transform.generic import Normalize, NormalizeRange, Cast, AsTorchBatch, Project
+from ..transform.generic import \
+    Normalize, NormalizeRange, Cast, AsTorchBatch, Project, Label2OneHot
 from ..transform.image import \
     RandomSizedCrop, RandomGammaCorrection, RandomFlip, Scale, PILImage2NumPyArray
 
@@ -87,6 +88,45 @@ CITYSCAPES_CLASSES_TO_LABELS = {
     32: 17,
     33: 18,
     -1: IGNORE_CLASS_LABEL
+}
+
+# Map classes to official cityscapes colors
+CITYSCAPES_CLASS_COLOR_MAPPING = {
+    0: (0, 0, 0),
+    1: (0, 0, 0),
+    2: (0, 0, 0),
+    3: (0, 0, 0),
+    4: (0, 0, 0),
+    5: (111, 74, 0),
+    6: (81, 0, 81),
+    7: (128, 64, 128),
+    8: (244, 35, 232),
+    9: (250, 170, 160),
+    10: (230, 150, 140),
+    11: (70, 70, 70),
+    12: (102, 102, 156),
+    13: (190, 153, 153),
+    14: (180, 165, 180),
+    15: (150, 100, 100),
+    16: (150, 120, 90),
+    17: (153, 153, 153),
+    18: (153, 153, 153),
+    19: (250, 170, 30),
+    20: (220, 220, 0),
+    21: (107, 142, 35),
+    22: (152, 251, 152),
+    23: (70, 130, 180),
+    24: (220, 20, 60),
+    25: (255, 0, 0),
+    26: (0, 0, 142),
+    27: (0, 0, 70),
+    28: (0, 60, 100),
+    29: (0, 0, 90),
+    30: (0, 0, 110),
+    31: (0, 80, 100),
+    32: (0, 0, 230),
+    33: (119, 11, 32),
+    -1: (0, 0, 142),
 }
 
 # Weights corresponding to the outputs
@@ -207,8 +247,8 @@ class Cityscapes(data.Dataset):
         raise NotImplementedError
 
 
-def get_cityscapes_loader(root_directory, image_shape=(1024, 2048),
-                          train_batch_size=1, validate_batch_size=1, num_workers=2):
+def get_cityscapes_loaders(root_directory, image_shape=(1024, 2048), labels_as_onehot=False,
+                           train_batch_size=1, validate_batch_size=1, num_workers=2):
     # Make transforms
     image_transforms = Compose(PILImage2NumPyArray(),
                                NormalizeRange(),
@@ -227,10 +267,20 @@ def get_cityscapes_loader(root_directory, image_shape=(1024, 2048),
                                      interpolation_order=0, apply_to=[1]),
                                RandomFlip(allow_ud_flips=False),
                                # Cast raw image to float
-                               Cast('float', apply_to=[0]),
-                               # Cast label image to long
-                               Cast('long', apply_to=[1]),
-                               AsTorchBatch(2, add_channel_axis_if_necessary=False))
+                               Cast('float', apply_to=[0]))
+    if labels_as_onehot:
+        # Applying Label2OneHot on the full label image makes it unnecessarily expensive,
+        # because we're throwing it away with RandomSizedCrop and Scale. Tests show that it's
+        # ~1 sec faster per image.
+        joint_transforms\
+            .add(Label2OneHot(num_classes=len(CITYSCAPES_LABEL_WEIGHTS), dtype='bool',
+                              apply_to=[1]))\
+            .add(Cast('float', apply_to=[1]))
+    else:
+        # Cast label image to long
+        joint_transforms.add(Cast('long', apply_to=[1]))
+    # Batchify
+    joint_transforms.add(AsTorchBatch(2, add_channel_axis_if_necessary=False))
     # Build datasets
     train_dataset = Cityscapes(root_directory, split='train',
                                image_transform=image_transforms,
@@ -238,6 +288,7 @@ def get_cityscapes_loader(root_directory, image_shape=(1024, 2048),
                                joint_transform=joint_transforms)
     validate_dataset = Cityscapes(root_directory, split='validate',
                                   image_transform=image_transforms,
+                                  label_transform=label_transforms,
                                   joint_transform=joint_transforms)
     # Build loaders
     train_loader = data.DataLoader(train_dataset, batch_size=train_batch_size,
