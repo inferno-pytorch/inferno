@@ -5,7 +5,8 @@ from PIL import Image
 from os.path import join
 from ...utils.exceptions import assert_
 from ..transform.base import Compose
-from ..transform.generic import Normalize, NormalizeRange, Cast, AsTorchBatch, Project
+from ..transform.generic import \
+    Normalize, NormalizeRange, Cast, AsTorchBatch, Project, Label2OneHot
 from ..transform.image import \
     RandomSizedCrop, RandomGammaCorrection, RandomFlip, Scale, PILImage2NumPyArray
 
@@ -246,8 +247,8 @@ class Cityscapes(data.Dataset):
         raise NotImplementedError
 
 
-def get_cityscapes_loader(root_directory, image_shape=(1024, 2048),
-                          train_batch_size=1, validate_batch_size=1, num_workers=2):
+def get_cityscapes_loaders(root_directory, image_shape=(1024, 2048), labels_as_onehot=False,
+                           train_batch_size=1, validate_batch_size=1, num_workers=2):
     # Make transforms
     image_transforms = Compose(PILImage2NumPyArray(),
                                NormalizeRange(),
@@ -266,10 +267,20 @@ def get_cityscapes_loader(root_directory, image_shape=(1024, 2048),
                                      interpolation_order=0, apply_to=[1]),
                                RandomFlip(allow_ud_flips=False),
                                # Cast raw image to float
-                               Cast('float', apply_to=[0]),
-                               # Cast label image to long
-                               Cast('long', apply_to=[1]),
-                               AsTorchBatch(2, add_channel_axis_if_necessary=False))
+                               Cast('float', apply_to=[0]))
+    if labels_as_onehot:
+        # Applying Label2OneHot on the full label image makes it unnecessarily expensive,
+        # because we're throwing it away with RandomSizedCrop and Scale. Tests show that it's
+        # ~1 sec faster per image.
+        joint_transforms\
+            .add(Label2OneHot(num_classes=len(CITYSCAPES_LABEL_WEIGHTS), dtype='bool',
+                              apply_to=[1]))\
+            .add(Cast('float', apply_to=[1]))
+    else:
+        # Cast label image to long
+        joint_transforms.add(Cast('long', apply_to=[1]))
+    # Batchify
+    joint_transforms.add(AsTorchBatch(2, add_channel_axis_if_necessary=False))
     # Build datasets
     train_dataset = Cityscapes(root_directory, split='train',
                                image_transform=image_transforms,
