@@ -3,7 +3,7 @@ import torch
 from torch.autograd import Variable
 
 from .python_utils import delayed_keyboard_interrupt
-from .exceptions import assert_, ShapeError
+from .exceptions import assert_, ShapeError, NotUnwrappableError
 
 
 def unwrap(tensor_or_variable, to_cpu=True, as_numpy=False):
@@ -19,7 +19,7 @@ def unwrap(tensor_or_variable, to_cpu=True, as_numpy=False):
     elif isinstance(tensor_or_variable, (float, int)):
         return tensor_or_variable
     else:
-        raise NotImplementedError("Cannot unwrap a '{}'."
+        raise NotUnwrappableError("Cannot unwrap a '{}'."
                                   .format(type(tensor_or_variable).__name__))
     # Transfer to CPU if required
     if to_cpu:

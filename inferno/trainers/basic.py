@@ -1229,10 +1229,12 @@ class Trainer(object):
                 self.update_state('validation_error', thu.unwrap(validation_error))
                 validation_error_meter.update(validation_error, n=batch_size)
 
-            self.update_state('validation_input', thu.unwrap(inputs))
+            self.update_state('validation_inputs', thu.unwrap(inputs))
             self.update_state('validation_target', thu.unwrap(target))
             self.update_state('validation_prediction', thu.unwrap(output))
             self.update_state('validation_loss', thu.unwrap(loss))
+            # This is here for legacy reasons and will eventually be deprecated.
+            self.update_state('validation_input', self.get_state('validation_inputs'))
             # Update from model's state hooks
             self.update_state_from_model_state_hooks()
 
