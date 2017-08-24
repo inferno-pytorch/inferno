@@ -1,4 +1,3 @@
---extra-index-url  http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp35-cp35m-manylinux1_x86_64.whl#egg=torch-0.2.0
 dill
 pyyaml
 scipy>=0.13.0
