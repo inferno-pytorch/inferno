@@ -4,4 +4,4 @@
 
 __author__ = """Nasim Rahaman"""
 __email__ = 'nasim.rahaman@iwr.uni-heidelberg.de'
-__version__ = '__version__ = '0.1.2''
+__version__ = '__version__ = '1.1.3''
