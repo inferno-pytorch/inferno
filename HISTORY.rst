@@ -16,3 +16,14 @@ History
 ------------------
 
 * Version Increment
+
+
+0.1.3 (2017-08-24)
+------------------
+
+* Updated Documentation
+
+
+Dev Changes:
+--------------------------
+* Fixed Requirements.dev
