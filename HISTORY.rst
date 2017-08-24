@@ -33,3 +33,10 @@ History
 ------------------
 
 * travis changes to run unittest
+
+
+0.1.6 (2017-08-24)
+------------------
+
+* travis missing packages for unittesting
+* fixed inconsistent version numbers
