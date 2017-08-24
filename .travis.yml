@@ -21,11 +21,11 @@ deploy:
       MXJyRE9Ja01oMXBpODhJSmdWL2NjU2RnOWZjdDdJcEpkZ0NQYzVxMGM2MGpYaklnWUczdkN6Sm89
   user: DerThorsten
   provider: pypi
-install: 
-  #- pip install http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp35-cp35m-manylinux1_x86_64.whl 
-  #- pip install torchvision
-  - pip install --process-dependency-links  -U tox-travis
+#install: 
+#  #- pip install http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp35-cp35m-manylinux1_x86_64.whl 
+#  #- pip install torchvision
+#  - pip install --process-dependency-links  -U tox-travis
 language: python
 python:
 - 3.5
-script: tox
+#script: tox
