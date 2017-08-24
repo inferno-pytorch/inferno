@@ -1,0 +1,7 @@
+dill
+pyyaml
+scipy>=0.13.0
+h5py
+numpy>=1.8
+scikit-image
+-e http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp35-cp35m-manylinux1_x86_64.whl#egg=torch-0.2.0
