@@ -167,3 +167,13 @@ class DumpHDF5Every(Callback):
             self.dump(mode='validation')
             # Clear cache
             self.clear_dump_cache()
+
+
+class SaveAtBestValidationScore(Callback):
+    """
+    Triggers a save at the best EMA (exponential moving average) validation score.
+    The basic `Trainer` has built in support for saving at the best validation score, but this
+    callback might eventually replace that functionality.
+    """
+    def __init__(self):
+        super(SaveAtBestValidationScore, self).__init__()
