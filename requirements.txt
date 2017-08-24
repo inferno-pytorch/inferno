@@ -2,5 +2,5 @@ dill==0.2.7.1
 pyyaml==3.12
 scipy>=0.13.0
 tensorflow>=1.0.0
-h5py
+h5py==2.7.0
 scikit-image
