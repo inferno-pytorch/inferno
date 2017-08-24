@@ -38,9 +38,10 @@ class CategoricalError(Metric):
 
 class IOU(Metric):
     """Intersection over Union. """
-    def __init__(self, eps=1e-6):
+    def __init__(self, ignore_class=None, eps=1e-6):
         super(IOU, self).__init__()
         self.eps = eps
+        self.ignore_class = ignore_class
 
     def forward(self, prediction, target):
         # Assume that is one of:
@@ -83,6 +84,13 @@ class IOU(Metric):
             raise ShapeError("Target must have the same number of dimensions as the "
                              "prediction, or one less. Got target.dim() = {} but "
                              "prediction.dim() = {}.".format(target.dim(), prediction.dim()))
+        if self.ignore_class is not None:
+            assert_(self.ignore_class < onehot_targets.size(0),
+                    "`ignore_class` = {} must be at least one less than the number "
+                    "of classes = {}.".format(self.ignore_class, onehot_targets.size(0)),
+                    ValueError)
+            onehot_targets[self.ignore_class] = 0
+            flattened_prediction[self.ignore_class] = 0
         # Now to compute the IOU = (a * b).sum()/(a**2 + b**2 - a * b).sum()
         # We sum over all samples and all classes (sum or average does not matter -
         # the factors cancel out)
