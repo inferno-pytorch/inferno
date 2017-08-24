@@ -26,8 +26,8 @@ deploy:
       N2ZZaTc1czNjYk10MW9TNlBCUEJWMXk2Q1c4bTFyaGpyODlVMmF4VVI1QThjZk9TM1NvTWZ2dkhw
       UDNORjBwM214cmRMd0ZKeCtTMEs2WDYwYkdoR3p3STlUY3N4RzlDZ2dBRXdxTlpBSGxPdDdSbTg9
   on:
-    all_branches: true
-
+    all_branches: false
+    tags: true
 
 script: echo "a"
 
