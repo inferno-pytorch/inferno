@@ -29,7 +29,10 @@ class CategoricalError(Metric):
         else:
             # Multiclass classificiation
             _, predicted_class = torch.max(prediction, 1)
-            incorrect = predicted_class.squeeze(1).type_as(target).ne(target).float()
+            if predicted_class.dim() == prediction.dim():
+                # Support for Pytorch 0.1.12
+                predicted_class = predicted_class.squeeze(1)
+            incorrect = predicted_class.type_as(target).ne(target).float()
             if self.aggregation_mode == 'mean':
                 return incorrect.mean()
             else:
