@@ -135,7 +135,7 @@ class TestInferno(unittest.TestCase):
             .bind_loader('validate', self.validate_loader)
         # Go
         trainer.fit()
-        self.assertGreater(trainer.get_state('validation_error_averaged'), 0.5)
+        self.assertLess(trainer.get_state('validation_error_averaged'), (1 - 1/self.NUM_CLASSES))
 
 
 
