@@ -175,13 +175,14 @@ class SaveAtBestValidationScore(Callback):
     The basic `Trainer` has built in support for saving at the best validation score, but this
     callback might eventually replace that functionality.
     """
-    def __init__(self, smoothness=0):
+    def __init__(self, smoothness=0, verbose=False):
         super(SaveAtBestValidationScore, self).__init__()
         # Privates
         self._ema_validation_score = None
         self._best_ema_validation_score = None
         # Publics
         self.smoothness = smoothness
+        self.verbose = verbose
 
     def end_of_validation_run(self, **_):
         # Get score (i.e. validation error if available, else validation loss)
@@ -200,5 +201,16 @@ class SaveAtBestValidationScore(Callback):
             self._ema_validation_score < self._best_ema_validation_score
         # Trigger a save
         if self.trainer._is_iteration_with_best_validation_score:
+            if self.verbose:
+                self.trainer.print("Current smoothed validation score {} is better "
+                                   "than the best smoothed validation score {}."
+                                   .format(self._ema_validation_score,
+                                           self._best_ema_validation_score))
             self.trainer.save_now = True
+        else:
+            if self.verbose:
+                self.trainer.print("Current smoothed validation score {} is not better "
+                                   "than the best smoothed validation score {}."
+                                   .format(self._ema_validation_score,
+                                           self._best_ema_validation_score))
         # Done
