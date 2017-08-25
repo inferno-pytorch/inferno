@@ -167,3 +167,38 @@ class DumpHDF5Every(Callback):
             self.dump(mode='validation')
             # Clear cache
             self.clear_dump_cache()
+
+
+class SaveAtBestValidationScore(Callback):
+    """
+    Triggers a save at the best EMA (exponential moving average) validation score.
+    The basic `Trainer` has built in support for saving at the best validation score, but this
+    callback might eventually replace that functionality.
+    """
+    def __init__(self, smoothness=0):
+        super(SaveAtBestValidationScore, self).__init__()
+        # Privates
+        self._ema_validation_score = None
+        self._best_ema_validation_score = None
+        # Publics
+        self.smoothness = smoothness
+
+    def end_of_validation_run(self, **_):
+        # Get score (i.e. validation error if available, else validation loss)
+        current_validation_score = self.trainer.get_state('validation_error_averaged')
+        current_validation_score = self.trainer.get_state('validation_loss_averaged') \
+            if current_validation_score is None else current_validation_score
+        # Maintain ema
+        if self._ema_validation_score is None:
+            self._ema_validation_score = current_validation_score
+            self._best_ema_validation_score = current_validation_score
+        else:
+            self._ema_validation_score = self.smoothness * self._ema_validation_score + \
+                                         (1 - self.smoothness) * current_validation_score
+        # This overrides the default behaviour, but reduces to it if smoothness = 0
+        self.trainer._is_iteration_with_best_validation_score = \
+            self._ema_validation_score < self._best_ema_validation_score
+        # Trigger a save
+        if self.trainer._is_iteration_with_best_validation_score:
+            self.trainer.save_now = True
+        # Done
