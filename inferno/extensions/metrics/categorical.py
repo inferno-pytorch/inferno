@@ -28,8 +28,8 @@ class CategoricalError(Metric):
                 return incorrect.sum()
         else:
             # Multiclass classificiation
-            _, predicted_class = torch.max(prediction, 1)
-            incorrect = predicted_class.squeeze(1).type_as(target).ne(target).float()
+            _, predicted_class = torch.max(prediction, 1, keepdim=False)
+            incorrect = predicted_class.type_as(target).ne(target).float()
             if self.aggregation_mode == 'mean':
                 return incorrect.mean()
             else:
