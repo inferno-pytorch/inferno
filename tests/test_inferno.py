@@ -59,9 +59,9 @@ class TestInferno(unittest.TestCase):
                                          torch.from_numpy(validate_targets))
         # Build dataloaders from dataset
         self.train_loader = DataLoader(train_dataset, batch_size=16,
-                                       shuffle=True, num_workers=2, pin_memory=True)
+                                       shuffle=True, num_workers=2, pin_memory=False)
         self.validate_loader = DataLoader(validate_dataset, batch_size=16,
-                                          shuffle=True, num_workers=2, pin_memory=True)
+                                          shuffle=True, num_workers=2, pin_memory=False)
 
     def setUpCallbacks(self):
 
