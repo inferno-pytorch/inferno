@@ -59,9 +59,9 @@ class TestInferno(unittest.TestCase):
                                          torch.from_numpy(validate_targets))
         # Build dataloaders from dataset
         self.train_loader = DataLoader(train_dataset, batch_size=16,
-                                       shuffle=True, num_workers=2, pin_memory=True)
+                                       shuffle=True, num_workers=2, pin_memory=False)
         self.validate_loader = DataLoader(validate_dataset, batch_size=16,
-                                          shuffle=True, num_workers=2, pin_memory=True)
+                                          shuffle=True, num_workers=2, pin_memory=False)
 
     def setUpCallbacks(self):
 
@@ -135,7 +135,7 @@ class TestInferno(unittest.TestCase):
             .bind_loader('validate', self.validate_loader)
         # Go
         trainer.fit()
-        self.assertGreater(trainer.get_state('validation_error_averaged'), 0.5)
+        self.assertLess(trainer.get_state('validation_error_averaged'), (1 - 1/self.NUM_CLASSES))
 
 
 
