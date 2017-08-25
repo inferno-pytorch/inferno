@@ -206,6 +206,7 @@ class SaveAtBestValidationScore(Callback):
                                    "than the best smoothed validation score {}."
                                    .format(self._ema_validation_score,
                                            self._best_ema_validation_score))
+            self._best_ema_validation_score = self._ema_validation_score
             self.trainer.save_now = True
         else:
             if self.verbose:
