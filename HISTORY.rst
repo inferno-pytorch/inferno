@@ -40,3 +40,8 @@ History
 
 * travis missing packages for unittesting
 * fixed inconsistent version numbers
+
+0.1.7 (2017-08-25)
+------------------
+
+* setup.py critical bugix in install procedure
