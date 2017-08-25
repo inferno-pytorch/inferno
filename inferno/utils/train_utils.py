@@ -27,6 +27,23 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
+class Momentum(object):
+    """Computes the moving average of a given float."""
+    def __init__(self, smoothing=0):
+        self.smoothing = smoothing
+        self.val = None
+
+    def reset(self):
+        self.val = None
+
+    def update(self, val):
+        if self.val is None:
+            self.val = val
+        else:
+            self.val = self.smoothing * self.val + (1 - self.smoothing) * val
+        return self.val
+
+
 class CLUI(object):
     """Command Line User Interface"""
 
@@ -171,7 +188,7 @@ class Frequency(object):
         return "{} {}".format(self.value, self.units)
 
     def __repr__(self):
-        return "Frequency(value={}, units={})".format(self.value, self.units)
+        return "{}(value={}, units={})".format(type(self).__name__, self.value, self.units)
 
     @classmethod
     def from_string(cls, string):
@@ -200,6 +217,18 @@ class Frequency(object):
             return cls.from_string(args)
         else:
             raise NotImplementedError
+
+
+class Duration(Frequency):
+    """Like frequency, but measures a duration."""
+    def match(self, iteration_count=None, epoch_count=None, when_equal_return=False, **_):
+        match_value = {'iterations': iteration_count, 'epochs': epoch_count}.get(self.units)
+        assert_(match_value is not None,
+                "Could not match duration because {} is not known.".format(self.units),
+                ValueError)
+        if match_value == self.value:
+            return when_equal_return
+        return match_value > self.value
 
 
 class NoLogger(object):

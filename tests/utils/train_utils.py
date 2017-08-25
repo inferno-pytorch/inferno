@@ -31,6 +31,15 @@ class FrequencyTest(unittest.TestCase):
         self.assertEqual(frequency.value, np.inf)
         self.assertEqual(frequency.units, frequency.UNIT_PRIORITY)
 
+    def test_duration(self):
+        duration = tu.Duration.build_from((3, 'iterations'))
+        self.assertFalse(duration.match(iteration_count=2))
+        self.assertFalse(duration.match(iteration_count=3))
+        self.assertTrue(duration.match(iteration_count=3, when_equal_return=True))
+        self.assertTrue(duration.match(iteration_count=4))
+        with self.assertRaises(ValueError):
+            duration.match(epoch_count=2)
+
 
 if __name__ == '__main__':
     unittest.main()
