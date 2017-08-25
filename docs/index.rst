@@ -9,6 +9,7 @@ Contents:
    readme
    installation
    usage
+   examples
    modules
    contributing
    reference
