@@ -44,7 +44,7 @@ setup(
     author="Nasim Rahaman",
     author_email='nasim.rahaman@iwr.uni-heidelberg.de',
     url='https://github.com/nasimrahaman/inferno',
-    packages=find_packages(include=['inferno']),
+    packages=find_packages(where='.',exclude=["*.tests", "*.tests.*", "tests.*", "tests","__pycache__","*.pyc"]),
     dependency_links=dependency_links,
     include_package_data=True,
     install_requires=requirements,
