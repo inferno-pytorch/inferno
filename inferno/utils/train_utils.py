@@ -27,10 +27,10 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-class Momentum(object):
+class MovingAverage(object):
     """Computes the moving average of a given float."""
-    def __init__(self, smoothing=0):
-        self.smoothing = smoothing
+    def __init__(self, momentum=0):
+        self.momentum = momentum
         self.val = None
 
     def reset(self):
@@ -40,7 +40,7 @@ class Momentum(object):
         if self.val is None:
             self.val = val
         else:
-            self.val = self.smoothing * self.val + (1 - self.smoothing) * val
+            self.val = self.momentum * self.val + (1 - self.momentum) * val
         return self.val
 
 
