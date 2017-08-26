@@ -96,13 +96,15 @@ class IOU(Metric):
         classwise_iou = numerator.div_(denominator)
         # If we're ignoring a class, don't count its contribution to the mean
         if self.ignore_class is not None:
-            assert_(self.ignore_class < onehot_targets.size(0),
+            ignore_class = self.ignore_class \
+                if self.ignore_class != -1 else onehot_targets.size(0) - 1
+            assert_(ignore_class < onehot_targets.size(0),
                     "`ignore_class` = {} must be at least one less than the number "
-                    "of classes = {}.".format(self.ignore_class, onehot_targets.size(0)),
+                    "of classes = {}.".format(ignore_class, onehot_targets.size(0)),
                     ValueError)
             num_classes = onehot_targets.size(0)
             dont_ignore_class = list(range(num_classes))
-            dont_ignore_class.pop(self.ignore_class)
+            dont_ignore_class.pop(ignore_class)
             if classwise_iou.is_cuda:
                 dont_ignore_class = torch.cuda.LongTensor(dont_ignore_class)
             else:
