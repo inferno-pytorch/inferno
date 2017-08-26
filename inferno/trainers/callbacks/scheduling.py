@@ -5,7 +5,7 @@ from .base import Callback
 
 
 class AutoLRDecay(Callback):
-    def __init__(self, by_factor, patience, monitor='auto', monitor_momentum=0,
+    def __init__(self, factor, patience, monitor='auto', monitor_momentum=0,
                  monitor_while='auto', exclude_param_groups=None, verbose=False):
         super(AutoLRDecay, self).__init__()
         # Privates
@@ -18,10 +18,10 @@ class AutoLRDecay(Callback):
         self._best_monitor_value = None
         # Publics
         self.patience = patience
-        self.factor = by_factor
+        self.factor = factor
         self.exclude_param_groups = pyu.to_iterable(exclude_param_groups) \
             if exclude_param_groups is not None else None
-        self.verbose = False
+        self.verbose = verbose
 
     @property
     def patience(self):
@@ -176,6 +176,10 @@ class AutoLRDecay(Callback):
                     self.trainer.print("Monitor '{}' has not improved, decaying LR."
                                        .format(self.monitor))
                 self.decay()
+            else:
+                if self.verbose:
+                    self.trainer.print("Monitor '{}' has improved or in cooldown, not decaying LR."
+                                       .format(self.monitor))
             self.maintain_monitor_moving_average()
 
     def end_of_validation_run(self, **_):
@@ -185,4 +189,8 @@ class AutoLRDecay(Callback):
                     self.trainer.print("Monitor '{}' has not improved, decaying LR."
                                        .format(self.monitor))
                 self.decay()
+            else:
+                if self.verbose:
+                    self.trainer.print("Monitor '{}' has improved or in cooldown, not decaying LR."
+                                       .format(self.monitor))
             self.maintain_monitor_moving_average()
