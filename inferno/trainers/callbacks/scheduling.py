@@ -1,12 +1,12 @@
 from ...utils.train_utils import Duration, MovingAverage
 from ...utils import python_utils as pyu
-from ...utils.exceptions import assert_
+from ...utils.exceptions import assert_, NotSetError
 from .base import Callback
 
 
 class AutoLRDecay(Callback):
     def __init__(self, by_factor, patience, monitor='auto', monitor_momentum=0,
-                 monitor_while='auto', exclude_param_groups=None):
+                 monitor_while='auto', exclude_param_groups=None, verbose=False):
         super(AutoLRDecay, self).__init__()
         # Privates
         self._patience = None
@@ -21,9 +21,11 @@ class AutoLRDecay(Callback):
         self.factor = by_factor
         self.exclude_param_groups = pyu.to_iterable(exclude_param_groups) \
             if exclude_param_groups is not None else None
+        self.verbose = False
 
     @property
     def patience(self):
+        assert_(self._patience is not None, "Patience is not set yet.", NotSetError)
         return self._patience
 
     @patience.setter
@@ -32,6 +34,7 @@ class AutoLRDecay(Callback):
 
     @property
     def monitor(self):
+        assert_(self._monitor is not None, "Monitor is not set yet.", NotSetError)
         return self._monitor
 
     @monitor.setter
@@ -138,8 +141,11 @@ class AutoLRDecay(Callback):
         return self.patience.match(**self.duration_since_last_improvment)
 
     def decay(self):
-        # TODO
-        # ...
+        exclude_param_groups = \
+            [] if self.exclude_param_groups is None else list(self.exclude_param_groups)
+        for param_group_num, param_group in enumerate(self.trainer.optimizer.param_groups):
+            if param_group_num not in exclude_param_groups:
+                param_group['lr'] *= self.factor
         self._last_decayed_at.update({'iteration_count': self.trainer.iteration_count,
                                       'epoch_count': self.trainer.epoch_count})
 
@@ -166,11 +172,17 @@ class AutoLRDecay(Callback):
         # Decay if we're not in cooldown (and monitoring while training)
         if self.monitor_while == 'training':
             if not self.monitor_value_has_improved and not self.in_cooldown:
+                if self.verbose:
+                    self.trainer.print("Monitor '{}' has not improved, decaying LR."
+                                       .format(self.monitor))
                 self.decay()
             self.maintain_monitor_moving_average()
 
     def end_of_validation_run(self, **_):
         if self.monitor_while == 'validation':
             if not self.monitor_value_has_improved and not self.in_cooldown:
+                if self.verbose:
+                    self.trainer.print("Monitor '{}' has not improved, decaying LR."
+                                       .format(self.monitor))
                 self.decay()
             self.maintain_monitor_moving_average()
