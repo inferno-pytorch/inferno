@@ -12,11 +12,11 @@ class AutoLRDecay(Callback):
         self._patience = None
         self._last_decayed_at = {'iteration_count': None, 'epoch_count': None}
         self._last_improved_at = {'iteration_count': None, 'epoch_count': None}
-        self._monitor = monitor
-        self._monitor_while = monitor_while
         self._monitor_value_moving_average = MovingAverage(momentum=monitor_momentum)
         self._best_monitor_value = None
         # Publics
+        self.monitor = monitor
+        self.monitor_while = monitor_while
         self.patience = patience
         self.factor = factor
         self.exclude_param_groups = pyu.to_iterable(exclude_param_groups) \
@@ -47,15 +47,16 @@ class AutoLRDecay(Callback):
 
     @property
     def monitor_while(self):
-        monitor_value, monitor = self.get_monitor_value()
-        if self._monitor_while != 'auto':
-            return self._monitor_while
-        elif monitor.startswith('training_'):
-            return 'training'
-        elif monitor.startswith('validation_'):
-            return 'validation'
-        else:
-            raise RuntimeError("Could not parse `monitor_while`. Please provide one manually.")
+        if self._monitor_while == 'auto':
+            monitor_value, monitor = self.get_monitor_value()
+            if monitor.startswith('training_'):
+                self._monitor_while = 'training'
+            elif monitor.startswith('validation_'):
+                self._monitor_while = 'validation'
+            else:
+                raise RuntimeError("Could not parse `monitor_while`. "
+                                   "Please provide one manually.")
+        return self._monitor_while
 
     @monitor_while.setter
     def monitor_while(self, value):
@@ -75,16 +76,20 @@ class AutoLRDecay(Callback):
             # Try to get validation error
             monitor_value = self.trainer.get_state('validation_error_averaged')
             if monitor_value is not None:
-                return monitor_value, 'validation_error_averaged'
+                self._monitor = 'validation_error_averaged'
+                return monitor_value, self._monitor
             monitor_value = self.trainer.get_state('validation_loss_averaged')
             if monitor_value is not None:
-                return monitor_value, 'validation_loss_averaged'
+                self._monitor = 'validation_loss_averaged'
+                return monitor_value, self._monitor
             monitor_value = self.trainer.get_state('training_error')
             if monitor_value is not None:
-                return monitor_value, 'training_error'
+                self._monitor = 'training_error'
+                return monitor_value, self._monitor
             monitor_value = self.trainer.get_state('training_loss')
             if monitor_value is not None:
-                return monitor_value, 'training_loss'
+                self._monitor = 'training_loss'
+                return monitor_value, self._monitor
             else:
                 raise RuntimeError("Could not auto-fetch a monitor_value. "
                                    "Please specify a monitor manually.")
@@ -138,7 +143,7 @@ class AutoLRDecay(Callback):
 
     @property
     def in_cooldown(self):
-        return self.patience.match(**self.duration_since_last_improvment)
+        return not self.patience.match(**self.duration_since_last_improvment)
 
     def decay(self):
         exclude_param_groups = \
@@ -171,26 +176,18 @@ class AutoLRDecay(Callback):
     def end_of_training_iteration(self, **_):
         # Decay if we're not in cooldown (and monitoring while training)
         if self.monitor_while == 'training':
+            self.maintain_monitor_moving_average()
             if not self.monitor_value_has_improved and not self.in_cooldown:
                 if self.verbose:
                     self.trainer.print("Monitor '{}' has not improved, decaying LR."
                                        .format(self.monitor))
                 self.decay()
-            else:
-                if self.verbose:
-                    self.trainer.print("Monitor '{}' has improved or in cooldown, not decaying LR."
-                                       .format(self.monitor))
-            self.maintain_monitor_moving_average()
 
     def end_of_validation_run(self, **_):
         if self.monitor_while == 'validation':
+            self.maintain_monitor_moving_average()
             if not self.monitor_value_has_improved and not self.in_cooldown:
                 if self.verbose:
                     self.trainer.print("Monitor '{}' has not improved, decaying LR."
                                        .format(self.monitor))
                 self.decay()
-            else:
-                if self.verbose:
-                    self.trainer.print("Monitor '{}' has improved or in cooldown, not decaying LR."
-                                       .format(self.monitor))
-            self.maintain_monitor_moving_average()
