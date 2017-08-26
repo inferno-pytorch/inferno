@@ -44,7 +44,7 @@ class TestCategorical(unittest.TestCase):
         iou_class_0 = (3 * 3) / (4 * 4)
         iou_class_1 = 0
         expected_mean_iou = 0.5 * (iou_class_0 + iou_class_1)
-        iou = IOU(ignore_class=2)(predicted_image[None, ...], target_image[None, ...])
+        iou = IOU(ignore_class=-1)(predicted_image[None, ...], target_image[None, ...])
         self.assertAlmostEqual(iou, expected_mean_iou, places=4)
 
 if __name__ == '__main__':
