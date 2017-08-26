@@ -14,6 +14,9 @@ class AutoLRDecay(Callback):
         self._last_improved_at = {'iteration_count': None, 'epoch_count': None}
         self._monitor_value_moving_average = MovingAverage(momentum=monitor_momentum)
         self._best_monitor_value = None
+        # Don't worry about these, these are properties
+        self._monitor_while = 'auto'
+        self._monitor = 'auto'
         # Publics
         self.monitor = monitor
         self.monitor_while = monitor_while
