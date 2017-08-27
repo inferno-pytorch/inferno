@@ -5,9 +5,42 @@ from .base import Callback
 
 
 class AutoLRDecay(Callback):
+    """
+    Callback to decay the learning rate automatically when a specified monitor
+    stops improving.
+
+    The monitor should be decreasing, i.e. lower value --> better performance.
+    """
     def __init__(self, factor, patience, required_minimum_relative_improvement=0,
                  monitor='auto', monitor_momentum=0, monitor_while='auto',
                  exclude_param_groups=None, verbose=False):
+        """
+        Parameters
+        ----------
+        factor : float
+            Factor to decay the learning rate by. Should be between 0 and 1.
+        patience : str or tuple or inferno.utils.train_utils.Duration
+            Specifies how long to wait for an improvement before a LR decay is triggered.
+        required_minimum_relative_improvement : float
+            Specifies by how much (as a fraction of the current value) the monitor should
+            improve to consider the improvement significant. Leaving this to zero implies
+            the monitor will be considered improving even if it's only so slightly better.
+        monitor : str
+            Specifies the monitor. Monitor must be a trainer state, and decrease with
+            increasing performance. Examples: 'validation_error', 'training_loss'.
+            The monitor can be 'auto' in which case it's recommended that you specify
+            `monitor_while`.
+        monitor_momentum : float
+            A momentum to smooth the monitor history with. Usually recommended to smooth out
+            any fluctuations in the monitor value.
+        monitor_while : {'auto', 'training', 'validating'}
+            Whether to monitor while training or validating. If the monitor is specified
+            (i.e. is not 'auto'), this can be left to 'auto'.
+        exclude_param_groups : int or list
+            Parameter groups to __not__ apply the LR decay on.
+        verbose : bool
+            Specifies if a message be printed before decaying.
+        """
         super(AutoLRDecay, self).__init__()
         # Privates
         self._patience = None
