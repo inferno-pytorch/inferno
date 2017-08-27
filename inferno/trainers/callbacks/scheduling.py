@@ -5,8 +5,9 @@ from .base import Callback
 
 
 class AutoLRDecay(Callback):
-    def __init__(self, factor, patience, monitor='auto', monitor_momentum=0,
-                 monitor_while='auto', exclude_param_groups=None, verbose=False):
+    def __init__(self, factor, patience, required_minimum_relative_improvement=0,
+                 monitor='auto', monitor_momentum=0, monitor_while='auto',
+                 exclude_param_groups=None, verbose=False):
         super(AutoLRDecay, self).__init__()
         # Privates
         self._patience = None
@@ -22,6 +23,7 @@ class AutoLRDecay(Callback):
         self.monitor_while = monitor_while
         self.patience = patience
         self.factor = factor
+        self.required_minimum_relative_improvement = required_minimum_relative_improvement
         self.exclude_param_groups = pyu.to_iterable(exclude_param_groups) \
             if exclude_param_groups is not None else None
         self.verbose = verbose
@@ -164,33 +166,46 @@ class AutoLRDecay(Callback):
             self._best_monitor_value = monitor_value
 
     @property
-    def monitor_value_has_improved(self):
+    def monitor_value_has_significantly_improved(self):
         if self._monitor_value_moving_average.val is None:
             return True
         else:
-            monitor_value_has_improved = \
-                self._monitor_value_moving_average.val < self._best_monitor_value
-            if monitor_value_has_improved:
-                self._best_monitor_value = self._monitor_value_moving_average.val
+            monitor_value_has_significantly_improved = \
+                self.is_significantly_less_than(self._monitor_value_moving_average.val,
+                                                self._best_monitor_value,
+                                                self.required_minimum_relative_improvement)
+            # monitor_value_has_significantly_improved could be False, even if the current
+            # moving average is less than the best monitor value, if the improvement is not
+            # significant enough
+            self._best_monitor_value = min([self._best_monitor_value,
+                                            self._monitor_value_moving_average.val])
+            if monitor_value_has_significantly_improved:
                 self._last_improved_at.update({'iteration_count': self.trainer.iteration_count,
                                                'epoch_count': self.trainer.epoch_count})
-            return monitor_value_has_improved
+            return monitor_value_has_significantly_improved
 
     def end_of_training_iteration(self, **_):
         # Decay if we're not in cooldown (and monitoring while training)
         if self.monitor_while == 'training':
             self.maintain_monitor_moving_average()
-            if not self.monitor_value_has_improved and not self.in_cooldown:
+            if not self.monitor_value_has_significantly_improved and not self.in_cooldown:
                 if self.verbose:
-                    self.trainer.print("Monitor '{}' has not improved, decaying LR."
+                    self.trainer.print("Monitor '{}' has not significantly improved, decaying LR."
                                        .format(self.monitor))
                 self.decay()
 
     def end_of_validation_run(self, **_):
         if self.monitor_while == 'validation':
             self.maintain_monitor_moving_average()
-            if not self.monitor_value_has_improved and not self.in_cooldown:
+            if not self.monitor_value_has_significantly_improved and not self.in_cooldown:
                 if self.verbose:
-                    self.trainer.print("Monitor '{}' has not improved, decaying LR."
+                    self.trainer.print("Monitor '{}' has not significantly improved, decaying LR."
                                        .format(self.monitor))
                 self.decay()
+
+    @staticmethod
+    def is_significantly_less_than(x, y, min_relative_delta):
+        if x > y:
+            return False
+        relative_delta = (y - x) / y
+        return relative_delta > min_relative_delta
