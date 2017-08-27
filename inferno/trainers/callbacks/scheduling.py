@@ -58,6 +58,7 @@ class AutoLRDecay(Callback):
         self.monitor = monitor
         self.monitor_while = monitor_while
         self.patience = patience
+        self.cooldown_duration = cooldown_duration
         self.factor = factor
         self.required_minimum_relative_improvement = required_minimum_relative_improvement
         self.exclude_param_groups = pyu.to_iterable(exclude_param_groups) \
