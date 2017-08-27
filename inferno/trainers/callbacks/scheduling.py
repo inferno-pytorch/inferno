@@ -12,8 +12,8 @@ class AutoLRDecay(Callback):
     The monitor should be decreasing, i.e. lower value --> better performance.
     """
     def __init__(self, factor, patience, required_minimum_relative_improvement=0,
-                 monitor='auto', monitor_momentum=0, monitor_while='auto',
-                 exclude_param_groups=None, verbose=False):
+                 cooldown_duration=None, monitor='auto', monitor_momentum=0,
+                 monitor_while='auto', exclude_param_groups=None, verbose=False):
         """
         Parameters
         ----------
@@ -25,6 +25,8 @@ class AutoLRDecay(Callback):
             Specifies by how much (as a fraction of the current value) the monitor should
             improve to consider the improvement significant. Leaving this to zero implies
             the monitor will be considered improving even if it's only so slightly better.
+        cooldown_duration: str or tuple or inferno.utils.train_utils.Duration
+            Wait for this duration to resume operation after having decayed LR.
         monitor : str
             Specifies the monitor. Monitor must be a trainer state, and decrease with
             increasing performance. Examples: 'validation_error', 'training_loss'.
@@ -44,6 +46,7 @@ class AutoLRDecay(Callback):
         super(AutoLRDecay, self).__init__()
         # Privates
         self._patience = None
+        self._cooldown = None
         self._last_decayed_at = {'iteration_count': None, 'epoch_count': None}
         self._last_improved_at = {'iteration_count': None, 'epoch_count': None}
         self._monitor_value_moving_average = MovingAverage(momentum=monitor_momentum)
@@ -69,6 +72,15 @@ class AutoLRDecay(Callback):
     @patience.setter
     def patience(self, value):
         self._patience = Duration.build_from(value)
+
+    @property
+    def cooldown_duration(self):
+        return self._cooldown
+
+    @cooldown_duration.setter
+    def cooldown_duration(self, value):
+        if value is not None:
+            self._cooldown = Duration.build_from(value)
 
     @property
     def monitor(self):
@@ -180,8 +192,15 @@ class AutoLRDecay(Callback):
         return since_last_improved
 
     @property
+    def out_of_patience(self):
+        return self.patience.match(**self.duration_since_last_improvment)
+
+    @property
     def in_cooldown(self):
-        return not self.patience.match(**self.duration_since_last_improvment)
+        if self.cooldown_duration is not None:
+            return not self.patience.match(**self.duration_since_last_decay)
+        else:
+            return False
 
     def decay(self):
         exclude_param_groups = \
@@ -231,7 +250,8 @@ class AutoLRDecay(Callback):
         # Decay if we're not in cooldown (and monitoring while training)
         if self.monitor_while == 'training':
             self.maintain_monitor_moving_average()
-            if not self.monitor_value_has_significantly_improved and not self.in_cooldown:
+            if not self.monitor_value_has_significantly_improved and \
+                    self.out_of_patience and not self.in_cooldown:
                 if self.verbose:
                     self.trainer.print("Monitor '{}' has not significantly improved, decaying LR."
                                        .format(self.monitor))
@@ -240,7 +260,8 @@ class AutoLRDecay(Callback):
     def end_of_validation_run(self, **_):
         if self.monitor_while == 'validation':
             self.maintain_monitor_moving_average()
-            if not self.monitor_value_has_significantly_improved and not self.in_cooldown:
+            if not self.monitor_value_has_significantly_improved \
+                    and self.out_of_patience and not self.in_cooldown:
                 if self.verbose:
                     self.trainer.print("Monitor '{}' has not significantly improved "
                                        "({} --> {}, {:0.2f}%), decaying LR."
