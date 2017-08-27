@@ -189,6 +189,10 @@ class AutoLRDecay(Callback):
         for param_group_num, param_group in enumerate(self.trainer.optimizer.param_groups):
             if param_group_num not in exclude_param_groups:
                 param_group['lr'] *= self.factor
+                self.debug_print("Decayed LR of param_group {} from {} --> {}"
+                                 .format(param_group_num,
+                                         param_group['lr'] / self.factor,
+                                         param_group['lr']))
         self._last_decayed_at.update({'iteration_count': self.trainer.iteration_count,
                                       'epoch_count': self.trainer.epoch_count})
 
@@ -200,13 +204,19 @@ class AutoLRDecay(Callback):
 
     @property
     def monitor_value_has_significantly_improved(self):
-        if self._monitor_value_moving_average.val is None:
+        if self._monitor_value_moving_average.previous is None:
+            # There's nothing to compare with
             return True
         else:
             monitor_value_has_significantly_improved = \
                 self.is_significantly_less_than(self._monitor_value_moving_average.val,
                                                 self._best_monitor_value,
                                                 self.required_minimum_relative_improvement)
+            self.debug_print("Is {} significantly less than {} with min_relative_delta = {}? {}."
+                             .format(self._monitor_value_moving_average.val,
+                                     self._best_monitor_value,
+                                     self.required_minimum_relative_improvement,
+                                     monitor_value_has_significantly_improved))
             # monitor_value_has_significantly_improved could be False, even if the current
             # moving average is less than the best monitor value, if the improvement is not
             # significant enough
@@ -232,13 +242,18 @@ class AutoLRDecay(Callback):
             self.maintain_monitor_moving_average()
             if not self.monitor_value_has_significantly_improved and not self.in_cooldown:
                 if self.verbose:
-                    self.trainer.print("Monitor '{}' has not significantly improved, decaying LR."
-                                       .format(self.monitor))
+                    self.trainer.print("Monitor '{}' has not significantly improved "
+                                       "({} --> {}, {:0.2f}%), decaying LR."
+                                       .format(self.monitor,
+                                               self._monitor_value_moving_average.previous,
+                                               self._monitor_value_moving_average.val,
+                                               self._monitor_value_moving_average.relative_change
+                                               * 100))
                 self.decay()
 
     @staticmethod
     def is_significantly_less_than(x, y, min_relative_delta):
         if x > y:
             return False
-        relative_delta = (y - x) / y
+        relative_delta = abs(y - x) / abs(y)
         return relative_delta > min_relative_delta

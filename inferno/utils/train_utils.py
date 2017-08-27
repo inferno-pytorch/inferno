@@ -32,16 +32,26 @@ class MovingAverage(object):
     def __init__(self, momentum=0):
         self.momentum = momentum
         self.val = None
+        self.previous = None
 
     def reset(self):
         self.val = None
 
     def update(self, val):
+        self.previous = self.val
         if self.val is None:
             self.val = val
         else:
             self.val = self.momentum * self.val + (1 - self.momentum) * val
         return self.val
+
+    @property
+    def relative_change(self):
+        if None not in [self.val, self.previous]:
+            relative_change = (self.previous - self.val) / self.previous
+            return relative_change
+        else:
+            return None
 
 
 class CLUI(object):
