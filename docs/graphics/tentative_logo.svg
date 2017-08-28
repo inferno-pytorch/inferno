@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.1 r15371">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.8"
+     inkscape:cx="251.22602"
+     inkscape:cy="725.50664"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1629"
+     inkscape:window-height="1026"
+     inkscape:window-x="1731"
+     inkscape:window-y="77"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="31.75"
+       y="99.696426"
+       id="text12"><tspan
+         sodipodi:role="line"
+         id="tspan10"
+         x="31.75"
+         y="99.696426"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Noto Sans CJK JP';-inkscape-font-specification:'Noto Sans CJK JP Bold';baseline-shift:baseline;stroke-width:0.26458332">INFERN</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:bold;font-size:10.58333302px;line-height:1.25;font-family:'Noto Sans CJK JP';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332;-inkscape-font-specification:'Noto Sans CJK JP Bold';font-stretch:normal;font-variant:normal;"
+       x="52.117558"
+       y="99.755089"
+       id="text16"><tspan
+         sodipodi:role="line"
+         id="tspan14"
+         x="52.117558"
+         y="109.11886"
+         style="stroke-width:0.26458332;-inkscape-font-specification:'Noto Sans CJK JP Bold';font-family:'Noto Sans CJK JP';font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;"></tspan></text>
+    <g
+       aria-label="O"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       id="text12-1"
+       transform="translate(41.293142,-23.252449)">
+      <path
+         d="m 34.689372,114.04392 c -0.673543,0.9251 -0.977203,1.45136 -1.098259,0.76281 -0.122246,-0.69531 -0.261084,-1.90179 -0.593562,-2.39479 0,0 -0.624594,-1.03665 -0.718206,-0.99683 -0.09361,0.0398 -0.199582,0.11671 -0.249017,0.26492 -0.292991,0.87842 -0.708508,2.64274 -1.127639,3.9444 -0.339539,1.05448 -1.122619,1.75327 -1.122619,3.12804 0,2.54 1.42875,4.09575 3.503084,4.09575 2.074333,0 3.503083,-1.55575 3.503083,-4.09575 0,-1.41773 -0.44512,-2.50904 -1.199172,-3.19664 m -2.303911,5.93773 c -1.164167,0 -1.905,-1.06892 -1.905,-2.74109 0,-1.68275 0.740833,-2.68816 1.905,-2.68816 1.164166,0 1.905,1.00541 1.905,2.68816 0,1.67217 -0.740834,2.74109 -1.905,2.74109 z"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Noto Sans CJK JP';-inkscape-font-specification:'Noto Sans CJK JP Bold';baseline-shift:baseline;fill:#008000;stroke-width:0.26458332"
+         id="path38"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cssssassscsssss" />
+    </g>
+  </g>
+</svg>

@@ -141,8 +141,33 @@ class Compose(object):
         self.transforms.append(transform)
         return self
 
+    def remove(self, name):
+        transform_idx = None
+        for idx, transform in enumerate(self.transforms):
+            if type(transform).__name__ == name:
+                transform_idx = idx
+                break
+        if transform_idx is not None:
+            self.transforms.pop(transform_idx)
+        return self
+
     def __call__(self, *tensors):
         intermediate = tensors
         for transform in self.transforms:
             intermediate = pyu.to_iterable(transform(*intermediate))
         return pyu.from_iterable(intermediate)
+
+
+class DTypeMapping(object):
+    DTYPE_MAPPING = {'float32': 'float32',
+                     'float': 'float32',
+                     'double': 'float64',
+                     'float64': 'float64',
+                     'half': 'float16',
+                     'float16': 'float16',
+                     'long': 'int64',
+                     'int64': 'int64',
+                     'byte': 'uint8',
+                     'uint8': 'uint8',
+                     'int': 'int32',
+                     'int32': 'int32'}

@@ -37,8 +37,19 @@ class FrequencyTypeError(TypeError):
     pass
 
 
+class DTypeError(TypeError):
+    pass
+
+
 # ------ LOOKUP ERRORS ------
 
 
 class ClassNotFoundError(LookupError):
+    pass
+
+
+# ------ NOT-IMPLEMENTED ERRORS ------
+
+
+class NotUnwrappableError(NotImplementedError):
     pass

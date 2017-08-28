@@ -18,6 +18,16 @@ def robust_len(x):
     return len(x) if is_listlike(x) else 1
 
 
+def as_tuple_of_len(x, len_):
+    if is_listlike(x):
+        assert len(x) == len_, \
+            "Listlike object of len {} can't be returned " \
+            "as a tuple of length {}.".format(len(x), len_)
+        return tuple(x)
+    else:
+        return (x,) * len_
+
+
 def has_callable_attr(object_, name):
     return hasattr(object_, name) and callable(getattr(object_, name))
 

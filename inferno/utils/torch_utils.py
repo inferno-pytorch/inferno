@@ -3,7 +3,7 @@ import torch
 from torch.autograd import Variable
 
 from .python_utils import delayed_keyboard_interrupt
-from .exceptions import assert_, ShapeError
+from .exceptions import assert_, ShapeError, NotUnwrappableError
 
 
 def unwrap(tensor_or_variable, to_cpu=True, as_numpy=False):
@@ -19,7 +19,8 @@ def unwrap(tensor_or_variable, to_cpu=True, as_numpy=False):
     elif isinstance(tensor_or_variable, (float, int)):
         return tensor_or_variable
     else:
-        raise NotImplementedError
+        raise NotUnwrappableError("Cannot unwrap a '{}'."
+                                  .format(type(tensor_or_variable).__name__))
     # Transfer to CPU if required
     if to_cpu:
         with delayed_keyboard_interrupt():
@@ -36,6 +37,10 @@ def is_tensor(object_):
     return torch.is_tensor(object_) or type(object_) in missed_tensor_classes
 
 
+def is_label_tensor(object_):
+    return is_tensor(object_) and object_.type() in ['torch.LongTensor', 'torch.cuda.LongTensor']
+
+
 def is_image_tensor(object_):
     return is_tensor(object_) and object_.dim() == 4
 
@@ -46,6 +51,18 @@ def is_volume_tensor(object_):
 
 def is_image_or_volume_tensor(object_):
     return is_image_tensor(object_) or is_volume_tensor(object_)
+
+
+def is_label_image_tensor(object_):
+    return is_label_tensor(object_) and object_.dim() == 3
+
+
+def is_label_volume_tensor(object_):
+    return is_label_tensor(object_) and object_.dim() == 4
+
+
+def is_label_image_or_volume_tensor(object_):
+    return is_label_image_tensor(object_) or is_label_volume_tensor(object_)
 
 
 def is_matrix_tensor(object_):
@@ -102,3 +119,28 @@ def where(condition, if_true, if_false):
     casted_condition = condition.type_as(if_true)
     output = casted_condition * if_true + (1 - casted_condition) * if_false
     return output
+
+
+def flatten_samples(tensor_or_variable):
+    """
+    Flattens a tensor or a variable such that the channel axis is first and the sample axis
+    is second. The shapes are transformed as follows:
+        (N, C, H, W) --> (C, N * H * W)
+        (N, C, D, H, W) --> (C, N * D * H * W)
+        (N, C) --> (C, N)
+    The input must be atleast 2d.
+    """
+    assert_(tensor_or_variable.dim() >= 2,
+            "Tensor or variable must be atleast 2D. Got one of dim {}."
+            .format(tensor_or_variable.dim()),
+            ShapeError)
+    # Get number of channels
+    num_channels = tensor_or_variable.size(1)
+    # Permute the channel axis to first
+    permute_axes = list(range(tensor_or_variable.dim()))
+    permute_axes[0], permute_axes[1] = permute_axes[1], permute_axes[0]
+    # For input shape (say) NCHW, this should have the shape CNHW
+    permuted = tensor_or_variable.permute(*permute_axes).contiguous()
+    # Now flatten out all but the first axis and return
+    flattened = permuted.view(num_channels, -1)
+    return flattened

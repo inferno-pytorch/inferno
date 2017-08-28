@@ -15,6 +15,7 @@ class TestCamvid(unittest.TestCase):
         else:
             return self.CAMVID_ROOT
 
+    # @unittest.skip
     def test_camvid_dataset_without_transforms(self):
         from inferno.io.box.camvid import CamVid
         camvid = CamVid(self.get_camvid_root())
@@ -25,6 +26,7 @@ class TestCamvid(unittest.TestCase):
         self.assertSequenceEqual(label.shape, (360, 480))
         self.assertLessEqual(label.max(), 11)
 
+    # @unittest.skip
     def _test_camvid_dataset_with_transforms(self):
         from inferno.io.box.camvid import CamVid
         from inferno.io.transform.base import Compose
@@ -61,6 +63,7 @@ class TestCamvid(unittest.TestCase):
         print_tensor(label[None, None, ...], prefix='LAB--', directory=self.PLOT_DIRECTORY)
         print("[+] Inspect images at {}".format(self.PLOT_DIRECTORY))
 
+    # @unittest.skip
     def test_camvid_dataset_with_transforms(self):
         from inferno.io.box.camvid import get_camvid_loaders
         from inferno.utils.io_utils import print_tensor
@@ -82,7 +85,29 @@ class TestCamvid(unittest.TestCase):
         print_tensor(label.numpy()[None, None, ...], prefix='LAB--', directory=self.PLOT_DIRECTORY)
         print("[+] Inspect images at {}".format(self.PLOT_DIRECTORY))
 
+    # @unittest.skip
+    def test_camvid_dataset_with_transforms_onehot(self):
+        from inferno.io.box.camvid import get_camvid_loaders
+        from inferno.utils.io_utils import print_tensor
+
+        train_loader, validate_loader, test_loader = get_camvid_loaders(self.get_camvid_root(),
+                                                                        labels_as_onehot=True)
+        train_dataset = train_loader.dataset
+        image, label = train_dataset[0]
+        # Make sure the shapes checkout
+        self.assertSequenceEqual(image.size(), (3, 360, 480))
+        self.assertSequenceEqual(label.size(), (12, 360, 480))
+        self.assertEqual(image.type(), 'torch.FloatTensor')
+        self.assertEqual(label.type(), 'torch.FloatTensor')
+        # Print tensors to make sure they look legit
+        if not exists(self.PLOT_DIRECTORY):
+            os.mkdir(self.PLOT_DIRECTORY)
+        else:
+            assert isdir(self.PLOT_DIRECTORY)
+        print_tensor(image.numpy()[None, ...], prefix='IMG--', directory=self.PLOT_DIRECTORY)
+        print_tensor(label.numpy()[None, ...], prefix='LAB--', directory=self.PLOT_DIRECTORY)
+        print("[+] Inspect images at {}".format(self.PLOT_DIRECTORY))
+
 if __name__ == '__main__':
-    tester = TestCamvid()
-    tester.CAMVID_ROOT = '/export/home/nrahaman/Python/Repositories/SegNet-Tutorial/CamVid'
-    tester.test_camvid_dataset_with_transforms()
+    TestCamvid.CAMVID_ROOT = '/export/home/nrahaman/Python/Repositories/SegNet-Tutorial/CamVid'
+    unittest.main()

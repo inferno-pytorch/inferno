@@ -1,5 +1,5 @@
 import torch.nn as nn
-from ..initializers import OrthogonalWeightsZeroBias
+from ..initializers import OrthogonalWeightsZeroBias, KaimingNormalWeightsZeroBias
 from ..initializers import Initializer
 
 
@@ -230,3 +230,23 @@ class Conv3D(ConvActivation):
                                      dim=3,
                                      activation=activation,
                                      initialization=OrthogonalWeightsZeroBias())
+
+
+class BNReLUConv2D(ConvActivation):
+    """
+    2D BN-ReLU-Conv layer with 'SAME' padding and He weight initialization.
+    """
+    def __init__(self, in_channels, out_channels, kernel_size):
+        super(BNReLUConv2D, self).__init__(in_channels=in_channels,
+                                           out_channels=out_channels,
+                                           kernel_size=kernel_size,
+                                           dim=2,
+                                           activation=nn.ReLU(inplace=True),
+                                           initialization=KaimingNormalWeightsZeroBias(0))
+        self.batchnorm = nn.BatchNorm2d(in_channels)
+
+    def forward(self, input):
+        normed = self.batchnorm(input)
+        activated = self.activation(normed)
+        conved = self.conv(activated)
+        return conved
