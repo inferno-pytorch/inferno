@@ -21,6 +21,7 @@ except ImportError:
 
 
 GITHUB_REPO = 'DerThorsten/inferno-1'
+GITHUB_REPO = 'nasimrahaman/inferno'
 TRAVIS_CONFIG_FILE = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), '.travis.yml')
 
