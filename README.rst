@@ -6,7 +6,7 @@ Inferno
 
 
 .. image:: https://img.shields.io/pypi/v/inferno.svg
-        :target: https://pypi.python.org/pypi/pytorch-inferno
+        :target: https://pypi.python.org/pypi/inferno-pytorch
 
 .. image:: https://img.shields.io/travis/nasimrahaman/inferno.svg
         :target: https://travis-ci.org/nasimrahaman/inferno
