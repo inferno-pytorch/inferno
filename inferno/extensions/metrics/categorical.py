@@ -29,7 +29,10 @@ class CategoricalError(Metric):
         else:
             # Multiclass classificiation
             _, predicted_class = torch.max(prediction, 1)
-            incorrect = predicted_class.squeeze(1).type_as(target).ne(target).float()
+            if predicted_class.dim() == prediction.dim():
+                # Support for Pytorch 0.1.12
+                predicted_class = predicted_class.squeeze(1)
+            incorrect = predicted_class.type_as(target).ne(target).float()
             if self.aggregation_mode == 'mean':
                 return incorrect.mean()
             else:
@@ -84,21 +87,29 @@ class IOU(Metric):
             raise ShapeError("Target must have the same number of dimensions as the "
                              "prediction, or one less. Got target.dim() = {} but "
                              "prediction.dim() = {}.".format(target.dim(), prediction.dim()))
+        # Now to compute the IOU = (a * b).sum()/(a**2 + b**2 - a * b).sum()
+        # We sum over all samples to obtain a classwise iou
+        numerator = (flattened_prediction * onehot_targets).sum(-1)
+        denominator = \
+            flattened_prediction.sub_(onehot_targets).pow_(2).clamp_(min=self.eps).sum(-1) + \
+            numerator
+        classwise_iou = numerator.div_(denominator)
+        # If we're ignoring a class, don't count its contribution to the mean
         if self.ignore_class is not None:
             assert_(self.ignore_class < onehot_targets.size(0),
                     "`ignore_class` = {} must be at least one less than the number "
                     "of classes = {}.".format(self.ignore_class, onehot_targets.size(0)),
                     ValueError)
-            onehot_targets[self.ignore_class] = 0
-            flattened_prediction[self.ignore_class] = 0
-        # Now to compute the IOU = (a * b).sum()/(a**2 + b**2 - a * b).sum()
-        # We sum over all samples and all classes (sum or average does not matter -
-        # the factors cancel out)
-        numerator = (flattened_prediction * onehot_targets).sum()
-        denominator = \
-            flattened_prediction.sub_(onehot_targets).pow_(2).clamp_(min=self.eps).sum() + \
-            numerator
-        iou = (numerator / denominator)
+            num_classes = onehot_targets.size(0)
+            dont_ignore_class = list(range(num_classes))
+            dont_ignore_class.pop(self.ignore_class)
+            if classwise_iou.is_cuda:
+                dont_ignore_class = torch.cuda.LongTensor(dont_ignore_class)
+            else:
+                dont_ignore_class = torch.LongTensor(dont_ignore_class)
+            iou = classwise_iou[dont_ignore_class].mean()
+        else:
+            iou = classwise_iou.mean()
         return iou
 
 

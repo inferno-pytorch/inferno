@@ -141,6 +141,16 @@ class Compose(object):
         self.transforms.append(transform)
         return self
 
+    def remove(self, name):
+        transform_idx = None
+        for idx, transform in enumerate(self.transforms):
+            if type(transform).__name__ == name:
+                transform_idx = idx
+                break
+        if transform_idx is not None:
+            self.transforms.pop(transform_idx)
+        return self
+
     def __call__(self, *tensors):
         intermediate = tensors
         for transform in self.transforms:
