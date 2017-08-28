@@ -125,6 +125,7 @@ class Callback(object):
     """Recommended (but not required) base class for callbacks."""
     def __init__(self):
         self._trainer = None
+        self._debugging = False
 
     @property
     def trainer(self):
@@ -158,3 +159,11 @@ class Callback(object):
 
     def __setstate__(self, state):
         self.set_config(state)
+
+    def toggle_debug(self):
+        self._debugging = not self._debugging
+        return self
+
+    def debug_print(self, message):
+        if self._debugging:
+            self.trainer.print("[DEBUG::{}] {}".format(type(self).__name__, message))
