@@ -36,7 +36,7 @@ deploy:
       YkVpSlFHY1lrWlhXZ1Z2cVdvcktPOW53a29Hem5BSm1HRVZHYU11dDYwaGg2SGU1MVJPTll3WHc9
   on:
     all_branches: false
-    tags: true
+    tags: false
 
 script: 
   - source activate test-environment
