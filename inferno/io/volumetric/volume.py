@@ -48,6 +48,10 @@ class VolumeLoader(SyncableDataset):
 
         self.base_sequence = self.make_sliding_windows()
 
+    @property
+    def shape(self):
+        return self.volume.shape
+
     def pad_volume(self, padding=None):
         padding = self.padding if padding is None else padding
         if padding is None:
