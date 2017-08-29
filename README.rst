@@ -6,14 +6,14 @@ Inferno
 
 
 .. image:: https://img.shields.io/pypi/v/inferno.svg
-        :target: https://pypi.python.org/pypi/pytorch-inferno
+        :target: https://pypi.python.org/pypi/inferno-pytorch
 
-.. image:: https://img.shields.io/travis/DerThorsten/inferno.svg
-        :target: https://travis-ci.org/DerThorsten/inferno-1
+.. image:: https://img.shields.io/travis/nasimrahaman/inferno.svg
+        :target: https://travis-ci.org/nasimrahaman/inferno
 
-.. image:: https://readthedocs.org/projects/pytorch-inferno/badge/?version=latest
-        :target: http://pytorch-inferno.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status               
+.. image:: https://readthedocs.org/projects/inferno-pytorch/badge/?version=latest
+        :target: http://inferno-pytorch.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/nasimrahaman/inferno/shield.svg
      :target: https://pyup.io/repos/github/nasimrahaman/inferno/
@@ -60,7 +60,7 @@ Current features include:
 .. code:: python
 
   import torch.nn as nn
-  from inferno.io.box.cifar10 import get_cifar10_loaders
+  from inferno.io.box.cifar import get_cifar10_loaders
   from inferno.trainers.basic import Trainer
   from inferno.trainers.callbacks.logging.tensorboard import TensorboardLogger
   from inferno.extensions.layers.convolutional import ConvELU2D
