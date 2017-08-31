@@ -42,7 +42,7 @@ With our model built, it's time to worry about the data generators. Or is it?
 
 .. code:: python
 
-    from inferno.io.box.cifar10 import get_cifar10_loaders
+    from inferno.io.box.cifar import get_cifar10_loaders
     train_loader, validate_loader = get_cifar10_loaders('path/to/cifar10', 
                                                         download=True, 
                                                         train_batch_size=128, 
