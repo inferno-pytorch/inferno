@@ -265,12 +265,10 @@ class AutoLRDecay(Callback):
                     and self.out_of_patience and not self.in_cooldown:
                 if self.verbose:
                     self.trainer.print("Monitor '{}' has not significantly improved "
-                                       "({} --> {}, {:0.2f}%), decaying LR."
+                                       "({} vs. {}), decaying LR."
                                        .format(self.monitor,
-                                               self._monitor_value_moving_average.previous,
                                                self._monitor_value_moving_average.val,
-                                               self._monitor_value_moving_average.relative_change
-                                               * 100))
+                                               self._best_monitor_value))
                 self.decay()
 
     @staticmethod
