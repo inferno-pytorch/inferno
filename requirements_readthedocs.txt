@@ -1,7 +1,7 @@
 dill
 pyyaml
 scipy>=0.13.0
-h5py
+h5py==2.7.1
 numpy>=1.13
 scikit-image
 sphinx-gallery

@@ -12,7 +12,7 @@ pytorch>=0.2.0
 dill
 pyyaml
 scipy>=0.13.0
-h5py
+h5py==2.7.1
 scikit-image
 sphinx-gallery
 sphinxcontrib-napoleon
