@@ -3,6 +3,16 @@ from ..initializers import OrthogonalWeightsZeroBias, KaimingNormalWeightsZeroBi
 from ..initializers import Initializer
 
 
+__all__ = ['ConvActivation',
+           'ConvELU2D', 'ConvELU3D',
+           'ConvSigmoid2D', 'ConvSigmoid3D',
+           'DeconvELU2D', 'DeconvELU3D',
+           'StridedConvELU2D', 'StridedConvELU3D',
+           'DilatedConvELU2D', 'DilatedConvELU3D',
+           'Conv2D', 'Conv3D',
+           'BNReLUConv2D']
+
+
 class ConvActivation(nn.Module):
     """Convolutional layer with 'SAME' padding followed by an activation."""
     def __init__(self, in_channels, out_channels, kernel_size, dim, activation,

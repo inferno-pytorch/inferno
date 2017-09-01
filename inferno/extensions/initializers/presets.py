@@ -5,6 +5,9 @@ from functools import partial
 from .base import Initialization, Initializer
 
 
+__all__ = ['Constant', 'OrthogonalWeightsZeroBias', 'KaimingNormalWeightsZeroBias']
+
+
 class Constant(Initializer):
     """Initialize with a constant."""
     def __init__(self, constant):

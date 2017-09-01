@@ -5,6 +5,13 @@ from ...utils.exceptions import assert_, ShapeError
 from ...utils import python_utils as pyu
 
 
+__all__ = ['View', 'AsMatrix', 'Flatten',
+           'As3D', 'As2D',
+           'Concatenate', 'Cat',
+           'ResizeAndConcatenate', 'PoolCat',
+           'Sum', 'Split']
+
+
 class View(nn.Module):
     def __init__(self, as_shape):
         super(View, self).__init__()

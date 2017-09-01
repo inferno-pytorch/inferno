@@ -12,6 +12,9 @@ from ...utils import python_utils as pyu
 from ...utils.exceptions import assert_
 
 
+__all__ = ['NNGraph', 'Graph']
+
+
 class NNGraph(nx.DiGraph):
     """A NetworkX DiGraph, except that node and edge ordering matters."""
     # We don't copy torch tensors, only to have them deleted.

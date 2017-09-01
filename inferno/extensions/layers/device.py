@@ -2,6 +2,8 @@ import torch.nn as nn
 from ...utils.python_utils import from_iterable
 from ...utils.exceptions import assert_, DeviceError
 
+__all__ = ['DeviceTransfer']
+
 
 class DeviceTransfer(nn.Module):
     """Layer to transfer variables to a specified device."""
