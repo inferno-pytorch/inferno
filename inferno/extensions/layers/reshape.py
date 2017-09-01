@@ -9,7 +9,7 @@ __all__ = ['View', 'AsMatrix', 'Flatten',
            'As3D', 'As2D',
            'Concatenate', 'Cat',
            'ResizeAndConcatenate', 'PoolCat',
-           'Sum', 'Split']
+           'Sum', 'SplitChannels']
 
 
 class View(nn.Module):
