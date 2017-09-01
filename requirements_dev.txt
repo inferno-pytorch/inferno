@@ -10,7 +10,7 @@ cryptography==1.7
 PyYAML==3.11
 pytorch>=0.2.0
 dill
-pyyaml
+pyyaml==3.12
 scipy>=0.13.0
 h5py
 scikit-image
