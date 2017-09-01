@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import sys
 import threading
-import torch.multiprocessing as mp
+import multiprocessing as mp
 import copy
 
 import networkx as nx
