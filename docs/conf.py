@@ -73,39 +73,39 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.mathjax',
     'sphinx.ext.graphviz',
-    'sphinx_gallery.gen_gallery', 
+    # 'sphinx_gallery.gen_gallery',
     'sphinxcontrib.bibtex',
     'sphinx.ext.napoleon'
 ]
 
 
 
-sphinx_gallery_conf = {
-    # path to your examples scripts
-    'examples_dirs' : 
-            '../examples',
-    # path where to save gallery generated examples
-    'gallery_dirs'  : 
-            'auto_examples',
-    'backreferences_dir' :  
-            'gen_modules/backreferences',
-    'scan_used_functions':
-        True,
-    'doc_module' : 
-        ('inferno'),
-
-    'docs_resolv': True,
-
-    'parallel_read_safe': True,
-
-    'reference_url':  {
-             # The module you locally document uses a None
-            'inferno': None,
-
-            # External python modules use their documentation websites
-            #'matplotlib': 'http://matplotlib.org',
-            'numpy': 'http://docs.scipy.org/doc/numpy-1.13.0'}
-}
+# sphinx_gallery_conf = {
+#     # path to your examples scripts
+#     'examples_dirs' :
+#             '../examples',
+#     # path where to save gallery generated examples
+#     'gallery_dirs'  :
+#             'auto_examples',
+#     'backreferences_dir' :
+#             'gen_modules/backreferences',
+#     'scan_used_functions':
+#         True,
+#     'doc_module' :
+#         ('inferno'),
+#
+#     'docs_resolv': True,
+#
+#     'parallel_read_safe': True,
+#
+#     'reference_url':  {
+#              # The module you locally document uses a None
+#             'inferno': None,
+#
+#             # External python modules use their documentation websites
+#             #'matplotlib': 'http://matplotlib.org',
+#             'numpy': 'http://docs.scipy.org/doc/numpy-1.13.0'}
+# }
 
 
 
