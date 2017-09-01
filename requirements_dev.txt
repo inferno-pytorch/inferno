@@ -13,6 +13,6 @@ dill
 pyyaml
 scipy>=0.13.0
 h5py
-scikit-image
+scikit-image==0.13.0
 sphinx-gallery
 sphinxcontrib-napoleon
