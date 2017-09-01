@@ -17,6 +17,8 @@ Contents:
    history
    zbibliography
 
+.. automodule:: inferno
+
 Indices and tables
 ==================
 
