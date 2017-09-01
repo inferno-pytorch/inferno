@@ -3,7 +3,7 @@ pyyaml
 scipy>=0.13.0
 h5py
 numpy>=1.13
-scikit-image
+scikit-image==0.13.0
 sphinx-gallery
 sphinxcontrib-napoleon
 sphinxcontrib-bibtex
