@@ -6,4 +6,4 @@ numpy>=1.13
 scikit-image
 sphinx-gallery
 sphinxcontrib-napoleon
-sphinxcontrib-bibtex
+sphinxcontrib-bibtex==0.3.5
