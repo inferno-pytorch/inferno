@@ -1,4 +1,4 @@
-from ...utils.train_utils import Duration, MovingAverage
+from ...utils.train_utils import Frequency, Duration, MovingAverage
 from ...utils import python_utils as pyu
 from ...utils.exceptions import assert_, NotSetError
 from .base import Callback
@@ -90,9 +90,9 @@ class _Scheduler(Callback):
         return monitor_value
 
 
-class AutoLRDecay(_Scheduler):
+class AutoLR(_Scheduler):
     """
-    Callback to decay the learning rate automatically when a specified monitor
+    Callback to decay or hike the learning rate automatically when a specified monitor
     stops improving.
 
     The monitor should be decreasing, i.e. lower value --> better performance.
@@ -104,7 +104,9 @@ class AutoLRDecay(_Scheduler):
         Parameters
         ----------
         factor : float
-            Factor to decay the learning rate by. Should be between 0 and 1.
+            Factor to multiply the learning rate with when out of patience
+            and not in cooldown. Setting `factor < 1` results in a LR decay,
+            whereas setting `factor > 1` results in a LR hike.
         patience : str or tuple or inferno.utils.train_utils.Duration
             Specifies how long to wait for an improvement before a LR decay is triggered.
         required_minimum_relative_improvement : float
@@ -129,8 +131,8 @@ class AutoLRDecay(_Scheduler):
         verbose : bool
             Specifies if a message be printed before decaying.
         """
-        super(AutoLRDecay, self).__init__(monitor=monitor, monitor_momentum=monitor_momentum,
-                                          monitor_while=monitor_while)
+        super(AutoLR, self).__init__(monitor=monitor, monitor_momentum=monitor_momentum,
+                                     monitor_while=monitor_while)
         # Privates
         self._patience = None
         self._cooldown = None
@@ -229,7 +231,7 @@ class AutoLRDecay(_Scheduler):
                                       'epoch_count': self.trainer.epoch_count})
 
     def maintain_monitor_moving_average(self):
-        monitor_value = super(AutoLRDecay, self).maintain_monitor_moving_average()
+        monitor_value = super(AutoLR, self).maintain_monitor_moving_average()
         if self._best_monitor_value is None:
             self._best_monitor_value = monitor_value
 
@@ -288,3 +290,13 @@ class AutoLRDecay(_Scheduler):
             return False
         relative_delta = abs(y - x) / abs(y)
         return relative_delta > min_relative_delta
+
+
+class AutoLRDecay(AutoLR):
+    """
+    Callback to decay the learning rate automatically when a specified monitor
+    stops improving.
+
+    The monitor should be decreasing, i.e. lower value --> better performance.
+    """
+    pass
