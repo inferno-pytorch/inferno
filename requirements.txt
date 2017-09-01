@@ -1,5 +1,5 @@
 dill
-pyyaml
+pyyaml==3.12
 scipy>=0.13.0
 h5py
 numpy>=1.8
