@@ -4,6 +4,6 @@ scipy>=0.13.0
 h5py
 numpy>=1.13
 scikit-image
-sphinx-gallery
+sphinx-gallery==0.1.12
 sphinxcontrib-napoleon
 sphinxcontrib-bibtex
