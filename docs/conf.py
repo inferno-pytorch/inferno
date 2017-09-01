@@ -29,7 +29,7 @@ MOCK_MODULES = ['pygtk',
                 'argparse',
                 'pandas',
                 'torch',
-                'torch.nn', 'torch.nn.init',
+                'torch.nn', 'torch.nn.init', 'torch.nn.functional', 'torch.nn.parallel',
                 'torch.multiprocessing', 'torch.autograd',
                 'torch.optim', 'torch.sparse', 'torch.cuda']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
