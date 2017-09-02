@@ -60,7 +60,7 @@ Current features include:
 .. code:: python
 
   import torch.nn as nn
-  from inferno.io.box.cifar10 import get_cifar10_loaders
+  from inferno.io.box.cifar import get_cifar10_loaders
   from inferno.trainers.basic import Trainer
   from inferno.trainers.callbacks.logging.tensorboard import TensorboardLogger
   from inferno.extensions.layers.convolutional import ConvELU2D
