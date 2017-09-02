@@ -167,10 +167,10 @@ CITYSCAPES_MEAN = [0.28689554, 0.32513303, 0.28389177]
 CITYSCAPES_STD = [0.18696375, 0.19017339, 0.18720214]
 
 
-def get_matching_labelimage_file(f):
+def get_matching_labelimage_file(f, groundtruth):
     fs = f.split('/')
-    fs[0] = "gtFine"
-    fs[-1] = str.replace(fs[-1], 'leftImg8bit', 'gtFine_labelIds')
+    fs[0] = groundtruth
+    fs[-1] = str.replace(fs[-1], 'leftImg8bit', groundtruth + '_labelIds')
     return '/'.join(fs)
 
 
@@ -180,7 +180,12 @@ def make_dataset(image_zip_file, split):
         fn = f.filename.split('/')
         if fn[-1].endswith('.png') and fn[1] == split:
             # use first folder name to identify train/val/test images
-            fl = get_matching_labelimage_file(f.filename)
+            if split == 'train_extra':
+                groundtruth = 'gtCoarse'
+            else:
+                groundtruth = 'gtFine'
+
+            fl = get_matching_labelimage_file(f.filename, groundtruth)
             images.append((f, fl))
     return images
 
@@ -197,7 +202,10 @@ class Cityscapes(data.Dataset):
                           'val': 'val',
                           'validation': 'val',
                           'test': 'test',
-                          'testing': 'test'}
+                          'testing': 'test',
+                          'training_extra': 'train_extra',
+                          'train_extra': 'train_extra'}
+
     # Dataset statistics
     CLASSES = CITYSCAPES_CLASSES
     MEAN = CITYSCAPES_MEAN
@@ -209,15 +217,22 @@ class Cityscapes(data.Dataset):
         Parameters:
         root_folder: folder that contains both leftImg8bit_trainvaltest.zip and
                gtFine_trainvaltest.zip archives.
-        split: name of dataset spilt (i.e. 'train', 'val' or 'test') 
+        split: name of dataset spilt (i.e. 'train_extra', 'train', 'val' or 'test') 
         """
-        self.image_zip_file = join(root_folder, 'leftImg8bit_trainvaltest.zip')
-        self.label_zip_file = join(root_folder, 'gtFine_trainvaltest.zip')
 
         assert_(split in self.SPLIT_NAME_MAPPING.keys(),
                 "`split` must be one of {}".format(set(self.SPLIT_NAME_MAPPING.keys())),
                 KeyError)
         self.split = self.SPLIT_NAME_MAPPING.get(split)
+
+        # Data path
+        if self.split == 'train_extra':
+            self.image_zip_file = join(root_folder, 'leftImg8bit_trainextra.zip')
+            self.label_zip_file = join(root_folder, 'gtCoarse.zip')
+        else:
+            self.image_zip_file = join(root_folder, 'leftImg8bit_trainvaltest.zip')
+            self.label_zip_file = join(root_folder, 'gtFine_trainvaltest.zip')
+
         # Transforms
         self.image_transform = image_transform
         self.label_transform = label_transform
@@ -279,8 +294,10 @@ def get_cityscapes_loaders(root_directory, image_shape=(1024, 2048), labels_as_o
     else:
         # Cast label image to long
         joint_transforms.add(Cast('long', apply_to=[1]))
+    
     # Batchify
     joint_transforms.add(AsTorchBatch(2, add_channel_axis_if_necessary=False))
+    
     # Build datasets
     train_dataset = Cityscapes(root_directory, split='train',
                                image_transform=image_transforms,
@@ -290,9 +307,70 @@ def get_cityscapes_loaders(root_directory, image_shape=(1024, 2048), labels_as_o
                                   image_transform=image_transforms,
                                   label_transform=label_transforms,
                                   joint_transform=joint_transforms)
+    
     # Build loaders
     train_loader = data.DataLoader(train_dataset, batch_size=train_batch_size,
                                    shuffle=True, num_workers=num_workers, pin_memory=True)
     validate_loader = data.DataLoader(validate_dataset, batch_size=validate_batch_size,
                                       shuffle=True, num_workers=num_workers, pin_memory=True)
+    
     return train_loader, validate_loader
+
+
+
+def get_cityscapes_train_loader(root_directory, dataset='train', image_shape=(1024, 2048), labels_as_onehot=False,
+                            batch_size=1, num_workers=2):
+
+    DATASET_NAME_MAPPING = {'train': 'train',
+                  'training': 'train',
+                  'training_extra': 'train_extra',
+                  'train_extra': 'train_extra'}
+
+    assert_(dataset in DATASET_NAME_MAPPING.keys(),
+            "`dataset` must be one of {}".format(set(DATASET_NAME_MAPPING.keys())), KeyError)
+    dataset_name = DATASET_NAME_MAPPING.get(dataset)
+
+    # Make transforms
+    image_transforms = Compose(PILImage2NumPyArray(),
+                               NormalizeRange(),
+                               RandomGammaCorrection(),
+                               Normalize(mean=CITYSCAPES_MEAN, std=CITYSCAPES_STD))
+    label_transforms = Compose(PILImage2NumPyArray(),
+                               Project(projection=CITYSCAPES_CLASSES_TO_LABELS))
+    joint_transforms = Compose(RandomSizedCrop(ratio_between=(0.6, 1.0),
+                                               preserve_aspect_ratio=True),
+                               # Scale raw image back to the original shape
+                               Scale(output_image_shape=image_shape,
+                                     interpolation_order=3, apply_to=[0]),
+                               # Scale segmentation back to the original shape
+                               # (without interpolation)
+                               Scale(output_image_shape=image_shape,
+                                     interpolation_order=0, apply_to=[1]),
+                               RandomFlip(allow_ud_flips=False),
+                               # Cast raw image to float
+                               Cast('float', apply_to=[0]))
+    if labels_as_onehot:
+        # Applying Label2OneHot on the full label image makes it unnecessarily expensive,
+        # because we're throwing it away with RandomSizedCrop and Scale. Tests show that it's
+        # ~1 sec faster per image.
+        joint_transforms\
+            .add(Label2OneHot(num_classes=len(CITYSCAPES_LABEL_WEIGHTS), dtype='bool',
+                              apply_to=[1]))\
+            .add(Cast('float', apply_to=[1]))
+    else:
+        # Cast label image to long
+        joint_transforms.add(Cast('long', apply_to=[1]))
+    
+    # Batchify
+    joint_transforms.add(AsTorchBatch(2, add_channel_axis_if_necessary=False))
+
+    # Build datasets
+    train_dataset = Cityscapes(root_directory, split=dataset_name,
+                            image_transform=image_transforms,
+                            label_transform=label_transforms,
+                            joint_transform=joint_transforms)
+
+    loader = data.DataLoader(train_dataset, batch_size=batch_size,
+                                shuffle=True, num_workers=num_workers, pin_memory=True)
+    
+    return loader
