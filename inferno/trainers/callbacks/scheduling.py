@@ -98,6 +98,7 @@ class AutoLR(_Scheduler):
     The monitor should be decreasing, i.e. lower value --> better performance.
     """
     def __init__(self, factor, patience, required_minimum_relative_improvement=0,
+                 consider_improvement_with_respect_to='best',
                  cooldown_duration=None, monitor='auto', monitor_momentum=0,
                  monitor_while='auto', exclude_param_groups=None, verbose=False):
         """
@@ -113,6 +114,9 @@ class AutoLR(_Scheduler):
             Specifies by how much (as a fraction of the current value) the monitor should
             improve to consider the improvement significant. Leaving this to zero implies
             the monitor will be considered improving even if it's only so slightly better.
+        consider_improvement_with_respect_to : {'best', 'previous'}
+            While determining if the monitor has improved, the improvement is considered with
+            respect to this value. Could be 'best' or 'previous'.
         cooldown_duration: str or tuple or inferno.utils.train_utils.Duration
             Wait for this duration to resume operation after having decayed LR.
         monitor : str
@@ -133,6 +137,11 @@ class AutoLR(_Scheduler):
         """
         super(AutoLR, self).__init__(monitor=monitor, monitor_momentum=monitor_momentum,
                                      monitor_while=monitor_while)
+        # Validate
+        assert_(consider_improvement_with_respect_to in ['best', 'previous'],
+                "`consider_improvement_with_respect_to` must be either 'best' or 'previous', "
+                "and not {}".format(consider_improvement_with_respect_to),
+                ValueError)
         # Privates
         self._patience = None
         self._cooldown = None
@@ -144,6 +153,7 @@ class AutoLR(_Scheduler):
         self.cooldown_duration = cooldown_duration
         self.factor = factor
         self.required_minimum_relative_improvement = required_minimum_relative_improvement
+        self.consider_improvement_with_respect_to = consider_improvement_with_respect_to
         self.exclude_param_groups = pyu.to_iterable(exclude_param_groups) \
             if exclude_param_groups is not None else None
         self.verbose = verbose
@@ -241,13 +251,17 @@ class AutoLR(_Scheduler):
             # There's nothing to compare with
             return True
         else:
+            improvement_baseline = \
+                self._best_monitor_value \
+                if self.consider_improvement_with_respect_to == 'best' else \
+                self._monitor_value_moving_average.previous
             monitor_value_has_significantly_improved = \
                 self.is_significantly_less_than(self._monitor_value_moving_average.val,
-                                                self._best_monitor_value,
+                                                improvement_baseline,
                                                 self.required_minimum_relative_improvement)
             self.debug_print("Is {} significantly less than {} with min_relative_delta = {}? {}."
                              .format(self._monitor_value_moving_average.val,
-                                     self._best_monitor_value,
+                                     improvement_baseline,
                                      self.required_minimum_relative_improvement,
                                      monitor_value_has_significantly_improved))
             # monitor_value_has_significantly_improved could be False, even if the current
