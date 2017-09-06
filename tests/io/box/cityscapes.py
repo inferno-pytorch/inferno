@@ -8,6 +8,7 @@ import time
 class TestCityscapes(unittest.TestCase):
     CITYSCAPES_ROOT = None
     PLOT_DIRECTORY = join(dirname(__file__), 'plots')
+    INCLUDE_COARSE = False
 
     def get_cityscapes_root(self):
         if self.CITYSCAPES_ROOT is None:
@@ -30,7 +31,9 @@ class TestCityscapes(unittest.TestCase):
         from inferno.io.box.cityscapes import get_cityscapes_loaders
         from inferno.utils.io_utils import print_tensor
 
-        train_loader, validate_loader = get_cityscapes_loaders(self.get_cityscapes_root())
+        train_loader, validate_loader = get_cityscapes_loaders(self.get_cityscapes_root(),
+                                                               include_coarse_dataset=
+                                                               self.INCLUDE_COARSE)
         train_dataset = train_loader.dataset
         tic = time.time()
         image, label = train_dataset[0]
@@ -58,4 +61,5 @@ class TestCityscapes(unittest.TestCase):
 
 if __name__ == '__main__':
     TestCityscapes.CITYSCAPES_ROOT = '/home/nrahaman/BigHeronHDD2/CityScapes'
+    TestCityscapes.INCLUDE_COARSE = True
     unittest.main()
