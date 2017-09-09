@@ -130,7 +130,7 @@ class Callback(object):
 
     @classmethod
     def register_instance(cls, instance):
-        if hasattr(cls, '_instance_registry'):
+        if hasattr(cls, '_instance_registry') and instance not in cls._instance_registry:
             cls._instance_registry.append(instance)
         else:
             cls._instance_registry = [instance]
