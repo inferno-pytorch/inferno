@@ -126,6 +126,21 @@ class Callback(object):
     def __init__(self):
         self._trainer = None
         self._debugging = False
+        self.register_instance(self)
+
+    @classmethod
+    def register_instance(cls, instance):
+        if hasattr(cls, '_instance_registry'):
+            cls._instance_registry.append(instance)
+        else:
+            cls._instance_registry = [instance]
+
+    @classmethod
+    def get_instances(cls):
+        if hasattr(cls, '_instance_registry'):
+            return pyu.from_iterable(cls._instance_registry)
+        else:
+            return None
 
     @property
     def trainer(self):
