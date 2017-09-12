@@ -1347,7 +1347,7 @@ class Trainer(object):
         from_directory : str
             Path to the directory where the checkpoint is located. The filename should be
             'checkpoint.pytorch' if best=False, or 'best_checkpoint.pytorch' if best=True.
-        best : str
+        best : bool
             Whether to load the best checkpoint. The filename in `from_directory` should be
             'best_checkpoint.pytorch'.
         filename : str
