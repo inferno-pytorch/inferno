@@ -262,13 +262,18 @@ class Cityscapes(data.Dataset):
         pi, pl = self.image_paths[index]
         image = extract_image(self.image_root, pi)
         label = extract_image(self.label_root, pl)
-        # Apply transforms
-        if self.image_transform is not None:
-            image = self.image_transform(image)
-        if self.label_transform is not None:
-            label = self.label_transform(label)
-        if self.joint_transform is not None:
-            image, label = self.joint_transform(image, label)
+        try:
+            # Apply transforms
+            if self.image_transform is not None:
+                image = self.image_transform(image)
+            if self.label_transform is not None:
+                label = self.label_transform(label)
+            if self.joint_transform is not None:
+                image, label = self.joint_transform(image, label)
+        except Exception:
+            print("[!] An Exception occurred while applying the transforms at "
+                  "index {} of split '{}'.".format(index, self.split))
+            raise
         return image, label
 
     def __len__(self):
