@@ -39,19 +39,21 @@ def get_cifar10_loaders(root_directory, train_batch_size=128, test_batch_size=25
         validset = torchvision.datasets.CIFAR10(root=os.path.join(root_directory, 'data'),
                                                 train=True, download=download,
                                                 transform=transform_test)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size, pin_memory=True,
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size,
+                                                  pin_memory=True, num_workers=1,
                                                   sampler=SubsetRandomSampler(train_indices))
-        validloader = torch.utils.data.DataLoader(validset, batch_size=test_batch_size, pin_memory=True,
+        validloader = torch.utils.data.DataLoader(validset, batch_size=test_batch_size,
+                                                  pin_memory=True, num_workers=1,
                                                   sampler=SubsetRandomSampler(valid_indices))
     else:
         trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size,
-                                                  shuffle=True, pin_memory=True)
+                                                  shuffle=True, pin_memory=True,  num_workers=1)
 
     testset = torchvision.datasets.CIFAR10(root=os.path.join(root_directory, 'data'),
                                            train=False, download=download,
                                            transform=transform_test)
     testloader = torch.utils.data.DataLoader(testset, batch_size=test_batch_size,
-                                             shuffle=False, pin_memory=True)
+                                             shuffle=False, pin_memory=True,  num_workers=1)
 
     if validsize:
         return trainloader, validloader, testloader
@@ -94,19 +96,21 @@ def get_cifar100_loaders(root_directory, train_batch_size=128, test_batch_size=1
         validset = torchvision.datasets.CIFAR100(root=os.path.join(root_directory, 'data'),
                                                  train=True, download=download,
                                                  transform=transform_test)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size, pin_memory=True,
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size,
+                                                  pin_memory=True,  num_workers=1,
                                                   sampler=SubsetRandomSampler(train_indices))
-        validloader = torch.utils.data.DataLoader(validset, batch_size=test_batch_size, pin_memory=True,
+        validloader = torch.utils.data.DataLoader(validset, batch_size=test_batch_size,
+                                                  pin_memory=True, num_workers=1,
                                                   sampler=SubsetRandomSampler(valid_indices))
     else:
         trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size,
-                                                  shuffle=True, pin_memory=True)
+                                                  shuffle=True, pin_memory=True, num_workers=1)
 
     testset = torchvision.datasets.CIFAR100(root=os.path.join(root_directory, 'data'),
                                             train=False, download=download,
                                             transform=transform_test)
     testloader = torch.utils.data.DataLoader(testset, batch_size=test_batch_size,
-                                             shuffle=False, pin_memory=True)
+                                             shuffle=False, pin_memory=True, num_workers=1)
 
     if validsize:
         return trainloader, validloader, testloader
