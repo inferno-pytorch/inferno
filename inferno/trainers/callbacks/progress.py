@@ -29,8 +29,9 @@ class ProgBarTrain(Callback):
 
     def end_of_epoch(self, **_):
         if self.verbose:
-            self.pbar.write("Train Loss: {:.3f}\tTrain Error: {:.3f}".format(tu.unwrap(self.trainer.get_state("training_loss"), as_numpy=True)[0],
-                                                                     self.trainer.get_state("training_error")))
+            self.pbar.write("Train epoch {}/{} Loss: {:.3f}\tTrain Error: {:.3f}".format(self.trainer.epoch_count,
+                    self.trainer._max_num_epochs, tu.unwrap(self.trainer.get_state("training_loss"), as_numpy=True)[0],
+                    self.trainer.get_state("training_error")))
         self.pbar.close()
         self.pbar = None
 
