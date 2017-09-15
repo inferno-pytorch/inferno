@@ -11,7 +11,7 @@ from ...utils import python_utils as pyu
 
 class VolumeLoader(SyncableDataset):
     def __init__(self, volume, window_size, stride, downsampling_ratio=None, padding=None,
-                 transforms=None, return_index_spec=False, name=None):
+                 padding_mode='reflect', transforms=None, return_index_spec=False, name=None):
         super(VolumeLoader, self).__init__()
         # Validate volume
         assert isinstance(volume, np.ndarray)
@@ -26,6 +26,7 @@ class VolumeLoader(SyncableDataset):
         self.volume = volume
         self.window_size = window_size
         self.stride = stride
+        self.padding_mode = padding_mode
         self.transforms = transforms
         # DataloaderIter should do the shuffling
         self.shuffle = False
@@ -55,7 +56,7 @@ class VolumeLoader(SyncableDataset):
         else:
             self.volume = np.pad(self.volume,
                                  pad_width=self.padding,
-                                 mode='reflect')
+                                 mode=self.padding_mode)
             return self.volume
 
     def make_sliding_windows(self):
