@@ -2,7 +2,7 @@ import torch.nn as nn
 from ...utils.python_utils import from_iterable, to_iterable
 from ...utils.exceptions import assert_, DeviceError
 
-__all__ = ['DeviceTransfer']
+__all__ = ['DeviceTransfer', 'OnDevice']
 
 
 class DeviceTransfer(nn.Module):

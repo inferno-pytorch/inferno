@@ -10,6 +10,7 @@ from torch import nn as nn
 
 from ...utils import python_utils as pyu
 from ...utils.exceptions import assert_
+from ..layers.device import OnDevice
 
 
 __all__ = ['NNGraph', 'Graph']
@@ -359,6 +360,21 @@ class Graph(nn.Module):
                                        "corresponding to it.".format(name)
             modules.append(module)
         return pyu.from_iterable(modules)
+
+    def to_device(self, names, target_device, device_ordinal=None, async=False):
+        """Transfer nodes in the network to a specified device."""
+        names = pyu.to_iterable(names)
+        for name in names:
+            assert self.is_node_in_graph(name), "Node '{}' is not in graph.".format(name)
+            module = getattr(self, name, None)
+            assert module is not None, "Node '{}' is in the graph but could not find a module " \
+                                       "corresponding to it.".format(name)
+            # Transfer
+            module_on_device = OnDevice(module, target_device,
+                                        device_ordinal=device_ordinal,
+                                        async=async)
+            setattr(self, name, module_on_device)
+        return self
 
     def get_parameters_for_nodes(self, names, named=False):
         """Get parameters of all nodes listed in `names`."""
