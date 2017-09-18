@@ -6,7 +6,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 
 
 def get_cifar10_loaders(root_directory, train_batch_size=128, test_batch_size=256,
-                        download=False, augment=False, validsize=None):
+                        download=False, augment=False, validation_dataset_size=None):
     # Data preparation for CIFAR10.
     if augment:
         transform_train = transforms.Compose([
@@ -32,10 +32,10 @@ def get_cifar10_loaders(root_directory, train_batch_size=128, test_batch_size=25
     trainset = torchvision.datasets.CIFAR10(root=os.path.join(root_directory, 'data'),
                                             train=True, download=download,
                                             transform=transform_train)
-    if validsize:
+    if validation_dataset_size:
         indices = torch.randperm(len(trainset))
-        train_indices = indices[:(len(indices) - validsize)]
-        valid_indices = indices[(len(indices) - validsize):]
+        train_indices = indices[:(len(indices) - validation_dataset_size)]
+        valid_indices = indices[(len(indices) - validation_dataset_size):]
         validset = torchvision.datasets.CIFAR10(root=os.path.join(root_directory, 'data'),
                                                 train=True, download=download,
                                                 transform=transform_test)
@@ -55,14 +55,14 @@ def get_cifar10_loaders(root_directory, train_batch_size=128, test_batch_size=25
     testloader = torch.utils.data.DataLoader(testset, batch_size=test_batch_size,
                                              shuffle=False, pin_memory=True,  num_workers=1)
 
-    if validsize:
+    if validation_dataset_size:
         return trainloader, validloader, testloader
     else:
         return trainloader, testloader
 
 
 def get_cifar100_loaders(root_directory, train_batch_size=128, test_batch_size=100,
-                        download=False, augment=False, validsize=None):
+                         download=False, augment=False, validation_dataset_size=None):
     # Data preparation for CIFAR100. Adapted from
     # https://github.com/kuangliu/pytorch-cifar/blob/master/main.py
     if augment:
@@ -89,10 +89,10 @@ def get_cifar100_loaders(root_directory, train_batch_size=128, test_batch_size=1
     trainset = torchvision.datasets.CIFAR100(root=os.path.join(root_directory, 'data'),
                                              train=True, download=download,
                                              transform=transform_train)
-    if validsize:
+    if validation_dataset_size:
         indices = torch.randperm(len(trainset))
-        train_indices = indices[:(len(indices) - validsize)]
-        valid_indices = indices[(len(indices) - validsize):]
+        train_indices = indices[:(len(indices) - validation_dataset_size)]
+        valid_indices = indices[(len(indices) - validation_dataset_size):]
         validset = torchvision.datasets.CIFAR100(root=os.path.join(root_directory, 'data'),
                                                  train=True, download=download,
                                                  transform=transform_test)
@@ -112,7 +112,7 @@ def get_cifar100_loaders(root_directory, train_batch_size=128, test_batch_size=1
     testloader = torch.utils.data.DataLoader(testset, batch_size=test_batch_size,
                                              shuffle=False, pin_memory=True, num_workers=1)
 
-    if validsize:
+    if validation_dataset_size:
         return trainloader, validloader, testloader
     else:
         return trainloader, testloader
