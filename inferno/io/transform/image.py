@@ -152,7 +152,7 @@ class RandomCrop(Transform):
             cropped = image
         if width_leeway > 0:
             # Crop width
-            width_location = self.get_random_variable('height_location',
+            width_location = self.get_random_variable('width_location',
                                                       height_leeway=height_leeway,
                                                       width_leeway=width_leeway)
             cropped = cropped[:, width_location:(width_location + crop_width)]
