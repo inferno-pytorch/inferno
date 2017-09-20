@@ -2,6 +2,7 @@ from ...utils.train_utils import Frequency, Duration, MovingAverage
 from ...utils import python_utils as pyu
 from ...utils.exceptions import assert_, NotSetError
 from .base import Callback
+from functools import reduce
 
 
 class _Scheduler(Callback):
@@ -314,3 +315,81 @@ class AutoLRDecay(AutoLR):
     The monitor should be decreasing, i.e. lower value --> better performance.
     """
     pass
+
+
+class DecaySpec(object):
+    """A class to specify when to decay (or hike) LR and by what factor."""
+    def __init__(self, duration, factor):
+        # Privates
+        self._matched = False
+        # Publics
+        self.duration = Duration.build_from(duration)
+        self.factor = factor
+
+    def match(self, iteration_count=None, epoch_count=None, when_equal_return=True):
+        match_result = self.duration.match(iteration_count=iteration_count,
+                                           epoch_count=epoch_count,
+                                           when_equal_return=when_equal_return)
+        if match_result and not self._matched:
+            # First match
+            self._matched = True
+            return match_result
+        else:
+            # Already matched once (or more often)
+            return False
+
+    def new(self):
+        return type(self)(self.duration, self.factor)
+
+    @classmethod
+    def build_from(cls, args):
+        if isinstance(args, (list, tuple)):
+            return cls(*args)
+        elif isinstance(args, dict):
+            return cls(**args)
+        elif isinstance(args, cls):
+            return args
+        else:
+            raise NotImplementedError("Can't build DecaySpec from {}.".format(type(args)))
+
+
+class ManualLR(Callback):
+    def __init__(self, decay_specs, exclude_param_groups=None):
+        super(ManualLR, self).__init__()
+        self.decay_specs = [DecaySpec.build_from(decay_spec)
+                            for decay_spec in pyu.to_iterable(decay_specs)]
+        self.exclude_param_groups = pyu.to_iterable(exclude_param_groups) \
+            if exclude_param_groups is not None else None
+
+    def match(self):
+        # Find the decayspec that matched
+        matched = [decay_spec
+                   for decay_spec in self.decay_specs
+                   if decay_spec.match(iteration_count=self.trainer.iteration_count,
+                                       epoch_count=self.trainer.epoch_count)]
+        if matched:
+            # Allow for more than one matches; in which case the factors are multiplied
+            global_factor = reduce(lambda x, y: x * y,
+                                   [matched_decay_spec.factor for matched_decay_spec in matched])
+            return True, global_factor
+        else:
+            return False, None
+
+    def decay(self, factor):
+        exclude_param_groups = \
+            [] if self.exclude_param_groups is None else list(self.exclude_param_groups)
+        for param_group_num, param_group in enumerate(self.trainer.optimizer.param_groups):
+            if param_group_num not in exclude_param_groups:
+                param_group['lr'] *= factor
+                self.debug_print("Decayed LR of param_group {} from {} --> {}"
+                                 .format(param_group_num,
+                                         param_group['lr'] / factor,
+                                         param_group['lr']))
+
+    def end_of_training_iteration(self, **_):
+        matched, global_factor = self.match()
+        if matched:
+            assert global_factor is not None
+            self.decay(global_factor)
+
+
