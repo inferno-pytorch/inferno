@@ -455,6 +455,9 @@ class Graph(nn.Module):
         # Remove all input and output nodes
         toposorted = [name for name in toposorted
                       if name not in input_nodes and name not in output_nodes]
+        # Since we'll be clearing payloads anyway, it makes no sense whatsoever
+        # to evaluate sink nodes
+        toposorted = [name for name in toposorted if not self.is_sink_node(name)]
         # Forward
         for node in toposorted:
             self.forward_through_node(node)
