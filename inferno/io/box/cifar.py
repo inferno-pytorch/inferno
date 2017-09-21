@@ -2,12 +2,12 @@ import os
 import torch
 import torchvision
 import torchvision.transforms as transforms
+from torch.utils.data.sampler import SubsetRandomSampler
 
 
-def get_cifar10_loaders(root_directory, train_batch_size=128, test_batch_size=100,
-                        download=False, augment=False):
-    # Data preparation for CIFAR10. Adapted from
-    # https://github.com/kuangliu/pytorch-cifar/blob/master/main.py
+def get_cifar10_loaders(root_directory, train_batch_size=128, test_batch_size=256,
+                        download=False, augment=False, validation_dataset_size=None):
+    # Data preparation for CIFAR10.
     if augment:
         transform_train = transforms.Compose([
             transforms.RandomCrop(32, padding=4),
@@ -32,19 +32,37 @@ def get_cifar10_loaders(root_directory, train_batch_size=128, test_batch_size=10
     trainset = torchvision.datasets.CIFAR10(root=os.path.join(root_directory, 'data'),
                                             train=True, download=download,
                                             transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size,
-                                              shuffle=True, num_workers=2)
+    if validation_dataset_size:
+        indices = torch.randperm(len(trainset))
+        train_indices = indices[:(len(indices) - validation_dataset_size)]
+        valid_indices = indices[(len(indices) - validation_dataset_size):]
+        validset = torchvision.datasets.CIFAR10(root=os.path.join(root_directory, 'data'),
+                                                train=True, download=download,
+                                                transform=transform_test)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size,
+                                                  pin_memory=True, num_workers=1,
+                                                  sampler=SubsetRandomSampler(train_indices))
+        validloader = torch.utils.data.DataLoader(validset, batch_size=test_batch_size,
+                                                  pin_memory=True, num_workers=1,
+                                                  sampler=SubsetRandomSampler(valid_indices))
+    else:
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size,
+                                                  shuffle=True, pin_memory=True,  num_workers=1)
 
     testset = torchvision.datasets.CIFAR10(root=os.path.join(root_directory, 'data'),
                                            train=False, download=download,
                                            transform=transform_test)
     testloader = torch.utils.data.DataLoader(testset, batch_size=test_batch_size,
-                                             shuffle=False, num_workers=2)
-    return trainloader, testloader
+                                             shuffle=False, pin_memory=True,  num_workers=1)
+
+    if validation_dataset_size:
+        return trainloader, validloader, testloader
+    else:
+        return trainloader, testloader
 
 
 def get_cifar100_loaders(root_directory, train_batch_size=128, test_batch_size=100,
-                        download=False, augment=False):
+                         download=False, augment=False, validation_dataset_size=None):
     # Data preparation for CIFAR100. Adapted from
     # https://github.com/kuangliu/pytorch-cifar/blob/master/main.py
     if augment:
@@ -69,14 +87,32 @@ def get_cifar100_loaders(root_directory, train_batch_size=128, test_batch_size=1
         ])
 
     trainset = torchvision.datasets.CIFAR100(root=os.path.join(root_directory, 'data'),
-                                            train=True, download=download,
-                                            transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size,
-                                              shuffle=True, num_workers=2)
+                                             train=True, download=download,
+                                             transform=transform_train)
+    if validation_dataset_size:
+        indices = torch.randperm(len(trainset))
+        train_indices = indices[:(len(indices) - validation_dataset_size)]
+        valid_indices = indices[(len(indices) - validation_dataset_size):]
+        validset = torchvision.datasets.CIFAR100(root=os.path.join(root_directory, 'data'),
+                                                 train=True, download=download,
+                                                 transform=transform_test)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size,
+                                                  pin_memory=True,  num_workers=1,
+                                                  sampler=SubsetRandomSampler(train_indices))
+        validloader = torch.utils.data.DataLoader(validset, batch_size=test_batch_size,
+                                                  pin_memory=True, num_workers=1,
+                                                  sampler=SubsetRandomSampler(valid_indices))
+    else:
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size,
+                                                  shuffle=True, pin_memory=True, num_workers=1)
 
     testset = torchvision.datasets.CIFAR100(root=os.path.join(root_directory, 'data'),
-                                           train=False, download=download,
-                                           transform=transform_test)
+                                            train=False, download=download,
+                                            transform=transform_test)
     testloader = torch.utils.data.DataLoader(testset, batch_size=test_batch_size,
-                                             shuffle=False, num_workers=2)
-    return trainloader, testloader
+                                             shuffle=False, pin_memory=True, num_workers=1)
+
+    if validation_dataset_size:
+        return trainloader, validloader, testloader
+    else:
+        return trainloader, testloader
