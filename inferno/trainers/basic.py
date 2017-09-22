@@ -527,7 +527,7 @@ class Trainer(object):
         if to_directory is not None:
             assert_(isinstance(to_directory, str), exception_type=TypeError)
             if not os.path.exists(to_directory):
-                os.mkdir(to_directory)
+                os.makedirs(to_directory)
             else:
                 assert os.path.isdir(to_directory)
             self._save_to_directory = to_directory
@@ -719,7 +719,7 @@ class Trainer(object):
         self._use_cuda = True
         self._devices = devices
         return self
-    
+
     def cpu(self):
         """
         Train on the CPU.
@@ -735,7 +735,7 @@ class Trainer(object):
             self.criterion.cpu()
         self._use_cuda = False
         self._devices = None
-        return self 
+        return self
 
     def is_cuda(self):
         """Returns whether using GPU for training."""
