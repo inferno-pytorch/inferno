@@ -3,6 +3,7 @@ import sys
 import threading
 import multiprocessing as mp
 import copy
+import gc
 
 import networkx as nx
 from networkx import is_directed_acyclic_graph, topological_sort
@@ -403,8 +404,12 @@ class Graph(nn.Module):
                 "Node '{}' did not get an input but is a source node.".format(name)
             # Get input from payload
             incoming_edges = self.graph.in_edges(name)
-            input = [self.graph[incoming][this]['payload']
-                     for incoming, this in incoming_edges]
+            input = []
+            for incoming, this in incoming_edges:
+                # Append to input
+                input.append(self.graph[incoming][this]['payload'])
+                # Clear reference for the garbage collector to do its thing
+                del self.graph[incoming][this]['payload']
         else:
             assert self.is_node_in_graph(name)
             # Convert input to list
@@ -437,6 +442,9 @@ class Graph(nn.Module):
                                                                               name)
             for (this, outgoing), output in zip(outgoing_edges, outputs):
                 self.graph[this][outgoing].update({'payload': output})
+        # Collect garbage to free some GPU memory?
+        del input
+        gc.collect()
         # Return outputs
         return pyu.from_iterable(outputs)
 
