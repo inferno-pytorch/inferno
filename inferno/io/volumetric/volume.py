@@ -63,7 +63,8 @@ class VolumeLoader(SyncableDataset):
         return list(vu.slidingwindowslices(shape=list(self.volume.shape),
                                            nhoodsize=self.window_size,
                                            stride=self.stride,
-                                           shuffle=self.shuffle))
+                                           shuffle=self.shuffle,
+                                           ds=self.downsampling_ratio))
 
     def __getitem__(self, index):
         # Casting to int would allow index to be IndexSpec objects.
