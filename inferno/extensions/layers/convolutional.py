@@ -1,6 +1,8 @@
 import torch.nn as nn
-from ..initializers import OrthogonalWeightsZeroBias, KaimingNormalWeightsZeroBias
+from ..initializers import OrthogonalWeightsZeroBias, KaimingNormalWeightsZeroBias, \
+    SELUWeightsZeroBias
 from ..initializers import Initializer
+from .activations import SELU
 from ...utils.exceptions import assert_, ShapeError
 
 
@@ -12,7 +14,8 @@ __all__ = ['ConvActivation',
            'DilatedConvELU2D', 'DilatedConvELU3D',
            'Conv2D', 'Conv3D',
            'BNReLUConv2D',
-           'BNReLUDepthwiseConv2D']
+           'BNReLUDepthwiseConv2D',
+           'ConvSELU2D', 'ConvSELU3D']
 
 
 class ConvActivation(nn.Module):
@@ -303,3 +306,37 @@ class BNReLUDepthwiseConv2D(ConvActivation):
         activated = self.activation(normed)
         conved = self.conv(activated)
         return conved
+
+
+class ConvSELU2D(ConvActivation):
+    """2D Convolutional layer with SELU activation and the appropriate weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        if hasattr(nn, 'SELU'):
+            # Pytorch 0.2: Use built in SELU
+            activation = nn.SELU(inplace=True)
+        else:
+            # Pytorch < 0.1.12: Use handmade SELU
+            activation = SELU()
+        super(ConvSELU2D, self).__init__(in_channels=in_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size,
+                                         dim=2,
+                                         activation=activation,
+                                         initialization=SELUWeightsZeroBias())
+
+
+class ConvSELU3D(ConvActivation):
+    """3D Convolutional layer with SELU activation and the appropriate weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        if hasattr(nn, 'SELU'):
+            # Pytorch 0.2: Use built in SELU
+            activation = nn.SELU(inplace=True)
+        else:
+            # Pytorch < 0.1.12: Use handmade SELU
+            activation = SELU()
+        super(ConvSELU3D, self).__init__(in_channels=in_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size,
+                                         dim=3,
+                                         activation=activation,
+                                         initialization=SELUWeightsZeroBias())

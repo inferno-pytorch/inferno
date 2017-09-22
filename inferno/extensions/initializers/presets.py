@@ -7,6 +7,8 @@ from .base import Initialization, Initializer
 
 
 __all__ = ['Constant', 'NormalWeights',
+           'SELUWeightsZeroBias',
+           'ELUWeightsZeroBias',
            'OrthogonalWeightsZeroBias',
            'KaimingNormalWeightsZeroBias']
 
