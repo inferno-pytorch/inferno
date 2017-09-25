@@ -33,6 +33,6 @@ class Logger(Callback):
         assert isinstance(log_directory, str)
         if not os.path.isdir(log_directory):
             assert not os.path.exists(log_directory)
-            os.mkdir(log_directory)
+            os.makedirs(log_directory)
         self._log_directory = log_directory
         return self
