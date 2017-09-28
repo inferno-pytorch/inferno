@@ -776,8 +776,14 @@ class Trainer(object):
             return objects.cuda() if self._use_cuda else objects
 
     def apply_model(self, *inputs):
+        if hasattr(self, '_base_device_ordinal'):
+            # This is to not break old checkpoints
+            base_device_ordinal = self._base_device_ordinal
+        else:
+            base_device_ordinal = None
         if self._devices is not None:
-            return data_parallel(self.model, inputs, list(self._devices))
+            return data_parallel(self.model, inputs, list(self._devices),
+                                 output_device=base_device_ordinal)
         else:
             return self.model(*inputs)
 
@@ -953,9 +959,34 @@ class Trainer(object):
                                    for from_loader in of_loader})
         return self
 
-    def wrap_batch(self, batch, requires_grad=False, volatile=False):
-        # First, send to device
-        batch = self.to_device(batch)
+    def wrap_batch(self, batch, from_loader=None, requires_grad=False, volatile=False):
+        base_device_ordinal = \
+            self._base_device_ordinal if hasattr(self, '_base_device_ordinal') else None
+        # First, send to the right device
+        if base_device_ordinal is None:
+            # Both inputs and labels are sent to the device
+            batch = self.to_device(batch)
+        elif base_device_ordinal == -1:
+            # Input batches go to device, while labels remain on the CPU.
+            # To start, we need the number of input batches, i.e. from_loader must not be None
+            assert_(from_loader is not None,
+                    "`from_loader` needs to be specified if base_device_ordinal is -1 "
+                    "(i.e. base device for data-parallel training is CPU).",
+                    ValueError)
+            loader_spec = self._loader_specs.get(from_loader)
+            assert_(loader_spec is not None,
+                    "No `loader_spec` found for loader key '{}'.".format(from_loader),
+                    RuntimeError)
+            # Get number of targets
+            num_targets = loader_spec['num_targets']
+            # Fetch input batches and send'em to device (leave the targets alone)
+            inputs = batch[:-num_targets]
+            inputs = self.to_device(inputs)
+            # Finally, build the batch
+            batch = inputs + batch[-num_targets:]
+        else:
+            raise ValueError("Internal Error: Invalid base_device_ordinal: {}."
+                             .format(base_device_ordinal))
         # Cast to the right dtype
         batch = self.cast(batch)
         # Second, wrap as variable
@@ -1153,7 +1184,7 @@ class Trainer(object):
                 # Get batch
                 batch = self.fetch_next_batch('train')
                 # Send to device and wrap as variable
-                batch = self.wrap_batch(batch)
+                batch = self.wrap_batch(batch, from_loader='train')
                 # Separate inputs from targets
                 inputs, target = self.split_batch(batch, from_loader='train')
                 # Apply model, compute loss and backprop
@@ -1240,7 +1271,7 @@ class Trainer(object):
             # Delay SIGINTs till after computation
             with pyu.delayed_keyboard_interrupt():
                 # Wrap
-                batch = self.wrap_batch(batch, volatile=True)
+                batch = self.wrap_batch(batch, from_loader='validate', volatile=True)
                 # Separate
                 inputs, target = self.split_batch(batch, from_loader='validate')
                 # Apply model, compute loss
