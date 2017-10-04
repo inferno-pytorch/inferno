@@ -1,5 +1,3 @@
-name: inferno-pytorch-docs
-
 channels:
   - conda-forge
   - soumith
