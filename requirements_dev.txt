@@ -8,7 +8,6 @@ coverage==4.1
 Sphinx==1.4.8
 cryptography==1.7
 PyYAML==3.11
-pytorch>=0.1.12
 dill
 pyyaml
 scipy>=0.13.0
