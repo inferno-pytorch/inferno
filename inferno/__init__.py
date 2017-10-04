@@ -12,8 +12,3 @@ __all__ = ['extensions', 'io', 'trainers', 'utils']
 __author__ = """Nasim Rahaman"""
 __email__ = 'nasim.rahaman@iwr.uni-heidelberg.de'
 __version__ = '0.1.7'
-
-
-class Bork(object):
-    """Bork dorc"""
-    pass
