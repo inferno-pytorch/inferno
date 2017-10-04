@@ -8,11 +8,11 @@ channels:
 dependencies:
   - python==3.5
   - pytorch>=0.1.12
-  - scipy>=0.13.0
-  - h5py
-  - scikit-image
-  - pyyaml
-  - dill
+#  - scipy>=0.13.0
+#  - h5py
+#  - scikit-image
+#  - pyyaml
+#  - dill
   - pip:
      - sphinx-gallery
      - sphinxcontrib-napoleon
