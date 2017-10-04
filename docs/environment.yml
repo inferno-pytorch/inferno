@@ -1,16 +1,20 @@
+name: inferno_docs
+
 channels:
   - conda-forge
   - soumith
   - anaconda
 
-python:
-  version: 3.5
-
 dependencies:
+  - python==3.5
   - pytorch>=0.1.12
   - scipy>=0.13.0
   - h5py
   - scikit-image
   - pyyaml
   - dill
+  - pip:
+     - sphinx-gallery
+     - sphinxcontrib-napoleon
+     - sphinxcontrib-bibtex
 
