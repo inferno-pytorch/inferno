@@ -14,7 +14,7 @@ with open('HISTORY.rst') as history_file:
 requirements = [
     # TODO: put package requirements here
     "pip==8.1.2",
-    "torch>=0.2.0",
+    "torch>=0.1.12",
     "dill",
     "pyyaml",
     "scipy>=0.13.0",
