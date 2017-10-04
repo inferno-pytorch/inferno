@@ -5,8 +5,10 @@ channels:
   - soumith
   - anaconda
 
+python:
+  version: 3.5
+
 dependencies:
-  - python 3.5*
   - pytorch>=0.1.12
   - scipy>=0.13.0
   - h5py
