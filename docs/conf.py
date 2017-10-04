@@ -23,18 +23,18 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
             return MagicMock()
 
-MOCK_MODULES = ['pygtk',
-                'hdf5',
-                'skimage',
-                'argparse',
-                'pandas',
-                'torch',
-                'torch.nn', 'torch.nn.init', 'torch.nn.functional',
-                'torch.nn.parallel', 'torch.nn.parallel.data_parallel',
-                'torch.multiprocessing', 'torch.autograd',
-                'torch.utils', 'torch.utils.data',
-                'torch.optim', 'torch.sparse', 'torch.cuda']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+# MOCK_MODULES = ['pygtk',
+#                 'hdf5',
+#                 'skimage',
+#                 'argparse',
+#                 'pandas',
+#                 'torch',
+#                 'torch.nn', 'torch.nn.init', 'torch.nn.functional',
+#                 'torch.nn.parallel', 'torch.nn.parallel.data_parallel',
+#                 'torch.multiprocessing', 'torch.autograd',
+#                 'torch.utils', 'torch.utils.data',
+#                 'torch.optim', 'torch.sparse', 'torch.cuda']
+# sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
 
@@ -80,32 +80,32 @@ extensions = [
 
 
 
-# sphinx_gallery_conf = {
-#     # path to your examples scripts
-#     'examples_dirs' :
-#             '../examples',
-#     # path where to save gallery generated examples
-#     'gallery_dirs'  :
-#             'auto_examples',
-#     'backreferences_dir' :
-#             'gen_modules/backreferences',
-#     'scan_used_functions':
-#         True,
-#     'doc_module' :
-#         ('inferno'),
-#
-#     'docs_resolv': True,
-#
-#     'parallel_read_safe': True,
-#
-#     'reference_url':  {
-#              # The module you locally document uses a None
-#             'inferno': None,
-#
-#             # External python modules use their documentation websites
-#             #'matplotlib': 'http://matplotlib.org',
-#             'numpy': 'http://docs.scipy.org/doc/numpy-1.13.0'}
-# }
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    'examples_dirs' :
+            '../examples',
+    # path where to save gallery generated examples
+    'gallery_dirs'  :
+            'auto_examples',
+    'backreferences_dir' :
+            'gen_modules/backreferences',
+    'scan_used_functions':
+        True,
+    'doc_module' :
+        ('inferno'),
+
+    'docs_resolv': True,
+
+    'parallel_read_safe': True,
+
+    'reference_url':  {
+             # The module you locally document uses a None
+            'inferno': None,
+
+            # External python modules use their documentation websites
+            #'matplotlib': 'http://matplotlib.org',
+            'numpy': 'http://docs.scipy.org/doc/numpy-1.13.0'}
+}
 
 
 
