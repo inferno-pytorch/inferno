@@ -56,6 +56,7 @@ project_root = os.path.dirname(cwd)
 sys.path.insert(0, project_root)
 
 import inferno
+import inferno.extensions
 
 # -- General configuration ---------------------------------------------
 
