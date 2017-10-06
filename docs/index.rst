@@ -12,7 +12,7 @@ Contents:
    examples
    modules
    contributing
-   reference
+   inferno-apidoc/modules
    authors
    history
    zbibliography
