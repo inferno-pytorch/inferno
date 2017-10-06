@@ -1,2 +1,2 @@
-from .graph import Graph
-from .sequential import Sequential1, Sequential2
+from .graph import *
+from .sequential import *

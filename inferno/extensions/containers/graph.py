@@ -1,8 +1,9 @@
 from collections import OrderedDict
 import sys
 import threading
-import torch.multiprocessing as mp
+import multiprocessing as mp
 import copy
+import gc
 
 import networkx as nx
 from networkx import is_directed_acyclic_graph, topological_sort
@@ -10,6 +11,10 @@ from torch import nn as nn
 
 from ...utils import python_utils as pyu
 from ...utils.exceptions import assert_
+from ..layers.device import OnDevice
+
+
+__all__ = ['NNGraph', 'Graph']
 
 
 class NNGraph(nx.DiGraph):
@@ -357,6 +362,21 @@ class Graph(nn.Module):
             modules.append(module)
         return pyu.from_iterable(modules)
 
+    def to_device(self, names, target_device, device_ordinal=None, async=False):
+        """Transfer nodes in the network to a specified device."""
+        names = pyu.to_iterable(names)
+        for name in names:
+            assert self.is_node_in_graph(name), "Node '{}' is not in graph.".format(name)
+            module = getattr(self, name, None)
+            assert module is not None, "Node '{}' is in the graph but could not find a module " \
+                                       "corresponding to it.".format(name)
+            # Transfer
+            module_on_device = OnDevice(module, target_device,
+                                        device_ordinal=device_ordinal,
+                                        async=async)
+            setattr(self, name, module_on_device)
+        return self
+
     def get_parameters_for_nodes(self, names, named=False):
         """Get parameters of all nodes listed in `names`."""
         if not named:
@@ -384,8 +404,12 @@ class Graph(nn.Module):
                 "Node '{}' did not get an input but is a source node.".format(name)
             # Get input from payload
             incoming_edges = self.graph.in_edges(name)
-            input = [self.graph[incoming][this]['payload']
-                     for incoming, this in incoming_edges]
+            input = []
+            for incoming, this in incoming_edges:
+                # Append to input
+                input.append(self.graph[incoming][this]['payload'])
+                # Clear reference for the garbage collector to do its thing
+                del self.graph[incoming][this]['payload']
         else:
             assert self.is_node_in_graph(name)
             # Convert input to list
@@ -418,6 +442,9 @@ class Graph(nn.Module):
                                                                               name)
             for (this, outgoing), output in zip(outgoing_edges, outputs):
                 self.graph[this][outgoing].update({'payload': output})
+        # Collect garbage to free some GPU memory?
+        del input
+        gc.collect()
         # Return outputs
         return pyu.from_iterable(outputs)
 
@@ -436,6 +463,9 @@ class Graph(nn.Module):
         # Remove all input and output nodes
         toposorted = [name for name in toposorted
                       if name not in input_nodes and name not in output_nodes]
+        # Since we'll be clearing payloads anyway, it makes no sense whatsoever
+        # to evaluate sink nodes
+        toposorted = [name for name in toposorted if not self.is_sink_node(name)]
         # Forward
         for node in toposorted:
             self.forward_through_node(node)

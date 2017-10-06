@@ -215,3 +215,36 @@ class SaveAtBestValidationScore(Callback):
                                    .format(self._ema_validation_score,
                                            self._best_ema_validation_score))
         # Done
+
+
+class ParameterEMA(Callback):
+    """Maintain a moving average of network parameters."""
+    def __init__(self, momentum):
+        """
+        Parameters
+        ----------
+        momentum : float
+            Momentum for the moving average. The following holds:
+            `new_moving_average = momentum * old_moving_average + (1 - momentum) * value`
+        """
+        super(ParameterEMA, self).__init__()
+        # Privates
+        self._parameters = None
+        # Publics
+        self.momentum = momentum
+
+    def maintain(self):
+        if self._parameters is None:
+            self._parameters = [p.data.new().zero_() for p in self.trainer.model.parameters()]
+        for p_model, p_ema in zip(self.trainer.model.parameters(), self._parameters):
+            p_ema.mul_(self.momentum).add_(p_model.data.mul(1. - self.momentum))
+
+    def apply(self):
+        assert_(self._parameters is not None,
+                "Can't apply parameter EMA's: not available.",
+                ValueError)
+        for p_model, p_ema in zip(self.trainer.model.parameters(), self._parameters):
+            p_model.data.copy_(p_ema)
+
+    def end_of_training_iteration(self, **_):
+        self.maintain()

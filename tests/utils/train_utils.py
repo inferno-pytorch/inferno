@@ -37,6 +37,8 @@ class FrequencyTest(unittest.TestCase):
         self.assertFalse(duration.match(iteration_count=3))
         self.assertTrue(duration.match(iteration_count=3, when_equal_return=True))
         self.assertTrue(duration.match(iteration_count=4))
+        self.assertEqual(duration.compare(iteration_count=1, epoch_count=3).get('iterations'),
+                         2)
         with self.assertRaises(ValueError):
             duration.match(epoch_count=2)
 

@@ -3,6 +3,9 @@ from ...utils.torch_utils import flatten_samples
 from torch.autograd import Variable
 
 
+__all__ = ['SorensenDiceLoss']
+
+
 class SorensenDiceLoss(nn.Module):
     """
     Computes a loss scalar, which when minimized maximizes the Sorensen-Dice similarity

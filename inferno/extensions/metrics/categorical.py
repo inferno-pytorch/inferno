@@ -118,7 +118,8 @@ class IOU(Metric):
             dont_ignore_class = list(range(num_classes))
             dont_ignore_class.pop(ignore_class)
             if classwise_iou.is_cuda:
-                dont_ignore_class = torch.cuda.LongTensor(dont_ignore_class)
+                dont_ignore_class = \
+                    torch.LongTensor(dont_ignore_class).cuda(classwise_iou.get_device())
             else:
                 dont_ignore_class = torch.LongTensor(dont_ignore_class)
             iou = classwise_iou[dont_ignore_class].mean()

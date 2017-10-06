@@ -18,7 +18,7 @@ from ..extensions import metrics
 from ..extensions import optimizers
 from ..extensions import criteria
 from .callbacks import CallbackEngine
-from ..utils.exceptions import assert_, NotSetError, NotTorchModuleError
+from ..utils.exceptions import assert_, NotSetError, NotTorchModuleError, DeviceError
 
 
 class Trainer(object):
@@ -76,6 +76,7 @@ class Trainer(object):
         self._use_cuda = False
         self._dtype = 'float'
         self._devices = None
+        self._base_device_ordinal = None
 
         # Validation
         self._save_at_best_validation_score = False
@@ -301,7 +302,14 @@ class Trainer(object):
         self._criterion = criterion_class(**kwargs)
         # Transfer criterion to GPU if required. This is necessary for e.g. weighted loss,
         # where the weight is registered as a buffer.
-        if self._use_cuda:
+        # The criterion is to be cuda'ed only if the model is on CUDA (self._use_cuda) and
+        # the base_device is not CPU (ordinal -1).
+        if hasattr(self, '_base_device_ordinal'):
+            # This is to not break old checkpoints
+            base_device_ordinal = self._base_device_ordinal
+        else:
+            base_device_ordinal = None
+        if self._use_cuda and base_device_ordinal != 1:
             self._criterion.cuda()
         return self
 
@@ -527,7 +535,7 @@ class Trainer(object):
         if to_directory is not None:
             assert_(isinstance(to_directory, str), exception_type=TypeError)
             if not os.path.exists(to_directory):
-                os.mkdir(to_directory)
+                os.makedirs(to_directory)
             else:
                 assert os.path.isdir(to_directory)
             self._save_to_directory = to_directory
@@ -697,7 +705,7 @@ class Trainer(object):
                          for _learning_rate in learning_rate]
         return pyu.from_iterable(learning_rate)
 
-    def cuda(self, devices=None):
+    def cuda(self, devices=None, base_device=None):
         """
         Train on the GPU.
 
@@ -706,20 +714,40 @@ class Trainer(object):
         devices : list
             Specify the ordinals of the devices to use for dataparallel training.
 
+        base_device : {'cpu', 'cuda'}
+            When using data-parallel training, specify where the result tensors
+            are collected. If 'cuda', the results are collected in `devices[0]`.
+
         Returns
         -------
         Trainer
             self
         """
-        # Move model and criterion to CUDA if necessary
+        # Validate base_device
+        assert_(base_device in [None, 'cpu', 'cuda'],
+                "`base_device` must either be 'cpu' or 'cuda', got {} instead."
+                .format(base_device),
+                DeviceError)
+        if isinstance(devices, int) or (isinstance(devices, (list, tuple)) and len(devices) == 1):
+            # No data-parallelism, make sure base_device is not CPU
+            assert_(base_device != 'cpu',
+                    "Without dataparallelism, `base_device` cannot be 'cpu'.",
+                    DeviceError)
+        self._base_device_ordinal = {None: None, 'cpu': -1, 'cuda': None}.get(base_device)
+        # Move model to CUDA
         if self.model_is_defined:
             self.model.cuda()
-        if self.criterion_is_defined:
+        # Move criterion to cuda if base device ordinal is not -1 (i.e. CPU)
+        # (the criterion is evaluated on the base device)
+        if self.criterion_is_defined and self._base_device_ordinal != -1:
             self.criterion.cuda()
+        elif self.criterion_is_defined and self._base_device_ordinal == -1:
+            # Criterion is evaluated on the CPU, make sure that's where it lives
+            self.criterion.cpu()
         self._use_cuda = True
         self._devices = devices
         return self
-    
+
     def cpu(self):
         """
         Train on the CPU.
@@ -735,7 +763,7 @@ class Trainer(object):
             self.criterion.cpu()
         self._use_cuda = False
         self._devices = None
-        return self 
+        return self
 
     def is_cuda(self):
         """Returns whether using GPU for training."""
@@ -748,8 +776,14 @@ class Trainer(object):
             return objects.cuda() if self._use_cuda else objects
 
     def apply_model(self, *inputs):
+        if hasattr(self, '_base_device_ordinal'):
+            # This is to not break old checkpoints
+            base_device_ordinal = self._base_device_ordinal
+        else:
+            base_device_ordinal = None
         if self._devices is not None:
-            return data_parallel(self.model, inputs, list(self._devices))
+            return data_parallel(self.model, inputs, list(self._devices),
+                                 output_device=base_device_ordinal)
         else:
             return self.model(*inputs)
 
@@ -925,9 +959,34 @@ class Trainer(object):
                                    for from_loader in of_loader})
         return self
 
-    def wrap_batch(self, batch, requires_grad=False, volatile=False):
-        # First, send to device
-        batch = self.to_device(batch)
+    def wrap_batch(self, batch, from_loader=None, requires_grad=False, volatile=False):
+        base_device_ordinal = \
+            self._base_device_ordinal if hasattr(self, '_base_device_ordinal') else None
+        # First, send to the right device
+        if base_device_ordinal is None:
+            # Both inputs and labels are sent to the device
+            batch = self.to_device(batch)
+        elif base_device_ordinal == -1:
+            # Input batches go to device, while labels remain on the CPU.
+            # To start, we need the number of input batches, i.e. from_loader must not be None
+            assert_(from_loader is not None,
+                    "`from_loader` needs to be specified if base_device_ordinal is -1 "
+                    "(i.e. base device for data-parallel training is CPU).",
+                    ValueError)
+            loader_spec = self._loader_specs.get(from_loader)
+            assert_(loader_spec is not None,
+                    "No `loader_spec` found for loader key '{}'.".format(from_loader),
+                    RuntimeError)
+            # Get number of targets
+            num_targets = loader_spec['num_targets']
+            # Fetch input batches and send'em to device (leave the targets alone)
+            inputs = batch[:-num_targets]
+            inputs = self.to_device(inputs)
+            # Finally, build the batch
+            batch = inputs + batch[-num_targets:]
+        else:
+            raise ValueError("Internal Error: Invalid base_device_ordinal: {}."
+                             .format(base_device_ordinal))
         # Cast to the right dtype
         batch = self.cast(batch)
         # Second, wrap as variable
@@ -1125,7 +1184,7 @@ class Trainer(object):
                 # Get batch
                 batch = self.fetch_next_batch('train')
                 # Send to device and wrap as variable
-                batch = self.wrap_batch(batch)
+                batch = self.wrap_batch(batch, from_loader='train')
                 # Separate inputs from targets
                 inputs, target = self.split_batch(batch, from_loader='train')
                 # Apply model, compute loss and backprop
@@ -1212,7 +1271,7 @@ class Trainer(object):
             # Delay SIGINTs till after computation
             with pyu.delayed_keyboard_interrupt():
                 # Wrap
-                batch = self.wrap_batch(batch, volatile=True)
+                batch = self.wrap_batch(batch, from_loader='validate', volatile=True)
                 # Separate
                 inputs, target = self.split_batch(batch, from_loader='validate')
                 # Apply model, compute loss
@@ -1347,7 +1406,7 @@ class Trainer(object):
         from_directory : str
             Path to the directory where the checkpoint is located. The filename should be
             'checkpoint.pytorch' if best=False, or 'best_checkpoint.pytorch' if best=True.
-        best : str
+        best : bool
             Whether to load the best checkpoint. The filename in `from_directory` should be
             'best_checkpoint.pytorch'.
         filename : str
