@@ -8,15 +8,15 @@ Inferno
 .. image:: https://img.shields.io/pypi/v/inferno.svg
         :target: https://pypi.python.org/pypi/inferno-pytorch
 
-.. image:: https://img.shields.io/travis/nasimrahaman/inferno.svg
+.. image:: https://img.shields.io/travis/infern-pytorch/inferno.svg
         :target: https://travis-ci.org/inferno-pytorch/inferno
 
 .. image:: https://readthedocs.org/projects/inferno-pytorch/badge/?version=latest
         :target: http://inferno-pytorch.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://pyup.io/repos/github/nasimrahaman/inferno/shield.svg
-     :target: https://pyup.io/repos/github/nasimrahaman/inferno/
+.. image:: https://pyup.io/repos/github/inferno-pytorch/inferno/shield.svg
+     :target: https://pyup.io/repos/github/inferno-pytorch/inferno/
      :alt: Updates
 
 
