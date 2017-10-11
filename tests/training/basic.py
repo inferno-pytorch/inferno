@@ -1,7 +1,10 @@
-from unittest import TestCase
+from unittest import TestCase, skipIf
 from unittest import main
 import time
 from os.path import join, dirname
+
+
+SKIP_INTEGRATION_TESTS = False
 
 
 class TestTrainer(TestCase):
@@ -30,9 +33,10 @@ class TestTrainer(TestCase):
                                 nn.Softmax())
         return toy_net
 
+    @skipIf(SKIP_INTEGRATION_TESTS, "Slow integration test.")
     def test_cifar(self):
         from inferno.trainers.basic import Trainer
-        from inferno.io.box.cifar10 import get_cifar10_loaders
+        from inferno.io.box.cifar import get_cifar10_loaders
         # Build cifar10 loaders
         trainloader, testloader = get_cifar10_loaders(root_directory=join(self.ROOT_DIR, 'data'),
                                                       download=self.DOWNLOAD_CIFAR)
@@ -131,13 +135,14 @@ class TestTrainer(TestCase):
         # Make sure everything survived (especially the logger)
         self.assertEqual(trainer._logger.__class__.__name__, 'BasicTensorboardLogger')
 
+    @skipIf(SKIP_INTEGRATION_TESTS, "Slow integration test.")
     def test_multi_gpu(self):
         import torch
         if not torch.cuda.is_available():
             return
 
         from inferno.trainers.basic import Trainer
-        from inferno.io.box.cifar10 import get_cifar10_loaders
+        from inferno.io.box.cifar import get_cifar10_loaders
         import os
 
         # Make model
@@ -151,7 +156,7 @@ class TestTrainer(TestCase):
             .save_every((1, 'epochs'), to_directory=os.path.join(self.ROOT_DIR, 'saves')) \
             .save_at_best_validation_score() \
             .set_max_num_epochs(2)\
-            .cuda(devices=[0, 1, 2, 3])
+            .cuda(devices=[0, 1, 2, 3], base_device='cpu')
 
         train_loader, validate_loader = get_cifar10_loaders(root_directory=self.ROOT_DIR,
                                                             download=True)
@@ -168,10 +173,28 @@ class TestTrainer(TestCase):
         # Instantiate new trainer and load
         trainer = Trainer().load(from_directory=self.ROOT_DIR, filename='dummy.pytorch')
 
+    def test_multi_gpu_setup(self):
+        from torch.nn import CrossEntropyLoss
+        import torch
+        from inferno.trainers.basic import Trainer
+        # Test base_device = 'cpu'
+        # Build model
+        net = self._make_test_model()
+        # Make dummy criterion
+        criterion = CrossEntropyLoss(weight=torch.rand(10))
+        # Make trainer
+        trainer = Trainer(net).build_criterion(criterion).cuda([0, 1], base_device='cpu')
+        self.assertIsInstance(trainer.criterion.weight, torch.FloatTensor)
+        # Test base_device = 'cpu'
+        # Build model
+        net = self._make_test_model()
+        criterion = CrossEntropyLoss(weight=torch.rand(10))
+        # Make trainer
+        trainer = Trainer(net).build_criterion(criterion).cuda([0, 1], base_device='cuda')
+        self.assertIsInstance(trainer.criterion.weight, torch.cuda.FloatTensor)
+
 
 if __name__ == '__main__':
-    tester = TestTrainer()
-    # tester.ROOT_DIR = '/export/home/nrahaman/Python/Repositories/inferno/tests/training/root'
-    # tester.test_multi_io()
-    tester.DOWNLOAD_CIFAR = True
-    tester.test_cifar()
+    TestTrainer.CUDA = True
+    TestTrainer.DOWNLOAD_CIFAR = False
+    main()

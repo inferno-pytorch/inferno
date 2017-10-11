@@ -8,9 +8,7 @@ Inferno API Reference
     :toctree: gen_modules/
     
     :template: template_module.rst
-    
-    inferno
-    inferno.extensions
+
     inferno.extensions.containers
     inferno.extensions.criteria
     inferno.extensions.initializers

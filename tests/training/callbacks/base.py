@@ -43,6 +43,20 @@ class CallbackMechTest(unittest.TestCase):
         with self.assertRaises(AssertionError):
             callback_engine.register_callback(WrongDummyCallback())
 
+    def test_instance_registry(self):
+        class Foo(Callback):
+            pass
+
+        class Bar(Callback):
+            pass
+
+        foo = Foo()
+        bar = Bar()
+        self.assertIs(foo.get_instances(), foo)
+        self.assertIs(bar.get_instances(), bar)
+        foo2 = Foo()
+        self.assertSequenceEqual(foo2.get_instances(), [foo, foo2])
+        self.assertIs(bar.get_instances(), bar)
 
 if __name__ == '__main__':
     unittest.main()

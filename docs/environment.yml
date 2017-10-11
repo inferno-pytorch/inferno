@@ -1,0 +1,19 @@
+name: inferno_docs
+
+channels:
+  - soumith
+
+dependencies:
+  - python==3.5
+  - pytorch>=0.1.12
+  - torchvision
+  - pip:
+     - scipy>=0.13.0
+     - h5py
+     - scikit-image
+     - pyyaml
+     - dill
+     - sphinx-gallery
+     - sphinxcontrib-napoleon
+     - sphinxcontrib-bibtex
+

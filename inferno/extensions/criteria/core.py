@@ -3,6 +3,9 @@ from functools import reduce
 from ...utils.exceptions import assert_, ShapeError, NotTorchModuleError
 
 
+__all__ = ['Criteria', 'As2DCriterion']
+
+
 class Criteria(nn.Module):
     """Aggregate multiple criteria to one."""
     def __init__(self, *criteria):

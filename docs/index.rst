@@ -4,7 +4,7 @@ Welcome to inferno's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
    readme
    installation
@@ -12,10 +12,12 @@ Contents:
    examples
    modules
    contributing
-   reference
+   inferno-apidoc/modules
    authors
    history
    zbibliography
+
+.. automodule:: inferno
 
 Indices and tables
 ==================

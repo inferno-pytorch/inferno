@@ -232,6 +232,8 @@ class Cityscapes(data.Dataset):
     MEAN = CITYSCAPES_MEAN
     STD = CITYSCAPES_STD
 
+    BLACKLIST = ['leftImg8bit/train_extra/troisdorf/troisdorf_000000_000073_leftImg8bit.png']
+
     def __init__(self, root_folder, split='train', read_from_zip_archive=True,
                  image_transform=None, label_transform=None, joint_transform=None):
         """
@@ -260,15 +262,23 @@ class Cityscapes(data.Dataset):
 
     def __getitem__(self, index):
         pi, pl = self.image_paths[index]
+        if pi in self.BLACKLIST:
+            # Select the next image if the current image is bad
+            return self[index + 1]
         image = extract_image(self.image_root, pi)
         label = extract_image(self.label_root, pl)
-        # Apply transforms
-        if self.image_transform is not None:
-            image = self.image_transform(image)
-        if self.label_transform is not None:
-            label = self.label_transform(label)
-        if self.joint_transform is not None:
-            image, label = self.joint_transform(image, label)
+        try:
+            # Apply transforms
+            if self.image_transform is not None:
+                image = self.image_transform(image)
+            if self.label_transform is not None:
+                label = self.label_transform(label)
+            if self.joint_transform is not None:
+                image, label = self.joint_transform(image, label)
+        except Exception:
+            print("[!] An Exception occurred while applying the transforms at "
+                  "index {} of split '{}'.".format(index, self.split))
+            raise
         return image, label
 
     def __len__(self):
