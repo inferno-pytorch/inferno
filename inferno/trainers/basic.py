@@ -86,6 +86,7 @@ class Trainer(object):
         self._num_validation_iterations = None
         # We should exclude the zero-th epoch from validation
         self._last_validated_at_epoch = 0
+        self._last_validated_at_iteration = 0
         # This is to allow a callback to trigger a validation by setting
         # trainer.validate_now = True
         self._validation_externally_triggered = False
@@ -563,10 +564,18 @@ class Trainer(object):
                 return False
             else:
                 # If we haven't validated this epoch, check if we should
-                return self._validate_every.match(epoch_count=self._epoch_count)
+                return self._validate_every.match(epoch_count=self._epoch_count,
+                                                  match_zero=False)
         else:
-            return self._validate_every is not None and \
-                   self._validate_every.match(iteration_count=self._iteration_count)
+            # Don't validate if we've done once already this iteration
+            if self._last_validated_at_iteration == self._iteration_count:
+                return False
+            else:
+                # If we haven't validated this iteration, check if we should. The `match_zero` is
+                # redundant, but we'll leave it on anyway.
+                return self._validate_every is not None and \
+                       self._validate_every.match(iteration_count=self._iteration_count,
+                                                  match_zero=False)
 
     @validate_now.setter
     def validate_now(self, value):
@@ -1259,7 +1268,7 @@ class Trainer(object):
 
         # Record the epoch we're validating in
         self._last_validated_at_epoch = self._epoch_count
-
+        self._last_validated_at_iteration = self._iteration_count
         self.callbacks.call(self.callbacks.BEGIN_OF_VALIDATION_RUN,
                             num_iterations=num_iterations,
                             last_validated_at_epoch=self._last_validated_at_epoch)
