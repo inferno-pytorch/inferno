@@ -46,8 +46,10 @@ def slidingwindowslices(shape, window_size, strides,
         stops  = [sl.stop - wsize for sl, wsize in zip(dataslice, window_size)]
     else:
         starts = dim * [0]
-        stops  = [dimsize - wsize for dimsize, wsize in zip(shape, window_size)]
+        stops  = [dimsize - wsize if wsize != dimsize else dimsize
+                  for dimsize, wsize in zip(shape, window_size)]
 
+    assert all(stp > strt for strt, stp in zip(starts, stops)), "%s, %s" % (str(starts), str(stops))
     nslices = [dimension_window(start, stop, wsize, stride, dimsize, ds_dim)
                for start, stop, wsize, stride, dimsize, ds_dim
                in zip(starts, stops, window_size, strides, shape, ds)]
