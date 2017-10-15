@@ -185,7 +185,7 @@ class Frequency(object):
             match = False
         else:
             match = match_value is not None and \
-                    match_value != np.inf and \
+                    self.value != np.inf and \
                     match_value % self.value == 0
         if persistent and match and self._last_match_value == match_value:
             # Last matched value is the current matched value, i.e. we've matched once already,
