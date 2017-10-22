@@ -292,7 +292,7 @@ class BNReLUConv3D(ConvActivation):
     3D BN-ReLU-Conv layer with 'SAME' padding and He weight initialization.
     """
     def __init__(self, in_channels, out_channels, kernel_size):
-        super(BNReLUConv2D, self).__init__(in_channels=in_channels,
+        super(BNReLUConv3D, self).__init__(in_channels=in_channels,
                                            out_channels=out_channels,
                                            kernel_size=kernel_size,
                                            dim=3,
