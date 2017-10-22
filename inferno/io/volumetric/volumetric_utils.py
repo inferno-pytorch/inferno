@@ -7,7 +7,7 @@ def slidingwindowslices(shape, window_size, strides,
                         dataslice=None, add_overhanging=True):
     # only support lists or tuples for shape, window_size and strides
     assert isinstance(shape, (list, tuple))
-    assert isinstance(window_size, (list, tuple))
+    assert isinstance(window_size, (list, tuple)), "%s" % (str(type(window_size)))
     assert isinstance(strides, (list, tuple))
 
     dim = len(shape)

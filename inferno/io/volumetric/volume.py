@@ -109,7 +109,7 @@ class HDF5VolumeLoader(VolumeLoader):
             assert name in path
             self.path = path.get(name)
         elif isinstance(path, str):
-            assert os.path.exists(path)
+            assert os.path.exists(path), path
             self.path = path
         else:
             raise NotImplementedError

@@ -287,6 +287,26 @@ class BNReLUConv2D(ConvActivation):
         return conved
 
 
+class BNReLUConv3D(ConvActivation):
+    """
+    3D BN-ReLU-Conv layer with 'SAME' padding and He weight initialization.
+    """
+    def __init__(self, in_channels, out_channels, kernel_size):
+        super(BNReLUConv2D, self).__init__(in_channels=in_channels,
+                                           out_channels=out_channels,
+                                           kernel_size=kernel_size,
+                                           dim=3,
+                                           activation=nn.ReLU(inplace=True),
+                                           initialization=KaimingNormalWeightsZeroBias(0))
+        self.batchnorm = nn.BatchNorm3d(in_channels)
+
+    def forward(self, input):
+        normed = self.batchnorm(input)
+        activated = self.activation(normed)
+        conved = self.conv(activated)
+        return conved
+
+
 class BNReLUDepthwiseConv2D(ConvActivation):
     """
     2D BN-ReLU-Conv layer with 'SAME' padding, He weight initialization and depthwise convolution.
