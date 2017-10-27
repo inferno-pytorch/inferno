@@ -83,7 +83,8 @@ class BSD500(Dataset):
                         subject = "{}_{}".format(img_num, self.subject)
 
                     label_path = "{}/{}".format(label_base, subject)
-                    self.data[shape].append((bsd[img_path].value, bsd[label_path].value))
+                    self.data[shape].append((bsd[img_path].value.astype(np.float32)[:, 1:, 1:], 
+                                             bsd[label_path].value.astype(np.float32)[1:, 1:]))
 
 
     def __getitem__(self, index):
