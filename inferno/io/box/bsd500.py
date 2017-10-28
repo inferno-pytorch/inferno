@@ -30,22 +30,31 @@ from inferno.io.transform import Compose
 #     return np.array(Image.open(io.BytesIO(zipfile.ZipFile(archive, 'r').read(image_path))))
 
 
-class MeanTransformOverLabelers(object):
-    def __init__(self, transform):
+class AccumulateTransformOverLabelers(object):
+    accumulators = ('mean', 'max', 'min')
+
+    def __init__(self, transform, accumulator='mean'):
         self.transform = transform
+        assert accumulator in self.accumulators
+        if accumulator == 'mean':
+            self.accumulator = np.mean
+        elif accumulator == 'max':
+            self.accumulator = np.amax
+        elif accumulator == 'min':
+            self.accumulator = np.amin
 
     def __call__(self, input_):
         transformed = np.array([self.transform(inp) for inp in input_])
-        return np.mean(transformed, axis=0)
+        return self.accumulator(transformed, axis=0)
 
 
-def get_label_transforms(offsets):
+def get_label_transforms(offsets, accumulator='mean'):
     from neurofire.transforms.segmentation import Segmentation2AffinitiesFromOffsets
     seg2aff = Segmentation2AffinitiesFromOffsets(dim=2,
                                                  offsets=pyu.from_iterable(offsets),
                                                  add_singleton_channel_dimension=True,
                                                  retain_segmentation=False)
-    return MeanTransformOverLabelers(seg2aff)
+    return AccumulateTransformOverLabelers(seg2aff, accumulator)
 
 
 # TODO rotations, transpose, flips
