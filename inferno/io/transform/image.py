@@ -401,6 +401,21 @@ class RandomRotate(Transform):
         return np.rot90(image, k=self.get_random_variable('k'))
 
 
+class RandomTranspose(Transform):
+    """Random 2d transpose."""
+    def __init__(self, **super_kwargs):
+        super(RandomTranspose, self).__init__(**super_kwargs)
+
+    def build_random_variables(self, **kwargs):
+        np.random.seed()
+        self.set_random_variable('do_transpose', np.random.uniform() > 0.5)
+
+    def image_function(self, image):
+        if self.get_random_variable('do_transpose'):
+            image = np.transpose(image)
+        return image
+
+
 class RandomFlip(Transform):
     """Random left-right or up-down flips."""
     def __init__(self, allow_lr_flips=True, allow_ud_flips=True, **super_kwargs):
@@ -433,7 +448,7 @@ class CenterCrop(Transform):
         th, tw = self.size
         x1 = int(round((w - tw) / 2.))
         y1 = int(round((h - th) / 2.))
-        return image[x1:x1+tw, y1:y1+th]
+        return image[x1:x1 + tw, y1:y1 + th]
 
 
 class BinaryMorphology(Transform):
