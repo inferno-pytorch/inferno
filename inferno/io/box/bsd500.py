@@ -6,8 +6,11 @@ import os  # , io
 # from scipy import ndimage
 import h5py
 from torch.utils.data.dataset import Dataset
+from torch.utils.data import DataLoader
 from random import choice
-from inferno.io.transform import Compose
+from ..transform import Compose
+from ..transform.generic import Normalize, NormalizeRange  # , Cast, AsTorchBatch
+from scipy.ndimage import grey_opening
 
 # def get_matching_labelimage_file(f):
 #     fs = f.split('/')
@@ -33,7 +36,7 @@ from inferno.io.transform import Compose
 class AccumulateTransformOverLabelers(object):
     accumulators = ('mean', 'max', 'min')
 
-    def __init__(self, transform, accumulator='mean'):
+    def __init__(self, transform, accumulator='mean', close_channels=None):
         self.transform = transform
         assert accumulator in self.accumulators
         if accumulator == 'mean':
@@ -42,32 +45,71 @@ class AccumulateTransformOverLabelers(object):
             self.accumulator = np.amax
         elif accumulator == 'min':
             self.accumulator = np.amin
+        if close_channels is not None:
+            assert isinstance(close_channels, (list, tuple))
+        self.close_channels = close_channels
 
     def __call__(self, input_):
         transformed = np.array([self.transform(inp) for inp in input_])
-        return self.accumulator(transformed, axis=0)
+        transformed = self.accumulator(transformed, axis=0)
+        if self.close_channels is not None:
+            for c in self.close_channels:
+                # TODO figure out what exactly size does
+                transformed[c] = grey_opening(transformed[c], size=(3, 3))
+        return transformed
 
 
-def get_label_transforms(offsets, accumulator='mean'):
+def get_label_transforms(offsets, accumulator='mean', close_channels=None):
     from neurofire.transforms.segmentation import Segmentation2AffinitiesFromOffsets
     seg2aff = Segmentation2AffinitiesFromOffsets(dim=2,
                                                  offsets=pyu.from_iterable(offsets),
                                                  add_singleton_channel_dimension=True,
                                                  retain_segmentation=False)
-    return AccumulateTransformOverLabelers(seg2aff, accumulator)
+    return AccumulateTransformOverLabelers(seg2aff, accumulator, close_channels)
 
 
-# TODO rotations, transpose, flips
-def get_joint_transforms(offsets):
-    pass
+def get_joint_transforms():
+    from ..transform.image import RandomFlip, RandomRotate, RandomTranspose
+    trafos = Compose(RandomFlip(allow_ud_flips=False), RandomRotate(), RandomTranspose())
+    return trafos
 
 
-def get_bsd500_loader(root_folder, split, offsets):
-    label_trafo = get_label_transforms(offsets)
-    return BSD500(root_folder,
-                  subject='all',
-                  split=split,
-                  label_transform=label_trafo)
+# TODO gamma correction ?
+def get_image_transforms():
+    trafos = Compose(NormalizeRange(),
+                     # RandomGammaCorrection(),
+                     Normalize())
+    return trafos
+
+
+# TODO return data loaders for train, val and test
+def get_bsd500_loaders(root_folder, offsets, close_channels=None, shuffle=True):
+    label_transforms = get_label_transforms(offsets, close_channels=close_channels)
+    joint_transforms = get_joint_transforms()
+    image_transforms = get_image_transforms()
+
+    train_set = BSD500(root_folder,
+                       subject='all',
+                       split='train',
+                       label_transform=label_transforms,
+                       joint_transform=joint_transforms,
+                       image_transform=image_transforms)
+    val_set = BSD500(root_folder,
+                     subject='all',
+                     split='val',
+                     label_transform=label_transforms,
+                     joint_transform=joint_transforms,
+                     image_transform=image_transforms)
+    test_set = BSD500(root_folder,
+                      subject='all',
+                      split='test',
+                      label_transform=label_transforms,
+                      joint_transform=joint_transforms,
+                      image_transform=image_transforms)
+
+    return DataLoader(train_set, shuffle=shuffle), \
+           DataLoader(val_set, shuffle=shuffle), \
+           DataLoader(test_set, shuffle=shuffle)
 
 
 class BSD500(Dataset):
@@ -155,7 +197,6 @@ class BSD500(Dataset):
                 label_path = "{}/{}".format(label_base, subject) if isinstance(subject, int) else \
                     ["{}/{}".format(label_base, subject_id) for subject_id in subject]
 
-                # TODO apply all trafos
                 gt = bsd[label_path].value.astype(np.float32)[1:, 1:] if isinstance(label_path, str) else \
                     np.array([bsd[lpath].value.astype(np.float32)[1:, 1:] for lpath in label_path])
 
@@ -169,7 +210,12 @@ class BSD500(Dataset):
             index -= len(self.data)
         img, gt = self.data[index]
 
-        # TODO also apply image and joint transform
+        if self.image_transform is not None:
+            img = self.image_transform(img)
+
+        if self.joint_transform is not None:
+            img, gt = self.joint_transform(img, gt)
+
         if self.label_transform is not None:
             gt = self.label_transform(gt)
         return img, gt
