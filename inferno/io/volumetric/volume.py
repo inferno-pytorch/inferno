@@ -14,9 +14,9 @@ class VolumeLoader(SyncableDataset):
                  padding_mode='reflect', transforms=None, return_index_spec=False, name=None):
         super(VolumeLoader, self).__init__()
         # Validate volume
-        assert isinstance(volume, np.ndarray)
+        assert isinstance(volume, np.ndarray), str(type(volume))
         # Validate window size and stride
-        assert len(window_size) == volume.ndim
+        assert len(window_size) == volume.ndim, "%i, %i" % (len(window_size), volume.ndim)
         assert len(stride) == volume.ndim
         # Validate transforms
         assert transforms is None or callable(transforms)
@@ -109,7 +109,7 @@ class HDF5VolumeLoader(VolumeLoader):
             assert name in path
             self.path = path.get(name)
         elif isinstance(path, str):
-            assert os.path.exists(path)
+            assert os.path.exists(path), path
             self.path = path
         else:
             raise NotImplementedError
