@@ -36,7 +36,7 @@ from scipy.ndimage import grey_opening
 class AccumulateTransformOverLabelers(object):
     accumulators = ('mean', 'max', 'min')
 
-    def __init__(self, transform, accumulator='mean', close_channels=None):
+    def __init__(self, transform, accumulator='mean', close_channels=None, retain_segmentation=False):
         self.transform = transform
         assert accumulator in self.accumulators
         if accumulator == 'mean':
@@ -48,14 +48,26 @@ class AccumulateTransformOverLabelers(object):
         if close_channels is not None:
             assert isinstance(close_channels, (list, tuple))
         self.close_channels = close_channels
+        self.retain_segmentation = retain_segmentation
 
     def __call__(self, input_):
         transformed = np.array([self.transform(inp) for inp in input_])
+
         transformed = self.accumulator(transformed, axis=0)
+        # t0 = np.mean(transformed, axis=0)
+        # t1 = np.amax(transformed, axis=0)
+        # t2 = np.amin(transformed, axis=0)
+
         if self.close_channels is not None:
             for c in self.close_channels:
                 # TODO figure out what exactly size does
                 transformed[c] = grey_opening(transformed[c], size=(3, 3))
+
+        # if `retain_segmentation` is set to true, we just retain the 0th segmentation
+        # to be compatible with the isbi loss functions
+        if self.retain_segmentation:
+            transformed = np.concatenate([input_[:1], transformed], axis=0)
+
         return transformed
 
 
@@ -64,8 +76,8 @@ def get_label_transforms(offsets, accumulator='mean', close_channels=None):
     seg2aff = Segmentation2AffinitiesFromOffsets(dim=2,
                                                  offsets=pyu.from_iterable(offsets),
                                                  add_singleton_channel_dimension=True,
-                                                 retain_segmentation=True)
-    return AccumulateTransformOverLabelers(seg2aff, accumulator, close_channels)
+                                                 retain_segmentation=False)
+    return AccumulateTransformOverLabelers(seg2aff, accumulator, close_channels, retain_segmentation=True)
 
 
 def get_joint_transforms():
@@ -82,18 +94,26 @@ def get_image_transforms():
     return trafos
 
 
-def get_bsd500_loader(root_folder, split, offsets, close_channels=None, shuffle=True, for_prediction=False):
-    label_transforms = None if for_prediction else get_label_transforms(offsets, close_channels=close_channels)
+def get_bsd500_loader(root_folder,
+                      split,
+                      offsets,
+                      close_channels=None,
+                      shuffle=True,
+                      for_prediction=False,
+                      accumulator='mean'):
+    label_transforms = None if for_prediction else get_label_transforms(offsets,
+                                                                        close_channels=close_channels,
+                                                                        accumulator=accumulator)
     joint_transforms = None if for_prediction else get_joint_transforms()
     image_transforms = None if for_prediction else get_image_transforms()
 
     data_set = BSD500(root_folder,
-                       subject='all',
-                       split=split,
-                       label_transform=label_transforms,
-                       joint_transform=joint_transforms,
-                       image_transform=image_transforms,
-                       load_labels=not for_prediction)
+                      subject='all',
+                      split=split,
+                      label_transform=label_transforms,
+                      joint_transform=joint_transforms,
+                      image_transform=image_transforms,
+                      load_labels=not for_prediction)
     if for_prediction:
         return data_set
     else:
