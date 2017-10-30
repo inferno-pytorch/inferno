@@ -64,7 +64,7 @@ def get_label_transforms(offsets, accumulator='mean', close_channels=None):
     seg2aff = Segmentation2AffinitiesFromOffsets(dim=2,
                                                  offsets=pyu.from_iterable(offsets),
                                                  add_singleton_channel_dimension=True,
-                                                 retain_segmentation=False)
+                                                 retain_segmentation=True)
     return AccumulateTransformOverLabelers(seg2aff, accumulator, close_channels)
 
 
@@ -82,34 +82,22 @@ def get_image_transforms():
     return trafos
 
 
-# TODO return data loaders for train, val and test
-def get_bsd500_loaders(root_folder, offsets, close_channels=None, shuffle=True):
-    label_transforms = get_label_transforms(offsets, close_channels=close_channels)
-    joint_transforms = get_joint_transforms()
-    image_transforms = get_image_transforms()
+def get_bsd500_loader(root_folder, split, offsets, close_channels=None, shuffle=True, for_prediction=False):
+    label_transforms = None if for_prediction else get_label_transforms(offsets, close_channels=close_channels)
+    joint_transforms = None if for_prediction else get_joint_transforms()
+    image_transforms = None if for_prediction else get_image_transforms()
 
-    train_set = BSD500(root_folder,
+    data_set = BSD500(root_folder,
                        subject='all',
-                       split='train',
+                       split=split,
                        label_transform=label_transforms,
                        joint_transform=joint_transforms,
-                       image_transform=image_transforms)
-    val_set = BSD500(root_folder,
-                     subject='all',
-                     split='val',
-                     label_transform=label_transforms,
-                     joint_transform=joint_transforms,
-                     image_transform=image_transforms)
-    test_set = BSD500(root_folder,
-                      subject='all',
-                      split='test',
-                      label_transform=label_transforms,
-                      joint_transform=joint_transforms,
-                      image_transform=image_transforms)
-
-    return DataLoader(train_set, shuffle=shuffle), \
-           DataLoader(val_set, shuffle=shuffle), \
-           DataLoader(test_set, shuffle=shuffle)
+                       image_transform=image_transforms,
+                       load_labels=not for_prediction)
+    if for_prediction:
+        return data_set
+    else:
+        return DataLoader(data_set, shuffle=shuffle)
 
 
 class BSD500(Dataset):
@@ -122,7 +110,8 @@ class BSD500(Dataset):
                  split='train',
                  image_transform=None,
                  joint_transform=None,
-                 label_transform=None):
+                 label_transform=None,
+                 load_labels=True):
         """
         Parameters:
         root_folder: folder that contains 'groundTruth' and 'images'  of the BSD 500.
@@ -141,14 +130,14 @@ class BSD500(Dataset):
         assert split in self.splits, str(split)
 
         self.root_folder = root_folder
-        if not os.path.exists(os.path.join(root_folder, "BSD500.h5")):
+        if not os.path.exists(os.path.join(root_folder, "BSD500_%s.h5" % split)):
             print("creating h5 files of BSD500")
 
             import scipy.io as sio
             from scipy.ndimage import imread
             from glob import glob
 
-            with h5py.File(os.path.join(root_folder, "BSD500.h5"), "w") as out:
+            with h5py.File(os.path.join(root_folder, "BSD500_%s.h5" % split), "w") as out:
                 for ds in ["train", "val", "test"]:
                     for i, f in enumerate(glob(root_folder + "/groundTruth/" + ds + "/*.mat")):
                         im_path = f.replace("groundTruth", "images").replace(".mat", ".jpg")
@@ -168,20 +157,22 @@ class BSD500(Dataset):
         self.image_transform = image_transform
         self.joint_transform = joint_transform
         self.label_transform = label_transform
+        self.load_labels = load_labels
 
-        # FIXME this can be done by the dataloader ?!
-        self.shuffle_data_paths()
+        self.load_data()
 
-    def shuffle_data_paths(self):
+    def load_data(self):
         self.data = []
-        with h5py.File(os.path.join(self.root_folder, "BSD500.h5"), "r") as bsd:
+        with h5py.File(os.path.join(self.root_folder, "BSD500_%s.h5" % self.split), "r") as bsd:
             base = "{}/image_data/".format(self.split)
             label_base = base.replace("image_data", "label_data")
 
-            for img_num in bsd["{}/image_data/".format(self.split)]:
+            img_nums = [int(num) for num in bsd["{}/image_data/".format(self.split)]]
+            img_nums.sort()
+            for img_num in img_nums:
 
                 # load the image
-                img_path = base + img_num
+                img_path = base + str(img_num)
                 img = bsd[img_path].value.astype(np.float32)[:, 1:, 1:]
 
                 # load the groundtruths
@@ -203,9 +194,6 @@ class BSD500(Dataset):
                 self.data.append((img, gt))
 
     def __getitem__(self, index):
-        if index == 0 and self.subject is None:
-            # TODO: shuffeling should actually be done, when a new batch is loaded
-            self.shuffle_data_paths()
         if index > len(self.data):
             index -= len(self.data)
         img, gt = self.data[index]
@@ -218,7 +206,11 @@ class BSD500(Dataset):
 
         if self.label_transform is not None:
             gt = self.label_transform(gt)
-        return img, gt
+
+        if self.load_labels:
+            return img, gt
+        else:
+            return img
 
     def __len__(self):
         return len(self.data)
