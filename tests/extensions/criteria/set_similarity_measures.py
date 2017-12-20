@@ -3,12 +3,14 @@ import torch
 from torch.autograd import Variable
 
 
-class TestSorensenDice(unittest.TestCase):
+class SetSimilarityTest(unittest.TestCase):
     def get_dummy_variables(self):
         x = Variable(torch.zeros(3, 2, 100, 100).uniform_())
         y = Variable(torch.zeros(3, 2, 100, 100).uniform_())
         return x, y
 
+
+class TestSorensenDice(SetSimilarityTest):
     # noinspection PyCallingNonCallable
     def test_channelwise(self):
         from inferno.extensions.criteria.set_similarity_measures import SorensenDiceLoss
@@ -23,6 +25,16 @@ class TestSorensenDice(unittest.TestCase):
         channelwise_loss = channelwise(x, y)
         # Compare
         self.assertAlmostEqual(expected_channelwise_loss.data[0], channelwise_loss.data[0])
+
+
+class TestGeneralizedSorensenDice(SetSimilarityTest):
+    # TODO better test
+    def test_pass(self):
+        from inferno.extensions.criteria.set_similarity_measures import GeneralizedDiceLoss
+        x, y = self.get_dummy_variables()
+        loss = GeneralizedDiceLoss()
+        val = loss(x, y)
+        self.assertLess(val, 0)
 
 
 if __name__ == '__main__':
