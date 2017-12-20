@@ -26,6 +26,7 @@ class SorensenDiceLoss(nn.Module):
         self.channelwise = channelwise
         self.eps = eps
 
+    # TODO move weight here as optional argument ?!
     def forward(self, input, target):
         if not self.channelwise:
             numerator = (input * target).sum()
@@ -54,6 +55,8 @@ class SorensenDiceLoss(nn.Module):
             loss = channelwise_loss.sum()
         return loss
 
+
+# TODO we could also make the channel-wise ?!
 class GeneralizedDiceLoss(nn.Module):
     """
     Computes the scalar Generalized Dice Loss defined in https://arxiv.org/abs/1707.03237
@@ -73,11 +76,11 @@ class GeneralizedDiceLoss(nn.Module):
 
         # Find classes weights:
         sum_targets = target.sum(-1)
-        class_weigths = 1. / (sum_targets*sum_targets).clamp(min=self.eps)
+        class_weigths = 1. / (sum_targets * sum_targets).clamp(min=self.eps)
 
         # # Compute generalized Dice loss:
-        numer = ((prediction*target).sum(-1) * class_weigths).sum()
-        denom = ((prediction+target).sum(-1) * class_weigths).sum()
+        numer = ((prediction * target).sum(-1) * class_weigths).sum()
+        denom = ((prediction + target).sum(-1) * class_weigths).sum()
 
         loss = 1. - 2. * numer / denom.clamp(min=self.eps)
 
