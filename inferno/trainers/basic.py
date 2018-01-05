@@ -18,7 +18,7 @@ from ..extensions import metrics
 from ..extensions import optimizers
 from ..extensions import criteria
 from .callbacks import CallbackEngine
-from ..utils.exceptions import assert_, NotSetError, NotTorchModuleError
+from ..utils.exceptions import assert_, NotSetError, NotTorchModuleError, DeviceError
 
 
 class Trainer(object):
@@ -76,6 +76,7 @@ class Trainer(object):
         self._use_cuda = False
         self._dtype = 'float'
         self._devices = None
+        self._base_device_ordinal = None
 
         # Validation
         self._save_at_best_validation_score = False
@@ -85,6 +86,7 @@ class Trainer(object):
         self._num_validation_iterations = None
         # We should exclude the zero-th epoch from validation
         self._last_validated_at_epoch = 0
+        self._last_validated_at_iteration = 0
         # This is to allow a callback to trigger a validation by setting
         # trainer.validate_now = True
         self._validation_externally_triggered = False
@@ -301,7 +303,14 @@ class Trainer(object):
         self._criterion = criterion_class(**kwargs)
         # Transfer criterion to GPU if required. This is necessary for e.g. weighted loss,
         # where the weight is registered as a buffer.
-        if self._use_cuda:
+        # The criterion is to be cuda'ed only if the model is on CUDA (self._use_cuda) and
+        # the base_device is not CPU (ordinal -1).
+        if hasattr(self, '_base_device_ordinal'):
+            # This is to not break old checkpoints
+            base_device_ordinal = self._base_device_ordinal
+        else:
+            base_device_ordinal = None
+        if self._use_cuda and base_device_ordinal != 1:
             self._criterion.cuda()
         return self
 
@@ -555,10 +564,18 @@ class Trainer(object):
                 return False
             else:
                 # If we haven't validated this epoch, check if we should
-                return self._validate_every.match(epoch_count=self._epoch_count)
+                return self._validate_every.match(epoch_count=self._epoch_count,
+                                                  match_zero=False)
         else:
-            return self._validate_every is not None and \
-                   self._validate_every.match(iteration_count=self._iteration_count)
+            # Don't validate if we've done once already this iteration
+            if self._last_validated_at_iteration == self._iteration_count:
+                return False
+            else:
+                # If we haven't validated this iteration, check if we should. The `match_zero` is
+                # redundant, but we'll leave it on anyway.
+                return self._validate_every is not None and \
+                       self._validate_every.match(iteration_count=self._iteration_count,
+                                                  match_zero=False)
 
     @validate_now.setter
     def validate_now(self, value):
@@ -697,7 +714,7 @@ class Trainer(object):
                          for _learning_rate in learning_rate]
         return pyu.from_iterable(learning_rate)
 
-    def cuda(self, devices=None):
+    def cuda(self, devices=None, base_device=None):
         """
         Train on the GPU.
 
@@ -706,16 +723,36 @@ class Trainer(object):
         devices : list
             Specify the ordinals of the devices to use for dataparallel training.
 
+        base_device : {'cpu', 'cuda'}
+            When using data-parallel training, specify where the result tensors
+            are collected. If 'cuda', the results are collected in `devices[0]`.
+
         Returns
         -------
         Trainer
             self
         """
-        # Move model and criterion to CUDA if necessary
+        # Validate base_device
+        assert_(base_device in [None, 'cpu', 'cuda'],
+                "`base_device` must either be 'cpu' or 'cuda', got {} instead."
+                .format(base_device),
+                DeviceError)
+        if isinstance(devices, int) or (isinstance(devices, (list, tuple)) and len(devices) == 1):
+            # No data-parallelism, make sure base_device is not CPU
+            assert_(base_device != 'cpu',
+                    "Without dataparallelism, `base_device` cannot be 'cpu'.",
+                    DeviceError)
+        self._base_device_ordinal = {None: None, 'cpu': -1, 'cuda': None}.get(base_device)
+        # Move model to CUDA
         if self.model_is_defined:
             self.model.cuda()
-        if self.criterion_is_defined:
+        # Move criterion to cuda if base device ordinal is not -1 (i.e. CPU)
+        # (the criterion is evaluated on the base device)
+        if self.criterion_is_defined and self._base_device_ordinal != -1:
             self.criterion.cuda()
+        elif self.criterion_is_defined and self._base_device_ordinal == -1:
+            # Criterion is evaluated on the CPU, make sure that's where it lives
+            self.criterion.cpu()
         self._use_cuda = True
         self._devices = devices
         return self
@@ -748,8 +785,14 @@ class Trainer(object):
             return objects.cuda() if self._use_cuda else objects
 
     def apply_model(self, *inputs):
+        if hasattr(self, '_base_device_ordinal'):
+            # This is to not break old checkpoints
+            base_device_ordinal = self._base_device_ordinal
+        else:
+            base_device_ordinal = None
         if self._devices is not None:
-            return data_parallel(self.model, inputs, list(self._devices))
+            return data_parallel(self.model, inputs, list(self._devices),
+                                 output_device=base_device_ordinal)
         else:
             return self.model(*inputs)
 
@@ -925,9 +968,34 @@ class Trainer(object):
                                    for from_loader in of_loader})
         return self
 
-    def wrap_batch(self, batch, requires_grad=False, volatile=False):
-        # First, send to device
-        batch = self.to_device(batch)
+    def wrap_batch(self, batch, from_loader=None, requires_grad=False, volatile=False):
+        base_device_ordinal = \
+            self._base_device_ordinal if hasattr(self, '_base_device_ordinal') else None
+        # First, send to the right device
+        if base_device_ordinal is None:
+            # Both inputs and labels are sent to the device
+            batch = self.to_device(batch)
+        elif base_device_ordinal == -1:
+            # Input batches go to device, while labels remain on the CPU.
+            # To start, we need the number of input batches, i.e. from_loader must not be None
+            assert_(from_loader is not None,
+                    "`from_loader` needs to be specified if base_device_ordinal is -1 "
+                    "(i.e. base device for data-parallel training is CPU).",
+                    ValueError)
+            loader_spec = self._loader_specs.get(from_loader)
+            assert_(loader_spec is not None,
+                    "No `loader_spec` found for loader key '{}'.".format(from_loader),
+                    RuntimeError)
+            # Get number of targets
+            num_targets = loader_spec['num_targets']
+            # Fetch input batches and send'em to device (leave the targets alone)
+            inputs = batch[:-num_targets]
+            inputs = self.to_device(inputs)
+            # Finally, build the batch
+            batch = inputs + batch[-num_targets:]
+        else:
+            raise ValueError("Internal Error: Invalid base_device_ordinal: {}."
+                             .format(base_device_ordinal))
         # Cast to the right dtype
         batch = self.cast(batch)
         # Second, wrap as variable
@@ -1125,7 +1193,7 @@ class Trainer(object):
                 # Get batch
                 batch = self.fetch_next_batch('train')
                 # Send to device and wrap as variable
-                batch = self.wrap_batch(batch)
+                batch = self.wrap_batch(batch, from_loader='train')
                 # Separate inputs from targets
                 inputs, target = self.split_batch(batch, from_loader='train')
                 # Apply model, compute loss and backprop
@@ -1167,7 +1235,27 @@ class Trainer(object):
         self.callbacks.call(self.callbacks.END_OF_TRAINING_RUN, num_iterations=num_iterations)
         return self
 
-    def validate_for(self, num_iterations=None):
+    def validate_for(self, num_iterations=None, loader_name='validate'):
+        """
+        Validate for a given number of validation (if `num_iterations is not None`)
+        or over the entire (validation) data set.
+
+        Parameters
+        ----------
+        num_iterations : int
+            Number of iterations to validate for. To validate on the entire dataset,
+            leave this as `None`.
+        loader_name : str
+            Name of the data loader to use for validation. 'validate' is the obvious default.
+
+        Returns
+        -------
+        Trainer
+            self.
+        """
+        assert_(loader_name in ['validate', 'test', 'train'],
+                "Invalid `loader_name`: {}".format(loader_name),
+                ValueError)
         # Average over errors
         validation_error_meter = tu.AverageMeter()
         validation_loss_meter = tu.AverageMeter()
@@ -1180,7 +1268,7 @@ class Trainer(object):
 
         # Record the epoch we're validating in
         self._last_validated_at_epoch = self._epoch_count
-
+        self._last_validated_at_iteration = self._iteration_count
         self.callbacks.call(self.callbacks.BEGIN_OF_VALIDATION_RUN,
                             num_iterations=num_iterations,
                             last_validated_at_epoch=self._last_validated_at_epoch)
@@ -1188,7 +1276,7 @@ class Trainer(object):
         # If we don't know num_iterations, we're validating the entire dataset - so we might as
         # well restart the loader now
         if num_iterations is None:
-            self.restart_generators('validate')
+            self.restart_generators(loader_name)
 
         while True:
             if num_iterations is not None and iteration_num > num_iterations:
@@ -1198,13 +1286,13 @@ class Trainer(object):
                                 iteration_num=iteration_num)
 
             try:
-                batch = self.fetch_next_batch('validate',
+                batch = self.fetch_next_batch(loader_name,
                                               restart_exhausted_generators=
                                               num_iterations is not None,
                                               update_batch_count=False,
                                               update_epoch_count_if_generator_exhausted=False)
             except StopIteration:
-                self.print("Validation generator exhausted, breaking.")
+                self.print("{} generator exhausted, breaking.".format(loader_name))
                 break
 
             self.print("Validating iteration {}.".format(iteration_num))
@@ -1212,9 +1300,9 @@ class Trainer(object):
             # Delay SIGINTs till after computation
             with pyu.delayed_keyboard_interrupt():
                 # Wrap
-                batch = self.wrap_batch(batch, volatile=True)
+                batch = self.wrap_batch(batch, from_loader=loader_name, volatile=True)
                 # Separate
-                inputs, target = self.split_batch(batch, from_loader='validate')
+                inputs, target = self.split_batch(batch, from_loader=loader_name)
                 # Apply model, compute loss
                 output, loss = self.apply_model_and_loss(inputs, target, backward=False)
             batch_size = target.size(0)

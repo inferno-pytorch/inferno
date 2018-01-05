@@ -168,7 +168,7 @@ class RandomSizedCrop(Transform):
     with `Scale`.
     """
     def __init__(self, ratio_between=None, height_ratio_between=None, width_ratio_between=None,
-                 preserve_aspect_ratio=False, **super_kwargs):
+                 preserve_aspect_ratio=False, relative_target_aspect_ratio=None, **super_kwargs):
         """
         Parameters
         ----------
@@ -186,6 +186,12 @@ class RandomSizedCrop(Transform):
             Whether to preserve aspect ratio. If both `height_ratio_between`
             and `width_ratio_between` are specified, the former is used if this
             is set to True.
+        relative_target_aspect_ratio : float
+            Specify the target aspect ratio (W x H) relative to the input image
+            (i.e. by mapping the input image ratio to 1:1). For instance, if an image
+            has the size 1024 (H) x 2048 (W), a relative target aspect ratio of 0.5
+            might yield images of size 1024 x 1024. Note that this only applies if
+            `preserve_aspect_ratio` is set to False.
         super_kwargs : dict
             Keyword arguments for the super class.
         """
@@ -206,6 +212,7 @@ class RandomSizedCrop(Transform):
         self.height_ratio_between = height_ratio_between
         self.width_ratio_between = width_ratio_between
         self.preserve_aspect_ratio = preserve_aspect_ratio
+        self.relative_target_aspect_ratio = relative_target_aspect_ratio
 
     def build_random_variables(self, image_shape):
         # Seed RNG
@@ -216,6 +223,8 @@ class RandomSizedCrop(Transform):
                                          high=self.height_ratio_between[1])
         if self.preserve_aspect_ratio:
             width_ratio = height_ratio
+        elif self.relative_target_aspect_ratio is not None:
+            width_ratio = height_ratio * self.relative_target_aspect_ratio
         else:
             width_ratio = np.random.uniform(low=self.width_ratio_between[0],
                                             high=self.width_ratio_between[1])
@@ -392,6 +401,21 @@ class RandomRotate(Transform):
         return np.rot90(image, k=self.get_random_variable('k'))
 
 
+class RandomTranspose(Transform):
+    """Random 2d transpose."""
+    def __init__(self, **super_kwargs):
+        super(RandomTranspose, self).__init__(**super_kwargs)
+
+    def build_random_variables(self, **kwargs):
+        np.random.seed()
+        self.set_random_variable('do_transpose', np.random.uniform() > 0.5)
+
+    def image_function(self, image):
+        if self.get_random_variable('do_transpose'):
+            image = np.transpose(image)
+        return image
+
+
 class RandomFlip(Transform):
     """Random left-right or up-down flips."""
     def __init__(self, allow_lr_flips=True, allow_ud_flips=True, **super_kwargs):
@@ -424,7 +448,7 @@ class CenterCrop(Transform):
         th, tw = self.size
         x1 = int(round((w - tw) / 2.))
         y1 = int(round((h - th) / 2.))
-        return image[x1:x1+tw, y1:y1+th]
+        return image[x1:x1 + tw, y1:y1 + th]
 
 
 class BinaryMorphology(Transform):

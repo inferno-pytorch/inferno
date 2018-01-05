@@ -23,8 +23,18 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
             return MagicMock()
 
-MOCK_MODULES = ['pygtk', 'hdf5', 'skimage', 'argparse', 'pandas','torch','torch.nn']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+# MOCK_MODULES = ['pygtk',
+#                 'hdf5',
+#                 'skimage',
+#                 'argparse',
+#                 'pandas',
+#                 'torch',
+#                 'torch.nn', 'torch.nn.init', 'torch.nn.functional',
+#                 'torch.nn.parallel', 'torch.nn.parallel.data_parallel',
+#                 'torch.multiprocessing', 'torch.autograd',
+#                 'torch.utils', 'torch.utils.data',
+#                 'torch.optim', 'torch.sparse', 'torch.cuda']
+# sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
 
@@ -46,6 +56,7 @@ project_root = os.path.dirname(cwd)
 sys.path.insert(0, project_root)
 
 import inferno
+import inferno.extensions
 
 # -- General configuration ---------------------------------------------
 
@@ -63,7 +74,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.mathjax',
     'sphinx.ext.graphviz',
-    'sphinx_gallery.gen_gallery', 
+    # 'sphinx_gallery.gen_gallery',
     'sphinxcontrib.bibtex',
     'sphinx.ext.napoleon'
 ]
@@ -72,16 +83,16 @@ extensions = [
 
 sphinx_gallery_conf = {
     # path to your examples scripts
-    'examples_dirs' : 
+    'examples_dirs' :
             '../examples',
     # path where to save gallery generated examples
-    'gallery_dirs'  : 
+    'gallery_dirs'  :
             'auto_examples',
-    'backreferences_dir' :  
+    'backreferences_dir' :
             'gen_modules/backreferences',
     'scan_used_functions':
         True,
-    'doc_module' : 
+    'doc_module' :
         ('inferno'),
 
     'docs_resolv': True,

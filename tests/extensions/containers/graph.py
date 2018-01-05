@@ -99,6 +99,23 @@ class TestGraph(unittest.TestCase):
         model.add_output_node('output_0', previous='conv1')
         ModelTester((1, 1, 100, 100), (1, 1, 100, 100))(model)
 
+    def test_graph_device_transfers(self):
+        from inferno.extensions.containers.graph import Graph
+        from inferno.extensions.layers.convolutional import ConvELU2D
+        import torch
+        from torch.autograd import Variable
+        # Build graph
+        model = Graph()
+        model.add_input_node('input_0')
+        model.add_node('conv0', ConvELU2D(1, 10, 3), previous='input_0')
+        model.add_node('conv1', ConvELU2D(10, 1, 3), previous='conv0')
+        model.add_output_node('output_0', previous='conv1')
+        # Transfer
+        model.to_device('conv0', 'cpu').to_device('conv1', 'cuda', 0)
+        x = Variable(torch.rand(1, 1, 100, 100))
+        y = model(x)
+        self.assertIsInstance(y.data, torch.cuda.FloatTensor)
+
     @unittest.skip("Needs machine with 4 GPUs")
     def test_multi_gpu(self):
         import torch
