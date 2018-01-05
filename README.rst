@@ -135,7 +135,7 @@ Conda packages for linux and mac (only python 3) are available via
 
 .. code:: bash
 
-conda install -c inferno-pytorch inferno
+  $ conda install -c inferno-pytorch inferno
 
 
 
