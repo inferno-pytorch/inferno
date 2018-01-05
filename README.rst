@@ -8,15 +8,15 @@ Inferno
 .. image:: https://img.shields.io/pypi/v/inferno.svg
         :target: https://pypi.python.org/pypi/inferno-pytorch
 
-.. image:: https://img.shields.io/travis/nasimrahaman/inferno.svg
-        :target: https://travis-ci.org/nasimrahaman/inferno
+.. image:: https://img.shields.io/travis/infern-pytorch/inferno.svg
+        :target: https://travis-ci.org/inferno-pytorch/inferno
 
 .. image:: https://readthedocs.org/projects/inferno-pytorch/badge/?version=latest
         :target: http://inferno-pytorch.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://pyup.io/repos/github/nasimrahaman/inferno/shield.svg
-     :target: https://pyup.io/repos/github/nasimrahaman/inferno/
+.. image:: https://pyup.io/repos/github/inferno-pytorch/inferno/shield.svg
+     :target: https://pyup.io/repos/github/inferno-pytorch/inferno/
      :alt: Updates
 
 
@@ -29,7 +29,7 @@ Inferno
 
 Inferno is a little library providing utilities and convenience functions/classes around 
 `PyTorch <https://github.com/pytorch/pytorch>`_. 
-It's a work-in-progress, but the first release is underway! 
+It's a work-in-progress, but the first stable release (0.2) is underway! 
 
 
 
@@ -60,7 +60,7 @@ Current features include:
 .. code:: python
 
   import torch.nn as nn
-  from inferno.io.box.cifar10 import get_cifar10_loaders
+  from inferno.io.box.cifar import get_cifar10_loaders
   from inferno.trainers.basic import Trainer
   from inferno.trainers.callbacks.logging.tensorboard import TensorboardLogger
   from inferno.extensions.layers.convolutional import ConvELU2D

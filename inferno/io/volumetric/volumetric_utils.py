@@ -2,11 +2,63 @@ import random
 import itertools as it
 
 
+def slidingwindowslices(shape, window_size, strides,
+                        ds=1, shuffle=True, rngseed=None,
+                        dataslice=None, add_overhanging=True):
+    # only support lists or tuples for shape, window_size and strides
+    assert isinstance(shape, (list, tuple))
+    assert isinstance(window_size, (list, tuple))
+    assert isinstance(strides, (list, tuple))
+
+    dim = len(shape)
+    assert len(window_size) == dim
+    assert len(strides) == dim
+
+    # check for downsampling
+    assert isinstance(ds, (list, tuple, int))
+    if isinstance(ds, int):
+        ds = [ds] * dim
+    assert len(ds) == dim
+
+    # Seed RNG if a seed is provided
+    if rngseed is not None:
+        random.seed(rngseed)
+
+    # sliding windows in one dimenstion
+    def dimension_window(start, stop, wsize, stride, dimsize, ds_dim):
+        starts = range(start, stop + 1, stride)
+        slices = [slice(st, st + wsize, ds_dim) for st in starts if st + wsize <= dimsize]
+
+        # add an overhanging window at the end if the windoes
+        # do not fit and `add_overhanging`
+        if slices[-1].stop != dimsize and add_overhanging:
+            slices.append(slice(dimsize - wsize, dimsize, ds_dim))
+
+        if shuffle:
+            random.shuffle(slices)
+        return slices
+
+    # determine adjusted start and stop coordinates if we have a dataslice
+    # otherwise predict the whole volume
+    if dataslice is not None:
+        assert len(dataslice) == dim, "Dataslice must be a tuple with len = data dimension."
+        starts = [sl.start for sl in dataslice]
+        stops  = [sl.stop - wsize for sl, wsize in zip(dataslice, window_size)]
+    else:
+        starts = dim * [0]
+        stops  = [dimsize - wsize for dimsize, wsize in zip(shape, window_size)]
+
+    nslices = [dimension_window(start, stop, wsize, stride, dimsize, ds_dim)
+               for start, stop, wsize, stride, dimsize, ds_dim
+               in zip(starts, stops, window_size, strides, shape, ds)]
+    return it.product(*nslices)
+
+
 # This code is legacy af, don't judge
 # Define a sliding window iterator (this time, more readable than a wannabe one-liner)
-def slidingwindowslices(shape, nhoodsize, stride=1, ds=1, window=None, ignoreborder=True,
-                        shuffle=True, rngseed=None,
-                        startmins=None, startmaxs=None, dataslice=None):
+def slidingwindowslices_depr(shape, nhoodsize, stride=1, ds=1, window=None, ignoreborder=True,
+                             shuffle=True, rngseed=None,
+                             startmins=None, startmaxs=None, dataslice=None):
     """
     Returns a generator yielding (shuffled) sliding window slice objects.
     :type shape: int or list of int

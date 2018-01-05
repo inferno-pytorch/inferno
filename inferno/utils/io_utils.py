@@ -29,10 +29,11 @@ def fromh5(path, datapath=None, dataslice=None, asnumpy=True, preptrain=None):
     return h5dataset
 
 
-def toh5(data, path, datapath='data'):
+# TODO we could also do **h5_kwargs instead
+def toh5(data, path, datapath='data', compression=None, chunks=None):
     """Write `data` to a HDF5 volume."""
     with h5.File(path, 'w') as f:
-        f.create_dataset(datapath, data=data)
+        f.create_dataset(datapath, data=data, compression=compression, chunks=chunks)
 
 
 # Yaml to dict reader

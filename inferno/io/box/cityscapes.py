@@ -1,14 +1,17 @@
 import zipfile
 import io
+import os
 import torch.utils.data as data
 from PIL import Image
-from os.path import join
+from os.path import join, relpath, abspath
 from ...utils.exceptions import assert_
 from ..transform.base import Compose
 from ..transform.generic import \
     Normalize, NormalizeRange, Cast, AsTorchBatch, Project, Label2OneHot
 from ..transform.image import \
     RandomSizedCrop, RandomGammaCorrection, RandomFlip, Scale, PILImage2NumPyArray
+from ..core import Concatenate
+
 
 CITYSCAPES_CLASSES = {
     0: 'unlabeled',
@@ -167,27 +170,50 @@ CITYSCAPES_MEAN = [0.28689554, 0.32513303, 0.28389177]
 CITYSCAPES_STD = [0.18696375, 0.19017339, 0.18720214]
 
 
-def get_matching_labelimage_file(f):
+def get_matching_labelimage_file(f, groundtruth):
     fs = f.split('/')
-    fs[0] = "gtFine"
-    fs[-1] = str.replace(fs[-1], 'leftImg8bit', 'gtFine_labelIds')
+    fs[0] = groundtruth
+    fs[-1] = str.replace(fs[-1], 'leftImg8bit', groundtruth + '_labelIds')
     return '/'.join(fs)
 
 
-def make_dataset(image_zip_file, split):
+def get_filelist(path):
+    if path.endswith('.zip'):
+        return zipfile.ZipFile(path, 'r').filelist
+    elif os.path.isdir(path):
+        return [relpath(join(root, filename), abspath(join(path, '..')))
+                for root, _, filenames in os.walk(path) for filename in filenames]
+    else:
+        raise NotImplementedError("Path must be a zip archive or a directory.")
+
+
+def make_dataset(path, split):
     images = []
-    for f in zipfile.ZipFile(image_zip_file, 'r').filelist:
-        fn = f.filename.split('/')
-        if fn[-1].endswith('.png') and fn[1] == split:
+    for f in get_filelist(path):
+        if isinstance(f, str):
+            fn = f
+            fns = f.split('/')
+        else:
+            fn = f.filename
+            fns = f.filename.split('/')
+        if fns[-1].endswith('.png') and fns[1] == split:
             # use first folder name to identify train/val/test images
-            fl = get_matching_labelimage_file(f.filename)
+            if split == 'train_extra':
+                groundtruth = 'gtCoarse'
+            else:
+                groundtruth = 'gtFine'
+
+            fl = get_matching_labelimage_file(fn, groundtruth)
             images.append((f, fl))
     return images
 
 
-def extract_image(archive, image_path):
-    # read image directly from zipfile
-    return Image.open(io.BytesIO(zipfile.ZipFile(archive, 'r').read(image_path)))
+def extract_image(path, image_path):
+    if path.endswith('.zip'):
+        # read image directly from zipfile if path is a zip
+        return Image.open(io.BytesIO(zipfile.ZipFile(path, 'r').read(image_path)))
+    else:
+        return Image.open(join(abspath(join(path, '..')), image_path), 'r')
 
 
 class Cityscapes(data.Dataset):
@@ -197,45 +223,62 @@ class Cityscapes(data.Dataset):
                           'val': 'val',
                           'validation': 'val',
                           'test': 'test',
-                          'testing': 'test'}
+                          'testing': 'test',
+                          'training_extra': 'train_extra',
+                          'train_extra': 'train_extra'}
+
     # Dataset statistics
     CLASSES = CITYSCAPES_CLASSES
     MEAN = CITYSCAPES_MEAN
     STD = CITYSCAPES_STD
 
-    def __init__(self, root_folder, split='train',
+    BLACKLIST = ['leftImg8bit/train_extra/troisdorf/troisdorf_000000_000073_leftImg8bit.png']
+
+    def __init__(self, root_folder, split='train', read_from_zip_archive=True,
                  image_transform=None, label_transform=None, joint_transform=None):
         """
         Parameters:
         root_folder: folder that contains both leftImg8bit_trainvaltest.zip and
                gtFine_trainvaltest.zip archives.
-        split: name of dataset spilt (i.e. 'train', 'val' or 'test') 
+        split: name of dataset spilt (i.e. 'train_extra', 'train', 'val' or 'test') 
         """
-        self.image_zip_file = join(root_folder, 'leftImg8bit_trainvaltest.zip')
-        self.label_zip_file = join(root_folder, 'gtFine_trainvaltest.zip')
 
         assert_(split in self.SPLIT_NAME_MAPPING.keys(),
                 "`split` must be one of {}".format(set(self.SPLIT_NAME_MAPPING.keys())),
                 KeyError)
         self.split = self.SPLIT_NAME_MAPPING.get(split)
+        self.read_from_zip_archive = read_from_zip_archive
+
+        # Get roots
+        self.image_root, self.label_root = [join(root_folder, groot)
+                                            for groot in self.get_image_and_label_roots()]
+
         # Transforms
         self.image_transform = image_transform
         self.label_transform = label_transform
         self.joint_transform = joint_transform
         # Make list with paths to the images
-        self.image_paths = make_dataset(self.image_zip_file, self.split)
+        self.image_paths = make_dataset(self.image_root, self.split)
 
     def __getitem__(self, index):
         pi, pl = self.image_paths[index]
-        image = extract_image(self.image_zip_file, pi)
-        label = extract_image(self.label_zip_file, pl)
-        # Apply transforms
-        if self.image_transform is not None:
-            image = self.image_transform(image)
-        if self.label_transform is not None:
-            label = self.label_transform(label)
-        if self.joint_transform is not None:
-            image, label = self.joint_transform(image, label)
+        if pi in self.BLACKLIST:
+            # Select the next image if the current image is bad
+            return self[index + 1]
+        image = extract_image(self.image_root, pi)
+        label = extract_image(self.label_root, pl)
+        try:
+            # Apply transforms
+            if self.image_transform is not None:
+                image = self.image_transform(image)
+            if self.label_transform is not None:
+                label = self.label_transform(label)
+            if self.joint_transform is not None:
+                image, label = self.joint_transform(image, label)
+        except Exception:
+            print("[!] An Exception occurred while applying the transforms at "
+                  "index {} of split '{}'.".format(index, self.split))
+            raise
         return image, label
 
     def __len__(self):
@@ -246,9 +289,27 @@ class Cityscapes(data.Dataset):
         # https://www.cityscapes-dataset.com/
         raise NotImplementedError
 
+    def get_image_and_label_roots(self):
+        all_roots = {
+            'zipped':
+                {
+                    'train': ('leftImg8bit_trainvaltest.zip', 'gtFine_trainvaltest.zip'),
+                    'val': ('leftImg8bit_trainvaltest.zip', 'gtFine_trainvaltest.zip'),
+                    'train_extra': ('leftImg8bit_trainextra.zip', 'gtCoarse.zip')
+                },
+            'unzipped':
+                {
+                    'train': ('leftImg8bit', 'gtFine'),
+                    'val': ('leftImg8bit', 'gtFine'),
+                    'train_extra': ('leftImg8bit', 'gtCoarse')
+                }
+        }
+        image_and_label_roots = all_roots\
+            .get('zipped' if self.read_from_zip_archive else 'unzipped').get(self.split)
+        return image_and_label_roots
 
-def get_cityscapes_loaders(root_directory, image_shape=(1024, 2048), labels_as_onehot=False,
-                           train_batch_size=1, validate_batch_size=1, num_workers=2):
+
+def make_transforms(image_shape, labels_as_onehot):
     # Make transforms
     image_transforms = Compose(PILImage2NumPyArray(),
                                NormalizeRange(),
@@ -272,24 +333,39 @@ def get_cityscapes_loaders(root_directory, image_shape=(1024, 2048), labels_as_o
         # Applying Label2OneHot on the full label image makes it unnecessarily expensive,
         # because we're throwing it away with RandomSizedCrop and Scale. Tests show that it's
         # ~1 sec faster per image.
-        joint_transforms\
+        joint_transforms \
             .add(Label2OneHot(num_classes=len(CITYSCAPES_LABEL_WEIGHTS), dtype='bool',
-                              apply_to=[1]))\
+                              apply_to=[1])) \
             .add(Cast('float', apply_to=[1]))
     else:
         # Cast label image to long
         joint_transforms.add(Cast('long', apply_to=[1]))
     # Batchify
     joint_transforms.add(AsTorchBatch(2, add_channel_axis_if_necessary=False))
+    # Return as kwargs
+    return {'image_transform': image_transforms,
+            'label_transform': label_transforms,
+            'joint_transform': joint_transforms}
+
+
+def get_cityscapes_loaders(root_directory, image_shape=(1024, 2048), labels_as_onehot=False,
+                           include_coarse_dataset=False, read_from_zip_archive=True,
+                           train_batch_size=1, validate_batch_size=1, num_workers=2):
     # Build datasets
     train_dataset = Cityscapes(root_directory, split='train',
-                               image_transform=image_transforms,
-                               label_transform=label_transforms,
-                               joint_transform=joint_transforms)
+                               read_from_zip_archive=read_from_zip_archive,
+                               **make_transforms(image_shape, labels_as_onehot))
+    if include_coarse_dataset:
+        # Build coarse dataset
+        coarse_dataset = Cityscapes(root_directory, split='train_extra',
+                                    read_from_zip_archive=read_from_zip_archive,
+                                    **make_transforms(image_shape, labels_as_onehot))
+        # ... and concatenate with train_dataset
+        train_dataset = Concatenate(coarse_dataset, train_dataset)
     validate_dataset = Cityscapes(root_directory, split='validate',
-                                  image_transform=image_transforms,
-                                  label_transform=label_transforms,
-                                  joint_transform=joint_transforms)
+                                  read_from_zip_archive=read_from_zip_archive,
+                                  **make_transforms(image_shape, labels_as_onehot))
+
     # Build loaders
     train_loader = data.DataLoader(train_dataset, batch_size=train_batch_size,
                                    shuffle=True, num_workers=num_workers, pin_memory=True)

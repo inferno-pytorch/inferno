@@ -32,7 +32,6 @@
    {% for item in classes %}
    .. autoclass:: {{ item }}
       :members:
-      :undoc-members:
 
    .. include:: backreferences/{{fullname}}.{{item}}.examples
    

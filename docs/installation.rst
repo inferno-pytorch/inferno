@@ -40,17 +40,6 @@ If you use PyCharm:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Refer to this `QA <https://askubuntu.com/questions/684550/importing-a-python-module-works-from-command-line-but-not-from-pycharm>`_ about setting up paths with Pycharm.
 
-Users
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Installation with `pip` will be ready when the release is.
-
-
-
-
-
-
-
 
 
 
@@ -69,7 +58,7 @@ To install inferno, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install pytorch-inferno
+    $ pip install inferno-pytorch
 
 This is the preferred method to install inferno, as it will always install the most recent stable release. 
 
@@ -82,9 +71,8 @@ you through the process.
 
 From sources
 ------------------------
-
+First, make sure `you have Pytorch installed <http://pytorch.org/>`_. 
 The sources for inferno can be downloaded from the `Github repo`_.
-
 You can either clone the public repository:
 
 .. code-block:: console

@@ -184,7 +184,9 @@ class Frequency(object):
         if not match_zero and match_value == 0:
             match = False
         else:
-            match = match_value is not None and match_value % self.value == 0
+            match = match_value is not None and \
+                    self.value != np.inf and \
+                    match_value % self.value == 0
         if persistent and match and self._last_match_value == match_value:
             # Last matched value is the current matched value, i.e. we've matched once already,
             # and don't need to match again
@@ -239,6 +241,25 @@ class Duration(Frequency):
         if match_value == self.value:
             return when_equal_return
         return match_value > self.value
+
+    def compare(self, iteration_count=None, epoch_count=None):
+        compare_value = {'iterations': iteration_count, 'epochs': epoch_count}.get(self.units)
+        assert_(compare_value is not None,
+                "Could not match duration because {} is not known.".format(self.units),
+                ValueError)
+        compared = {'iterations': None, 'epochs': None}
+        compared.update({self.units: self.value - compare_value})
+        return compared
+
+    def __sub__(self, other):
+        assert_(isinstance(other, Duration),
+                "Object of type {} cannot be subtracted from "
+                "a Duration object.".format(type(other)),
+                TypeError)
+        assert_(other.units == self.units,
+                "The Duration objects being subtracted must have the same units.",
+                ValueError)
+        return Duration(value=(self.value - other.value), units=self.units)
 
 
 class NoLogger(object):
