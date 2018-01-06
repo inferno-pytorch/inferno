@@ -29,6 +29,7 @@ requirements:
         - scikit-image
         - h5py
         - dill
+        - networkx 1.11
 
 test:
     imports:
