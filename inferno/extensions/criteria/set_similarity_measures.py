@@ -2,7 +2,7 @@ import torch.nn as nn
 from ...utils.torch_utils import flatten_samples
 from torch.autograd import Variable
 
-__all__ = ['SorensenDiceLoss', 'GeneralizedDiceLoss']
+__all__ = ['SorensenDiceLoss', 'GeneralizedDiceLoss', 'TverskyLoss']
 
 
 class SorensenDiceLoss(nn.Module):
@@ -26,23 +26,24 @@ class SorensenDiceLoss(nn.Module):
         self.channelwise = channelwise
         self.eps = eps
 
-    # TODO move weight here as optional argument ?!
-    def forward(self, input, target):
+    def forward(self, prediction, target):
         if not self.channelwise:
-            numerator = (input * target).sum()
-            denominator = (input * input).sum() + (target * target).sum()
+            numerator = (prediction * target).sum()
+            denominator = (prediction * prediction).sum() + (target * target).sum()
             loss = -2. * (numerator / denominator.clamp(min=self.eps))
         else:
             # TODO This should be compatible with Pytorch 0.2, but check
-            # Flatten input and target to have the shape (C, N),
+            # Flatten prediction and target to have the shape (C, N),
             # where N is the number of samples
-            input = flatten_samples(input)
+            prediction = flatten_samples(prediction)
             target = flatten_samples(target)
             # Compute numerator and denominator (by summing over samples and
             # leaving the channels intact)
-            numerator = (input * target).sum(-1)
-            denominator = (input * input).sum(-1) + (target * target).sum(-1)
+            numerator = (prediction * target).sum(-1)
+            denominator = (prediction * prediction).sum(-1) + (target * target).sum(-1)
             channelwise_loss = -2 * (numerator / denominator.clamp(min=self.eps))
+            # FIXME weight does not do what I expect:
+            # instead of weighting the individual classes, it weights the channels.
             if self.weight is not None:
                 # With pytorch < 0.2, channelwise_loss.size = (C, 1).
                 if channelwise_loss.dim() == 2:
@@ -56,7 +57,6 @@ class SorensenDiceLoss(nn.Module):
         return loss
 
 
-# TODO we could also make the channel-wise ?!
 class GeneralizedDiceLoss(nn.Module):
     """
     Computes the scalar Generalized Dice Loss defined in https://arxiv.org/abs/1707.03237
@@ -83,5 +83,40 @@ class GeneralizedDiceLoss(nn.Module):
         denom = ((prediction + target).sum(-1) * class_weigths).sum()
 
         loss = 1. - 2. * numer / denom.clamp(min=self.eps)
+        return loss
 
+
+class TverskyLoss(nn.Module):
+    """
+    Computes a loss scalar according to Salehi et al., which generalizes the Dice loss.
+    It has to parameters, alpha and beta, which weight the False Positives and False Negatives, respectively.
+    For alpha = beta = 0.5 TverslyLoss reduces to Dice Loss.
+    In Salehis paper beta = 0.7, alpha = 1 - beta = 0.3 are optimal for very unbalanced data.
+    """
+    def __init__(self, alpha=0.3, beta=0.7, eps=1e-6):
+        """
+        Parameters
+        ----------
+        alpha: weight for the FPs
+        beta:  weight for the FNs
+        """
+        super(TverskyLoss, self).__init__()
+        self.alpha = alpha
+        self.beta = beta
+        self.eps = eps
+
+    def forward(self, prediction, target):
+        '''prediction and target are respectively a tensor of the shape (N,*) with the batch_size N
+        the output is the mean over the loss of each batch dimension'''
+
+        batch_size = prediction.size(0)
+        prediction = prediction.view(batch_size, -1)
+        target = target.view(batch_size, -1)
+
+        numerator = (prediction * target).sum(dim=1)
+        denominator = (prediction * target).sum(dim=1) + self.alpha * ((1. - target) * prediction).sum(dim=1) + \
+            self.beta * ((1. - prediction) * target).sum(dim=1)
+
+        losses = -numerator / denominator.clamp(min=self.eps)
+        loss = losses.sum() / batch_size
         return loss
