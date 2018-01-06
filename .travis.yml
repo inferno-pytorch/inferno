@@ -11,10 +11,10 @@ install:
   #- hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION  h5py numpy scikit-image scipy
-  - conda install pytorch torchvision -c soumith
-  - conda install -c anaconda pyyaml 
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
+  - conda install -c conda-forge networkx=1.11 h5py numpy scikit-image scipy pyyaml dill
+  - conda install -c pytorch pytorch torchvision
 
 
 deploy:
@@ -40,10 +40,7 @@ deploy:
 
 script: 
   - source activate test-environment
-  - pip install http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp35-cp35m-manylinux1_x86_64.whl |cat
-  - pip install torchvision | cat
   - pip install pytest | cat
-  - pip install dill
   - pytest tests/test_inferno.py
   - python setup.py install
 
