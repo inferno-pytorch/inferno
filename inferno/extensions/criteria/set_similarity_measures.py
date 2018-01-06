@@ -2,8 +2,7 @@ import torch.nn as nn
 from ...utils.torch_utils import flatten_samples
 from torch.autograd import Variable
 
-
-__all__ = ['SorensenDiceLoss']
+__all__ = ['SorensenDiceLoss', 'GeneralizedDiceLoss']
 
 
 class SorensenDiceLoss(nn.Module):
@@ -27,6 +26,7 @@ class SorensenDiceLoss(nn.Module):
         self.channelwise = channelwise
         self.eps = eps
 
+    # TODO move weight here as optional argument ?!
     def forward(self, input, target):
         if not self.channelwise:
             numerator = (input * target).sum()
@@ -53,4 +53,35 @@ class SorensenDiceLoss(nn.Module):
                 channelwise_loss = weight * channelwise_loss
             # Sum over the channels to compute the total loss
             loss = channelwise_loss.sum()
+        return loss
+
+
+# TODO we could also make the channel-wise ?!
+class GeneralizedDiceLoss(nn.Module):
+    """
+    Computes the scalar Generalized Dice Loss defined in https://arxiv.org/abs/1707.03237
+
+    This version works for multiple classes and expects predictions for every class (e.g. softmax output) and
+    one-hot targets for every class.
+    """
+    def __init__(self, eps=1e-6):
+        super(GeneralizedDiceLoss, self).__init__()
+        self.eps = eps
+
+    def forward(self, prediction, target):
+        # Flatten input and target to have the shape (C, N),
+        # where N is the number of samples
+        prediction = flatten_samples(prediction)
+        target = flatten_samples(target)
+
+        # Find classes weights:
+        sum_targets = target.sum(-1)
+        class_weigths = 1. / (sum_targets * sum_targets).clamp(min=self.eps)
+
+        # # Compute generalized Dice loss:
+        numer = ((prediction * target).sum(-1) * class_weigths).sum()
+        denom = ((prediction + target).sum(-1) * class_weigths).sum()
+
+        loss = 1. - 2. * numer / denom.clamp(min=self.eps)
+
         return loss
