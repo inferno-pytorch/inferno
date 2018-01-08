@@ -13,7 +13,7 @@ __all__ = ['ConvActivation',
            'StridedConvELU2D', 'StridedConvELU3D',
            'DilatedConvELU2D', 'DilatedConvELU3D',
            'Conv2D', 'Conv3D',
-           'BNReLUConv2D',
+           'BNReLUConv2D', 'BNReLUConv3D',
            'BNReLUDepthwiseConv2D',
            'ConvSELU2D', 'ConvSELU3D']
 

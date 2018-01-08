@@ -3,6 +3,7 @@ from .base import Metric
 import numpy as np
 import scipy.sparse as sparse
 
+
 class VoiScore(Metric):
     """
     Computes a score based on the variation of information according to [1].
@@ -15,7 +16,7 @@ class VoiScore(Metric):
         assert(len(prediction) == len(target))
         segmentation = prediction.cpu().numpy()
         target = target.cpu().numpy()
-        return np.mean([sum(voi_rand(segmentation[i], target[i]))
+        return np.mean([sum(voi(segmentation[i], target[i]))
                         for i in range(len(prediction))])
 
 
@@ -93,7 +94,7 @@ def split_vi(x, y=None, ignore_x=[0], ignore_y=[0]):
     --------
     vi
     """
-    _, _, _ , hxgy, hygx, _, _ = vi_tables(x, y, ignore_x, ignore_y)
+    _, _, _, hxgy, hygx, _, _ = vi_tables(x, y, ignore_x, ignore_y)
     # false merges, false splits
     return np.array([hygx.sum(), hxgy.sum()])
 
@@ -142,13 +143,12 @@ def vi_tables(x, y=None, ignore_x=[0], ignore_y=[0]):
 
     # Calculate log conditional probabilities and entropies
     lpygx = np.zeros(np.shape(px))
-    lpygx[nzx] = xlogx(divide_rows(nzpxy, nzpx)).sum(axis=1).squeeze()
-                        # \sum_x{p_{y|x} \log{p_{y|x}}}
-    hygx = -(px*lpygx) # \sum_x{p_x H(Y|X=x)} = H(Y|X)
+    lpygx[nzx] = xlogx(divide_rows(nzpxy, nzpx)).sum(axis=1).squeeze()  # \sum_x{p_{y|x} \log{p_{y|x}}}
+    hygx = -(px * lpygx)  # \sum_x{p_x H(Y|X=x)} = H(Y|X)
 
     lpxgy = np.zeros(np.shape(py))
     lpxgy[nzy] = xlogx(divide_columns(nzpxy, nzpy)).sum(axis=0)
-    hxgy = -(py*lpxgy)
+    hxgy = -(py * lpxgy)
 
     return [pxy] + list(map(np.asarray, [px, py, hxgy, hygx, lpygx, lpxgy]))
 
