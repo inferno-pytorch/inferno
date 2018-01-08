@@ -156,10 +156,9 @@ class BSD500(Dataset):
                         out.create_dataset("{}/image_data/{}".format(ds, i),
                                            data=img)
                         all_segmentations = sio.loadmat(f)["groundTruth"][0]
-                        for subject in range(all_segmentations.shape[0]):
-                            label_img = all_segmentations[subject][0][0][0]
-                            out.create_dataset("{}/label_data/{}_{}".format(ds, i, subject),
-                                               data=label_img)
+                        label_img = np.stack([s[0][0][0] for s in all_segmentations])
+                        out.create_dataset("{}/label_data/{}".format(ds, i),
+                                           data=label_img)
 
         self.subject = subject
         self.root_folder = root_folder
@@ -168,11 +167,9 @@ class BSD500(Dataset):
         self.image_transform = image_transform
         self.joint_transform = joint_transform
         self.label_transform = label_transform
+        self.load_data()
 
-        # FIXME this can be done by the dataloader ?!
-        self.shuffle_data_paths()
-
-    def shuffle_data_paths(self):
+    def load_data(self):
         self.data = []
         with h5py.File(os.path.join(self.root_folder, "BSD500.h5"), "r") as bsd:
             base = "{}/image_data/".format(self.split)
@@ -185,29 +182,12 @@ class BSD500(Dataset):
                 img = bsd[img_path].value.astype(np.float32)[:, 1:, 1:]
 
                 # load the groundtruths
-                subject_list = [p for p in bsd[label_base] if p.startswith("{}_".format(img_num))]
-                if self.subject is None:
-                    subject = choice(subject_list)
-                elif isinstance(self.subject, int):
-                    assert self.subject < len(subject_list)
-                    subject = "{}_{}".format(img_num, self.subject)
-                elif self.subject == 'all':
-                    subject = subject_list
-
-                label_path = "{}/{}".format(label_base, subject) if isinstance(subject, int) else \
-                    ["{}/{}".format(label_base, subject_id) for subject_id in subject]
-
-                gt = bsd[label_path].value.astype(np.float32)[1:, 1:] if isinstance(label_path, str) else \
-                    np.array([bsd[lpath].value.astype(np.float32)[1:, 1:] for lpath in label_path])
+                gt_path = label_base + img_num
+                gt = bsd[gt_path].value.astype(np.float32)[1:, 1:]
 
                 self.data.append((img, gt))
 
     def __getitem__(self, index):
-        if index == 0 and self.subject is None:
-            # TODO: shuffeling should actually be done, when a new batch is loaded
-            self.shuffle_data_paths()
-        if index > len(self.data):
-            index -= len(self.data)
         img, gt = self.data[index]
 
         if self.image_transform is not None:
