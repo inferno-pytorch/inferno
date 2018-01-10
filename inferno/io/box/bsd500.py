@@ -12,26 +12,6 @@ from ..transform import Compose
 from ..transform.generic import Normalize, NormalizeRange  # , Cast, AsTorchBatch
 from scipy.ndimage import grey_opening
 
-# def get_matching_labelimage_file(f):
-#     fs = f.split('/')
-#     fn[0] = "gtFine"
-#     fn[-1] = str.replace(fn[-1], 'leftImg8bit', 'gtFine_labelIds')
-#     return join(fn)
-
-# def make_dataset(image_zip_file, split):
-#     images = []
-#     for f in zipfile.ZipFile(image_zip_file, 'r').filelist:
-#         fn = f.filename.split('/')
-#         if fn[-1].endswith('.png') and fn[1] == split:
-#             # use first folder name to identify train/val/test images
-#             fl = get_matching_labelimage_file(f)
-#             images.append((f, fl))
-#     return images
-
-# def get_image(archive, image_path):
-#     # read image directly from zipfile
-#     return np.array(Image.open(io.BytesIO(zipfile.ZipFile(archive, 'r').read(image_path))))
-
 
 class AccumulateTransformOverLabelers(object):
     accumulators = ('mean', 'max', 'min')
@@ -68,57 +48,50 @@ def get_label_transforms(offsets, accumulator='mean', close_channels=None):
     return AccumulateTransformOverLabelers(seg2aff, accumulator, close_channels)
 
 
-def get_joint_transforms():
+def get_joint_transforms(offsets):
     from ..transform.image import RandomFlip, RandomRotate, RandomTranspose
-    trafos = Compose(RandomFlip(allow_ud_flips=False), RandomRotate(), RandomTranspose())
-    return trafos
-
-
-# TODO gamma correction ?
-def get_image_transforms():
-    trafos = Compose(NormalizeRange(),
-                     # RandomGammaCorrection(),
-                     Normalize())
+    from neurofire.transform.segmentation import ManySegmentationsToFuzzyAffinities
+    trafos = Compose(RandomFlip(allow_ud_flips=False), RandomRotate(), RandomTranspose(),
+                     ManySegmentationsToFuzzyAffinities(dim=2, offsets=offsets,
+                                                        retain_segmentation=True))
     return trafos
 
 
 # TODO return data loaders for train, val and test
-def get_bsd500_loaders(root_folder, offsets, close_channels=None, shuffle=True):
-    label_transforms = get_label_transforms(offsets, close_channels=close_channels)
-    joint_transforms = get_joint_transforms()
-    image_transforms = get_image_transforms()
+def get_bsd500_loaders(root_folder, offsets, shuffle=True):
+    joint_transforms = get_joint_transforms(offsets)
 
     train_set = BSD500(root_folder,
-                       subject='all',
                        split='train',
-                       label_transform=label_transforms,
-                       joint_transform=joint_transforms,
-                       image_transform=image_transforms)
+                       joint_transform=joint_transforms)
     val_set = BSD500(root_folder,
-                     subject='all',
                      split='val',
-                     label_transform=label_transforms,
-                     joint_transform=joint_transforms,
-                     image_transform=image_transforms)
+                     joint_transform=joint_transforms)
     test_set = BSD500(root_folder,
-                      subject='all',
                       split='test',
-                      label_transform=label_transforms,
-                      joint_transform=joint_transforms,
-                      image_transform=image_transforms)
+                      joint_transform=joint_transforms)
 
     return DataLoader(train_set, shuffle=shuffle), \
            DataLoader(val_set, shuffle=shuffle), \
            DataLoader(test_set, shuffle=shuffle)
 
 
+BSD500_MEAN = np.array([110.797, 113.003, 93.5948], dtype='float32')
+BSD500_STD = np.array([63.6275, 59.7415, 61.6398], dtype='float32')
+
 class BSD500(Dataset):
-    subject_modes = ('all',)
+    # BSD contains landscape and portrait images, with up to 9 segmentations
+    # This dataset loader returns tuples of images in original orientation and 
+    # associated segmentations, which means, that one can not simply
+    # create a batch with size > 1 that has a consistent shape
+    # For now we assume batch size = 1
     splits = ('train', 'val', 'test')
+
+    # measured on train split
+
 
     def __init__(self,
                  root_folder,
-                 subject=None,
                  split='train',
                  image_transform=None,
                  joint_transform=None,
@@ -127,17 +100,8 @@ class BSD500(Dataset):
         Parameters:
         root_folder: folder that contains 'groundTruth' and 'images'  of the BSD 500.
         (http://www.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/BSR/BSR_bsds500.tgz)
-        subject: defines which labeler should be used / how to combine the labelers.
-                 integer -> labeler with this number is drawn
-                 None -> random labeler is drawn
-                 'all' labelers are drawn (and potentially combined)
         """
-        # validate
         assert os.path.exists(root_folder)
-        if subject is not None:
-            assert isinstance(subject, (int, str))
-            if isinstance(subject, str):
-                assert subject in self.subject_modes
         assert split in self.splits, str(split)
 
         self.root_folder = root_folder
@@ -152,15 +116,18 @@ class BSD500(Dataset):
                 for ds in ["train", "val", "test"]:
                     for i, f in enumerate(glob(root_folder + "/groundTruth/" + ds + "/*.mat")):
                         im_path = f.replace("groundTruth", "images").replace(".mat", ".jpg")
-                        img = imread(im_path).transpose(2, 0, 1)
+                        img = imread(im_path).transpose(2, 0, 1).astype(np.float32)[:, 1:, 1:]
+                        # normalize
+                        img -= BSD500_MEAN[:, None, None]
+                        img /= BSD500_STD[:, None, None]
                         out.create_dataset("{}/image_data/{}".format(ds, i),
                                            data=img)
                         all_segmentations = sio.loadmat(f)["groundTruth"][0]
-                        label_img = np.stack([s[0][0][0] for s in all_segmentations])
+                        label_img = np.stack([s[0][0][0] for s in all_segmentations])\
+                                            .astype(np.float32)[:, 1:, 1:]
                         out.create_dataset("{}/label_data/{}".format(ds, i),
                                            data=label_img)
 
-        self.subject = subject
         self.root_folder = root_folder
         self.split = split
 
@@ -179,11 +146,11 @@ class BSD500(Dataset):
 
                 # load the image
                 img_path = base + img_num
-                img = bsd[img_path].value.astype(np.float32)[:, 1:, 1:]
+                img = bsd[img_path].value
 
                 # load the groundtruths
                 gt_path = label_base + img_num
-                gt = bsd[gt_path].value.astype(np.float32)[1:, 1:]
+                gt = bsd[gt_path].value
 
                 self.data.append((img, gt))
 
