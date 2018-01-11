@@ -51,7 +51,7 @@ def get_label_transforms(offsets, accumulator='mean', close_channels=None):
 def get_joint_transforms(offsets):
     from ..transform.image import RandomFlip, RandomRotate, RandomTranspose
     from neurofire.transform.segmentation import ManySegmentationsToFuzzyAffinities
-    trafos = Compose(RandomFlip(allow_ud_flips=False), RandomRotate(), RandomTranspose(),
+    trafos = Compose(RandomFlip(allow_ud_flips=False),
                      ManySegmentationsToFuzzyAffinities(dim=2, offsets=offsets,
                                                         retain_segmentation=True))
     return trafos
