@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.ndimage import zoom
 from scipy.ndimage.filters import gaussian_filter
-from scipy.ndimage.interpolation import map_coordinates
+from scipy.ndimage.interpolation import map_coordinates, rotate
 from scipy.ndimage.morphology import binary_dilation, binary_erosion
 from skimage.exposure import adjust_gamma
 from warnings import catch_warnings, simplefilter
@@ -507,3 +507,31 @@ class BinaryErosion(BinaryMorphology):
         super(BinaryErosion, self).__init__(mode='erode', num_iterations=num_iterations,
                                             morphology_kwargs=morphology_kwargs,
                                             **super_kwargs)
+
+
+class FineRandomRotations(Transform):
+    """ Random Rotation with random uniform angle distribution
+        batch_function applies to rotation of input and label image
+
+        Parameters
+        ----------
+        angle_range : int
+                      maximum angle of rotation
+        axes        : tuple, default (1,2) assuming that channel axis is 0
+                      pair of axis that define the 2d-plane of rotation
+    """
+    def __init__(self, angle_range, axes=(1,2), **super_kwargs):
+        super(FineRandomRotations, self).__init__(**super_kwargs)
+        self.angle_range = angle_range
+        self.axes = axes
+
+    def build_random_variables(self):
+        np.random.seed()
+        self.set_random_variable('angle',
+                 np.random.uniform(low=-self.angle_range,
+                                   high=self.angle_range))
+
+    def batch_function(self, image):
+        angle = self.get_random_variable('angle')
+        return rotate(image[0], angle, axes=self.axes, reshape=False), \
+               rotate(image[1], angle, axes=self.axes, order=0, cval=-1, reshape=False)
