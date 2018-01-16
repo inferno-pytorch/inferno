@@ -57,6 +57,12 @@ def get_joint_transforms(offsets):
     return trafos
 
 
+def get_bsd500_dataset(root_folder, offsets, split="train", return_no_labels=False):
+    return BSD500(root_folder,
+                   split=split,
+                   return_no_labels=return_no_labels,
+                   joint_transform=get_joint_transforms(offsets, split=split))
+
 # TODO return data loaders for train, val and test
 def get_bsd500_loaders(root_folder, offsets, shuffle=True):
     joint_transforms = get_joint_transforms(offsets)
