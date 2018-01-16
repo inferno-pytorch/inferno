@@ -9,6 +9,7 @@ from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
 from random import choice
 from ..transform import Compose
+from ..transform.image import FineRandomRotations
 from ..transform.generic import Normalize, NormalizeRange  # , Cast, AsTorchBatch
 from scipy.ndimage import grey_opening
 
@@ -57,7 +58,6 @@ def get_joint_transforms(offsets, split='not_test'):
     else:
         trafos = Compose(RandomFlip(allow_ud_flips=False),
                      FineRandomRotations(10),
-                     
                      ManySegmentationsToFuzzyAffinities(dim=2, offsets=offsets,
                                                         retain_segmentation=True))
                      # RandomResizedCrop(size, scale=(0.08, 1.0), ratio=(0.50, 1.5), interpolation=2))
