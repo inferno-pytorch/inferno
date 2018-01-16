@@ -48,12 +48,19 @@ def get_label_transforms(offsets, accumulator='mean', close_channels=None):
     return AccumulateTransformOverLabelers(seg2aff, accumulator, close_channels)
 
 
-def get_joint_transforms(offsets):
+def get_joint_transforms(offsets, split='not_test'):
     from ..transform.image import RandomFlip, RandomRotate, RandomTranspose
     from neurofire.transform.segmentation import ManySegmentationsToFuzzyAffinities
-    trafos = Compose(RandomFlip(allow_ud_flips=False),
+    if split == 'test':
+        trafos = Compose(ManySegmentationsToFuzzyAffinities(dim=2, offsets=offsets,
+                                                        retain_segmentation=True))
+    else:
+        trafos = Compose(RandomFlip(allow_ud_flips=False),
+                     FineRandomRotations(10),
+                     
                      ManySegmentationsToFuzzyAffinities(dim=2, offsets=offsets,
                                                         retain_segmentation=True))
+                     # RandomResizedCrop(size, scale=(0.08, 1.0), ratio=(0.50, 1.5), interpolation=2))
     return trafos
 
 
@@ -64,9 +71,13 @@ def get_bsd500_dataset(root_folder, offsets, split="train", return_no_labels=Fal
                    joint_transform=get_joint_transforms(offsets, split=split))
 
 # TODO return data loaders for train, val and test
-def get_bsd500_loaders(root_folder, offsets, shuffle=True):
-    joint_transforms = get_joint_transforms(offsets)
+def get_bsd500_loaders(root_folder, offsets, shuffle=True, split="all", num_workers=0):
+    if split != "all":
+        return DataLoader(BSD500(root_folder,
+                   split=split,
+                   joint_transform=get_joint_transforms(offsets, split=split)))
 
+    joint_transforms = get_joint_transforms(offsets)
     train_set = BSD500(root_folder,
                        split='train',
                        joint_transform=joint_transforms)
@@ -75,11 +86,11 @@ def get_bsd500_loaders(root_folder, offsets, shuffle=True):
                      joint_transform=joint_transforms)
     test_set = BSD500(root_folder,
                       split='test',
-                      joint_transform=joint_transforms)
+                      joint_transform=get_joint_transforms(offsets, split='test'))
 
-    return DataLoader(train_set, shuffle=shuffle), \
-           DataLoader(val_set, shuffle=shuffle), \
-           DataLoader(test_set, shuffle=shuffle)
+    return DataLoader(train_set, shuffle=shuffle, num_workers=num_workers), \
+           DataLoader(val_set, shuffle=shuffle, num_workers=num_workers), \
+           DataLoader(test_set, shuffle=shuffle, num_workers=num_workers)
 
 
 BSD500_MEAN = np.array([110.797, 113.003, 93.5948], dtype='float32')
@@ -99,6 +110,7 @@ class BSD500(Dataset):
     def __init__(self,
                  root_folder,
                  split='train',
+                 return_no_labels=False,
                  image_transform=None,
                  joint_transform=None,
                  label_transform=None):
@@ -136,6 +148,7 @@ class BSD500(Dataset):
 
         self.root_folder = root_folder
         self.split = split
+        self.return_no_labels = return_no_labels
 
         self.image_transform = image_transform
         self.joint_transform = joint_transform
@@ -166,11 +179,15 @@ class BSD500(Dataset):
         if self.image_transform is not None:
             img = self.image_transform(img)
 
+        if self.return_no_labels:
+            return img
+
         if self.joint_transform is not None:
             img, gt = self.joint_transform(img, gt)
 
         if self.label_transform is not None:
             gt = self.label_transform(gt)
+
         return img, gt
 
     def __len__(self):
