@@ -9,7 +9,7 @@ from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
 from random import choice
 from ..transform import Compose
-from ..transform.image import FineRandomRotations
+from ..transform.image import FineRandomRotations, RandomScaleSegmentation
 from ..transform.generic import Normalize, NormalizeRange  # , Cast, AsTorchBatch
 from scipy.ndimage import grey_opening
 
@@ -49,18 +49,19 @@ def get_label_transforms(offsets, accumulator='mean', close_channels=None):
     return AccumulateTransformOverLabelers(seg2aff, accumulator, close_channels)
 
 
-def get_joint_transforms(offsets, split='not_test'):
+def get_joint_transforms(offsets, split='train'):
     from ..transform.image import RandomFlip, RandomRotate, RandomTranspose
     from neurofire.transform.segmentation import ManySegmentationsToFuzzyAffinities
-    if split == 'test':
+    if split == 'train':
+        trafos = Compose(RandomFlip(allow_ud_flips=False),
+                     RandomScaleSegmentation((0.8, 1.2)),
+                     FineRandomRotations(15),
+                     ManySegmentationsToFuzzyAffinities(dim=2, offsets=offsets,
+                                                        retain_segmentation=True),
+                     )
+    else:
         trafos = Compose(ManySegmentationsToFuzzyAffinities(dim=2, offsets=offsets,
                                                         retain_segmentation=True))
-    else:
-        trafos = Compose(RandomFlip(allow_ud_flips=False),
-                     FineRandomRotations(10),
-                     ManySegmentationsToFuzzyAffinities(dim=2, offsets=offsets,
-                                                        retain_segmentation=True))
-                     # RandomResizedCrop(size, scale=(0.08, 1.0), ratio=(0.50, 1.5), interpolation=2))
     return trafos
 
 
@@ -77,20 +78,15 @@ def get_bsd500_loaders(root_folder, offsets, shuffle=True, split="all", num_work
                    split=split,
                    joint_transform=get_joint_transforms(offsets, split=split)))
 
-    joint_transforms = get_joint_transforms(offsets)
-    train_set = BSD500(root_folder,
-                       split='train',
-                       joint_transform=joint_transforms)
-    val_set = BSD500(root_folder,
-                     split='val',
-                     joint_transform=joint_transforms)
-    test_set = BSD500(root_folder,
-                      split='test',
-                      joint_transform=get_joint_transforms(offsets, split='test'))
+    splits = ['train', 'val', 'test']
 
-    return DataLoader(train_set, shuffle=shuffle, num_workers=num_workers), \
-           DataLoader(val_set, shuffle=shuffle, num_workers=num_workers), \
-           DataLoader(test_set, shuffle=shuffle, num_workers=num_workers)
+    ds = [BSD500(root_folder,
+                       split=s,
+                       joint_transform=get_joint_transforms(offsets, split=s))\
+                       for s in splits]
+
+    dl = [DataLoader(bsd_split, shuffle=shuffle, num_workers=num_workers) for bsd_split in ds]
+    return dl
 
 
 BSD500_MEAN = np.array([110.797, 113.003, 93.5948], dtype='float32')
@@ -134,15 +130,26 @@ class BSD500(Dataset):
                 for ds in ["train", "val", "test"]:
                     for i, f in enumerate(glob(root_folder + "/groundTruth/" + ds + "/*.mat")):
                         im_path = f.replace("groundTruth", "images").replace(".mat", ".jpg")
-                        img = imread(im_path).transpose(2, 0, 1).astype(np.float32)[:, 1:, 1:]
+                        img = imread(im_path).transpose(2, 0, 1).astype(np.float32)[:, :, :]
                         # normalize
                         img -= BSD500_MEAN[:, None, None]
                         img /= BSD500_STD[:, None, None]
+
+                        image_shape = np.array(img[0].shape)
+                        pad_l = (512 - image_shape) // 2 
+                        pad_r = 512 - image_shape - pad_l
+                        padding = [(0,0)] + list(zip(pad_l, pad_r))
+                        out.create_dataset("{}/padding/{}".format(ds, i),
+                                           data=np.array(padding))
+
                         out.create_dataset("{}/image_data/{}".format(ds, i),
-                                           data=img)
+                                           data=np.pad(img, padding, 'constant'))
                         all_segmentations = sio.loadmat(f)["groundTruth"][0]
-                        label_img = np.stack([s[0][0][0] for s in all_segmentations])\
-                                            .astype(np.float32)[:, 1:, 1:]
+
+                        stacked_segmentations = np.stack([s[0][0][0] for s in all_segmentations])\
+                                                                .astype(np.float32)[:, :, :]
+                        # add one to segmentation such that 0 can be treated as ignore label
+                        label_img = np.pad(stacked_segmentations+1, padding, 'constant')
                         out.create_dataset("{}/label_data/{}".format(ds, i),
                                            data=label_img)
 
