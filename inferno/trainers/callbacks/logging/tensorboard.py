@@ -63,6 +63,7 @@ class TensorboardLogger(Logger):
         self._log_scalars_every = None
         self._log_images_every = None
         self._writer = None
+        self._writers = {}
         self._config = {'image_batch_indices': send_image_at_batch_indices,
                         'image_channel_indices': send_image_at_channel_indices,
                         'volume_z_indices': send_volume_at_z_indices}
@@ -86,6 +87,13 @@ class TensorboardLogger(Logger):
         if self._writer is None:
             self._writer = tf.summary.FileWriter(self.log_directory)
         return self._writer
+
+    def _get_writer(self, tag, subtag):
+        if (tag, subtag) in self._writers.keys():
+            return self._writers[(tag, subtag)]
+
+        self._writers[(tag, subtag)] = tf.summary.FileWriter(f"{self.log_directory}/{tag}/{subtag}")
+        return self._writers[(tag, subtag)]
 
     @property
     def log_scalars_every(self):
@@ -154,6 +162,17 @@ class TensorboardLogger(Logger):
     def log_object(self, tag, object_, allow_scalar_logging=True, allow_image_logging=True):
         assert isinstance(tag, str)
         if isinstance(object_, (list, tuple)):
+            if all(map(lambda x: isinstance(x, (float, int)) or tu.is_scalar_tensor(x), object_)) and allow_scalar_logging:
+                values = []
+                for v in object_:
+                    if tu.is_scalar_tensor(v):
+                        values.append(v.float()[0])
+                    else:
+                        values.append(v)
+
+                self.log_scalar_group(tag, values, step=self.trainer.iteration_count)
+                return
+
             for object_num, _object in enumerate(object_):
                 self.log_object("{}_{}".format(tag, object_num),
                                 _object,
@@ -278,6 +297,21 @@ class TensorboardLogger(Logger):
         image_list = self.extract_images_from_batch(batch)
         self.log_images(tag, image_list, step)
 
+    def log_scalar_group(self, tag, values, step):
+        """
+        Parameter
+        ----------
+        tag : basestring
+            Name of the scalar
+        values
+        step : int
+            training iteration
+        """
+
+        for i, value in enumerate(values):
+            summary = tf.Summary(value=[tf.Summary.Value(tag=tag, simple_value=value)])
+            self._get_writer(tag, str(i)).add_summary(summary, step)
+
     def log_scalar(self, tag, value, step):
         """
         Parameter
@@ -352,5 +386,5 @@ class TensorboardLogger(Logger):
         # Apparently, some SwigPyObject objects cannot be pickled - so we need to build the
         # writer on the fly.
         config = super(TensorboardLogger, self).get_config()
-        config.update({'_writer': None})
+        config.update({'_writer': None, '_writers': None})
         return config
