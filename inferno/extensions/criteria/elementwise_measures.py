@@ -48,5 +48,7 @@ class WeightedBCELoss(nn.Module):
 
     def forward(self, input, target):
         if self.weight is not None:
-            self.bce.weight = torch.FloatTensor([self.weight[1] / self.weight[0]])
+            weight_ = input.data.new(1)
+            weight_[0] = self.weight[1] / self.weight[0]
+            self.bce.weight = weight_
         return self.bce(input=input.view(-1), target=target.view(-1))
