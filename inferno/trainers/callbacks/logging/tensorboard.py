@@ -92,7 +92,7 @@ class TensorboardLogger(Logger):
         if (tag, subtag) in self._writers.keys():
             return self._writers[(tag, subtag)]
 
-        self._writers[(tag, subtag)] = tf.summary.FileWriter(f"{self.log_directory}/{tag}/{subtag}")
+        self._writers[(tag, subtag)] = tf.summary.FileWriter("/".join([self.log_directory, tag, subtag]))
         return self._writers[(tag, subtag)]
 
     @property
