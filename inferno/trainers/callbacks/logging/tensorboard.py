@@ -89,6 +89,9 @@ class TensorboardLogger(Logger):
         return self._writer
 
     def _get_writer(self, tag, subtag):
+        if not isinstance(self._writers, dict):
+            self._writers = {}
+
         if (tag, subtag) in self._writers.keys():
             return self._writers[(tag, subtag)]
 
@@ -388,3 +391,9 @@ class TensorboardLogger(Logger):
         config = super(TensorboardLogger, self).get_config()
         config.update({'_writer': None, '_writers': None})
         return config
+
+
+    def set_config(self, config_dict):
+        super(TensorboardLogger, self).set_config(config_dict)
+        self._writers = {}
+        return self
