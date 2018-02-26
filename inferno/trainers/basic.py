@@ -481,8 +481,8 @@ class Trainer(object):
             self._save_externally_triggered = False
             # Save if externally triggered
             return True
-        elif self._is_iteration_with_best_validation_score:
-            return self._save_at_best_validation_score
+        elif self._save_at_best_validation_score:
+            return self._is_iteration_with_best_validation_score
         else:
             # Check if we're saving by epoch
             if self._save_every is not None and self._save_every.by_epoch:
