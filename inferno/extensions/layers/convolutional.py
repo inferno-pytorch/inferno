@@ -109,23 +109,25 @@ class ConvActivation(nn.Module):
 
 class ConvELU2D(ConvActivation):
     """2D Convolutional layer with 'SAME' padding, ELU and orthogonal weight initialization."""
-    def __init__(self, in_channels, out_channels, kernel_size):
+    def __init__(self, in_channels, out_channels, kernel_size, dilation=1):
         super(ConvELU2D, self).__init__(in_channels=in_channels,
                                         out_channels=out_channels,
                                         kernel_size=kernel_size,
                                         dim=2,
                                         activation='ELU',
+                                        dilation=dilation,
                                         initialization=OrthogonalWeightsZeroBias())
 
 
 class ConvELU3D(ConvActivation):
     """3D Convolutional layer with 'SAME' padding, ELU and orthogonal weight initialization."""
-    def __init__(self, in_channels, out_channels, kernel_size):
+    def __init__(self, in_channels, out_channels, kernel_size, dilation=1):
         super(ConvELU3D, self).__init__(in_channels=in_channels,
                                         out_channels=out_channels,
                                         kernel_size=kernel_size,
                                         dim=3,
                                         activation='ELU',
+                                        dilation=dilation,
                                         initialization=OrthogonalWeightsZeroBias())
 
 
