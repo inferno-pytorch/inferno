@@ -23,8 +23,9 @@ class AnisotropicUpsample(nn.Module):
         return unfolded
 
 
+# stride is just a dummy variable, to be consistent with nn.Maxpool syntax
 class AnisotropicPool(nn.MaxPool3d):
-    def __init__(self, downscale_factor):
+    def __init__(self, downscale_factor, stride=None):
         ds = downscale_factor
         super(AnisotropicPool, self).__init__(kernel_size=(1, ds + 1, ds + 1),
                                               stride=(1, ds, ds),
