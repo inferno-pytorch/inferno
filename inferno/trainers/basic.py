@@ -84,6 +84,7 @@ class Trainer(object):
         self._is_iteration_with_best_validation_score = False
         self._validate_every = None
         self._num_validation_iterations = None
+        self._target_batch_dim = 0
         # We should exclude the zero-th epoch from validation
         self._last_validated_at_epoch = 0
         self._last_validated_at_iteration = 0
@@ -1305,7 +1306,7 @@ class Trainer(object):
                 inputs, target = self.split_batch(batch, from_loader=loader_name)
                 # Apply model, compute loss
                 output, loss = self.apply_model_and_loss(inputs, target, backward=False)
-            batch_size = target.size(0)
+            batch_size = target.size(self._target_batch_dim)
             validation_loss_meter.update(loss.data[0], n=batch_size)
             # Compute validation_error
             if self.metric_is_defined:
