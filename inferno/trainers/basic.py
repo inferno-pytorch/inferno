@@ -614,6 +614,21 @@ class Trainer(object):
     def epoch_count(self):
         return self._epoch_count
 
+    @property
+    def target_batch_dim(self):
+        return self._target_batch_dim
+
+    @target_batch_dim.setter
+    def target_batch_dim(self, value):
+        assert_(value in [0, 1],
+                f"target_batch_dim must be either 0 or 1, got {value} instead.",
+                ValueError)
+        self._target_batch_dim = value
+
+    def set_target_batch_dim(self, value):
+        self.target_batch_dim = value
+        return self
+
     def build_logger(self, logger=None, log_directory=None, **kwargs):
         """
         Build the logger.
