@@ -9,28 +9,9 @@ from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
 from random import choice
 from ..transform import Compose
+from ..transform.image import FineRandomRotations, RandomScaleSegmentation
 from ..transform.generic import Normalize, NormalizeRange  # , Cast, AsTorchBatch
 from scipy.ndimage import grey_opening
-
-# def get_matching_labelimage_file(f):
-#     fs = f.split('/')
-#     fn[0] = "gtFine"
-#     fn[-1] = str.replace(fn[-1], 'leftImg8bit', 'gtFine_labelIds')
-#     return join(fn)
-
-# def make_dataset(image_zip_file, split):
-#     images = []
-#     for f in zipfile.ZipFile(image_zip_file, 'r').filelist:
-#         fn = f.filename.split('/')
-#         if fn[-1].endswith('.png') and fn[1] == split:
-#             # use first folder name to identify train/val/test images
-#             fl = get_matching_labelimage_file(f)
-#             images.append((f, fl))
-#     return images
-
-# def get_image(archive, image_path):
-#     # read image directly from zipfile
-#     return np.array(Image.open(io.BytesIO(zipfile.ZipFile(archive, 'r').read(image_path))))
 
 
 class AccumulateTransformOverLabelers(object):
@@ -68,58 +49,64 @@ def get_label_transforms(offsets, accumulator='mean', close_channels=None):
     return AccumulateTransformOverLabelers(seg2aff, accumulator, close_channels)
 
 
-def get_joint_transforms():
+def get_joint_transforms(offsets, split='train'):
     from ..transform.image import RandomFlip, RandomRotate, RandomTranspose
-    trafos = Compose(RandomFlip(allow_ud_flips=False), RandomRotate(), RandomTranspose())
+    from neurofire.transform.segmentation import ManySegmentationsToFuzzyAffinities
+    if split == 'train':
+        trafos = Compose(RandomFlip(allow_ud_flips=False),
+                     RandomScaleSegmentation((0.8, 1.2)),
+                     FineRandomRotations(15),
+                     ManySegmentationsToFuzzyAffinities(dim=2, offsets=offsets,
+                                                        retain_segmentation=True),
+                     )
+    else:
+        trafos = Compose(ManySegmentationsToFuzzyAffinities(dim=2, offsets=offsets,
+                                                        retain_segmentation=True))
     return trafos
 
 
-# TODO gamma correction ?
-def get_image_transforms():
-    trafos = Compose(NormalizeRange(),
-                     # RandomGammaCorrection(),
-                     Normalize())
-    return trafos
-
+def get_bsd500_dataset(root_folder, offsets, split="train", return_no_labels=False):
+    return BSD500(root_folder,
+                   split=split,
+                   return_no_labels=return_no_labels,
+                   joint_transform=get_joint_transforms(offsets, split=split))
 
 # TODO return data loaders for train, val and test
-def get_bsd500_loaders(root_folder, offsets, close_channels=None, shuffle=True):
-    label_transforms = get_label_transforms(offsets, close_channels=close_channels)
-    joint_transforms = get_joint_transforms()
-    image_transforms = get_image_transforms()
+def get_bsd500_loaders(root_folder, offsets, shuffle=True, split="all", num_workers=0):
+    if split != "all":
+        return DataLoader(BSD500(root_folder,
+                   split=split,
+                   joint_transform=get_joint_transforms(offsets, split=split)))
 
-    train_set = BSD500(root_folder,
-                       subject='all',
-                       split='train',
-                       label_transform=label_transforms,
-                       joint_transform=joint_transforms,
-                       image_transform=image_transforms)
-    val_set = BSD500(root_folder,
-                     subject='all',
-                     split='val',
-                     label_transform=label_transforms,
-                     joint_transform=joint_transforms,
-                     image_transform=image_transforms)
-    test_set = BSD500(root_folder,
-                      subject='all',
-                      split='test',
-                      label_transform=label_transforms,
-                      joint_transform=joint_transforms,
-                      image_transform=image_transforms)
+    splits = ['train', 'val', 'test']
 
-    return DataLoader(train_set, shuffle=shuffle), \
-           DataLoader(val_set, shuffle=shuffle), \
-           DataLoader(test_set, shuffle=shuffle)
+    ds = [BSD500(root_folder,
+                       split=s,
+                       joint_transform=get_joint_transforms(offsets, split=s))\
+                       for s in splits]
 
+    dl = [DataLoader(bsd_split, shuffle=shuffle, num_workers=num_workers) for bsd_split in ds]
+    return dl
+
+
+BSD500_MEAN = np.array([110.797, 113.003, 93.5948], dtype='float32')
+BSD500_STD = np.array([63.6275, 59.7415, 61.6398], dtype='float32')
 
 class BSD500(Dataset):
-    subject_modes = ('all',)
+    # BSD contains landscape and portrait images, with up to 9 segmentations
+    # This dataset loader returns tuples of images in original orientation and 
+    # associated segmentations, which means, that one can not simply
+    # create a batch with size > 1 that has a consistent shape
+    # For now we assume batch size = 1
     splits = ('train', 'val', 'test')
+
+    # measured on train split
+
 
     def __init__(self,
                  root_folder,
-                 subject=None,
                  split='train',
+                 return_no_labels=False,
                  image_transform=None,
                  joint_transform=None,
                  label_transform=None):
@@ -127,17 +114,8 @@ class BSD500(Dataset):
         Parameters:
         root_folder: folder that contains 'groundTruth' and 'images'  of the BSD 500.
         (http://www.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/BSR/BSR_bsds500.tgz)
-        subject: defines which labeler should be used / how to combine the labelers.
-                 integer -> labeler with this number is drawn
-                 None -> random labeler is drawn
-                 'all' labelers are drawn (and potentially combined)
         """
-        # validate
         assert os.path.exists(root_folder)
-        if subject is not None:
-            assert isinstance(subject, (int, str))
-            if isinstance(subject, str):
-                assert subject in self.subject_modes
         assert split in self.splits, str(split)
 
         self.root_folder = root_folder
@@ -152,9 +130,20 @@ class BSD500(Dataset):
                 for ds in ["train", "val", "test"]:
                     for i, f in enumerate(glob(root_folder + "/groundTruth/" + ds + "/*.mat")):
                         im_path = f.replace("groundTruth", "images").replace(".mat", ".jpg")
-                        img = imread(im_path).transpose(2, 0, 1)
+                        img = imread(im_path).transpose(2, 0, 1).astype(np.float32)[:, :, :]
+                        # normalize
+                        img -= BSD500_MEAN[:, None, None]
+                        img /= BSD500_STD[:, None, None]
+
+                        image_shape = np.array(img[0].shape)
+                        pad_l = (512 - image_shape) // 2 
+                        pad_r = 512 - image_shape - pad_l
+                        padding = [(0,0)] + list(zip(pad_l, pad_r))
+                        out.create_dataset("{}/padding/{}".format(ds, i),
+                                           data=np.array(padding))
+
                         out.create_dataset("{}/image_data/{}".format(ds, i),
-                                           data=img)
+                                           data=np.pad(img, padding, 'constant'))
                         all_segmentations = sio.loadmat(f)["groundTruth"][0]
                         best_gt_index = np.argmax([len(np.unique(s)) for s in all_segmentations])
                         print(all_segmentations)
@@ -162,14 +151,20 @@ class BSD500(Dataset):
                         out.create_dataset("{}/label_data/{}".format(ds, i),
                                            data=label_img)
 
-        self.subject = subject
+                        stacked_segmentations = np.stack([s[0][0][0] for s in all_segmentations])\
+                                                                .astype(np.float32)[:, :, :]
+                        # add one to segmentation such that 0 can be treated as ignore label
+                        label_img = np.pad(stacked_segmentations+1, padding, 'constant')
+                        out.create_dataset("{}/label_data/{}".format(ds, i),
+                                           data=label_img)
+
         self.root_folder = root_folder
         self.split = split
+        self.return_no_labels = return_no_labels
 
         self.image_transform = image_transform
         self.joint_transform = joint_transform
         self.label_transform = label_transform
-
         self.load_data()
 
     def load_data(self):
@@ -182,23 +177,11 @@ class BSD500(Dataset):
 
                 # load the image
                 img_path = base + img_num
-                img = bsd[img_path].value.astype(np.float32)[:, 1:, 1:]
+                img = bsd[img_path].value
 
                 # load the groundtruths
-                subject_list = [p for p in bsd[label_base] if p.startswith("{}_".format(img_num))]
-                if self.subject is None:
-                    subject = choice(subject_list)
-                elif isinstance(self.subject, int):
-                    assert self.subject < len(subject_list)
-                    subject = "{}_{}".format(img_num, self.subject)
-                elif self.subject == 'all':
-                    subject = subject_list
-
-                label_path = "{}/{}".format(label_base, subject) if isinstance(subject, int) else \
-                    ["{}/{}".format(label_base, subject_id) for subject_id in subject]
-
-                gt = bsd[label_path].value.astype(np.float32)[1:, 1:] if isinstance(label_path, str) else \
-                    np.array([bsd[lpath].value.astype(np.float32)[1:, 1:] for lpath in label_path])
+                gt_path = label_base + img_num
+                gt = bsd[gt_path].value
 
                 self.data.append((img, gt))
 
@@ -208,11 +191,15 @@ class BSD500(Dataset):
         if self.image_transform is not None:
             img = self.image_transform(img)
 
+        if self.return_no_labels:
+            return img
+
         if self.joint_transform is not None:
             img, gt = self.joint_transform(img, gt)
 
         if self.label_transform is not None:
             gt = self.label_transform(gt)
+
         return img, gt
 
     def __len__(self):
