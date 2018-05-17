@@ -156,10 +156,11 @@ class BSD500(Dataset):
                         out.create_dataset("{}/image_data/{}".format(ds, i),
                                            data=img)
                         all_segmentations = sio.loadmat(f)["groundTruth"][0]
-                        for subject in range(all_segmentations.shape[0]):
-                            label_img = all_segmentations[subject][0][0][0]
-                            out.create_dataset("{}/label_data/{}_{}".format(ds, i, subject),
-                                               data=label_img)
+                        best_gt_index = np.argmax([len(np.unique(s)) for s in all_segmentations])
+                        print(all_segmentations)
+                        label_img = all_segmentations[:, 0][0][0]
+                        out.create_dataset("{}/label_data/{}".format(ds, i),
+                                           data=label_img)
 
         self.subject = subject
         self.root_folder = root_folder
@@ -169,10 +170,9 @@ class BSD500(Dataset):
         self.joint_transform = joint_transform
         self.label_transform = label_transform
 
-        # FIXME this can be done by the dataloader ?!
-        self.shuffle_data_paths()
+        self.load_data()
 
-    def shuffle_data_paths(self):
+    def load_data(self):
         self.data = []
         with h5py.File(os.path.join(self.root_folder, "BSD500.h5"), "r") as bsd:
             base = "{}/image_data/".format(self.split)
@@ -203,11 +203,6 @@ class BSD500(Dataset):
                 self.data.append((img, gt))
 
     def __getitem__(self, index):
-        if index == 0 and self.subject is None:
-            # TODO: shuffeling should actually be done, when a new batch is loaded
-            self.shuffle_data_paths()
-        if index > len(self.data):
-            index -= len(self.data)
         img, gt = self.data[index]
 
         if self.image_transform is not None:
@@ -222,3 +217,9 @@ class BSD500(Dataset):
 
     def __len__(self):
         return len(self.data)
+
+
+if __name__ == '__main__':
+    ROOT_FOLDER = "/home/swolf/local/data/BSDS500/data"
+    ds = BSD500(ROOT_FOLDER)
+    print(ds[0])
