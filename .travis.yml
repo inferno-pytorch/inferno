@@ -5,8 +5,10 @@ python:
   - 3.6
 
 env:
-  - PYTORCH_VERSION=current PYTORCH_CONDA="pytorch"
-  - PYTORCH_VERSION=0.3.1 PYTORCH_CONDA="pytorch=0.3.1"
+  - PYTORCH_CONDA="pytorch" TORCHVISION_CONDA="torchvision=0.2.1"
+  - PYTORCH_CONDA="pytorch" TORCHVISION_CONDA="torchvision=0.1.9"
+  - PYTORCH_CONDA="pytorch=0.3.1" TORCHVISION_CONDA="torchvision=0.2.1"
+  - PYTORCH_CONDA="pytorch=0.3.1" TORCHVISION_CONDA="torchvision=0.1.9"
 
 install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -16,8 +18,8 @@ install:
   - conda update -q conda
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
-  - conda install -c conda-forge networkx=1.11 h5py numpy scikit-image scipy pyyaml dill
-  - conda install -c pytorch $PYTORCH_CONDA torchvision
+  - conda install -c conda-forge networkx=1.11 h5py numpy scikit-image scipy pyyaml dill cython
+  - conda install -c pytorch $PYTORCH_CONDA $TORCHVISION_CONDA
 
 deploy:
   provider: pypi
