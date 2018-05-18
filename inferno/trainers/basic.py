@@ -621,7 +621,7 @@ class Trainer(object):
     @target_batch_dim.setter
     def target_batch_dim(self, value):
         assert_(value in [0, 1],
-                f"target_batch_dim must be either 0 or 1, got {value} instead.",
+                "target_batch_dim must be either 0 or 1, got {value} instead.".format(value=value),
                 ValueError)
         self._target_batch_dim = value
 

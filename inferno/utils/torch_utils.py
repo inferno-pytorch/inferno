@@ -70,7 +70,7 @@ def is_matrix_tensor(object_):
 
 
 def is_scalar_tensor(object_):
-    return is_tensor(object_) and object_.dim() == 1 and object_.numel() == 1
+    return is_tensor(object_) and object_.dim() <= 1 and object_.numel() == 1
 
 
 def assert_same_size(tensor_1, tensor_2):

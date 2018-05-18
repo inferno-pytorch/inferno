@@ -20,8 +20,7 @@ class Constant(Initializer):
 
     def call_on_tensor(self, tensor):
         if isinstance(tensor, Variable):
-            self.call_on_tensor(tensor.data)
-            return tensor
+            tensor = tensor.data
         tensor.fill_(self.constant)
         return tensor
 

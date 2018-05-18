@@ -6,13 +6,21 @@ import torch
 import torch.utils.data as data
 import numpy as np
 from PIL import Image
-from torchvision.datasets.folder import is_image_file, default_loader
+from torchvision.datasets.folder import default_loader
 from ...utils.exceptions import assert_
 from ..transform.base import Compose
 from ..transform.generic import Normalize, NormalizeRange, Cast, AsTorchBatch, Label2OneHot
 from ..transform.image import \
     RandomSizedCrop, RandomGammaCorrection, RandomFlip, Scale, PILImage2NumPyArray
 
+try:
+    from torchvision.datasets.folder import is_image_file
+except ImportError:
+    from torchvision.datasets.folder import IMG_EXTENSIONS, has_file_allowed_extension
+
+
+    def is_image_file(filename):
+        return has_file_allowed_extension(filename, IMG_EXTENSIONS)
 
 CAMVID_CLASSES = ['Sky',
                   'Building',
