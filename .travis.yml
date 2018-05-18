@@ -1,6 +1,10 @@
 language: python
 python:
-- 3.5
+  - 3.5
+  - 3.6
+env:
+  - PYTORCH_VERSION=current PYTORCH_CONDA="pytorch"
+  - PYTORCH_VERSION=0.3.1 PYTORCH_CONDA="pytorch=0.3.1"
 
 install:
 
@@ -14,7 +18,7 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
   - conda install -c conda-forge networkx=1.11 h5py numpy scikit-image scipy pyyaml dill
-  - conda install -c pytorch pytorch torchvision
+  - conda install -c pytorch $PYTORCH_CONDA torchvision
 
 
 deploy:
