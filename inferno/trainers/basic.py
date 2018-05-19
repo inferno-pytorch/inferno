@@ -1,5 +1,6 @@
 import dill
 from datetime import datetime
+from inspect import signature
 import os
 import shutil
 
@@ -697,13 +698,17 @@ class Trainer(object):
         self._state.update({key: value})
         return self
 
+    def update_state_from_dictionary(self, dictionary):
+        # Unwrap variables (or tensors)
+        self._state.update({
+            state_key: thu.unwrap(state)
+            for state_key, state in dictionary.items()})
+
     def update_state_from_model_state_hooks(self):
         if hasattr(self.model, '_state_hooks'):
             state_hooks = getattr(self.model, '_state_hooks')
             if isinstance(state_hooks, dict):
-                # Unwrap variables (or tensors) and
-                self._state.update({state_key: thu.unwrap(state)
-                                    for state_key, state in state_hooks.items()})
+                self.update_state_from_dictionary(state_hooks)
 
     def get_state(self, key, default=None):
         if key in self.DYNAMIC_STATES:
@@ -1172,7 +1177,11 @@ class Trainer(object):
         # Compute prediction
         prediction = self.apply_model(*inputs)
         # Compute loss
-        loss = self.criterion(prediction, target)
+        kwargs = {}
+        if (isinstance(self.criterion, torch.nn.Module) and
+                'trainer' in signature(self.criterion.forward).parameters):
+            kwargs['trainer'] = self
+        loss = self.criterion(prediction, target, **kwargs)
         if backward:
             # Backprop if required
             loss.backward()
