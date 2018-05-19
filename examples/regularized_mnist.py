@@ -5,7 +5,6 @@ import torch
 import torch.nn as nn
 from torchvision import datasets, transforms
 
-from inferno.extensions.criteria.regularized import RegularizedCrossEntropyLoss
 from inferno.extensions.layers.reshape import Flatten
 from inferno.trainers.basic import Trainer
 from inferno.trainers.callbacks.logging.tensorboard import TensorboardLogger
@@ -60,7 +59,7 @@ def train_model(args):
 
     # Build trainer
     trainer = Trainer(model) \
-        .build_criterion(RegularizedCrossEntropyLoss) \
+        .build_criterion('RegularizedCrossEntropyLoss') \
         .build_metric('CategoricalError') \
         .build_optimizer('Adam') \
         .validate_every((1, 'epochs')) \

@@ -5,6 +5,15 @@ from torch import nn
 
 from . import set_similarity_measures, core
 
+__all__ = [
+    'RegularizedLoss',
+    'RegularizedCrossEntropyLoss',
+    'RegularizedBCEWithLogitsLoss',
+    'RegularizedBCELoss',
+    'RegularizedMSELoss',
+    'RegularizedNLLLoss'
+]
+
 
 def collect_losses(module):
     """Collect `_losses` dictionaries from module and children
@@ -52,6 +61,7 @@ def build_criterion(criterion, *args, **kwargs):
 class RegularizedLoss(nn.Module):
     """Wrap a criterion. Collect regularization losses from model and combine with wrapped criterion.
     """
+
     def __init__(self, criterion, *args, **kwargs):
         super(RegularizedLoss, self).__init__()
         self.criterion = build_criterion(criterion, *args, **kwargs)
@@ -63,12 +73,12 @@ class RegularizedLoss(nn.Module):
         # If no trainer, we cannot record states
         if trainer is None:
             warnings.warn('No trainer parameter provided. Not logging regularization losses.')
-        else:
+        elif model is None:
             model = trainer.model
 
         # If no model or trainer, we cannot record states or collect losses
         if model is None:
-            warnings.warn('No model parameter provided. Not calculating regularization losses.')
+            warnings.warn('No model or trainer parameter provided. Not calculating regularization losses.')
             regularization_losses = {}
             total_regularization_loss = None
             total_loss = main_loss
