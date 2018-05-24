@@ -56,6 +56,8 @@ def adapted_rand(seg, gt):
     """
     logger = logging.getLogger(__name__)
 
+    assert seg.shape == gt.shape, "%s, %s" % (str(seg.shape), str(gt.shape))
+
     if np.any(seg == 0):
         logger.debug("Zeros in segmentation, treating as background.")
     if np.any(gt == 0):
