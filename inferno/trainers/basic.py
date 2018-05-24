@@ -429,6 +429,7 @@ class Trainer(object):
             self.criterion.eval()
         if self.metric_is_defined and isinstance(self.metric, torch.nn.Module):
             self.metric.eval()
+        return self
 
     def train_mode(self):
         """Set model, criterion and metric to train mode"""
@@ -437,6 +438,7 @@ class Trainer(object):
             self.criterion.train()
         if self.metric_is_defined and isinstance(self.metric, torch.nn.Module):
             self.metric.train()
+        return self
 
     @property
     def train_loader(self):
