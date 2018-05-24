@@ -423,6 +423,24 @@ class Trainer(object):
         """Checks if the metric is defined."""
         return self._metric is not None
 
+    def eval_mode(self):
+        """Set model, criterion and metric to eval mode"""
+        self.model.eval()
+        if self.criterion_is_defined and isinstance(self.criterion, torch.nn.Module):
+            self.criterion.eval()
+        if self.metric_is_defined and isinstance(self.metric, torch.nn.Module):
+            self.metric.eval()
+        return self
+
+    def train_mode(self):
+        """Set model, criterion and metric to train mode"""
+        self.model.train()
+        if self.criterion_is_defined and isinstance(self.criterion, torch.nn.Module):
+            self.criterion.train()
+        if self.metric_is_defined and isinstance(self.metric, torch.nn.Module):
+            self.metric.train()
+        return self
+
     @property
     def train_loader(self):
         assert self._loaders.get('train') is not None
@@ -1189,7 +1207,7 @@ class Trainer(object):
 
     def train_for(self, num_iterations=None, break_callback=None):
         # Switch model to train mode
-        self.model.train()
+        self.train_mode()
         # Call callback
         self.callbacks.call(self.callbacks.BEGIN_OF_TRAINING_RUN,
                             num_iterations=num_iterations)
@@ -1289,7 +1307,7 @@ class Trainer(object):
             self._num_validation_iterations if num_iterations is None else num_iterations
 
         # Switch to eval mode (e.g. for batchnorm, etc.)
-        self.model.eval()
+        self.eval_mode()
 
         # Record the epoch we're validating in
         self._last_validated_at_epoch = self._epoch_count
