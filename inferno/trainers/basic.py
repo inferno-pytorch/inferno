@@ -1321,7 +1321,12 @@ class Trainer(object):
                 inputs, target = self.split_batch(batch, from_loader=loader_name)
                 # Apply model, compute loss
                 output, loss = self.apply_model_and_loss(inputs, target, backward=False)
-            batch_size = target.size(self._target_batch_dim)
+            
+            if isinstance(target, list):
+                batch_size = target[0].size(self._target_batch_dim)
+            else:
+                batch_size = target.size(self._target_batch_dim)
+
             validation_loss_meter.update(loss.data[0], n=batch_size)
             # Compute validation_error
             if self.metric_is_defined:
