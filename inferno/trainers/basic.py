@@ -1318,17 +1318,23 @@ class Trainer(object):
         # Switch to eval mode (e.g. for batchnorm, etc.)
         self.eval_mode()
 
-        # Record the epoch we're validating in
-        self._last_validated_at_epoch = self._epoch_count
-        self._last_validated_at_iteration = self._iteration_count
-        self.callbacks.call(self.callbacks.BEGIN_OF_VALIDATION_RUN,
-                            num_iterations=num_iterations,
-                            last_validated_at_epoch=self._last_validated_at_epoch)
+        if loader_name not in self._loader_iters:
+            self._loader_iters.update({loader_name: self._loaders[loader_name].__iter__()})
 
         # If we don't know num_iterations, we're validating the entire dataset - so we might as
         # well restart the loader now
         if num_iterations is None:
             self.restart_generators(loader_name)
+
+        # Record the epoch we're validating in
+        self._last_validated_at_epoch = self._epoch_count
+        self._last_validated_at_iteration = self._iteration_count
+        self.callbacks.call(self.callbacks.BEGIN_OF_VALIDATION_RUN,
+                            num_iterations=num_iterations,
+                            num_iterations_in_generator=len(self._loader_iters[loader_name]),
+                            last_validated_at_epoch=self._last_validated_at_epoch)
+
+
 
         while True:
             if num_iterations is not None and iteration_num > num_iterations:
