@@ -19,6 +19,7 @@ from ..extensions import metrics
 from ..extensions import optimizers
 from ..extensions import criteria
 from .callbacks import CallbackEngine
+from .callbacks import Console
 from ..utils.exceptions import assert_, NotSetError, NotTorchModuleError, DeviceError
 
 
@@ -113,9 +114,17 @@ class Trainer(object):
         self._callback_engine = CallbackEngine().bind_trainer(self)
         self._state = {}
 
+        # Print console
+        self._console = Console()
+
         # Public
         if model is not None:
             self.model = model
+
+    @property
+    def console(self):
+        """Get the current console."""
+        return self._console
 
     @property
     def callbacks(self):
@@ -1168,18 +1177,18 @@ class Trainer(object):
         run_num = 0
         while True:
             if self.stop_fitting(max_num_iterations, max_num_epochs):
-                self.print("Exceeded max number of iterations / epochs, breaking.")
+                self.console.info("Exceeded max number of iterations / epochs, breaking.")
                 break
             # Train
             self.train_for(break_callback=lambda *args: self.stop_fitting(max_num_iterations,
                                                                           max_num_epochs))
             # Check if it's time to validate
             if self.validate_now:
-                self.print("Validating.")
+                self.console.info("Validating.")
                 self.validate_for()
             # Check if it's time to save
             if self.save_now:
-                self.print("Saving.")
+                self.console.info("Saving.")
                 self.save()
             run_num += 1
 
@@ -1217,13 +1226,13 @@ class Trainer(object):
         iteration_num = 0
         while True:
             if num_iterations is not None and iteration_num > num_iterations:
-                self.print("Finished {} iterations. Breaking...".format(num_iterations))
+                self.console.info("Finished {} iterations. Breaking...".format(num_iterations))
                 break
             # Break if break callback asks us to
             if break_callback is not None and break_callback(iteration_num):
-                self.print("Breaking on request from callback.")
+                self.console.info("Breaking on request from callback.")
                 break
-            self.print("Training iteration {} (batch {} of epoch {})."
+            self.console.progress("Training iteration {} (batch {} of epoch {})."
                        .format(iteration_num, self._batch_count, self._epoch_count))
             # Call callback
             self.callbacks.call(self.callbacks.BEGIN_OF_TRAINING_ITERATION,
@@ -1268,10 +1277,10 @@ class Trainer(object):
             # counter is never updated after the first save and validate, resulting in an infinite
             # save + validate loop.
             if self.validate_now:
-                self.print("Breaking to validate.")
+                self.console.info("Breaking to validate.")
                 break
             if self.save_now:
-                self.print("Breaking to save.")
+                self.console.info("Breaking to save.")
                 break
             iteration_num += 1
 
@@ -1309,17 +1318,23 @@ class Trainer(object):
         # Switch to eval mode (e.g. for batchnorm, etc.)
         self.eval_mode()
 
-        # Record the epoch we're validating in
-        self._last_validated_at_epoch = self._epoch_count
-        self._last_validated_at_iteration = self._iteration_count
-        self.callbacks.call(self.callbacks.BEGIN_OF_VALIDATION_RUN,
-                            num_iterations=num_iterations,
-                            last_validated_at_epoch=self._last_validated_at_epoch)
+        if loader_name not in self._loader_iters:
+            self._loader_iters.update({loader_name: self._loaders[loader_name].__iter__()})
 
         # If we don't know num_iterations, we're validating the entire dataset - so we might as
         # well restart the loader now
         if num_iterations is None:
             self.restart_generators(loader_name)
+
+        # Record the epoch we're validating in
+        self._last_validated_at_epoch = self._epoch_count
+        self._last_validated_at_iteration = self._iteration_count
+        self.callbacks.call(self.callbacks.BEGIN_OF_VALIDATION_RUN,
+                            num_iterations=num_iterations,
+                            num_iterations_in_generator=len(self._loader_iters[loader_name]),
+                            last_validated_at_epoch=self._last_validated_at_epoch)
+
+
 
         while True:
             if num_iterations is not None and iteration_num > num_iterations:
@@ -1335,10 +1350,10 @@ class Trainer(object):
                                               update_batch_count=False,
                                               update_epoch_count_if_generator_exhausted=False)
             except StopIteration:
-                self.print("{} generator exhausted, breaking.".format(loader_name))
+                self.console.info("{} generator exhausted, breaking.".format(loader_name))
                 break
 
-            self.print("Validating iteration {}.".format(iteration_num))
+            self.console.progress("Validating iteration {}.".format(iteration_num))
 
             # Delay SIGINTs till after computation
             with pyu.delayed_keyboard_interrupt():
@@ -1374,7 +1389,7 @@ class Trainer(object):
 
             iteration_num += 1
 
-        self.print("Done validating. Logging results...")
+        self.console.info("Done validating. Logging results...")
 
         # Report
         self.record_validation_results(
@@ -1458,7 +1473,7 @@ class Trainer(object):
 
         # This is required to prevent an infinite save loop?
         self._is_iteration_with_best_validation_score = False
-        self.print("Saved to {}.".format(self._save_to_directory))
+        self.console.info("Saved to {}.".format(self._save_to_directory))
         return self
 
     def save_model(self, to_directory=None):
@@ -1516,6 +1531,7 @@ class Trainer(object):
         # Here for legacy reasons - use load instead.
         return self.load(*args, **kwargs)
 
+    @pyu.deprecated("please use self.console.{info,progress,warning,debug} instead")
     def print(self, message):
         print("[+][{}] {}".format(str(datetime.now()), message))
 

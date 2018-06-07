@@ -202,7 +202,7 @@ class SaveAtBestValidationScore(Callback):
         # Trigger a save
         if self.trainer._is_iteration_with_best_validation_score:
             if self.verbose:
-                self.trainer.print("Current smoothed validation score {} is better "
+                self.trainer.console.info("Current smoothed validation score {} is better "
                                    "than the best smoothed validation score {}."
                                    .format(self._ema_validation_score,
                                            self._best_ema_validation_score))
@@ -210,7 +210,7 @@ class SaveAtBestValidationScore(Callback):
             self.trainer.save_now = True
         else:
             if self.verbose:
-                self.trainer.print("Current smoothed validation score {} is not better "
+                self.trainer.console.info("Current smoothed validation score {} is not better "
                                    "than the best smoothed validation score {}."
                                    .format(self._ema_validation_score,
                                            self._best_ema_validation_score))
