@@ -146,9 +146,18 @@ class TensorboardLogger(Logger):
             raise NotImplementedError
         return self
 
+    def observe_training_and_validation_state(self, key):
+        for mode in ['training', 'validation']:
+            self.observe_state('{}_{}'.format(mode, key), observe_while=mode)
+
     def observe_states(self, keys, observe_while='training'):
         for key in keys:
             self.observe_state(key, observe_while=observe_while)
+        return self
+
+    def observe_training_and_validation_states(self, keys):
+        for key in keys:
+            self.observe_training_and_validation_state(key)
         return self
 
     def log_object(self, tag, object_, allow_scalar_logging=True, allow_image_logging=True):
