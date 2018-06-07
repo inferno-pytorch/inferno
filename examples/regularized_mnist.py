@@ -1,3 +1,11 @@
+
+"""
+Regularized MNist Example
+================================
+
+TODO
+
+"""
 import argparse
 import sys
 
