@@ -74,7 +74,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.mathjax',
     'sphinx.ext.graphviz',
-    # 'sphinx_gallery.gen_gallery',
+    'sphinx_gallery.gen_gallery',
     'sphinxcontrib.bibtex',
     'sphinx.ext.napoleon'
 ]
