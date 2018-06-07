@@ -5,24 +5,17 @@ import torch.nn as nn
 
 
 
-__all__ = ['ResidualUnet',
-           'ConvELU2D', 'ConvELU3D',
-           'ConvSigmoid2D', 'ConvSigmoid3D',
-           'DeconvELU2D', 'DeconvELU3D',
-           'StridedConvELU2D', 'StridedConvELU3D',
-           'DilatedConvELU2D', 'DilatedConvELU3D',
-           'Conv2D', 'Conv3D',
-           'BNReLUConv2D', 'BNReLUConv3D',
-           'BNReLUDepthwiseConv2D',
-           'ConvSELU2D', 'ConvSELU3D']
-           
+__all__ = ['ResidualUnet']
+
 
 class ResidualUnet(nn.Module):
 
-
-
     class ConvBlock(nn.Module):
-        def __init__(self, in_channels, out_channels):
+        def __init__(
+            self, 
+            in_channels, 
+            out_channels
+        ):
             super(ConvBlock, self).__init__()
             self.a = BNReLUConv2D(kernel_size=3, in_channels=in_channels,   out_channels=out_channels)
             self.b = BNReLUConv2D(kernel_size=3, in_channels=out_channels,  out_channels=out_channels)
@@ -35,20 +28,54 @@ class ResidualUnet(nn.Module):
             return ra + rc
 
 
-
-    def __init__(self, in_channels, depth=3, gain=2):
-
+    def __init__(self, 
+            in_channels, depth=3, gain=2,conv_factory = None, 
+            conv_down_factory = None,conv_up_factory = ConvBlock, 
+            conv_bottom_factory = None):
+        """Construct Unet 
+         TODO: out channels atm is in_channels*gain
+        
+        Args:
+            in_channels (int): Number of channels of the input tensor
+                depth (int, optional): Depth of the unet: A depth of n correspondes to n downsample steps
+                gain (int, optional): While going down in the unet, the numbert of channels is multiplied by
+                the gain factor. Going up in the unet, the number of channels is divided by the gain.
+            conv_factory (None, optional): Factory function which should return a torch.nn.Module.
+                conv_factory is only used if neither conv_down_factory, conv_up_factory or conv_bottom_factory
+                is specified the conv_factory will be used.
+                The default factory will return a residual convolutional block defined in ResidualUnet.ConvBlock
+            conv_down_factory (None, optional): Factory function which should return a torch.nn.Module.
+                If nothing is specified, conv_factory is used.
+            conv_up_factory (None, optional): Factory function which should return a torch.nn.Module.
+                If nothing is specified, conv_factory is used.
+            conv_bottom_factory (None, optional): Factory function which should return a torch.nn.Module.
+                If nothing is specified, conv_factory is used.
+        """
         super(ResidualUnet, self).__init__()
 
         self.depth = int(depth)
         self.gain = int(gain)
         self.out_channels = in_channels * gain
 
+
+        if self.conv_factory is None:
+            self.conv_factory  = self._conv
+
+        if self.conv_down_factory is None:
+            self.conv_down_factory  = self.conv_factory
+
+        if self.conv_down_factory is None:
+            self.conv_down_factory  = self.conv_factory
+
+        if self.conv_bottom_factory is None:
+            self.conv_bottom_factory  = self.conv_factory
+
+
         conv_in_channels  = in_channels
         # convolution block downwards
         conv_down_ops = []
         for i in range(depth):
-            conv = self.conv_down_ops_factory( conv_in_channels, int(conv_in_channels*gain))
+            conv = self._conv_down_factory( conv_in_channels, int(conv_in_channels*gain))
             conv_in_channels *= gain
 
             conv_down_ops.append(conv)
@@ -66,27 +93,23 @@ class ResidualUnet(nn.Module):
         ])
 
         # bottom block
-        self.conv_bottom_op = self.conv_bottom_ops_factory(conv_in_channels,int(conv_in_channels*gain))
+        self.conv_bottom_op = self._conv_bottom_factory(conv_in_channels,int(conv_in_channels*gain))
         conv_in_channels *= gain
 
         # convolution block upwards
         conv_up_ops = []
         for i in range(depth):
-            conv = self.conv_up_ops_factory( conv_in_channels, conv_in_channels//gain)
+            conv = self._conv_up_factory( conv_in_channels, conv_in_channels//gain)
             conv_in_channels //= gain
             conv_up_ops.append(conv)
 
         self.conv_up_ops = nn.ModuleList(conv_up_ops)
 
     
-    def conv_down_ops_factory(self, in_channels, out_channels):
+    # fallback implementation
+    def _conv_factory(self, in_channels, out_channels):
         return ConvBlock(in_channels=in_channels,  out_channels=out_channels)
 
-    def conv_up_ops_factory(self, in_channels, out_channels):
-        return ConvBlock(in_channels=in_channels,  out_channels=out_channels)
-
-    def conv_bottom_ops_factory(self, in_channels, out_channels):
-        return ConvBlock(in_channels=in_channels,  out_channels=out_channels)
 
 
 
