@@ -69,4 +69,4 @@ if USE_CUDA:
     trainer.cuda()
 
 # Go!
-#trainer.fit()
+trainer.fit()
