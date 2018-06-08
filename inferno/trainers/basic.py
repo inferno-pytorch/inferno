@@ -1322,7 +1322,7 @@ class Trainer(object):
                 # Apply model, compute loss
                 output, loss = self.apply_model_and_loss(inputs, target, backward=False)
             
-            if isinstance(target, list):
+            if isinstance(target, (list,tuple)):
                 batch_size = target[0].size(self._target_batch_dim)
             else:
                 batch_size = target.size(self._target_batch_dim)
