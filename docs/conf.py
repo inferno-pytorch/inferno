@@ -12,6 +12,10 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
+import matplotlib
+matplotlib.use('Agg')
+import sphinx_gallery
+
 
 import sys
 
@@ -54,6 +58,7 @@ project_root = os.path.dirname(cwd)
 # This lets us ensure that the source package is imported, and that its
 # version is used.
 sys.path.insert(0, project_root)
+
 
 import inferno
 import inferno.extensions
