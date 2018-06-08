@@ -45,7 +45,7 @@ model = nn.Sequential(
 
 # Load loaders
 train_loader, validate_loader = get_cifar10_loaders(DATASET_DIRECTORY,
-                                           sys       download=DOWNLOAD_CIFAR)
+                                        download=DOWNLOAD_CIFAR)
 
 # Build trainer
 trainer = Trainer(model) \
@@ -69,4 +69,4 @@ if USE_CUDA:
     trainer.cuda()
 
 # Go!
-trainer.fit()
+#trainer.fit()
