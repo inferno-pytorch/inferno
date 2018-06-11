@@ -126,6 +126,15 @@ class Trainer(object):
         """Get the current console."""
         return self._console
 
+    def set_console(self, console):
+        assert_(isinstance(console, Console), "`console` must be a Console object.", TypeError)
+        self._console = console
+        return self
+
+    def quiet(self):
+        self.console.toggle_progress(False)
+        return self
+
     @property
     def callbacks(self):
         """Gets the callback engine."""
@@ -1358,20 +1367,20 @@ class Trainer(object):
             # Delay SIGINTs till after computation
             with pyu.delayed_keyboard_interrupt():
                 # Wrap
-                batch = self.wrap_batch(batch, from_loader=loader_name, volatile=True)
+                batch = self.wrap_batch(batch, from_loader=loader_name)
                 # Separate
                 inputs, target = self.split_batch(batch, from_loader=loader_name)
                 # Apply model, compute loss
                 output, loss = self.apply_model_and_loss(inputs, target, backward=False)
             batch_size = target.size(self._target_batch_dim)
-            validation_loss_meter.update(loss.data[0], n=batch_size)
+            validation_loss_meter.update(thu.unwrap(loss, extract_item=True), n=batch_size)
             # Compute validation_error
             if self.metric_is_defined:
                 validation_error = self.metric(thu.unwrap(output, to_cpu=False),
                                                thu.unwrap(target, to_cpu=False))
                 if torch.is_tensor(validation_error):
                     # Convert to float
-                    validation_error = validation_error[0]
+                    validation_error = thu.unwrap(validation_error, extract_item=True)
                 self.update_state('validation_error', thu.unwrap(validation_error))
                 validation_error_meter.update(validation_error, n=batch_size)
 
