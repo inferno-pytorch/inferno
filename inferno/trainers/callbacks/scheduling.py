@@ -282,7 +282,7 @@ class AutoLR(_Scheduler):
             if not self.monitor_value_has_significantly_improved and \
                     self.out_of_patience and not self.in_cooldown:
                 if self.verbose:
-                    self.trainer.print("Monitor '{}' has not significantly improved, decaying LR."
+                    self.trainer.console.info("Monitor '{}' has not significantly improved, decaying LR."
                                        .format(self.monitor))
                 self.decay()
 
@@ -292,7 +292,7 @@ class AutoLR(_Scheduler):
             if not self.monitor_value_has_significantly_improved \
                     and self.out_of_patience and not self.in_cooldown:
                 if self.verbose:
-                    self.trainer.print("Monitor '{}' has not significantly improved "
+                    self.trainer.console.info("Monitor '{}' has not significantly improved "
                                        "({} vs. {}), decaying LR."
                                        .format(self.monitor,
                                                self._monitor_value_moving_average.val,

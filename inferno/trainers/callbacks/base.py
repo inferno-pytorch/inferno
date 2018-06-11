@@ -181,4 +181,4 @@ class Callback(object):
 
     def debug_print(self, message):
         if self._debugging:
-            self.trainer.print("[DEBUG::{}] {}".format(type(self).__name__, message))
+            self.trainer.console.debug("[{}] {}".format(type(self).__name__, message))

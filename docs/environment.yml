@@ -2,11 +2,13 @@ name: inferno_docs
 
 channels:
   - soumith
+  - anaconda
 
 dependencies:
   - python==3.5
   - pytorch>=0.1.12
   - torchvision
+  - scikit-image 
   - pip:
      - scipy>=0.13.0
      - h5py

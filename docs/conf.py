@@ -12,6 +12,10 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
+import matplotlib
+matplotlib.use('Agg')
+import sphinx_gallery
+
 
 import sys
 
@@ -55,6 +59,7 @@ project_root = os.path.dirname(cwd)
 # version is used.
 sys.path.insert(0, project_root)
 
+
 import inferno
 import inferno.extensions
 
@@ -74,7 +79,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.mathjax',
     'sphinx.ext.graphviz',
-    # 'sphinx_gallery.gen_gallery',
+    'sphinx_gallery.gen_gallery',
     'sphinxcontrib.bibtex',
     'sphinx.ext.napoleon'
 ]
