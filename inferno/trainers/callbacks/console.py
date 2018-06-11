@@ -1,8 +1,10 @@
 from datetime import datetime
 
-class StdoutConsole(object):
+
+class StdoutPrinter(object):
     def print(self, message):
         print("[+][{}] {}".format(str(datetime.now()), message))
+
 
 class Console(object):
     LEVEL_INFO = 1
@@ -10,23 +12,24 @@ class Console(object):
     LEVEL_WARNING = 3
     LEVEL_DEBUG = 4
 
-
-    def __init__(self, console=StdoutConsole()):
-        self._console = console
+    def __init__(self, printer=StdoutPrinter()):
+        self._printer = printer
         self._enabled = {self.LEVEL_INFO, self.LEVEL_PROGRESS, self.LEVEL_WARNING}
 
     def set_console(self, console):
-        self._console = console
-
+        self._printer = console
 
     def _print(self, message, level):
         if level not in self._enabled:
             return
 
-        self._console.print(message)
+        self._printer.print(message)
 
     def info(self, message):
         self._print("[INFO    ] " + message, self.LEVEL_INFO)
+
+    def print(self, message):
+        self.info(message)
 
     def progress(self, message):
         self._print("[PROGRESS] " + message, self.LEVEL_PROGRESS)
@@ -46,7 +49,9 @@ class Console(object):
 
     def toggle_info(self, state):
         self._toggle(self.LEVEL_INFO, state)
+
     def toggle_progress(self, state):
         self._toggle(self.LEVEL_PROGRESS, state)
+
     def toggle_warning(self, state):
         self._toggle(self.LEVEL_WARNING, state)

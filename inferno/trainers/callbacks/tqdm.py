@@ -1,8 +1,10 @@
 from .base import Callback
 from tqdm import tqdm
 from datetime import datetime
+from .console import Console
 
-class TQDMConsole(object):
+
+class TQDMPrinter(object):
     def __init__(self, progress):
         self._progress = progress
 
@@ -12,6 +14,12 @@ class TQDMConsole(object):
         tqdm.write(message)
         if self._progress.outer_bar is not None:
             self._progress.outer_bar.refresh()
+
+
+class TQDMConsole(Console):
+    def __init__(self):
+        super(TQDMConsole, self).__init__(printer=TQDMPrinter(TQDMProgressBar()))
+
 
 class TQDMProgressBar(Callback):
     def __init__(self, *args, **kwargs):
@@ -24,7 +32,7 @@ class TQDMProgressBar(Callback):
     def bind_trainer(self, *args, **kwargs):
         super(TQDMProgressBar, self).bind_trainer(*args, **kwargs)
         self.trainer.console.toggle_progress(False)
-        self.trainer.console.set_console(TQDMConsole(self))
+        self.trainer.console.set_console(TQDMPrinter(self))
 
     def _init_epoch_bar_train(self):
         n_batch = len(self.trainer._loader_iters['train'])
@@ -67,11 +75,9 @@ class TQDMProgressBar(Callback):
         if self.epoch_bar:
             self.epoch_bar.update(1)
 
-
     def begin_of_validation_iteration(self, **_):
         if self.epoch_bar:
             self.epoch_bar.update(1)
-
 
     def begin_of_training_run(self, **_):
         self.is_training = True
