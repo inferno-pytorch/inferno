@@ -1392,9 +1392,13 @@ class Trainer(object):
         self.console.info("Done validating. Logging results...")
 
         # Report
-        self.record_validation_results(
-            validation_loss=validation_loss_meter.avg,
-            validation_error=(validation_error_meter.avg if self.metric_is_defined else None))
+        validation_results = {
+            'validation_loss': validation_loss_meter.avg,
+            'validation_error': (validation_error_meter.avg if self.metric_is_defined else None)
+        }
+        self.record_validation_results(**validation_results)
+
+        self.console.info("Validation loss: {validation_loss}; validation error: {validation_error}".format(**validation_results))
 
         self.callbacks.call(self.callbacks.END_OF_VALIDATION_RUN,
                             validation_loss_meter=validation_loss_meter,
