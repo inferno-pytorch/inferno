@@ -9,7 +9,7 @@ from building_blocks import *
 
 
 class UnetBase(nn.Module):
-    def __init__(self, in_channels, out_channels=None, depth=3, gain=2, residual=False, p_dropout=0.1):
+    def __init__(self, in_channels, out_channels=None, depth=3, gain=2, residual=False,ndim=2, p_dropout=0.1, upsample_mode='bilinear'):
 
         super(UnetBase, self).__init__()
         self.in_channels = in_channels
@@ -17,10 +17,11 @@ class UnetBase(nn.Module):
         self.gain = int(gain)
         self.out_channels = out_channels
         self.residual = residual
+        self.ndim = ndim    
+        self.upsample_mode = upsample_mode
         if self.out_channels is None:
             self.out_channels = self.in_channels * gain
 
-        self.dropout = torch.nn.Dropout2d(p=p_dropout)
 
         conv_in_channels  = in_channels
         # convolution block downwards
@@ -33,9 +34,9 @@ class UnetBase(nn.Module):
 
         self.conv_down_ops = nn.ModuleList(conv_down_ops)
 
-        # downsample
+        # pooling  downsample
         self.downsample_ops = nn.ModuleList([
-            nn.MaxPool2d(kernel_size=2, stride=2) for i in range(depth)
+            self.pooling_op_factory() for i in range(depth)
         ])
 
         # upsample
@@ -71,6 +72,15 @@ class UnetBase(nn.Module):
         self.conv_up_ops = nn.ModuleList(conv_up_ops)
 
     
+    def pooling_op_factory(self):
+        if self.ndim == 2:
+            return nn.MaxPool2d(kernel_size=2, stride=2) 
+        else
+            return nn.MaxPool3d(kernel_size=2, stride=2) 
+
+    def upsample_op_factory(self):
+        return nn.Upsample(scale_factor=2, mode=self.upsample_mode)
+
     def conv_op_factory(self, in_channels, out_channels):
         raise NotImplementedError("conv_op_factory need to be implemented by deriving class")
 
@@ -82,6 +92,8 @@ class UnetBase(nn.Module):
 
     def conv_bottom_op_factory(self, in_channels, out_channels):
         return self.conv_op_factory(in_channels=in_channels,  out_channels=out_channels)
+
+
 
 
     def forward(self, input):
@@ -107,8 +119,7 @@ class UnetBase(nn.Module):
             # upsample
             input = self.upsample_ops[d](input)
 
-            
-
+        
             a = down_res[d]
 
             if self.residual:
