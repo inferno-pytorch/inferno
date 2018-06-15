@@ -450,6 +450,7 @@ class CenterCrop(Transform):
         y1 = int(round((h - th) / 2.))
         return image[x1:x1 + tw, y1:y1 + th]
 
+        trafo.image.RandomRotate(),
 
 class BinaryMorphology(Transform):
     """
