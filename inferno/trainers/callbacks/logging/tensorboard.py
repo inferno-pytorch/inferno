@@ -341,7 +341,14 @@ class TensorboardLogger(Logger):
             # tensorboardX borks if the number of image channels is not 3
             if image.shape[-1] == 1:
                 image = image[..., [0, 0, 0]]
+            image = self._normalize_image(image)
             self.writer.add_image(tag, img_tensor=image, global_step=step)
+
+    @staticmethod
+    def _normalize_image(image):
+        normalized_image = image - image.min()
+        normalized_image = normalized_image / normalized_image.max()
+        return normalized_image
 
     def log_histogram(self, tag, values, step, bins=1000):
         """Logs the histogram of a list/vector of values."""
