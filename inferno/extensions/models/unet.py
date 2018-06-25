@@ -75,7 +75,7 @@ class UnetBase(nn.Module):
     def pooling_op_factory(self):
         if self.ndim == 2:
             return nn.MaxPool2d(kernel_size=2, stride=2) 
-        else
+        else:
             return nn.MaxPool3d(kernel_size=2, stride=2) 
 
     def upsample_op_factory(self):
