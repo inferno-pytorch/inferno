@@ -1,11 +1,15 @@
-
 """
-Regularized MNist Example
+Regularized MNIST Example
 ================================
 
-TODO
+This example demonstrates adding and logging arbitrary regularization losses, in this case,
+L2 activity regularization and L1 weight regularization.
 
+- Add a `_losses` dictionary to any module containing loss names and values
+- Use a criterion from `inferno.extensions.criteria.regularized` that will collect and add those losses
+- Call `Trainer.observe_training_and_validation_states` to log the losses as well
 """
+
 import argparse
 import sys
 
