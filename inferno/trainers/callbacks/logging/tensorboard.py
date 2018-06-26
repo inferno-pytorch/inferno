@@ -81,9 +81,12 @@ class TensorboardLogger(Logger):
                                                               'learning_rate'}
         self._trainer_states_being_observed_while_validating = {'validation_error_averaged',
                                                                 'validation_loss_averaged'}
-        self.log_scalars_every = log_scalars_every
-        self.log_images_every = log_images_every
-        self.log_histograms_every = log_histograms_every
+        if log_scalars_every is not None:
+            self.log_scalars_every = log_scalars_every
+        if log_images_every is not None:
+            self.log_images_every = log_images_every
+        if log_histograms_every is not None:
+            self.log_histograms_every = log_histograms_every
 
     @property
     def writer(self):
