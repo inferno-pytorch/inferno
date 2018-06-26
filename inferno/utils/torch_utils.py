@@ -33,8 +33,8 @@ def unwrap(tensor_or_variable, to_cpu=True, as_numpy=False):
 
 
 def is_tensor(object_):
-    missed_tensor_classes = {torch.HalfTensor}
-    return torch.is_tensor(object_) or type(object_) in missed_tensor_classes
+    missed_tensor_classes = (torch.HalfTensor,)
+    return torch.is_tensor(object_) or isinstance(object_, missed_tensor_classes)
 
 
 def is_label_tensor(object_):
@@ -71,6 +71,10 @@ def is_matrix_tensor(object_):
 
 def is_scalar_tensor(object_):
     return is_tensor(object_) and object_.dim() <= 1 and object_.numel() == 1
+
+
+def is_vector_tensor(object_):
+    return is_tensor(object_) and object_.dim() == 1 and object_.numel() > 1
 
 
 def assert_same_size(tensor_1, tensor_2):

@@ -12,6 +12,7 @@ except ImportError:
     plt = None
 
 import numpy as np
+import warnings
 from scipy.misc import toimage
 
 from .base import Logger
@@ -28,7 +29,8 @@ class TensorboardLogger(Logger):
     """
     # Borrowed from https://gist.github.com/gyglim/1f8dfb1b5c82627ae3efcfbbadb9f514 and
     # https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/04-utils/tensorboard/logger.py
-    def __init__(self, log_directory=None, log_scalars_every=None, log_images_every=None,
+    def __init__(self, log_directory=None,
+                 log_scalars_every=None, log_images_every=None, log_histograms_every=None,
                  send_image_at_batch_indices='all', send_image_at_channel_indices='all',
                  send_volume_at_z_indices='mid'):
         """
@@ -40,6 +42,8 @@ class TensorboardLogger(Logger):
             How often scalars should be logged to Tensorboard. By default, once every iteration.
         log_images_every : str or tuple or inferno.utils.train_utils.Frequency
             How often images should be logged to Tensorboard. By default, once every iteration.
+        log_histograms_every : str or tuple or inferno.utils.train_utils.Frequency
+            How often histograms should be logged to Tensorboard. By default, once every iteration.
         send_image_at_batch_indices : list or str
             The indices of the batches to be logged. An `image_batch` usually has the shape
             (num_samples, num_channels, num_rows, num_cols). By setting this argument to say
@@ -62,6 +66,7 @@ class TensorboardLogger(Logger):
         super(TensorboardLogger, self).__init__(log_directory=log_directory)
         self._log_scalars_every = None
         self._log_images_every = None
+        self._log_histograms_every = None
         self._writer = None
         self._config = {'image_batch_indices': send_image_at_batch_indices,
                         'image_channel_indices': send_image_at_channel_indices,
@@ -76,10 +81,9 @@ class TensorboardLogger(Logger):
                                                               'learning_rate'}
         self._trainer_states_being_observed_while_validating = {'validation_error_averaged',
                                                                 'validation_loss_averaged'}
-        if log_scalars_every is not None:
-            self.log_scalars_every = log_scalars_every
-        if log_images_every is not None:
-            self.log_images_every = log_images_every
+        self.log_scalars_every = log_scalars_every
+        self.log_images_every = log_images_every
+        self.log_histograms_every = log_histograms_every
 
     @property
     def writer(self):
@@ -123,6 +127,24 @@ class TensorboardLogger(Logger):
                                            epoch_count=self.trainer.epoch_count,
                                            persistent=True)
 
+    @property
+    def log_histograms_every(self):
+        if self._log_histograms_every is None:
+            self._log_histograms_every = tru.Frequency(1, 'iterations')
+        return self._log_histograms_every
+
+    @log_histograms_every.setter
+    def log_histograms_every(self, value):
+        self._log_histograms_every = tru.Frequency.build_from(value)
+
+    @property
+    def log_histograms_now(self):
+        # Using persistent=True in a property getter is probably not a very good idea...
+        # We need to make sure that this getter is called only once per callback-call.
+        return self.log_histograms_every.match(iteration_count=self.trainer.iteration_count,
+                                               epoch_count=self.trainer.epoch_count,
+                                               persistent=True)
+
     def observe_state(self, key, observe_while='training'):
         # Validate arguments
         keyword_mapping = {'train': 'training',
@@ -146,6 +168,20 @@ class TensorboardLogger(Logger):
             raise NotImplementedError
         return self
 
+    def unobserve_state(self, key, observe_while='training'):
+        if observe_while == 'training':
+            self._trainer_states_being_observed_while_training.remove(key)
+        elif observe_while == 'validating':
+            self._trainer_states_being_observed_while_validating.remove(key)
+        else:
+            raise NotImplementedError
+        return self
+
+    def unobserve_states(self, keys, observe_while='training'):
+        for key in keys:
+            self.unobserve_state(key, observe_while=observe_while)
+        return self
+
     def observe_training_and_validation_state(self, key):
         for mode in ['training', 'validation']:
             self.observe_state('{}_{}'.format(mode, key), observe_while=mode)
@@ -160,33 +196,44 @@ class TensorboardLogger(Logger):
             self.observe_training_and_validation_state(key)
         return self
 
-    def log_object(self, tag, object_, allow_scalar_logging=True, allow_image_logging=True):
+    def log_object(self, tag, object_,
+                   allow_scalar_logging=True, allow_image_logging=True, allow_histogram_logging=True):
         assert isinstance(tag, str)
         if isinstance(object_, (list, tuple)):
             for object_num, _object in enumerate(object_):
                 self.log_object("{}_{}".format(tag, object_num),
                                 _object,
                                 allow_scalar_logging,
-                                allow_image_logging)
+                                allow_image_logging,
+                                allow_histogram_logging)
             return
         # Check whether object is a scalar
-        if tu.is_scalar_tensor(object_) and allow_scalar_logging:
-            # Log scalar
-            value = object_.float()[0]
-            self.log_scalar(tag, value, step=self.trainer.iteration_count)
-        elif isinstance(object_, (float, int)) and allow_scalar_logging:
-            value = float(object_)
-            self.log_scalar(tag, value, step=self.trainer.iteration_count)
-        elif tu.is_label_image_or_volume_tensor(object_) and allow_image_logging:
-            # Add a channel axis and log as images
-            self.log_image_or_volume_batch(tag, object_[:, None, ...],
-                                           self.trainer.iteration_count)
-        elif tu.is_image_or_volume_tensor(object_) and allow_image_logging:
-            # Log images
-            self.log_image_or_volume_batch(tag, object_, self.trainer.iteration_count)
+        if tu.is_scalar_tensor(object_):
+            if allow_scalar_logging:
+                # Log scalar
+                value = object_.float()[0]
+                self.log_scalar(tag, value, step=self.trainer.iteration_count)
+        elif isinstance(object_, (float, int)):
+            if allow_scalar_logging:
+                value = float(object_)
+                self.log_scalar(tag, value, step=self.trainer.iteration_count)
+        elif tu.is_label_image_or_volume_tensor(object_):
+            if allow_image_logging:
+                # Add a channel axis and log as images
+                self.log_image_or_volume_batch(tag, object_[:, None, ...],
+                                               self.trainer.iteration_count)
+        elif tu.is_image_or_volume_tensor(object_):
+            if allow_image_logging:
+                # Log images
+                self.log_image_or_volume_batch(tag, object_, self.trainer.iteration_count)
+        elif tu.is_vector_tensor(object_):
+            if allow_histogram_logging:
+                values = object_.data.cpu().numpy()
+                self.log_histogram(tag, values, self.trainer.iteration_count)
         else:
-            # Object is neither a scalar nor an image, there's nothing we can do
-            pass
+            # Object is neither a scalar nor an image nor a vector, there's nothing we can do
+            if tu.is_tensor(object_):
+                warnings.warn("Unsupported attempt to log tensor `{}` of shape `{}`".format(tag, object_.size()))
 
     def end_of_training_iteration(self, **_):
         log_scalars_now = self.log_scalars_now
