@@ -34,7 +34,7 @@ class UnetBase(nn.Module):
 
         self.conv_down_ops = nn.ModuleList(conv_down_ops)
 
-        # pooling  downsample
+        # pooling  downsample`
         self.downsample_ops = nn.ModuleList([
             self.pooling_op_factory() for i in range(depth)
         ])
