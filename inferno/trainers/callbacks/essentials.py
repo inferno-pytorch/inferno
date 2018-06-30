@@ -193,12 +193,14 @@ class SaveAtBestValidationScore(Callback):
         if self._ema_validation_score is None:
             self._ema_validation_score = current_validation_score
             self._best_ema_validation_score = current_validation_score
+            # If no previous score is known, assume this is the best score and save
+            self.trainer._is_iteration_with_best_validation_score = True
         else:
             self._ema_validation_score = self.smoothness * self._ema_validation_score + \
                                          (1 - self.smoothness) * current_validation_score
-        # This overrides the default behaviour, but reduces to it if smoothness = 0
-        self.trainer._is_iteration_with_best_validation_score = \
-            self._ema_validation_score < self._best_ema_validation_score
+            # This overrides the default behaviour, but reduces to it if smoothness = 0
+            self.trainer._is_iteration_with_best_validation_score = \
+                self._ema_validation_score < self._best_ema_validation_score
         # Trigger a save
         if self.trainer._is_iteration_with_best_validation_score:
             if self.verbose:
