@@ -2,10 +2,22 @@ import numpy as np
 import os
 import skimage.io
 
+# try to load io libraries (h5py and z5py)
+try:
+    import h5py
+    WITH_H5PY = True
+except ImportError:
+    WITH_H5PY = False
+
+try:
+    import z5py
+    WITH_Z5PY = True
+except ImportError:
+    WITH_Z5PY = False
+
 from ..core.base import SyncableDataset
 from ..core.base import IndexSpec
 from . import volumetric_utils as vu
-from ...utils import io_utils as iou
 from ...utils import python_utils as pyu
 
 
@@ -49,6 +61,9 @@ class VolumeLoader(SyncableDataset):
 
         self.base_sequence = self.make_sliding_windows()
 
+    # TODO this only works for numpy data, but we wanna support
+    # h5py-like datasets as well. The easiest solution for this
+    # would be to do the padding in `__getitem__` for this case
     def pad_volume(self, padding=None):
         padding = self.padding if padding is None else padding
         if padding is None:
@@ -66,6 +81,8 @@ class VolumeLoader(SyncableDataset):
                                            shuffle=self.shuffle,
                                            add_overhanging=True))
 
+    # TODO pad on the fly for datasets here ?
+    # TODO offset and check bounds for `data_slice is not None` here ?
     def __getitem__(self, index):
         # Casting to int would allow index to be IndexSpec objects.
         index = int(index)
@@ -100,8 +117,11 @@ class VolumeLoader(SyncableDataset):
         return "{}(shape={}, name={})".format(type(self).__name__, self.volume.shape, self.name)
 
 
-class HDF5VolumeLoader(VolumeLoader):
-    def __init__(self, path, path_in_h5_dataset=None, data_slice=None, transforms=None,
+# TODO this should implement contextmanager
+# baseclass for hdf5, zarr or n5 volume loaders
+class ChunkedVolumeLoader(VolumeLoader):
+    def __init__(self, file_impl, path,
+                 path_in_file=None, data_slice=None, transforms=None,
                  name=None, **slicing_config):
 
         if isinstance(path, dict):
@@ -114,14 +134,14 @@ class HDF5VolumeLoader(VolumeLoader):
         else:
             raise NotImplementedError
 
-        if isinstance(path_in_h5_dataset, dict):
+        if isinstance(path_in_file, dict):
             assert name is not None
-            assert name in path_in_h5_dataset
-            self.path_in_h5_dataset = path_in_h5_dataset.get(name)
-        elif isinstance(path_in_h5_dataset, str):
-            self.path_in_h5_dataset = path_in_h5_dataset
-        elif path_in_h5_dataset is None:
-            self.path_in_h5_dataset = None
+            assert name in path_in_file
+            self.path_in_file = path_in_file.get(name)
+        elif isinstance(path_in_file, str):
+            self.path_in_file = path_in_file
+        elif path_in_file is None:
+            self.path_in_file = None
         else:
             raise NotImplementedError
 
@@ -140,13 +160,56 @@ class HDF5VolumeLoader(VolumeLoader):
         assert 'stride' in slicing_config_for_name
 
         # Read in volume from file
-        volume = iou.fromh5(self.path, self.path_in_h5_dataset,
-                            dataslice=(tuple(self.data_slice)
-                                       if self.data_slice is not None
-                                       else None))
+        # TODO we don't read the whole file immediately, but just open the corresponding dataset
+        # however, with this implementing `data_slice` is not that trivial
+        # an option would be to move `data_slice` to `VolumeLoader` and then change its
+        # `__getitem__` accordingly; and also change the shape used for the sliding-window
+        assert data_slice is None
+        # volume = iou.fromh5(self.path, self.path_in_h5_dataset,
+        #                     dataslice=(tuple(self.data_slice)
+        #                                if self.data_slice is not None
+        #                                else None))
+        # we need to close this for h5 later
+        self.file = file_impl(self.path)
         # Initialize superclass with the volume
-        super(HDF5VolumeLoader, self).__init__(volume=volume, name=name, transforms=transforms,
-                                               **slicing_config_for_name)
+        super(ChunkedVolumeLoader, self).__init__(volume=self.file[self.path_in_file], name=name, transforms=transforms,
+                                                  **slicing_config_for_name)
+
+
+class HDF5VolumeLoader(ChunkedVolumeLoader):
+    # TODO the name `path_in_h5_dataset` does not make sense.
+    # should be `path_in_file` (or `path_in_h5_file`); change or keep for legacy?
+    def __init__(self, path, path_in_h5_dataset=None, data_slice=None, transforms=None,
+                 name=None, **slicing_config):
+        assert WITH_H5PY, "Need h5py to load volume from hdf5 file."
+        super(HDF5VolumeLoader, self).__init__(file_impl=h5py.File, path=path,
+                                               path_in_file=path_in_h5_dataset,
+                                               data_slice=data_slice, transforms=transforms,
+                                               name=name, **slicing_config)
+
+    # this is not pythonic, but we need to close the h5py file
+    def __del__(self):
+        self.file.close()
+
+
+class N5VolumeLoader(ChunkedVolumeLoader):
+    def __init__(self, path, path_in_file=None, data_slice=None, transforms=None,
+                 name=None, **slicing_config):
+        assert WITH_Z5PY, "Need z5py to load volume from N5 file."
+        super(N5VolumeLoader, self).__init__(file_impl=z5py.N5File, path=path,
+                                             path_in_file=path_in_file,
+                                             data_slice=data_slice, transforms=transforms,
+                                             name=name, **slicing_config)
+
+
+class ZarrVolumeLoader(ChunkedVolumeLoader):
+    def __init__(self, path, path_in_file=None, data_slice=None, transforms=None,
+                 name=None, **slicing_config):
+        assert WITH_Z5PY, "Need z5py to load volume from zarr file."
+        super(ZarrVolumeLoader, self).__init__(file_impl=z5py.ZarrFile, path=path,
+                                               path_in_file=path_in_file,
+                                               data_slice=data_slice, transforms=transforms,
+                                               name=name, **slicing_config)
 
 
 class TIFVolumeLoader(VolumeLoader):
