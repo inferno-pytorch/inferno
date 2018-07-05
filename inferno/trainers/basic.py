@@ -1060,7 +1060,7 @@ class Trainer(object):
         variable_batch = []
         for batch_num, _batch in enumerate(batch):
             if thu.is_tensor(_batch):
-                variable_batch.append(Variable(batch, requires_grad=requires_grad,
+                variable_batch.append(Variable(_batch, requires_grad=requires_grad,
                                                volatile=volatile))
             elif pyu.is_listlike(_batch):
                 variable_batch.append([Variable(__batch, requires_grad=requires_grad,
