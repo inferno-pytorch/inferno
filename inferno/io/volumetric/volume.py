@@ -64,7 +64,8 @@ class VolumeLoader(SyncableDataset):
                                            window_size=self.window_size,
                                            strides=self.stride,
                                            shuffle=self.shuffle,
-                                           add_overhanging=True))
+                                           add_overhanging=True,
+                                           ds=self.downsampling_ratio))
 
     def __getitem__(self, index):
         # Casting to int would allow index to be IndexSpec objects.
