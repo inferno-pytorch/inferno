@@ -3,6 +3,7 @@ from datetime import datetime
 from inspect import signature
 import os
 import shutil
+import contextlib
 
 import torch
 from numpy import inf
@@ -125,6 +126,15 @@ class Trainer(object):
     def console(self):
         """Get the current console."""
         return self._console
+
+    def set_console(self, console):
+        assert_(isinstance(console, Console), "`console` must be a Console object.", TypeError)
+        self._console = console
+        return self
+
+    def quiet(self):
+        self.console.toggle_progress(False)
+        return self
 
     @property
     def callbacks(self):
@@ -1047,8 +1057,19 @@ class Trainer(object):
         # Cast to the right dtype
         batch = self.cast(batch)
         # Second, wrap as variable
-        batch = type(batch)([Variable(_batch, requires_grad=requires_grad, volatile=volatile)
-                             for _batch in batch])
+        variable_batch = []
+        for batch_num, _batch in enumerate(batch):
+            if thu.is_tensor(_batch):
+                variable_batch.append(Variable(batch, requires_grad=requires_grad,
+                                               volatile=volatile))
+            elif pyu.is_listlike(_batch):
+                variable_batch.append([Variable(__batch, requires_grad=requires_grad,
+                                                volatile=volatile)
+                                       for __batch in _batch])
+            else:
+                raise RuntimeError(f"Was Expecting batch at index {batch_num} to be either a "
+                                   f"tensor or a list of tensors. Got {type(_batch)} instead.")
+        batch = type(batch)(variable_batch)
         return batch
 
     def next_iteration(self):
@@ -1355,28 +1376,29 @@ class Trainer(object):
 
             self.console.progress("Validating iteration {}.".format(iteration_num))
 
+            no_grad = torch.no_grad if hasattr(torch, 'no_grad') else contextlib.suppress
             # Delay SIGINTs till after computation
-            with pyu.delayed_keyboard_interrupt():
+            with pyu.delayed_keyboard_interrupt(), no_grad():
                 # Wrap
+                # FIXME The volatile=True is required for compatibility with older 0.3 code.
+                # FIXME Remove when support is deprecated.
                 batch = self.wrap_batch(batch, from_loader=loader_name, volatile=True)
                 # Separate
                 inputs, target = self.split_batch(batch, from_loader=loader_name)
                 # Apply model, compute loss
                 output, loss = self.apply_model_and_loss(inputs, target, backward=False)
-            
             if isinstance(target, (list,tuple)):
                 batch_size = target[0].size(self._target_batch_dim)
             else:
                 batch_size = target.size(self._target_batch_dim)
-
-            validation_loss_meter.update(loss.data[0], n=batch_size)
+            validation_loss_meter.update(thu.unwrap(loss, extract_item=True), n=batch_size)
             # Compute validation_error
             if self.metric_is_defined:
                 validation_error = self.metric(thu.unwrap(output, to_cpu=False),
                                                thu.unwrap(target, to_cpu=False))
                 if torch.is_tensor(validation_error):
                     # Convert to float
-                    validation_error = validation_error[0]
+                    validation_error = thu.unwrap(validation_error, extract_item=True)
                 self.update_state('validation_error', thu.unwrap(validation_error))
                 validation_error_meter.update(validation_error, n=batch_size)
 
@@ -1403,7 +1425,8 @@ class Trainer(object):
         }
         self.record_validation_results(**validation_results)
 
-        self.console.info("Validation loss: {validation_loss}; validation error: {validation_error}".format(**validation_results))
+        self.console.info("Validation loss: {validation_loss}; validation error: "
+                          "{validation_error}".format(**validation_results))
 
         self.callbacks.call(self.callbacks.END_OF_VALIDATION_RUN,
                             validation_loss_meter=validation_loss_meter,

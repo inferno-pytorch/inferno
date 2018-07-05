@@ -1,19 +1,5 @@
-try:
-    import tensorflow as tf
-except ImportError:
-    tf = None
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO, BytesIO
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    plt = None
-
+import tensorboardX as tX
 import numpy as np
-from scipy.misc import toimage
-
 from .base import Logger
 from ....utils import torch_utils as tu
 from ....utils import python_utils as pyu
@@ -21,13 +7,18 @@ from ....utils import train_utils as tru
 from ....utils.exceptions import assert_
 
 
+class TaggedImage(object):
+    def __init__(self, array, tag):
+        self.array = array
+        self.tag = tag
+
+
 class TensorboardLogger(Logger):
     """Class to enable logging of training progress to Tensorboard.
 
     Currently supports logging scalars and images.
     """
-    # Borrowed from https://gist.github.com/gyglim/1f8dfb1b5c82627ae3efcfbbadb9f514 and
-    # https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/04-utils/tensorboard/logger.py
+
     def __init__(self, log_directory=None, log_scalars_every=None, log_images_every=None,
                  send_image_at_batch_indices='all', send_image_at_channel_indices='all',
                  send_volume_at_z_indices='mid'):
@@ -57,8 +48,6 @@ class TensorboardLogger(Logger):
         Leaving log_images_every to the default (i.e. once every iteration) might generate a
         large logfile and/or slow down the training.
         """
-        assert tf is not None
-        assert plt is not None
         super(TensorboardLogger, self).__init__(log_directory=log_directory)
         self._log_scalars_every = None
         self._log_images_every = None
@@ -84,7 +73,7 @@ class TensorboardLogger(Logger):
     @property
     def writer(self):
         if self._writer is None:
-            self._writer = tf.summary.FileWriter(self.log_directory)
+            self._writer = tX.SummaryWriter(self.log_directory)
         return self._writer
 
     @property
@@ -172,7 +161,7 @@ class TensorboardLogger(Logger):
         # Check whether object is a scalar
         if tu.is_scalar_tensor(object_) and allow_scalar_logging:
             # Log scalar
-            value = object_.float()[0]
+            value = tu.unwrap(object_.float(), extract_item=True)
             self.log_scalar(tag, value, step=self.trainer.iteration_count)
         elif isinstance(object_, (float, int)) and allow_scalar_logging:
             value = float(object_)
@@ -216,12 +205,31 @@ class TensorboardLogger(Logger):
                             allow_scalar_logging=True,
                             allow_image_logging=True)
 
-    def extract_images_from_batch(self, batch):
+    def _tag_image(self, image, base_tag, prefix=None, instance_num=None, channel_num=None,
+                   slice_num=None):
+        tag = base_tag
+        if prefix is not None:
+            tag = '{}/{}'.format(base_tag, prefix)
+        if instance_num is not None:
+            tag = '{}/instance_{}'.format(tag, instance_num)
+        if channel_num is not None:
+            tag = '{}/channel_{}'.format(tag, channel_num)
+        if slice_num is not None:
+            tag = '{}/slice_{}'.format(tag, slice_num)
+        return TaggedImage(image, tag)
+
+    def extract_images_from_batch(self, batch, base_tag=None, prefix=None):
+        if base_tag is None:
+            assert_(prefix is None,
+                    "`base_tag` is not provided - `prefix` must be None in this case.",
+                    ValueError)
         # Special case when batch is a list or tuple of batches
         if isinstance(batch, (list, tuple)):
             image_list = []
-            for _batch in batch:
-                image_list.extend(self.extract_images_from_batch(_batch))
+            for batch_num, _batch in batch:
+                image_list.extend(
+                    self.extract_images_from_batch(_batch, base_tag=base_tag,
+                                                   prefix='batch_{}'.format(batch_num)))
             return image_list
         # `batch` really is a tensor from now on.
         batch_is_image_tensor = tu.is_image_tensor(batch)
@@ -252,7 +260,11 @@ class TensorboardLogger(Logger):
             raise NotImplementedError
         # Extract images from batch
         if batch_is_image_tensor:
-            image_list = [image
+            image_list = [(self._tag_image(image,
+                                           base_tag=base_tag, prefix=prefix,
+                                           instance_num=instance_num,
+                                           channel_num=channel_num)
+                           if base_tag is not None else image)
                           for instance_num, instance in enumerate(batch)
                           for channel_num, image in enumerate(instance)
                           if instance_num in batch_indices and channel_num in channel_indices]
@@ -271,7 +283,12 @@ class TensorboardLogger(Logger):
             else:
                 raise NotImplementedError
             # I'm going to hell for this.
-            image_list = [image
+            image_list = [(self._tag_image(image,
+                                           base_tag=base_tag, prefix=prefix,
+                                           instance_num=instance_num,
+                                           channel_num=channel_num,
+                                           slice_num=slice_num)
+                           if base_tag is not None else image)
                           for instance_num, instance in enumerate(batch)
                           for channel_num, volume in enumerate(instance)
                           for slice_num, image in enumerate(volume)
@@ -284,7 +301,7 @@ class TensorboardLogger(Logger):
     def log_image_or_volume_batch(self, tag, batch, step=None):
         assert pyu.is_maybe_list_of(tu.is_image_or_volume_tensor)(batch)
         step = step or self.trainer.iteration_count
-        image_list = self.extract_images_from_batch(batch)
+        image_list = self.extract_images_from_batch(batch, base_tag=tag)
         self.log_images(tag, image_list, step)
 
     def log_scalar(self, tag, value, step):
@@ -297,65 +314,46 @@ class TensorboardLogger(Logger):
         step : int
             training iteration
         """
-        summary = tf.Summary(value=[tf.Summary.Value(tag=tag,
-                                                     simple_value=value)])
-        self.writer.add_summary(summary, step)
+        self.writer.add_scalar(tag=tag, scalar_value=value, global_step=step)
 
-    def log_images(self, tag, images, step):
+    def log_images(self, tag, images, step, image_format='CHW'):
         """Logs a list of images."""
-
-        image_summaries = []
+        assert_(image_format.upper() in ['CHW', 'HWC'],
+                "Image format must be either 'CHW' or 'HWC'. Got {} instead.".format(image_format),
+                ValueError)
         for image_num, image in enumerate(images):
-            # Write the image to a string
-            try:
-                # Python 2.7
-                s = StringIO()
-                toimage(image).save(s, format="png")
-            except TypeError:
-                # Python 3.X
-                s = BytesIO()
-                toimage(image).save(s, format="png")
-            # Create an Image object
-            img_sum = tf.Summary.Image(encoded_image_string=s.getvalue(),
-                                       height=image.shape[0],
-                                       width=image.shape[1])
-            # Create a Summary value
-            image_summaries.append(tf.Summary.Value(tag='%s/%d' % (tag, image_num),
-                                                    image=img_sum))
+            if isinstance(image, TaggedImage):
+                tag = image.tag
+                image = image.array
+            else:
+                tag = "{}/{}".format(tag, image_num)
+            # image axis gymnastics
+            if image.ndim == 2:
+                # image is 2D - tensorboardX needs a channel axis in the end
+                image = image[..., None]
+            elif image.ndim == 3 and image_format.upper() == 'CHW':
+                # We have a CHW image, but need HWC.
+                image = np.moveaxis(image, 0, 2)
+            elif image.ndim == 3 and image_format.upper() == 'HWC':
+                pass
+            else:
+                raise RuntimeError
+            # tensorboardX borks if the number of image channels is not 3
+            if image.shape[-1] == 1:
+                image = image[..., [0, 0, 0]]
+            image = self._normalize_image(image)
+            self.writer.add_image(tag, img_tensor=image, global_step=step)
 
-        # Create and write Summary
-        summary = tf.Summary(value=image_summaries)
-        self.writer.add_summary(summary, step)
+    @staticmethod
+    def _normalize_image(image):
+        normalized_image = image - image.min()
+        normalized_image = normalized_image / normalized_image.max()
+        return normalized_image
 
     def log_histogram(self, tag, values, step, bins=1000):
         """Logs the histogram of a list/vector of values."""
-
-        # Create histogram using numpy
-        counts, bin_edges = np.histogram(values, bins=bins)
-
-        # Fill fields of histogram proto
-        hist = tf.HistogramProto()
-        hist.min = float(np.min(values))
-        hist.max = float(np.max(values))
-        hist.num = int(np.prod(values.shape))
-        hist.sum = float(np.sum(values))
-        hist.sum_squares = float(np.sum(values**2))
-
-        # Requires equal number as bins, where the first goes from -DBL_MAX to bin_edges[1]
-        # See https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/summary.proto#L30
-        # Thus, we drop the start of the first bin
-        bin_edges = bin_edges[1:]
-
-        # Add bin edges and counts
-        for edge in bin_edges:
-            hist.bucket_limit.append(edge)
-        for c in counts:
-            hist.bucket.append(c)
-
-        # Create and write Summary
-        summary = tf.Summary(value=[tf.Summary.Value(tag=tag, histo=hist)])
-        self.writer.add_summary(summary, step)
-        self.writer.flush()
+        # TODO
+        raise NotImplementedError
 
     def get_config(self):
         # Apparently, some SwigPyObject objects cannot be pickled - so we need to build the

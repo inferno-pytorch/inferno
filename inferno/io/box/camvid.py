@@ -164,6 +164,7 @@ class CamVid(data.Dataset):
         raise NotImplementedError
 
 
+# noinspection PyTypeChecker
 def get_camvid_loaders(root_directory, image_shape=(360, 480), labels_as_onehot=False,
                        train_batch_size=1, validate_batch_size=1, test_batch_size=1,
                        num_workers=2):
