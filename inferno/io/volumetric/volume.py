@@ -170,7 +170,7 @@ class ChunkedVolumeLoader(VolumeLoader):
         #                                if self.data_slice is not None
         #                                else None))
         # we need to close this for h5 later
-        self.file = file_impl(self.path)
+        self.file = file_impl(self.path, mode='r')
         # Initialize superclass with the volume
         super(ChunkedVolumeLoader, self).__init__(volume=self.file[self.path_in_file], name=name, transforms=transforms,
                                                   **slicing_config_for_name)
