@@ -74,6 +74,7 @@ class Trainer(object):
         self._iteration_count = 0
         self._epoch_count = 0
         self._batch_count = 0
+        self._current_mode = 'train'
 
         # GPU and dtype business
         self._use_cuda = False
@@ -88,6 +89,7 @@ class Trainer(object):
         self._validate_every = None
         self._num_validation_iterations = None
         self._target_batch_dim = 0
+        self._validation_criterion = None
         # We should exclude the zero-th epoch from validation
         self._last_validated_at_epoch = 0
         self._last_validated_at_iteration = 0
@@ -280,7 +282,8 @@ class Trainer(object):
         elif isinstance(value, dict):
             self.build_criterion(**value)
         else:
-            raise NotImplementedError
+            raise RuntimeError(f"Criterion can either be set to a string, callable or a dict. "
+                               f"Got {type(value).__name__} instead.")
 
     def build_criterion(self, method, **kwargs):
         """
@@ -338,6 +341,86 @@ class Trainer(object):
     @property
     def criterion_is_defined(self):
         return self._criterion is not None
+
+    @property
+    def validation_criterion(self):
+        if self._validation_criterion is None:
+            return self.criterion
+        else:
+            return self._validation_criterion
+
+    @validation_criterion.setter
+    def validation_criterion(self, value):
+        if isinstance(value, str) or callable(value):
+            self.build_validation_criterion(value)
+        elif isinstance(value, dict):
+            self.build_validation_criterion(**value)
+        else:
+            raise RuntimeError(f"Validation criterion can either be set to a string, callable "
+                               f"or a dict. Got {type(value).__name__} instead.")
+
+    def build_validation_criterion(self, method, **kwargs):
+        """
+        Builds the loss criterion for validation.
+
+        Parameters
+        ----------
+        method : str or callable or torch.nn.Module
+            Name of the criterion when str, criterion class when callable, or a
+            torch.nn.Module instance. If a name is provided, this method looks
+            for the criterion in `torch.nn`.
+        kwargs : dict
+            Keyword arguments to the criterion class' constructor if applicable.
+
+        Returns
+        -------
+        Trainer
+            self.
+
+        Raises
+        ------
+        AssertionError
+            if criterion is not found.
+        NotImplementedError
+            if method is neither a str nor a callable.
+        """
+        if isinstance(method, str):
+            # Look for criteria in torch
+            criterion_class = getattr(torch.nn, method, None)
+            if criterion_class is None:
+                # Look for it in extensions
+                criterion_class = getattr(criteria, method, None)
+            assert criterion_class is not None, "Criterion {} not found.".format(method)
+        elif callable(method) and isinstance(method, type):
+            criterion_class = method
+        elif isinstance(method, torch.nn.Module):
+            self._validation_criterion = method
+            return self
+        else:
+            raise NotImplementedError
+        self._validation_criterion = criterion_class(**kwargs)
+        # Transfer criterion to GPU if required. This is necessary for e.g. weighted loss,
+        # where the weight is registered as a buffer.
+        # The criterion is to be cuda'ed only if the model is on CUDA (self._use_cuda) and
+        # the base_device is not CPU (ordinal -1).
+        if hasattr(self, '_base_device_ordinal'):
+            # This is to not break old checkpoints
+            base_device_ordinal = self._base_device_ordinal
+        else:
+            base_device_ordinal = None
+        if self._use_cuda and base_device_ordinal != 1:
+            self._validation_criterion.cuda()
+        return self
+
+    def validation_criterion_is_train_criterion(self, yes=True):
+        if yes:
+            # This will cause the property to return train criterion
+            self._validation_criterion = None
+        return self
+
+    @property
+    def validation_criterion_is_defined(self):
+        return self._validation_criterion is not None
 
     @property
     def metric(self):
@@ -444,6 +527,7 @@ class Trainer(object):
 
     def eval_mode(self):
         """Set model, criterion and metric to eval mode"""
+        self._current_mode = 'eval'
         self.model.eval()
         if self.criterion_is_defined and isinstance(self.criterion, torch.nn.Module):
             self.criterion.eval()
@@ -453,6 +537,7 @@ class Trainer(object):
 
     def train_mode(self):
         """Set model, criterion and metric to train mode"""
+        self._current_mode = 'train'
         self.model.train()
         if self.criterion_is_defined and isinstance(self.criterion, torch.nn.Module):
             self.criterion.train()
@@ -1221,7 +1306,11 @@ class Trainer(object):
 
         return self
 
-    def apply_model_and_loss(self, inputs, target, backward=True):
+    def apply_model_and_loss(self, inputs, target, backward=True, mode=None):
+        if mode is None:
+            mode = self._current_mode
+            assert_(mode in ['train', 'eval'],
+                    f"`mode` must be one of ['train', 'eval'], got {mode} instead.", ValueError)
         # Compute prediction
         prediction = self.apply_model(*inputs)
         # Compute loss
@@ -1229,7 +1318,12 @@ class Trainer(object):
         if (isinstance(self.criterion, torch.nn.Module) and
                 'trainer' in signature(self.criterion.forward).parameters):
             kwargs['trainer'] = self
-        loss = self.criterion(prediction, target, **kwargs)
+        if mode == 'train':
+            loss = self.criterion(prediction, target, **kwargs)
+        elif mode == 'eval':
+            loss = self.validation_criterion(prediction, target, **kwargs)
+        else:
+            raise ValueError
         if backward:
             # Backprop if required
             loss.backward()
@@ -1270,7 +1364,8 @@ class Trainer(object):
                 # Separate inputs from targets
                 inputs, target = self.split_batch(batch, from_loader='train')
                 # Apply model, compute loss and backprop
-                prediction, loss = self.apply_model_and_loss(inputs, target, backward=True)
+                prediction, loss = self.apply_model_and_loss(inputs, target, backward=True,
+                                                             mode='train')
             # Compute metric
             if self.metric_is_defined and self.evaluate_metric_now:
                 self._last_metric_evaluated_at_epoch = self._epoch_count
@@ -1386,7 +1481,8 @@ class Trainer(object):
                 # Separate
                 inputs, target = self.split_batch(batch, from_loader=loader_name)
                 # Apply model, compute loss
-                output, loss = self.apply_model_and_loss(inputs, target, backward=False)
+                output, loss = self.apply_model_and_loss(inputs, target, backward=False,
+                                                         mode='eval')
             if isinstance(target, (list,tuple)):
                 batch_size = target[0].size(self._target_batch_dim)
             else:
