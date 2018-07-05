@@ -3,6 +3,7 @@ from datetime import datetime
 from inspect import signature
 import os
 import shutil
+import contextlib
 
 import torch
 from numpy import inf
@@ -1056,8 +1057,19 @@ class Trainer(object):
         # Cast to the right dtype
         batch = self.cast(batch)
         # Second, wrap as variable
-        batch = type(batch)([Variable(_batch, requires_grad=requires_grad, volatile=volatile)
-                             for _batch in batch])
+        variable_batch = []
+        for batch_num, _batch in enumerate(batch):
+            if thu.is_tensor(_batch):
+                variable_batch.append(Variable(batch, requires_grad=requires_grad,
+                                               volatile=volatile))
+            elif pyu.is_listlike(_batch):
+                variable_batch.append([Variable(__batch, requires_grad=requires_grad,
+                                                volatile=volatile)
+                                       for __batch in _batch])
+            else:
+                raise RuntimeError(f"Was Expecting batch at index {batch_num} to be either a "
+                                   f"tensor or a list of tensors. Got {type(_batch)} instead.")
+        batch = type(batch)(variable_batch)
         return batch
 
     def next_iteration(self):
@@ -1364,10 +1376,13 @@ class Trainer(object):
 
             self.console.progress("Validating iteration {}.".format(iteration_num))
 
+            no_grad = torch.no_grad if hasattr(torch, 'no_grad') else contextlib.suppress
             # Delay SIGINTs till after computation
-            with pyu.delayed_keyboard_interrupt():
+            with pyu.delayed_keyboard_interrupt(), no_grad():
                 # Wrap
-                batch = self.wrap_batch(batch, from_loader=loader_name)
+                # FIXME The volatile=True is required for compatibility with older 0.3 code.
+                # FIXME Remove when support is deprecated.
+                batch = self.wrap_batch(batch, from_loader=loader_name, volatile=True)
                 # Separate
                 inputs, target = self.split_batch(batch, from_loader=loader_name)
                 # Apply model, compute loss
