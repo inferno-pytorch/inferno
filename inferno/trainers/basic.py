@@ -1372,7 +1372,10 @@ class Trainer(object):
                 inputs, target = self.split_batch(batch, from_loader=loader_name)
                 # Apply model, compute loss
                 output, loss = self.apply_model_and_loss(inputs, target, backward=False)
-            batch_size = target.size(self._target_batch_dim)
+            if isinstance(target, (list,tuple)):
+                batch_size = target[0].size(self._target_batch_dim)
+            else:
+                batch_size = target.size(self._target_batch_dim)
             validation_loss_meter.update(thu.unwrap(loss, extract_item=True), n=batch_size)
             # Compute validation_error
             if self.metric_is_defined:
@@ -1401,9 +1404,14 @@ class Trainer(object):
         self.console.info("Done validating. Logging results...")
 
         # Report
-        self.record_validation_results(
-            validation_loss=validation_loss_meter.avg,
-            validation_error=(validation_error_meter.avg if self.metric_is_defined else None))
+        validation_results = {
+            'validation_loss': validation_loss_meter.avg,
+            'validation_error': (validation_error_meter.avg if self.metric_is_defined else None)
+        }
+        self.record_validation_results(**validation_results)
+
+        self.console.info("Validation loss: {validation_loss}; validation error: "
+                          "{validation_error}".format(**validation_results))
 
         self.callbacks.call(self.callbacks.END_OF_VALIDATION_RUN,
                             validation_loss_meter=validation_loss_meter,

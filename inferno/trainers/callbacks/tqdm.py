@@ -36,7 +36,7 @@ class TQDMProgressBar(Callback):
 
     def _init_epoch_bar_train(self):
         n_batch = len(self.trainer._loader_iters['train'])
-        self.epoch_bar = tqdm(total=n_batch, position=1)
+        self.epoch_bar = tqdm(total=n_batch, position=1, dynamic_ncols=True)
         self.epoch_bar.update(self.trainer._batch_count)
         self.epoch_bar.set_description("Training epoch %d" % self.trainer._epoch_count)
 
@@ -49,9 +49,9 @@ class TQDMProgressBar(Callback):
 
     def begin_of_fit(self, max_num_epochs, **_):
         if isinstance(max_num_epochs, int):
-            self.outer_bar = tqdm(total=max_num_epochs, position=0)
+            self.outer_bar = tqdm(total=max_num_epochs, position=0, dynamic_ncols=True)
         else:
-            self.outer_bar = tqdm(total=1000, position=0)
+            self.outer_bar = tqdm(total=1000, position=0, dynamic_ncols=True)
         self.outer_bar.set_description("Epochs")
 
     def end_of_fit(self, **_):
@@ -94,7 +94,7 @@ class TQDMProgressBar(Callback):
         if not nmax:
             nmax = num_iterations_in_generator
 
-        self.epoch_bar = tqdm(total=nmax, position=1)
+        self.epoch_bar = tqdm(total=nmax, position=1, dynamic_ncols=True)
         self.epoch_bar.set_description("Validating epoch %d" % (last_validated_at_epoch-1))
 
     def end_of_validation_run(self, **_):
