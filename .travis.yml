@@ -20,6 +20,7 @@ install:
   - conda install -c conda-forge networkx=1.11 h5py numpy scikit-image scipy pyyaml dill cython
   - conda install -c pytorch $PYTORCH_CONDA
   - conda install -c $TORCHVISION_CHANNEL $TORCHVISION_CONDA
+  - pip install tensorboardX
 
 deploy:
   provider: pypi
