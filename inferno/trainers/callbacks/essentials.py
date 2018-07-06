@@ -14,8 +14,8 @@ class NaNDetector(Callback):
         # Extract scalar
         if tu.is_tensor(training_loss):
             training_loss = training_loss.float()[0]
-        if np.isnan(training_loss):
-            raise RuntimeError("NaNs detected!")
+        if not np.isfinite(training_loss):
+            raise RuntimeError("Loss is not finite (loss={})!".format(training_loss))
 
 
 class PersistentSave(Callback):
