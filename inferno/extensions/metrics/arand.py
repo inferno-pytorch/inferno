@@ -12,11 +12,11 @@ class ArandScore(Metric):
     [1]: http://journal.frontiersin.org/article/10.3389/fnana.2015.00142/full#h3
     """
     def forward(self, prediction, target):
-        assert(len(prediction) == len(target))
-        segmentation = prediction.cpu().numpy()
-        target = target.cpu().numpy()
-        return np.mean([adapted_rand(segmentation[i], target[i])[0]
-                        for i in range(len(prediction))])
+        assert(len(prediction) == len(target)), "%i, %i" % (len(prediction), len(target))
+        prediction = prediction.cpu().numpy().squeeze()
+        target = target.cpu().numpy().squeeze()
+        return np.mean([adapted_rand(pred, targ)[0]
+                        for pred, targ in zip(prediction, target)])
 
 
 class ArandError(ArandScore):
@@ -78,8 +78,8 @@ def adapted_rand(seg, gt):
 
     # number of nonzero pixels in original segA
     n = segA.size
-    n_labels_A = np.amax(segA) + 1
-    n_labels_B = np.amax(segB) + 1
+    n_labels_A = int(np.amax(segA)) + 1
+    n_labels_B = int(np.amax(segB)) + 1
 
     ones_data = np.ones(n)
     p_ij = sparse.csr_matrix((ones_data, (segA.ravel(), segB.ravel())),
