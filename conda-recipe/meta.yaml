@@ -30,6 +30,7 @@ requirements:
         - h5py
         - dill
         - networkx 1.11
+        - tensorboardx
 
 test:
     imports:

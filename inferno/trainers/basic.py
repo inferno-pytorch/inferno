@@ -1340,7 +1340,7 @@ class Trainer(object):
         # self.next_iteration().
         iteration_num = 0
         while True:
-            if num_iterations is not None and iteration_num > num_iterations:
+            if num_iterations is not None and iteration_num >= num_iterations:
                 self.console.info("Finished {} iterations. Breaking...".format(num_iterations))
                 break
             # Break if break callback asks us to
@@ -1453,7 +1453,7 @@ class Trainer(object):
 
 
         while True:
-            if num_iterations is not None and iteration_num > num_iterations:
+            if num_iterations is not None and iteration_num >= num_iterations:
                 break
 
             self.callbacks.call(self.callbacks.BEGIN_OF_VALIDATION_ITERATION,
