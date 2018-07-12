@@ -4,6 +4,7 @@ from inspect import signature
 import os
 import shutil
 import contextlib
+import warnings
 
 import torch
 from numpy import inf
@@ -1145,12 +1146,20 @@ class Trainer(object):
         variable_batch = []
         for batch_num, _batch in enumerate(batch):
             if thu.is_tensor(_batch):
-                variable_batch.append(Variable(_batch, requires_grad=requires_grad,
-                                               volatile=volatile))
+                # This supresses the volatile deprecated warning
+                # TODO remove after Pytorch 1.0
+                with warnings.catch_warnings():
+                    warnings.simplefilter('ignore')
+                    variable_batch.append(Variable(_batch, requires_grad=requires_grad,
+                                                   volatile=volatile))
             elif pyu.is_listlike(_batch):
-                variable_batch.append([Variable(__batch, requires_grad=requires_grad,
-                                                volatile=volatile)
-                                       for __batch in _batch])
+                # This supresses the volatile deprecated warning
+                # TODO remove after Pytorch 1.0
+                with warnings.catch_warnings():
+                    warnings.simplefilter('ignore')
+                    variable_batch.append([Variable(__batch, requires_grad=requires_grad,
+                                                    volatile=volatile)
+                                           for __batch in _batch])
             else:
                 raise RuntimeError(f"Was Expecting batch at index {batch_num} to be either a "
                                    f"tensor or a list of tensors. Got {type(_batch)} instead.")
