@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.ndimage import zoom
 from scipy.ndimage.filters import gaussian_filter
-from scipy.ndimage.interpolation import map_coordinates
+from scipy.ndimage.interpolation import map_coordinates, rotate
 from scipy.ndimage.morphology import binary_dilation, binary_erosion
 from skimage.exposure import adjust_gamma
 from warnings import catch_warnings, simplefilter
@@ -45,8 +45,9 @@ class Scale(Transform):
         """
         Parameters
         ----------
-        output_image_shape : list or tuple or int
+        output_image_shape : list or tuple or int or None
             Target size of the output image. Aspect ratio may not be preserved.
+            If output_image_shape is None, image input size will be preserved
         interpolation_order : int
             Interpolation order for the spline interpolation.
         zoom_kwargs : dict
@@ -55,11 +56,12 @@ class Scale(Transform):
             Keyword arguments for the superclass.
         """
         super(Scale, self).__init__(**super_kwargs)
-        output_image_shape = (output_image_shape, output_image_shape) \
-            if isinstance(output_image_shape, int) else tuple(output_image_shape)
-        assert_(len(output_image_shape) == 2,
-                "`output_image_shape` must be an integer or a tuple of length 2.",
-                ValueError)
+        if output_image_shape is not None:
+            output_image_shape = (output_image_shape, output_image_shape) \
+                if isinstance(output_image_shape, int) else tuple(output_image_shape)
+            assert_(len(output_image_shape) == 2,
+                    "`output_image_shape` must be an integer or a tuple of length 2.",
+                    ValueError)
         self.output_image_shape = output_image_shape
         self.interpolation_order = interpolation_order
         self.zoom_kwargs = {} if zoom_kwargs is None else dict(zoom_kwargs)
@@ -507,3 +509,85 @@ class BinaryErosion(BinaryMorphology):
         super(BinaryErosion, self).__init__(mode='erode', num_iterations=num_iterations,
                                             morphology_kwargs=morphology_kwargs,
                                             **super_kwargs)
+
+
+class FineRandomRotations(Transform):
+    """ Random Rotation with random uniform angle distribution
+        batch_function applies to rotation of input and label image
+
+        Parameters
+        ----------
+        angle_range : int
+                      maximum angle of rotation
+        axes        : tuple, default (1,2) assuming that channel axis is 0
+                      pair of axis that define the 2d-plane of rotation
+        mask_label  : constant value that is used to pad the label images
+    """
+    def __init__(self, angle_range, axes=(1,2), mask_label=0, **super_kwargs):
+        super(FineRandomRotations, self).__init__(**super_kwargs)
+        self.angle_range = angle_range
+        self.axes = axes
+        self.ml = mask_label
+
+    def build_random_variables(self):
+        np.random.seed()
+        self.set_random_variable('angle',
+                 np.random.uniform(low=-self.angle_range,
+                                   high=self.angle_range))
+
+    def batch_function(self, image):
+        angle = self.get_random_variable('angle')
+        return rotate(image[0], angle, axes=self.axes, reshape=False), \
+               rotate(image[1], angle, axes=self.axes, order=0, cval=self.ml, reshape=False)
+
+
+class RandomScaleSegmentation(Transform):
+    """ Random Scale input and label image
+
+        Parameters
+        ----------
+        scale_range : tuple of floats defining (min, max) scales
+                      maximum angle of rotation
+        resize  : if True, image is cropped or padded to the original size
+    """
+    def __init__(self, scale_range, resize=True, pad_const=0, **super_kwargs):
+        super(RandomScaleSegmentation, self).__init__(**super_kwargs)
+        self.scale_range = scale_range
+        self.resize = resize
+        self.pad_const = pad_const
+
+    def build_random_variables(self):
+        np.random.seed()
+        self.set_random_variable('seg_scale',
+                 np.random.uniform(low=self.scale_range[0],
+                                   high=self.scale_range[1]))
+
+    def batch_function(self, image):
+        scale = self.get_random_variable('seg_scale')
+        image_shape = np.array(image[0].shape[1:])
+
+        with catch_warnings():
+            simplefilter('ignore')
+            img = np.stack([zoom(x, scale, order=3) for x in image[0]])
+            seg = np.stack([zoom(x, scale, order=0) for x in image[1]])
+        new_shape = np.array(img.shape[1:])
+
+        if self.resize:
+            if scale > 1.:
+                # pad image to original size
+                crop_l = (new_shape - image_shape) // 2
+                crop_r = new_shape - image_shape - crop_l
+                cropping = [slice(None)] + [slice(c[0] if c[0] > 0 else None,
+                                                 -c[1] if c[1] > 0 else None) for c in zip(crop_l, crop_r)]
+                img = img[cropping]
+                seg = seg[cropping]
+            else:
+                # crop image to original size
+                pad_l = (image_shape - new_shape) // 2
+                pad_r = image_shape - new_shape - pad_l
+                padding = [(0,0)] + list(zip(pad_l, pad_r))
+                img = np.pad(img, padding, 'constant', constant_values=self.pad_const)
+                
+                seg = np.pad(seg, padding, 'constant', constant_values=self.pad_const)
+
+        return img, seg

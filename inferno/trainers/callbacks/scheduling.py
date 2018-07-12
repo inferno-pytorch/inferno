@@ -224,7 +224,7 @@ class AutoLR(_Scheduler):
     @property
     def in_cooldown(self):
         if self.cooldown_duration is not None:
-            return not self.patience.match(**self.duration_since_last_decay)
+            return not self.cooldown_duration.match(**self.duration_since_last_decay)
         else:
             return False
 
