@@ -9,7 +9,7 @@ from .building_blocks import ResBlock, DenseBlock
 
 
 class UnetBase(nn.Module):
-    def __init__(self, in_channels, out_channels=None, depth=3, gain=2, residual=False,ndim=2, p_dropout=0.1, upsample_mode='bilinear'):
+    def __init__(self, in_channels, out_channels=None, ndim, depth=3, gain=2, residual=False, upsample_mode='bilinear'):
 
         super(UnetBase, self).__init__()
         self.in_channels = in_channels
@@ -34,7 +34,7 @@ class UnetBase(nn.Module):
 
         self.conv_down_ops = nn.ModuleList(conv_down_ops)
 
-        # pooling  downsample`
+        # pooling  downsample
         self.downsample_ops = nn.ModuleList([
             self.pooling_op_factory() for i in range(depth)
         ])
@@ -139,7 +139,7 @@ class UnetBase(nn.Module):
 
 
 class ResBlockUnet(UnetBase):
-    def __init__(self, in_channels, ndim=2, out_channels=None, depth=3, gain=2, residual=False, activated=True, **kwargs):
+    def __init__(self, in_channels, ndim, out_channels=None, depth=3, gain=2, residual=False, activated=True, **kwargs):
         self.activated = activated
         self.ndim = ndim
         super(ResBlockUnet, self).__init__(
@@ -159,19 +159,19 @@ class ResBlockUnet(UnetBase):
         else:
             return ResBlock(in_channels=in_channels, out_channels=out_channels, ndim=self.ndim, activated=True)
 
-class DenseBlockUnet(UnetBase):
-    def __init__(self, in_channels, ndim=2,out_channels=None, depth=3, gain=2, residual=False):
-        super(DenseBlockUnet, self).__init__(
-            in_channels=in_channels, 
-            ndim=ndim,
-            out_channels=out_channels, 
-            depth=depth, 
-            gain=gain, 
-            residual=residual
-        )
+# class DenseBlockUnet(UnetBase):
+#     def __init__(self, in_channels, ndim,out_channels=None, depth=3, gain=2, residual=False):
+#         super(DenseBlockUnet, self).__init__(
+#             in_channels=in_channels, 
+#             ndim=ndim,
+#             out_channels=out_channels, 
+#             depth=depth, 
+#             gain=gain, 
+#             residual=residual
+#         )
 
 
-    def conv_op_factory(self, in_channels, out_channels):
-        return DenseBlock(in_channels=in_channels, out_channels=out_channels)
+#     def conv_op_factory(self, in_channels, out_channels):
+#         return DenseBlock(in_channels=in_channels, out_channels=out_channels)
 
 
