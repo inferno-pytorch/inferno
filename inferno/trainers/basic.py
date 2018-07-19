@@ -1497,6 +1497,7 @@ class Trainer(object):
             else:
                 batch_size = target.size(self._target_batch_dim)
             validation_loss_meter.update(thu.unwrap(loss, extract_item=True), n=batch_size)
+
             # Compute validation_error
             if self.metric_is_defined:
                 validation_error = self.metric(thu.unwrap(output, to_cpu=False),
