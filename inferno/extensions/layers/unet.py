@@ -9,7 +9,7 @@ from .building_blocks import ResBlock, DenseBlock
 
 
 class UnetBase(nn.Module):
-    def __init__(self, in_channels, out_channels=None, ndim, depth=3, gain=2, residual=False, upsample_mode='bilinear'):
+    def __init__(self, in_channels,ndim, out_channels=None, depth=3, gain=2, residual=False, upsample_mode=None):
 
         super(UnetBase, self).__init__()
         self.in_channels = in_channels
@@ -21,6 +21,19 @@ class UnetBase(nn.Module):
         self.upsample_mode = upsample_mode
         if self.out_channels is None:
             self.out_channels = self.in_channels * gain
+
+        if upsample_mode is None:
+            if ndim == 2:
+                self.upsample_mode = 'bilinear'
+            elif ndim == 3:
+                self.upsample_mode = 'nearest'
+            else:
+                raise RuntimeError("unet is only implemented for 2 and 3 not for %d-d"%self.ndim)
+
+
+        upsample_kwargs = dict(scale_factor=2, mode=self.upsample_mode)
+        if self.upsample_mode == 'bilinear':
+            upsample_kwargs['align_corners'] = False
 
 
         conv_in_channels  = in_channels
@@ -39,9 +52,11 @@ class UnetBase(nn.Module):
             self.pooling_op_factory() for i in range(depth)
         ])
 
-        # upsample
+        
+
+        # upsample 
         self.upsample_ops = nn.ModuleList([
-            nn.Upsample(scale_factor=2, mode=self.upsample_mode) for i in range(depth)
+            nn.Upsample(**upsample_kwargs) for i in range(depth)
         ])
 
         # bottom block
