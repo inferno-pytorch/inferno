@@ -6,7 +6,7 @@ from .python_utils import delayed_keyboard_interrupt
 from .exceptions import assert_, ShapeError, NotUnwrappableError
 
 
-def unwrap(tensor_or_variable, to_cpu=True, as_numpy=False):
+def unwrap(tensor_or_variable, to_cpu=True, as_numpy=False, extract_item=False):
     if isinstance(tensor_or_variable, (list, tuple)):
         return type(tensor_or_variable)([unwrap(_t, to_cpu=to_cpu, as_numpy=as_numpy)
                                          for _t in tensor_or_variable])
@@ -28,6 +28,11 @@ def unwrap(tensor_or_variable, to_cpu=True, as_numpy=False):
     # Convert to numpy if required
     if as_numpy:
         return tensor.cpu().numpy()
+    elif extract_item:
+        try:
+            return tensor.item()
+        except AttributeError:
+            return tensor[0]
     else:
         return tensor
 

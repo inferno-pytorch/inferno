@@ -14,8 +14,8 @@ class NaNDetector(Callback):
         # Extract scalar
         if tu.is_tensor(training_loss):
             training_loss = training_loss.float()[0]
-        if np.isnan(training_loss):
-            raise RuntimeError("NaNs detected!")
+        if not np.isfinite(training_loss):
+            raise RuntimeError("Loss is not finite (loss={})!".format(training_loss))
 
 
 class PersistentSave(Callback):
@@ -193,27 +193,29 @@ class SaveAtBestValidationScore(Callback):
         if self._ema_validation_score is None:
             self._ema_validation_score = current_validation_score
             self._best_ema_validation_score = current_validation_score
+            # If no previous score is known, assume this is the best score and save
+            self.trainer._is_iteration_with_best_validation_score = True
         else:
             self._ema_validation_score = self.smoothness * self._ema_validation_score + \
                                          (1 - self.smoothness) * current_validation_score
-        # This overrides the default behaviour, but reduces to it if smoothness = 0
-        self.trainer._is_iteration_with_best_validation_score = \
-            self._ema_validation_score < self._best_ema_validation_score
+            # This overrides the default behaviour, but reduces to it if smoothness = 0
+            self.trainer._is_iteration_with_best_validation_score = \
+                self._ema_validation_score < self._best_ema_validation_score
         # Trigger a save
         if self.trainer._is_iteration_with_best_validation_score:
             if self.verbose:
                 self.trainer.console.info("Current smoothed validation score {} is better "
-                                   "than the best smoothed validation score {}."
-                                   .format(self._ema_validation_score,
-                                           self._best_ema_validation_score))
+                                          "than the best smoothed validation score {}."
+                                          .format(self._ema_validation_score,
+                                                  self._best_ema_validation_score))
             self._best_ema_validation_score = self._ema_validation_score
             self.trainer.save_now = True
         else:
             if self.verbose:
                 self.trainer.console.info("Current smoothed validation score {} is not better "
-                                   "than the best smoothed validation score {}."
-                                   .format(self._ema_validation_score,
-                                           self._best_ema_validation_score))
+                                          "than the best smoothed validation score {}."
+                                          .format(self._ema_validation_score,
+                                                  self._best_ema_validation_score))
         # Done
 
 
