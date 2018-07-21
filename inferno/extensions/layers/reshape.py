@@ -112,8 +112,8 @@ class Concatenate(nn.Module):
 class ResizeAndConcatenate(nn.Module):
     """
     Resize input tensors spatially (to a specified target size) before concatenating
-    them along the channel dimension. The downsampling mode can be specified
-    ('average' or 'max'), but the upsampling is always 'nearest'.
+    them along the a given `dim`ension (channel, i.e. 1 by default). The downsampling mode can
+    be specified ('average' or 'max'), but the upsampling is always 'nearest'.
     """
 
     POOL_MODE_MAPPING = {'avg': 'avg',
@@ -121,7 +121,7 @@ class ResizeAndConcatenate(nn.Module):
                          'mean': 'avg',
                          'max': 'max'}
 
-    def __init__(self, target_size, pool_mode='average'):
+    def __init__(self, target_size, pool_mode='average', dim=1):
         super(ResizeAndConcatenate, self).__init__()
         self.target_size = target_size
         assert_(pool_mode in self.POOL_MODE_MAPPING.keys(),
@@ -129,6 +129,7 @@ class ResizeAndConcatenate(nn.Module):
                 .format(self.POOL_MODE_MAPPING.keys(), pool_mode),
                 ValueError)
         self.pool_mode = pool_mode
+        self.dim = dim
 
     def forward(self, *inputs):
         dim = inputs[0].dim()
@@ -151,7 +152,7 @@ class ResizeAndConcatenate(nn.Module):
                     ShapeError)
             resized_inputs.append(resize_function(input, target_size))
         # Concatenate along the channel axis
-        concatenated = torch.cat(tuple(resized_inputs), 1)
+        concatenated = torch.cat(tuple(resized_inputs), self.dim)
         # Done
         return concatenated
 
