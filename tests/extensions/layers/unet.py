@@ -16,7 +16,7 @@ class ResidualUnetTest(unittest.TestCase):
         in_channels = 3
 
         x = torch.autograd.Variable(torch.rand(1,in_channels,64,64))
-        model = unet.ResBlockUnet(in_channels=in_channels, ndim=2)
+        model = unet.ResBlockUNet(in_channels=in_channels, out_channels=6, dim=2)
         xx = model(x)
         out_size = xx.size()
         self.assertEqual(list(out_size), [1,in_channels*2, 64, 64])
@@ -25,11 +25,11 @@ class ResidualUnetTest(unittest.TestCase):
 
         in_channels = 3
 
-        x = torch.autograd.Variable(torch.rand(1,in_channels,64,32,64))
-        model = unet.ResBlockUnet(in_channels=in_channels, ndim=3)
+        x = torch.autograd.Variable(torch.rand(1,in_channels,64,32,80))
+        model = unet.ResBlockUNet(in_channels=in_channels, out_channels=6, dim=3)
         xx = model(x)
         out_size = xx.size()
-        self.assertEqual(list(out_size), [1,in_channels*2, 64,32, 64])
+        self.assertEqual(list(out_size), [1,in_channels*2, 64,32, 80])
 
 
 if __name__ == '__main__':

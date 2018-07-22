@@ -3,44 +3,57 @@ import torch
 import torch.nn as nn
 
 
-from .building_blocks import ResBlock, DenseBlock
+from .building_blocks import ResBlock
+
+
+
+# lil helper
+def ensure_dict_kwagrs(kwargs, msg=None):
+    if kwargs is None:
+        return dict()
+    elif isinstance(kwargs, dict):
+        return dict()
+    else:
+        if msg is None:
+            raise RuntimeError("value passed as keyword argument dict is neither none nor a  dict")
+        else:
+            raise RuntimeError("%s"%str(msg))
 
 
 
 
-class UnetBase(nn.Module):
-    def __init__(self, in_channels,ndim, out_channels=None, depth=3, gain=2, residual=False, upsample_mode=None):
+class UNetBase(nn.Module):
+    def __init__(self, in_channels, out_channels, dim, depth=3, gain=2, residual=False, upsample_mode=None):
 
-        super(UnetBase, self).__init__()
-        self.in_channels = in_channels
+        super(UNetBase, self).__init__()
+        self.in_channels = int(in_channels)
+        self.out_channels = int(out_channels)
+        self.dim = int(dim)    
         self.depth = int(depth)
         self.gain = int(gain)
-        self.out_channels = out_channels
-        self.residual = residual
-        self.ndim = ndim    
+        self.residual = bool(residual)
         self.upsample_mode = upsample_mode
-        if self.out_channels is None:
-            self.out_channels = self.in_channels * gain
 
         if upsample_mode is None:
-            if ndim == 2:
+            if dim == 2:
                 self.upsample_mode = 'bilinear'
-            elif ndim == 3:
+            elif dim == 3:
                 self.upsample_mode = 'nearest'
             else:
-                raise RuntimeError("unet is only implemented for 2 and 3 not for %d-d"%self.ndim)
+                raise RuntimeError("unet is only implemented for 2d and 3d not for %d-d"%self.dim)
 
 
-        upsample_kwargs = dict(scale_factor=2, mode=self.upsample_mode)
+        self.upsample_kwargs = dict(scale_factor=2, mode=self.upsample_mode)
         if self.upsample_mode == 'bilinear':
-            upsample_kwargs['align_corners'] = False
+            self.upsample_kwargs['align_corners'] = False
 
 
         conv_in_channels  = in_channels
         # convolution block downwards
         conv_down_ops = []
         for i in range(depth):
-            conv = self.conv_down_op_factory( conv_in_channels, int(conv_in_channels*gain))
+            conv = self.conv_down_op_factory(in_channels=conv_in_channels, out_channels=conv_in_channels*self.gain,
+                i=i)
             conv_in_channels *= gain
 
             conv_down_ops.append(conv)
@@ -49,19 +62,19 @@ class UnetBase(nn.Module):
 
         # pooling  downsample
         self.downsample_ops = nn.ModuleList([
-            self.pooling_op_factory() for i in range(depth)
+            self.downsample_op_factory(i) for i in range(depth)
         ])
 
         
 
         # upsample 
         self.upsample_ops = nn.ModuleList([
-            nn.Upsample(**upsample_kwargs) for i in range(depth)
+            self.upsample_op_factory(i) for i in range(depth)
         ])
 
         # bottom block
         #self.conv_bottom_op = self.conv_bottom_op_factory(conv_in_channels,int(conv_in_channels*gain))
-        self.conv_bottom_op = self.conv_bottom_op_factory(conv_in_channels,conv_in_channels)
+        self.conv_bottom_op = self.conv_bottom_op_factory(conv_in_channels, conv_in_channels)
         #conv_in_channels *= gain
 
         # convolution block upwards
@@ -76,43 +89,44 @@ class UnetBase(nn.Module):
 
             # are we in the last block?
             if i + 1 == depth:
-                conv = self.conv_up_op_factory( fac*conv_in_channels, self.out_channels, last=True)
+                conv = self.conv_up_op_factory( in_channels=fac*conv_in_channels, out_channels=self.out_channels, i=i)
                 conv_in_channels //= gain
                 conv_up_ops.append(conv)
             else:
-
-                conv = self.conv_up_op_factory( fac*conv_in_channels, conv_in_channels//gain, last=False)
+                conv = self.conv_up_op_factory(in_channels=fac*conv_in_channels, out_channels=conv_in_channels//gain, i=i)
                 conv_in_channels //= gain
                 conv_up_ops.append(conv)
 
         self.conv_up_ops = nn.ModuleList(conv_up_ops)
 
     
-    def pooling_op_factory(self):
-        if self.ndim == 2:
+    def downsample_op_factory(self, i):
+        if self.dim == 2:
             return nn.MaxPool2d(kernel_size=2, stride=2) 
         else:
             return nn.MaxPool3d(kernel_size=2, stride=2) 
 
-    def upsample_op_factory(self):
-        return nn.Upsample(scale_factor=2, mode=self.upsample_mode)
+    def upsample_op_factory(self, i):
+        return nn.Upsample(**self.upsample_kwargs)
 
     def conv_op_factory(self, in_channels, out_channels, last):
         raise NotImplementedError("conv_op_factory need to be implemented by deriving class")
 
-    def conv_down_op_factory(self, in_channels, out_channels):
-        return self.conv_op_factory(in_channels=in_channels,  out_channels=out_channels, last=False)
+    def conv_down_op_factory(self, in_channels, out_channels, i):
+        return self.conv_op_factory(in_channels=in_channels, out_channels=out_channels, last=False)
 
-    def conv_up_op_factory(self, in_channels, out_channels, last):
-        return self.conv_op_factory(in_channels=in_channels,  out_channels=out_channels, last=last)
+    def conv_up_op_factory(self, in_channels, out_channels, i):
+        is_very_last_conv = bool(i+1 == self.depth)
+        return self.conv_op_factory(in_channels=in_channels, out_channels=out_channels, last=is_very_last_conv)
 
     def conv_bottom_op_factory(self, in_channels, out_channels):
-        return self.conv_op_factory(in_channels=in_channels,  out_channels=out_channels, last=False)
-
-
-
+        return self.conv_op_factory(in_channels=in_channels, out_channels=out_channels, last=False)
 
     def forward(self, input):
+
+        # collect all outputs
+        side_out = []
+
         assert input.size(1) == self.in_channels
         down_res = []
 
@@ -128,6 +142,9 @@ class UnetBase(nn.Module):
         input = self.conv_bottom_op(input)
 
         down_res = list(reversed(down_res))
+
+        # the first 
+        side_out.append(input)
 
         # upwards
         for d in range(self.depth):
@@ -153,40 +170,31 @@ class UnetBase(nn.Module):
 
 
 
-class ResBlockUnet(UnetBase):
-    def __init__(self, in_channels, ndim, out_channels=None, depth=3, gain=2, residual=False, activated=True, **kwargs):
+class ResBlockUNet(UNetBase):
+    def __init__(self, in_channels, dim, out_channels, unet_kwargs=None, 
+                 res_block_kwargs=None, activated=True
+        ):
+
+
+        self.dim = dim
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.res_block_kwargs = res_block_kwargs
+        
+        self.unet_kwargs      = ensure_dict_kwagrs(unet_kwargs,      "unet_kwargs must be a dict or None")
+        self.res_block_kwargs = ensure_dict_kwagrs(res_block_kwargs, "res_block_kwargs must be a dict or None")
         self.activated = activated
-        self.ndim = ndim
-        super(ResBlockUnet, self).__init__(
+        super(ResBlockUNet, self).__init__(
             in_channels=in_channels, 
-            ndim=ndim,
+            dim=dim,
             out_channels=out_channels, 
-            depth=depth, 
-            gain=gain, 
-            residual=residual,
-            **kwargs
+            **self.unet_kwargs
         )
 
         
     def conv_op_factory(self, in_channels, out_channels, last):
-        if self.activated==False and last:
-            return ResBlock(in_channels=in_channels, out_channels=out_channels, ndim=self.ndim, activated=False)
-        else:
-            return ResBlock(in_channels=in_channels, out_channels=out_channels, ndim=self.ndim, activated=True)
-
-# class DenseBlockUnet(UnetBase):
-#     def __init__(self, in_channels, ndim,out_channels=None, depth=3, gain=2, residual=False):
-#         super(DenseBlockUnet, self).__init__(
-#             in_channels=in_channels, 
-#             ndim=ndim,
-#             out_channels=out_channels, 
-#             depth=depth, 
-#             gain=gain, 
-#             residual=residual
-#         )
-
-
-#     def conv_op_factory(self, in_channels, out_channels):
-#         return DenseBlock(in_channels=in_channels, out_channels=out_channels)
-
+        activated = not last or self.activated
+        return ResBlock(in_channels=in_channels, out_channels=out_channels, 
+                             dim=self.dim, activated=activated,
+                             **self.res_block_kwargs)
 
