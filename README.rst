@@ -8,7 +8,7 @@ Inferno
 .. image:: https://img.shields.io/pypi/v/inferno.svg
         :target: https://pypi.python.org/pypi/inferno-pytorch
 
-.. image:: https://img.shields.io/travis/infern-pytorch/inferno.svg
+.. image:: https://travis-ci.org/inferno-pytorch/inferno.svg?branch=master
         :target: https://travis-ci.org/inferno-pytorch/inferno
 
 .. image:: https://readthedocs.org/projects/inferno-pytorch/badge/?version=latest
