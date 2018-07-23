@@ -9,7 +9,7 @@ Inferno
         :target: https://pypi.python.org/pypi/inferno-pytorch
 
 .. image:: https://img.shields.io/travis/infern-pytorch/inferno.svg
-        :target: https://travis-ci.org/inferno-pytorch/inferno
+        :target: https://travis-ci.org/inferno-pytorch/inferno.svg?branch=master
 
 .. image:: https://readthedocs.org/projects/inferno-pytorch/badge/?version=latest
         :target: http://inferno-pytorch.readthedocs.io/en/latest/?badge=latest
