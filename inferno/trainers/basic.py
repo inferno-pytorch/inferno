@@ -516,7 +516,7 @@ class Trainer(object):
         elif isinstance(method, str):
             assert hasattr(metrics, method), \
                 "Could not find the metric '{}'.".format(method)
-            self._metric = getattr(metrics, method)()
+            self._metric = getattr(metrics, method)(**kwargs)
         else:
             raise NotImplementedError
         return self
