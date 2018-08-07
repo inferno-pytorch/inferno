@@ -2,19 +2,18 @@ from torch.nn import Module,ModuleList,ELU
 from inferno.extensions.layers.convolutional import ConvELU2D, Conv2D,ConvELU3D, Conv3D,ConvActivation
 import torch 
 import copy
+import sys
 
 class ResBlockBase(Module):
-    def __init__(self, in_channels, out_channels, size=2, force_skip_op=False, activated=True):
+    def __init__(self, in_channels, out_channels, dim,  size=2, force_skip_op=False, activated=True):
         super(ResBlockBase, self).__init__()
         self.in_channels = int(in_channels)
         self.out_channels = int(out_channels)
         self.size = int(size)
         self.activated = bool(activated)
         self.force_skip_op = bool(force_skip_op)
+        self.dim = int(dim)
 
-
-
-    def build_model(self):
 
         if self.in_channels != self.out_channels or self.force_skip_op:
             self.activated_skip_op = self.activated_skip_op_factory(in_channels=self.in_channels, out_channels=self.out_channels)
@@ -48,7 +47,16 @@ class ResBlockBase(Module):
         return nn.ReLU()
 
     def forward(self, input):
-        assert input.size(1) == self.in_channels
+
+        if input.size(1) != self.in_channels : 
+            raise RuntimeError("wrong number of channels: expected %d, got %d"%
+                (self.in_channels, input.size(1))) 
+
+        if input.dim() != self.dim + 2 : 
+            raise RuntimeError("wrong number of dim: expected %d, got %d"%
+                (self.dim+2, input.dim())) 
+
+
 
         if self.in_channels != self.out_channels or self.force_skip_op:
             skip_res = self.activated_skip_op(input)
@@ -61,9 +69,8 @@ class ResBlockBase(Module):
         for i in  range(self.size):
             res = self.conv_ops[i](res)
             assert res.size(1)  == self.out_channels
-            if i < self.size:
+            if i + 1 < self.size:
                 res = self.activation_ops[i](res)
-            input = res
 
         
         non_activated =  skip_res + res
@@ -76,19 +83,15 @@ class ResBlockBase(Module):
 
 class ResBlock(ResBlockBase):
     def __init__(self, in_channels, out_channels, dim, size=2, activated=True, activation='ReLU', batchnorm=True, force_skip_op=False, conv_kwargs=None):
-        
-        super(ResBlock, self).__init__(
-            in_channels=in_channels, 
-            out_channels=out_channels, 
-            size=size, 
-            force_skip_op=force_skip_op,
-            activated=activated,
-        ) 
-
-        self.dim = dim
-        self.batchnorm = batchnorm 
-
-
+    
+        # trick to store  nn-module before call of super
+        # => we put it in a list
+        if isinstance(activation, str):
+            self.activation_op = [getattr(torch.nn, activation)()]
+        elif isinstance(activation, torch.nn.Module):
+            self.activation_op = [activation]
+        else:
+            raise RuntimeError("activation must be a striong or a torch.nn.Module")
 
         # keywords for conv
         if conv_kwargs is None:
@@ -102,7 +105,10 @@ class ResBlock(ResBlockBase):
         else:
             raise RuntimeError("conv_kwargs must be either None or a dict")
         self.conv_kwargs = conv_kwargs
-   
+
+        self.dim = dim
+        self.batchnorm = batchnorm 
+
 
         self.conv_1x1_kwargs = dict(
             kernel_size=1, dim=dim, activation=None,
@@ -112,41 +118,31 @@ class ResBlock(ResBlockBase):
 
         
 
-        if isinstance(activation, str):
-            self.activation_op = getattr(torch.nn, activation)()
-        elif isinstance(activation, torch.nn.Module):
-            self.activation_op = activation
-        else:
-            raise RuntimeError("activation must be a striong or a torch.nn.Module")
 
-        # we cannot build the model directly 
-        # in the constructor of the base class
-        # since :
-        # - super(ResBlock, self).__init__() needs
-        #   to be called before any assignments of submodules:
-        #   smth. like `self.activation = kwargs['activation']`
-        #   works only after the superinit 
-        # - the factory functions like activated_skip_op_factory \
-        #   need to access the submodules =>
-        #   therefore superinit needs to be called before
-        #   any call of ***_factory.
-        # - The _factories also need to call members
-        #   which only exist in this deriving class,
-        #   and those member can be nn-modules. => these 
-        #   are not yet ready in super(ResBlock, self).__init__() call
-        #   since we HAVE to make these assignments after the superinit 
-        # - => this is why we need this build_model 
-        #   function
-        self.build_model()
+
+        super(ResBlock, self).__init__(
+            in_channels=in_channels, 
+            out_channels=out_channels, 
+            dim=dim,
+            size=size, 
+            force_skip_op=force_skip_op,
+            activated=activated,
+        ) 
+
+
+
+   
+
+
 
 
     def activated_skip_op_factory(self, in_channels, out_channels):
         conv_op = ConvActivation(in_channels=in_channels, out_channels=out_channels, **self.conv_1x1_kwargs)
         if self.batchnorm:
             batchnorm_op = self.batchnorm_op_factory(in_channels=out_channels)
-            return torch.nn.Sequential(conv_op, batchnorm_op, self.activation_op)
+            return torch.nn.Sequential(conv_op, batchnorm_op, self.activation_op[0])
         else:
-            return torch.nn.Sequential(conv_op, self.activation_op)
+            return torch.nn.Sequential(conv_op, self.activation_op[0])
 
     def nonactivated_conv_op_factory(self, in_channels, out_channels, index):
         conv_op = ConvActivation(in_channels=in_channels, out_channels=out_channels, **self.conv_kwargs)
@@ -157,7 +153,7 @@ class ResBlock(ResBlockBase):
             return conv_op
 
     def activation_op_factory(self, index):
-        return self.activation_op
+        return self.activation_op[0]
 
     def batchnorm_op_factory(self, in_channels):
         bn_cls_name = 'BatchNorm{}d'.format(int(self.dim))
