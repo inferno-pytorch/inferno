@@ -80,8 +80,8 @@ print(out.size())
 A Custom UNet
 ================================
 
-This example should illustrate how chain
-multiple residual unets
+This example should illustrate how create
+a custom UNet by deriving from UNetBase
 """
 
 class MySimple2DUnet(unet.UNetBase):
