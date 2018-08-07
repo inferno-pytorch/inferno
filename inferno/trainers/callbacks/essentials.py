@@ -13,7 +13,7 @@ class NaNDetector(Callback):
         training_loss = self.trainer.get_state('training_loss')
         # Extract scalar
         if tu.is_tensor(training_loss):
-            training_loss = training_loss.float()[0]
+            training_loss = tu.unwrap(training_loss, extract_item=True)
         if not np.isfinite(training_loss):
             raise RuntimeError("Loss is not finite (loss={})!".format(training_loss))
 
