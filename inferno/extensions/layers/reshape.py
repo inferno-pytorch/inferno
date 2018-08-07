@@ -9,6 +9,7 @@ __all__ = ['View', 'AsMatrix', 'Flatten',
            'As3D', 'As2D',
            'Concatenate', 'Cat',
            'ResizeAndConcatenate', 'PoolCat',
+           'GlobalMeanPooling', 'GlobalMaxPooling',
            'Sum', 'SplitChannels']
 
 
@@ -128,7 +129,7 @@ class ResizeAndConcatenate(nn.Module):
                 "`pool_mode` must be one of {}, got {} instead."
                 .format(self.POOL_MODE_MAPPING.keys(), pool_mode),
                 ValueError)
-        self.pool_mode = pool_mode
+        self.pool_mode = self.POOL_MODE_MAPPING.get(pool_mode)
         self.dim = dim
 
     def forward(self, *inputs):
@@ -152,7 +153,10 @@ class ResizeAndConcatenate(nn.Module):
                     ShapeError)
             resized_inputs.append(resize_function(input, target_size))
         # Concatenate along the channel axis
-        concatenated = torch.cat(tuple(resized_inputs), self.dim)
+        if len(resized_inputs) > 1:
+            concatenated = torch.cat(tuple(resized_inputs), self.dim)
+        else:
+            concatenated = resized_inputs[0]
         # Done
         return concatenated
 
@@ -165,6 +169,18 @@ class Cat(Concatenate):
 class PoolCat(ResizeAndConcatenate):
     """Alias for `ResizeAndConcatenate`, just to annoy snarky web developers."""
     pass
+
+
+class GlobalMeanPooling(ResizeAndConcatenate):
+    """Global mean pooling layer."""
+    def __init__(self):
+        super(GlobalMeanPooling, self).__init__((1, 1), 'average')
+
+
+class GlobalMaxPooling(ResizeAndConcatenate):
+    """Global max pooling layer."""
+    def __init__(self):
+        super(GlobalMaxPooling, self).__init__((1, 1), 'max')
 
 
 class Sum(nn.Module):
