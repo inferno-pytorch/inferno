@@ -12,6 +12,28 @@ from ...utils.math_utils import max_allowed_ds_steps
 
 class UNetBase(nn.Module):
 
+    """ Base class for implementing UNets.
+        The depth and dimension of the UNet is flexible.
+        The deriving classes must implement
+        `conv_op_factory` and can implement
+        `upsample_op_factory` and 
+        `downsample_op_factory`.
+
+  
+    Attributes:
+        in_channels (int): Description
+        out_channels (int): Description
+        dim (int): Spatial dimension of data (must be 2 or 3)
+        depth (int): How many down-sampling / up-sampling steps
+            shall be performed
+        gain (int): Multiplicative increase of channels while going down in the UNet.
+            The same factor is used to decrease the number of channels while 
+            going up in the UNet.
+        residual (bool): If residual is true, the output of the down-streams
+            are added to the up-stream results.
+            Otherwise the results are concatenated.
+    """
+
     def __init__(self, in_channels, out_channels, dim, depth=3, gain=2, residual=False, upsample_mode=None):
 
         super(UNetBase, self).__init__()
@@ -287,7 +309,7 @@ class ResBlockUNet(UNetBase):
 
 
     def conv_op_factory(self, in_channels, out_channels, part, index):
-        
+
         # is this the very last convolutional block?
         very_last = part == 'up' and index + 1 == self.depth
 
