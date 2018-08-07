@@ -287,6 +287,7 @@ class ResBlockUNet(UNetBase):
 
 
     def conv_op_factory(self, in_channels, out_channels, part, index):
+        
         # is this the very last convolutional block?
         very_last = part == 'up' and index + 1 == self.depth
 
