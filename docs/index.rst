@@ -12,6 +12,7 @@ Contents:
    examples
    modules
    contributing
+   dev_readme
    inferno-apidoc/modules
    authors
    history

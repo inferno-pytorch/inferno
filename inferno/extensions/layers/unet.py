@@ -8,6 +8,9 @@ from .building_blocks import ResBlock
 from ...utils.python_utils import require_dict_kwagrs
 from ...utils.math_utils import max_allowed_ds_steps
 
+__all__ = ['UNetBase',
+           'ResBlockUNet']
+
 
 
 class UNetBase(nn.Module):
