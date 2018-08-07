@@ -54,6 +54,7 @@ class Trainer(object):
         self._model = None
         self._optimizer = None
         self._criterion = None
+        self._retain_graph = False
 
         # Metric evaluation
         self._metric = None
@@ -205,6 +206,15 @@ class Trainer(object):
     @property
     def model_is_defined(self):
         return self._model is not None
+
+    @property
+    def retain_graph(self):
+        return self._retain_graph
+
+    @retain_graph.setter
+    def retain_graph(self, value):
+        assert isinstance(value, bool)
+        self._retain_graph = value
 
     @property
     def optimizer(self):
@@ -1335,7 +1345,9 @@ class Trainer(object):
             raise ValueError
         if backward:
             # Backprop if required
-            loss.backward()
+            # retain_graph option is needed for some custom
+            # loss functions like malis, False per default
+            loss.backward(retain_graph=self.retain_graph)
         return prediction, loss
 
     def train_for(self, num_iterations=None, break_callback=None):
