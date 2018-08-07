@@ -1593,8 +1593,8 @@ class Trainer(object):
 
         # Save the state dictionary
         torch.save(self.get_config(exclude_loader=exclude_loader),
-                   checkpoint_path,
-                   pickle_module=dill)
+                   checkpoint_path)
+                   # pickle_module=dill)
 
         self.callbacks.call(self.callbacks.END_OF_SAVE,
                             save_to_directory=self._save_to_directory,
