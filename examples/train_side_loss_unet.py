@@ -158,7 +158,7 @@ if USE_CUDA:
     trainer.cuda()
 
 # Go!
-trainer.fit()
+#trainer.fit()
 
 
 # predict:
@@ -168,13 +168,17 @@ trainer\
 .bind_loader('validate', validate_loader)
 trainer.eval_mode()
 
-
-trainer.cuda()
+if USE_CUDA:
+    trainer.cuda()
 
 # look at an example
 for x,y in test_loader:
     if USE_CUDA:
         x = x.cuda()
+
+    ###############################
+    #TODO show all side outs
+    ##############################
     yy = trainer.apply_model(x)[-1]
     yy = nn.functional.softmax(yy,dim=1)
     yy = unwrap(yy, as_numpy=True, to_cpu=True)
