@@ -42,12 +42,7 @@ model = nn.Sequential(
 train_loader, test_loader, validate_loader = get_binary_blob_loaders(
     train_batch_size=3,
     length=512, # <= size of the images
-    gaussian_noise_sigma=1.5 # <= how noise are the images
-)
 
-
-# smaller number of iterations on readthedocs server
-max_num_epochs =  40
 
 # Build trainer
 trainer = Trainer(model) \
@@ -57,7 +52,7 @@ trainer = Trainer(model) \
 .validate_every((10, 'epochs')) \
 .save_every((10, 'epochs')) \
 .save_to_directory(SAVE_DIRECTORY) \
-.set_max_num_epochs(max_num_epochs) \
+.set_max_num_epochs(40) \
 
 # Bind loaders
 trainer \

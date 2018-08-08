@@ -58,6 +58,10 @@ class UNetBase(nn.Module):
         self.__store_conv_bottom = False
         self.__store_conv_up = []
 
+        # number of channels per side output
+        self.n_channels_per_output = []
+        
+
         # members to hold actual nn.Modules / nn.ModuleLists
         self.__conv_down_ops = None
         self.__conv_up_ops = None
@@ -74,10 +78,12 @@ class UNetBase(nn.Module):
         # of conv block shall be used as side output.
         # If only a module is returned, this is an implicit `False`.
         # This function eases the adding of factory results to lists
-        def add_conv_op(res, conv_list=None, store_res_list=None):
+        def add_conv_op(res, conv_list, store_res_list, out_channels):
             if isinstance(res, tuple):
                 conv_list.append(res[0])
                 store_res_list.append(res[1])
+                if res[1]:
+                    self.n_channels_per_output.append(out_channels)
             else:
                 conv_list.append(res)
                 store_res_list.append(False)
@@ -97,7 +103,7 @@ class UNetBase(nn.Module):
             factory_res = self.conv_op_factory(in_channels=current_in_channels, 
                                               out_channels=current_in_channels * self.gain,  
                                               part='down',index=i)
-            add_conv_down_op(factory_res)
+            add_conv_down_op(factory_res, out_channels=current_in_channels * self.gain)
 
             # increase the number of channels
             current_in_channels *= gain
@@ -131,6 +137,8 @@ class UNetBase(nn.Module):
             out_channels=current_in_channels, part='bottom', index=0)
         if isinstance(factory_res, tuple):
             self.__conv_bottom_op, self.__store_conv_bottom = factory_res
+            if self.__store_conv_bottom:
+                self.n_channels_per_output.append(current_in_channels)
         else:
             self.__conv_bottom_op = factory_res
             self.__store_conv_bottom = False
@@ -154,7 +162,7 @@ class UNetBase(nn.Module):
 
             factory_res = self.conv_op_factory(in_channels=fac*current_in_channels, 
                                               out_channels=out_c, part='up', index=i)
-            add_conv_up_op(factory_res)
+            add_conv_up_op(factory_res, out_channels=out_c)
 
             # decrease the number of input_channels
             current_in_channels //= gain
@@ -163,8 +171,16 @@ class UNetBase(nn.Module):
         self.__conv_up_ops = nn.ModuleList(conv_up_ops)
 
         # the last block needs to be stored in any case
-        self.__store_conv_up[-1] = True
+        if not self.__store_conv_up[-1]:
+            self.__store_conv_up[-1] = True
+            self.n_channels_per_output.append(self.out_channels)
 
+        print(len(self.n_channels_per_output))
+
+        
+
+        assert len(self.n_channels_per_output) == self.__store_conv_down.count(True) + \
+            self.__store_conv_up.count(True)   + int(self.__store_conv_bottom)
         
 
     
