@@ -8,9 +8,9 @@ from .building_blocks import ResBlock
 from ...utils.python_utils import require_dict_kwagrs
 from ...utils.math_utils import max_allowed_ds_steps
 
-__all__ = ['UNetBase',
-           'ResBlockUNet']
 
+__all__ = ['UNetBase', 'ResBlockUNet']
+_all = __all__
 
 
 class UNetBase(nn.Module):
@@ -297,9 +297,18 @@ class UNetBase(nn.Module):
     def conv_op_factory(self, in_channels, out_channels, part, index):
         raise NotImplementedError("conv_op_factory need to be implemented by deriving class")
 
-
-
 class ResBlockUNet(UNetBase):
+    """TODO.
+
+        ACCC
+    
+    Attributes:
+        activated (TYPE): Description
+        dim (TYPE): Description
+        res_block_kwargs (TYPE): Description
+        side_out_parts (TYPE): Description
+        unet_kwargs (TYPE): Description
+    """
     def __init__(self, in_channels, dim, out_channels, unet_kwargs=None, 
                  res_block_kwargs=None, activated=True,
                  side_out_parts=None

@@ -4,6 +4,14 @@ inferno.io.box package
 Submodules
 ----------
 
+inferno.io.box.binary\_blobs module
+-----------------------------------
+
+.. automodule:: inferno.io.box.binary_blobs
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 inferno.io.box.camvid module
 ----------------------------
 

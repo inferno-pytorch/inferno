@@ -11,7 +11,7 @@ __all__ = ['View', 'AsMatrix', 'Flatten',
            'ResizeAndConcatenate', 'PoolCat',
            'GlobalMeanPooling', 'GlobalMaxPooling',
            'Sum', 'SplitChannels']
-
+_all = __all__
 
 class View(nn.Module):
     def __init__(self, as_shape):
@@ -113,8 +113,8 @@ class Concatenate(nn.Module):
 class ResizeAndConcatenate(nn.Module):
     """
     Resize input tensors spatially (to a specified target size) before concatenating
-    them along the a given `dim`ension (channel, i.e. 1 by default). The downsampling mode can
-    be specified ('average' or 'max'), but the upsampling is always 'nearest'.
+    them along the a given dim (channel, i.e. 1 by default). The down-sampling mode can
+    be specified ('average' or 'max'), but the up-sampling is always 'nearest'.
     """
 
     POOL_MODE_MAPPING = {'avg': 'avg',

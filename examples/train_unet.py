@@ -11,27 +11,21 @@ in conjunction with a unet, we use a toy dataset here
 import torch.nn as nn
 from inferno.io.box.binary_blobs import get_binary_blob_loaders
 from inferno.trainers.basic import Trainer
-from inferno.trainers.callbacks.logging.tensorboard import TensorboardLogger
-
 from inferno.extensions.layers.building_blocks import ResBlock
 from inferno.extensions.layers.unet import ResBlockUNet
+from inferno.extensions.layers.unet import foo
 from inferno.utils.torch_utils import unwrap
-
+from inferno.utils.python_utils import ensure_dir
 import pylab
 
-# lil helper to make sure dirs exits
-import os
-def ensure_dir(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    return directory
+
 
 # change directories to your needs
 LOG_DIRECTORY = ensure_dir('log')
 SAVE_DIRECTORY = ensure_dir('save')
 DATASET_DIRECTORY = ensure_dir('dataset')
 
-
+# should cuda be used
 USE_CUDA = True
 
 # Build a residual unet where the last layer is not activated

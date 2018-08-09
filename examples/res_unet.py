@@ -9,19 +9,7 @@ as a layer
 import torch
 import inferno.extensions.layers.unet as unet
 
-from inferno.extensions.layers.convolutional import ConvELU2D,ConvELU3D,ConvSigmoid2D
-
-
-
-
-
-
-
-
-
-
-
-
+from inferno.extensions.layers import ConvELU2D, ConvSigmoid2D
 
 
 
@@ -29,7 +17,7 @@ from inferno.extensions.layers.convolutional import ConvELU2D,ConvELU3D,ConvSigm
 # a 2D data with 10 input channels
 x = torch.rand(1, 10, 64,64)
 x = torch.autograd.Variable(x)
-b
+
 # a unet with resiudal blocks
 model = unet.ResBlockUNet(in_channels=10, out_channels=20, dim=2)
 

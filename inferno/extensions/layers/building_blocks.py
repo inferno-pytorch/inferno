@@ -4,6 +4,9 @@ import torch
 import copy
 import sys
 
+__all__ = ['ResBlockBase', 'ResBlock']
+_all = __all__
+
 class ResBlockBase(Module):
     def __init__(self, in_channels, out_channels, dim,  size=2, force_skip_op=False, activated=True):
         super(ResBlockBase, self).__init__()
@@ -78,7 +81,6 @@ class ResBlockBase(Module):
             return self.activation_ops[-1](non_activated)
         else:
             return non_activated
-
 
 
 class ResBlock(ResBlockBase):

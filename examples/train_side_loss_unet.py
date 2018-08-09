@@ -1,26 +1,41 @@
 """
-Train UNet Example
+Train Side Loss UNet Example
 ================================
 
-This example should illustrate how to use the trainer class
-in conjunction with a unet, we use a toy dataset here
+In this example a UNet with side supervision
+and auxiliary loss  implemented
 
 """
 
+##############################################################################
+# Imports needed for this example
 import torch
 import torch.nn as nn
 from inferno.io.box.binary_blobs import get_binary_blob_loaders
 from inferno.trainers.basic import Trainer
-from inferno.trainers.callbacks.logging.tensorboard import TensorboardLogger
 
-from inferno.extensions.layers.convolutional import ConvELU2D, Conv2D,ConvELU3D, Conv3D,ConvActivation
+from inferno.extensions.layers.convolutional import  Conv2D
 from inferno.extensions.layers.building_blocks import ResBlock
 from inferno.extensions.layers.unet import ResBlockUNet
 from inferno.utils.torch_utils import unwrap
+from inferno.utils.python_utils import ensure_dir
 import pylab
 
 
-
+##############################################################################
+# To create a UNet with side loss we create a new nn.Module class
+# which has a ResBlockUNet as member.
+# The ResBlockUNet is configured such that the results of the 
+# bottom convolution and all the results of the up-stream
+# convolutions are returned as (side)-output.
+# a 1x1 convolutions is used to give the side outputs
+# the right number of out_channels and UpSampling is
+# used to resize all side-outputs to the full resolution
+# of the input. These side `side-predictions` are
+# returned by our MySideLossUNet.
+# Furthermore, all  `side-predictions` are concatenated
+# and feed trough another two residual blocks to make
+# the final prediction.
 class MySideLossUNet(nn.Module):
     def __init__(self, in_channels, out_channels, depth=3):
         super(MySideLossUNet, self).__init__()
@@ -83,7 +98,11 @@ class MySideLossUNet(nn.Module):
         # return everything
         return preds + (final_res,)
 
-
+##############################################################################
+# We use a custom loss functions which applied CrossEntropyLoss
+# to all side outputs.
+# The side outputs are weighted in a quadratic fashion and added up
+# into a single value
 class MySideLoss(nn.Module):
     """Wrap a criterion. Collect regularization losses from model and combine with wrapped criterion.
     """
@@ -94,7 +113,6 @@ class MySideLoss(nn.Module):
 
         w = 1.0
         l = None
-
 
     def forward(self, predictions, target):
         w = 1.0
@@ -110,16 +128,8 @@ class MySideLoss(nn.Module):
 
             
 
-
-
-# lil helper to make sure dirs exits
-import os
-def ensure_dir(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    return directory
-
-# change directories to your needs
+##############################################################################
+# Training boilerplate (see :ref:`sphx_glr_auto_examples_trainer.py`)
 LOG_DIRECTORY = ensure_dir('log')
 SAVE_DIRECTORY = ensure_dir('save')
 DATASET_DIRECTORY = ensure_dir('dataset')
@@ -158,43 +168,57 @@ if USE_CUDA:
     trainer.cuda()
 
 # Go!
-#trainer.fit()
+trainer.fit()
 
+
+##############################################################################
+# Predict with the trained network
+# and visualize the results
 
 # predict:
 trainer.load(best=True)
-trainer\
-.bind_loader('train', train_loader)\
-.bind_loader('validate', validate_loader)
+trainer.bind_loader('train', train_loader)
+trainer.bind_loader('validate', validate_loader)
 trainer.eval_mode()
 
 if USE_CUDA:
     trainer.cuda()
 
 # look at an example
-for x,y in test_loader:
+for img,target in test_loader:
     if USE_CUDA:
-        x = x.cuda()
+        img = img.cuda()
 
-    ###############################
-    #TODO show all side outs
-    ##############################
-    yy = trainer.apply_model(x)[-1]
-    yy = nn.functional.softmax(yy,dim=1)
-    yy = unwrap(yy, as_numpy=True, to_cpu=True)
-    x  = unwrap(x,  as_numpy=True, to_cpu=True)
-    y  = unwrap(y, as_numpy=True, to_cpu=True)
+    # softmax on each of the prediction
+    preds = trainer.apply_model(img)
+    preds = [nn.functional.softmax(pred,dim=1)        for pred in preds]
+    preds = [unwrap(pred, as_numpy=True, to_cpu=True) for pred in preds]
+    img    = unwrap(img,  as_numpy=True, to_cpu=True)
+    target  = unwrap(target, as_numpy=True, to_cpu=True)
 
-    batch_size = yy.shape[0]
+    n_plots = len(preds) + 2
+    batch_size = preds[0].shape[0]
+
     for b in range(batch_size):
 
         fig = pylab.figure()
-        ax1 = fig.add_subplot(1,3,1)
-        ax1.imshow(x[b,0,...])
-        ax2 = fig.add_subplot(1,3,2)
-        ax2.imshow(y[b,...])
-        ax3 = fig.add_subplot(1,3,3)
-        ax3.imshow(yy[b,1,...])
+
+        ax1 = fig.add_subplot(2,4,1)
+        ax1.set_title('image')
+        ax1.imshow(img[b,0,...])
+
+        ax2 = fig.add_subplot(2,4,2)
+        ax2.set_title('ground truth')
+        ax2.imshow(target[b,...])
+    
+        for i,pred in enumerate(preds):
+            axn = fig.add_subplot(2,4, 3+i)
+            axn.imshow(pred[b,1,...])
+
+            if i + 1 < len(preds):
+                axn.set_title('side prediction %d'%i)
+            else:
+                axn.set_title('combined prediction')
 
         pylab.show()
 

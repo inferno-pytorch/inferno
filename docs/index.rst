@@ -10,7 +10,6 @@ Contents:
    installation
    usage
    examples
-   modules
    contributing
    inferno-apidoc/modules
    authors
