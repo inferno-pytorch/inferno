@@ -175,9 +175,7 @@ class UNetBase(nn.Module):
             self.__store_conv_up[-1] = True
             self.n_channels_per_output.append(self.out_channels)
 
-        print(len(self.n_channels_per_output))
-
-        
+       
 
         assert len(self.n_channels_per_output) == self.__store_conv_down.count(True) + \
             self.__store_conv_up.count(True)   + int(self.__store_conv_bottom)

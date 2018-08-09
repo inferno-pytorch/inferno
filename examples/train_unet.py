@@ -42,22 +42,21 @@ model = nn.Sequential(
 train_loader, test_loader, validate_loader = get_binary_blob_loaders(
     train_batch_size=3,
     length=512, # <= size of the images
-
+)
 
 # Build trainer
-trainer = Trainer(model) \
-.build_criterion('CrossEntropyLoss') \
-.build_metric('IOU') \
-.build_optimizer('Adam') \
-.validate_every((10, 'epochs')) \
-.save_every((10, 'epochs')) \
-.save_to_directory(SAVE_DIRECTORY) \
-.set_max_num_epochs(40) \
+trainer = Trainer(model)
+trainer.build_criterion('CrossEntropyLoss')
+trainer.build_metric('IOU')
+trainer.build_optimizer('Adam')
+trainer.validate_every((10, 'epochs'))
+trainer.save_every((10, 'epochs'))
+trainer.save_to_directory(SAVE_DIRECTORY)
+trainer.set_max_num_epochs(40)
 
 # Bind loaders
-trainer \
-    .bind_loader('train', train_loader) \
-    .bind_loader('validate', validate_loader)
+trainer.bind_loader('train', train_loader) 
+trainer.bind_loader('validate', validate_loader)
 
 if USE_CUDA:
     trainer.cuda()
@@ -68,13 +67,12 @@ trainer.fit()
 
 # predict:
 trainer.load(best=True)
-trainer\
-    .bind_loader('train', train_loader) \
-    .bind_loader('validate', validate_loader)
+trainer.bind_loader('train', train_loader)
+trainer.bind_loader('validate', validate_loader)
 trainer.eval_mode()
 
-
-trainer.cuda()
+if USE_CUDA:
+    trainer.cuda()
 
 # look at an example
 for x,y in test_loader:
