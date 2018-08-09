@@ -1,5 +1,5 @@
-inferno\.extensions package
-===========================
+inferno.extensions package
+==========================
 
 Subpackages
 -----------
