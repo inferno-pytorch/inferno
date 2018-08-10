@@ -10,7 +10,7 @@ __all__ = ['View', 'AsMatrix', 'Flatten',
            'Concatenate', 'Cat',
            'ResizeAndConcatenate', 'PoolCat',
            'GlobalMeanPooling', 'GlobalMaxPooling',
-           'Sum', 'SplitChannels']
+           'Sum', 'SplitChannels','Squeeze', 'RemoveSingletonDimension']
 _all = __all__
 
 class View(nn.Module):
@@ -206,3 +206,28 @@ class SplitChannels(nn.Module):
         split_0 = input[:, 0:split_location, ...]
         split_1 = input[:, split_location:, ...]
         return split_0, split_1
+
+
+
+class Squeeze(nn.Module):
+    def __init__(self):
+        super(Squeeze, self).__init__()
+    def  forward(self, x):
+        return x.squeeze()
+
+class RemoveSingletonDimension(nn.Module):
+    def __init__(self, dim=1):
+        super(RemoveSingletonDimension, self).__init__()
+        self.dim = 1
+    def  forward(self, x):
+        size = list(x.size())
+        if size[self.dim] != 1:
+            raise RuntimeError("RemoveSingletonDimension expects a single channel at dim %d"%d)
+
+        slicing = []
+        for s in size:
+            slicing.append(slice(0, s))
+
+        slicing[self.dim] = 0
+
+        return x[slicing]

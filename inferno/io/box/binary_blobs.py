@@ -87,7 +87,7 @@ class BinaryBlobs(data.Dataset):
 
         image -= image.mean()
         image /= image.std()
-
+        label = label.astype('long')
         try:
             # Apply transforms
             if self.image_transform is not None:
@@ -102,7 +102,7 @@ class BinaryBlobs(data.Dataset):
             raise
 
         image = image[None,...]
-        return image, label.astype('long')
+        return image, label
 
     def __len__(self):
         return self.size
@@ -110,11 +110,23 @@ class BinaryBlobs(data.Dataset):
 
 def get_binary_blob_loaders(train_batch_size=1, test_batch_size=1,
                             num_workers=1,
+                            train_image_transform=None,
+                            train_label_transform=None,
+                            train_joint_transform=None,
+                            validate_image_transform=None,
+                            validate_label_transform=None,
+                            validate_joint_transform=None,
+                            test_image_transform=None,
+                            test_label_transform=None,
+                            test_joint_transform=None,
                             **kwargs):
     
-    trainset = BinaryBlobs(split='train',    **kwargs)
-    testset  = BinaryBlobs(split='test',     **kwargs)
-    validset = BinaryBlobs(split='validate', **kwargs)
+    trainset = BinaryBlobs(split='train',   image_transform=train_image_transform, 
+        label_transform=train_label_transform, joint_transform=train_joint_transform, **kwargs)
+    testset  = BinaryBlobs(split='test',    image_transform=test_image_transform,
+        label_transform=test_label_transform, joint_transform=test_joint_transform, **kwargs)
+    validset = BinaryBlobs(split='validate',image_transform=validate_image_transform, 
+        label_transform=validate_label_transform, joint_transform=validate_joint_transform, **kwargs)
 
 
     trainloader = data.DataLoader(trainset, batch_size=train_batch_size,
@@ -122,6 +134,7 @@ def get_binary_blob_loaders(train_batch_size=1, test_batch_size=1,
 
     testloader = data.DataLoader(testset, batch_size=test_batch_size,
                                             num_workers=num_workers)
+
     validloader = data.DataLoader(validset, batch_size=test_batch_size,
                                             num_workers=num_workers)
 
