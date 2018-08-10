@@ -84,7 +84,8 @@ extensions = [
     'sphinx.ext.graphviz',
     'sphinx_gallery.gen_gallery',
     'sphinxcontrib.bibtex',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinxcontrib.inlinesyntaxhighlight'
 ]
 
 

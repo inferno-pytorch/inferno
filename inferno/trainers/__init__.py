@@ -1,4 +1,4 @@
 from . import basic
 from . import callbacks
-
-__all__ = ['basic','callbacks-']
+from . basic import Trainer
+__all__ = ['basic','callbacks','Trainer']
