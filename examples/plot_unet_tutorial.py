@@ -100,7 +100,7 @@ model_a = torch.nn.Sequential(
 ##############################################################################
 # Training
 # ----------------------------
-# To train the unet, we use the infern-os Trainer class of inferno.
+# To train the unet, we use the infernos Trainer class of inferno.
 # Since we train many models later on in this example we encapsulate
 # the training in a function (see :ref:`sphx_glr_auto_examples_trainer.py` for
 # an example dedicated to the trainer itself). 
