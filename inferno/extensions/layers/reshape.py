@@ -222,7 +222,7 @@ class RemoveSingletonDimension(nn.Module):
     def  forward(self, x):
         size = list(x.size())
         if size[self.dim] != 1:
-            raise RuntimeError("RemoveSingletonDimension expects a single channel at dim %d"%d)
+            raise RuntimeError("RemoveSingletonDimension expects a single channel at dim %d, shape=%s"%(self.dim,str(size)))
 
         slicing = []
         for s in size:

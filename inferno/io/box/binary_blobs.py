@@ -87,6 +87,7 @@ class BinaryBlobs(data.Dataset):
 
         image -= image.mean()
         image /= image.std()
+        
         label = label.astype('long')
         try:
             # Apply transforms
