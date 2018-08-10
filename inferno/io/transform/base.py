@@ -108,13 +108,17 @@ class Transform(object):
         assert pyu.has_callable_attr(self, 'volume_function')
         # 3D case
         if tensor.ndim == 5:
+            # tensor is bczyx
+            # volume function is applied to zyx, i.e. loop over b and c
+            # FIXME This loops one time too many
             return np.array([np.array([np.array([self.volume_function(volume,
                                                                       **transform_function_kwargs)
                                                  for volume in channel_volume])
                                        for channel_volume in batch])
                              for batch in tensor])
         elif tensor.ndim == 4:
-            # We're applying the volume function on a czyx tensor
+            # We're applying the volume function on a czyx tensor, i.e. we loop over c and apply
+            # volume function to (zyx)
             return np.array([self.volume_function(volume, **transform_function_kwargs)
                              for volume in tensor])
         elif tensor.ndim == 3:

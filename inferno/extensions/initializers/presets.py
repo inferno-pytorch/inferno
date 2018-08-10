@@ -57,15 +57,19 @@ class NormalWeights(Initializer):
 
 class OrthogonalWeightsZeroBias(Initialization):
     def __init__(self, orthogonal_gain=1.):
+        # This prevents a deprecated warning in Pytorch 0.4+
+        orthogonal = getattr(init, 'orthogonal_', init.orthogonal)
         super(OrthogonalWeightsZeroBias, self)\
-            .__init__(weight_initializer=partial(init.orthogonal, gain=orthogonal_gain),
+            .__init__(weight_initializer=partial(orthogonal, gain=orthogonal_gain),
                       bias_initializer=Constant(0.))
 
 
 class KaimingNormalWeightsZeroBias(Initialization):
     def __init__(self, relu_leakage=0):
+        # This prevents a deprecated warning in Pytorch 0.4+
+        kaiming_normal = getattr(init, 'kaiming_normal_', init.kaiming_normal)
         super(KaimingNormalWeightsZeroBias, self)\
-            .__init__(weight_initializer=partial(init.kaiming_normal, a=relu_leakage),
+            .__init__(weight_initializer=partial(kaiming_normal, a=relu_leakage),
                       bias_initializer=Constant(0.))
 
 

@@ -1,19 +1,19 @@
-inferno\.extensions\.containers package
-=======================================
+inferno.extensions.containers package
+=====================================
 
 Submodules
 ----------
 
-inferno\.extensions\.containers\.graph module
----------------------------------------------
+inferno.extensions.containers.graph module
+------------------------------------------
 
 .. automodule:: inferno.extensions.containers.graph
     :members:
     :undoc-members:
     :show-inheritance:
 
-inferno\.extensions\.containers\.sequential module
---------------------------------------------------
+inferno.extensions.containers.sequential module
+-----------------------------------------------
 
 .. automodule:: inferno.extensions.containers.sequential
     :members:

@@ -3,7 +3,7 @@ import torch.nn as nn
 from ...utils.torch_utils import where
 
 __all__ = ['SELU']
-
+_all = __all__
 
 class SELU(nn.Module):
     def forward(self, input):
