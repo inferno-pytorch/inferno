@@ -1,5 +1,5 @@
-inferno\.io package
-===================
+inferno.io package
+==================
 
 Subpackages
 -----------

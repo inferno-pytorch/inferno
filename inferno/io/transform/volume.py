@@ -1,5 +1,11 @@
 import numpy as np
 from .base import Transform
+import numpy as np
+from .base import Transform
+
+import scipy
+
+
 
 
 class RandomFlip3D(Transform):
@@ -20,6 +26,67 @@ class RandomFlip3D(Transform):
         if self.get_random_variable('flip_z'):
             volume = volume[::-1, :, :]
         return volume
+
+class RandomRot3D(Transform):
+    def __init__(self, rot_range, p=0.125,  only_one=True, **super_kwargs):
+        super(RandomRot3D, self).__init__(**super_kwargs)
+        self.rot_range = rot_range
+        self.p = p
+    def build_random_variables(self, **kwargs):
+        np.random.seed()
+
+        self.set_random_variable('do_z',  np.random.uniform() < self.p)
+        self.set_random_variable('do_y',  np.random.uniform() < self.p)
+        self.set_random_variable('do_x',  np.random.uniform() < self.p)
+
+
+        self.set_random_variable('angle_z',  np.random.uniform(-self.rot_range, self.rot_range) )
+        self.set_random_variable('angle_y',  np.random.uniform(-self.rot_range, self.rot_range) )
+        self.set_random_variable('angle_x',   np.random.uniform(-self.rot_range, self.rot_range) )
+
+    def volume_function(self, volume):
+
+
+        #print("inshape", volume.shape)
+        angle_z = self.get_random_variable('angle_z')
+        angle_y = self.get_random_variable('angle_y')
+        angle_x = self.get_random_variable('angle_x')
+        
+
+        # rotate along z-axis
+        if self.get_random_variable('do_z'):
+            volume = scipy.ndimage.interpolation.rotate(volume, angle_z, order=0, mode='nearest', axes=(0, 1), reshape=False)
+            #return volume
+        # rotate along y-axis
+        if self.get_random_variable('do_y'):
+            volume = scipy.ndimage.interpolation.rotate(volume, angle_y, order=0, mode='nearest', axes=(0, 2), reshape=False)
+            #return volume
+        # rotate along x-axis
+        if self.get_random_variable('do_y'):
+            volume = scipy.ndimage.interpolation.rotate(volume, angle_x, order=0, mode='nearest', axes=(1, 2), reshape=False)
+            #return volume
+
+        return volume
+
+
+
+class AdditiveRandomNoise3D(Transform):
+    def __init__(self, shape, std, **super_kwargs):
+        super(AdditiveRandomNoise3D, self).__init__(**super_kwargs)
+        self.shape = shape
+        self.std = float(std)
+    def build_random_variables(self, **kwargs):
+        np.random.seed()
+        self.set_random_variable('noise_vol',  np.random.normal(loc=0.0, scale=self.std, size=self.shape) )
+
+
+    def volume_function(self, volume):
+
+
+        #print("inshape", volume.shape)
+        noise_vol = self.get_random_variable('noise_vol')
+
+        return volume + noise_vol
 
 
 class CentralSlice(Transform):

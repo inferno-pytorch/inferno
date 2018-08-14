@@ -62,6 +62,9 @@ sys.path.insert(0, project_root)
 
 import inferno
 import inferno.extensions
+import inferno.extensions.layers
+from inferno.extensions.layers import *
+from inferno.extensions.layers.reshape import *
 
 # -- General configuration ---------------------------------------------
 
@@ -81,7 +84,8 @@ extensions = [
     'sphinx.ext.graphviz',
     'sphinx_gallery.gen_gallery',
     'sphinxcontrib.bibtex',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinxcontrib.inlinesyntaxhighlight'
 ]
 
 
@@ -98,7 +102,7 @@ sphinx_gallery_conf = {
     'scan_used_functions':
         True,
     'doc_module' :
-        ('inferno'),
+        ('inferno','inferno.extensions','inferno.extensions.layers','inferno.extensions.layers.convolutional'),
 
     'docs_resolv': True,
 

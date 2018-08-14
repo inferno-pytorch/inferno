@@ -1,10 +1,16 @@
-import dill
 from datetime import datetime
 from inspect import signature
 import os
 import shutil
 import contextlib
 import warnings
+
+# These are fetched from globals, they're not unused
+# noinspection PyUnresolvedReferences
+import dill
+# noinspection PyUnresolvedReferences
+import pickle
+
 
 import torch
 from numpy import inf
@@ -102,6 +108,7 @@ class Trainer(object):
         # Checkpointing
         self._save_every = None
         self._save_to_directory = None
+        self._pickle_module = 'pickle'
         # Defaults for file names
         self._checkpoint_filename = 'checkpoint.pytorch'
         self._best_checkpoint_filename = 'best_checkpoint.pytorch'
@@ -598,6 +605,22 @@ class Trainer(object):
         """Sets the log directory,"""
         if value is not None:
             self.set_log_directory(value)
+
+    @property
+    def pickle_module(self):
+        module_ = globals().get(self._pickle_module, None)
+        assert_(module_ is not None, "Pickle module not found!", ModuleNotFoundError)
+        return module_
+
+    _ALLOWED_PICKLE_MODULES = {'pickle', 'dill'}
+
+    @pickle_module.setter
+    def pickle_module(self, value):
+        assert_(isinstance(value, str), "`pickle_module` must be set to a string.", TypeError)
+        assert_(value in self._ALLOWED_PICKLE_MODULES,
+                f"Pickle module must be one of {self._ALLOWED_PICKLE_MODULES}, "
+                f"got {value} instead.", ValueError)
+        self._pickle_module = value
 
     @property
     def saving_every(self):
@@ -1509,6 +1532,7 @@ class Trainer(object):
             else:
                 batch_size = target.size(self._target_batch_dim)
             validation_loss_meter.update(thu.unwrap(loss, extract_item=True), n=batch_size)
+
             # Compute validation_error
             if self.metric_is_defined:
                 validation_error = self.metric(thu.unwrap(output, to_cpu=False),
@@ -1605,7 +1629,7 @@ class Trainer(object):
         # Save the state dictionary
         torch.save(self.get_config(exclude_loader=exclude_loader),
                    checkpoint_path,
-                   pickle_module=dill)
+                   pickle_module=self.pickle_module)
 
         self.callbacks.call(self.callbacks.END_OF_SAVE,
                             save_to_directory=self._save_to_directory,
@@ -1630,7 +1654,7 @@ class Trainer(object):
         # Save the state dictionary
         torch.save(self.model,
                    os.path.join(to_directory, 'model.pytorch'),
-                   pickle_module=dill)
+                   pickle_module=self.pickle_module)
         return self
 
     def load(self, from_directory=None, best=False, filename=None):
@@ -1660,7 +1684,7 @@ class Trainer(object):
             filename = self._best_checkpoint_filename if best else self._checkpoint_filename
         # Load the dictionary
         config_dict = torch.load(os.path.join(from_directory, filename),
-                                 pickle_module=dill)
+                                 pickle_module=self.pickle_module)
         # This is required to prevent an infinite save loop?
         self._is_iteration_with_best_validation_score = False
         # Set config
@@ -1671,7 +1695,8 @@ class Trainer(object):
         from_directory = self._save_to_directory if from_directory is None else from_directory
         filename = 'model.pytorch' if filename is None else filename
         # Load the model
-        model = torch.load(os.path.join(from_directory, filename), pickle_module=dill)
+        model = torch.load(os.path.join(from_directory, filename),
+                           pickle_module=self.pickle_module)
         # Set model
         self.model = model
         return self
