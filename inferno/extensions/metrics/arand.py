@@ -11,16 +11,25 @@ class ArandScore(Metric):
     ----------
     [1]: http://journal.frontiersin.org/article/10.3389/fnana.2015.00142/full#h3
     """
+    def __init__(self, average_slices=True):
+        self.average_slices = average_slices
+
     def forward(self, prediction, target):
         assert(len(prediction) == len(target)), "%i, %i" % (len(prediction), len(target))
         prediction = prediction.cpu().numpy().squeeze()
         target = target.cpu().numpy().squeeze()
-        return np.mean([adapted_rand(pred, targ)[0]
-                        for pred, targ in zip(prediction, target)])
+        if self.average_slices:
+            return np.mean([adapted_rand(pred, targ)[0]
+                           for pred, targ in zip(prediction, target)])
+        else:
+            return adapted_rand(prediction, target)[0]
 
 
 class ArandError(ArandScore):
     """Arand Error = 1 - <arand score>"""
+    def __init__(self, **super_kwargs):
+        super(ArandError, self).__init__(**super_kwargs)
+
     def forward(self, prediction, target):
         return 1. - super(ArandError, self).forward(prediction, target)
 
@@ -63,9 +72,16 @@ def adapted_rand(seg, gt):
     if np.any(gt == 0):
         logger.debug("Zeros in ground truth, 0's will be ignored.")
 
-    if np.all(seg == 0) or np.all(gt == 0):
-        logger.error("Either segmentation or groundtruth are all zeros.")
-        return [0, 0, 0]
+    seg_zeros = np.all(seg == 0)
+    gt_zeros = np.all(gt == 0)
+    if  seg_zeros or gt_zeros:
+        if seg_zeros:
+            logger.error("Segmentation is all zeros.")
+        else:
+            print(gt.shape)
+            print(np.unique(gt))
+            logger.error("Groundtruth is all zeros.")
+        return 0, 0, 0
 
     # segA is truth, segB is query
     segA = np.ravel(gt)
@@ -112,4 +128,4 @@ def adapted_rand(seg, gt):
     precision = float(sum_p_ij) / sum_b
     recall = float(sum_p_ij) / sum_a
     f_score = 2.0 * precision * recall / (precision + recall)
-    return [f_score, precision, recall]
+    return f_score, precision, recall
