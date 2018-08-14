@@ -150,8 +150,7 @@ class AsTorchBatch(Transform):
         self.dimensionality = dimensionality
         self.add_channel_axis_if_necessary = bool(add_channel_axis_if_necessary)
 
-    def tensor_function(self, tensor):
-        assert isinstance(tensor, np.ndarray)
+    def _to_batch(self, tensor):
         if self.dimensionality == 3:
             # We're dealing with a volume. tensor can either be 3D or 4D
             assert tensor.ndim in [3, 4]
@@ -176,3 +175,10 @@ class AsTorchBatch(Transform):
             return torch.from_numpy(tensor)
         else:
             raise NotImplementedError
+
+    def tensor_function(self, tensor):
+        assert isinstance(tensor, (list, np.ndarray)), "Expected numpy array or list, got %s" % type(tensor)
+        if isinstance(tensor, np.ndarray):
+            return self._to_batch(tensor)
+        else:
+            return [self._to_batch(elem) for elem in tensor]

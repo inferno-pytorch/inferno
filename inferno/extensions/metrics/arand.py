@@ -19,8 +19,9 @@ class ArandScore(Metric):
         prediction = prediction.cpu().numpy().squeeze()
         target = target.cpu().numpy().squeeze()
         if self.average_slices:
-            return np.mean([adapted_rand(pred, targ)[0]
-                           for pred, targ in zip(prediction, target)])
+            evaluation_values = [adapted_rand(pred, targ)
+                                 for pred, targ in zip(prediction, target)]
+            return np.mean([eval_val[0] for eval_val in evaluation_values if eval_val is not None])
         else:
             return adapted_rand(prediction, target)[0]
 
@@ -76,12 +77,13 @@ def adapted_rand(seg, gt):
     gt_zeros = np.all(gt == 0)
     if  seg_zeros or gt_zeros:
         if seg_zeros:
-            logger.error("Segmentation is all zeros.")
+            logger.warn("Segmentation is all zeros, ignoring for eval.")
+            return None
         else:
             print(gt.shape)
             print(np.unique(gt))
-            logger.error("Groundtruth is all zeros.")
-        return 0, 0, 0
+            logger.warn("Groundtruth is all zeros, ignoring for eval.")
+            return None
 
     # segA is truth, segB is query
     segA = np.ravel(gt)
