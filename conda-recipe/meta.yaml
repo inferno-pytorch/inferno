@@ -32,6 +32,7 @@ requirements:
         - dill
         - networkx 1.11
         - tensorboardx
+        - sphinx_rtd_theme
 
 
 test:

@@ -16,15 +16,18 @@ from inferno.utils.python_utils import ensure_dir
 
 from inferno.extensions.layers import SELU
 
+##################################################
 # change directories to your needs
 LOG_DIRECTORY = ensure_dir('log')
 SAVE_DIRECTORY = ensure_dir('save')
 DATASET_DIRECTORY = ensure_dir('dataset')
 
-
+##################################################
+# shall models be downloaded
 DOWNLOAD_CIFAR = True
 USE_CUDA = True
 
+##################################################
 # Build torch model
 model = nn.Sequential(
     ConvELU2D(in_channels=3, out_channels=256, kernel_size=3),
@@ -38,10 +41,12 @@ model = nn.Sequential(
     nn.Softmax()
 )
 
-# Load loaders
+##################################################
+# data loaders
 train_loader, validate_loader = get_cifar10_loaders(DATASET_DIRECTORY,
                                         download=DOWNLOAD_CIFAR)
 
+##################################################
 # Build trainer
 trainer = Trainer(model)
 trainer.build_criterion('CrossEntropyLoss')
@@ -55,12 +60,16 @@ trainer.build_logger(TensorboardLogger(log_scalars_every=(1, 'iteration'),
                                 log_images_every='never'), 
               log_directory=LOG_DIRECTORY)
 
+##################################################
 # Bind loaders
 trainer.bind_loader('train', train_loader)
 trainer.bind_loader('validate', validate_loader)
 
+##################################################
+# activate cuda
 if USE_CUDA:
     trainer.cuda()
 
-# Go!
-#trainer.fit()
+##################################################
+# fit
+trainer.fit()

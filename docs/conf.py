@@ -152,7 +152,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'inferno'
-copyright = u"2017, Nasim Rahaman"
+copyright = u"2018, f"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -207,7 +207,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.  For a list of options available for each theme, see the
@@ -306,7 +306,7 @@ latex_elements = {
 latex_documents = [
     ('index', 'inferno.tex',
      u'inferno Documentation',
-     u'Nasim Rahaman', 'manual'),
+     u'Inferno Team', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at
@@ -337,7 +337,7 @@ latex_documents = [
 man_pages = [
     ('index', 'inferno',
      u'inferno Documentation',
-     [u'Nasim Rahaman'], 1)
+     [u'Inferno Team'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -352,7 +352,7 @@ man_pages = [
 texinfo_documents = [
     ('index', 'inferno',
      u'inferno Documentation',
-     u'Nasim Rahaman',
+     u'Inferno Team',
      'inferno',
      'One line description of project.',
      'Miscellaneous'),

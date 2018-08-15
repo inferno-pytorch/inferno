@@ -68,7 +68,7 @@ plt.show()
 # With :code:`activated=False` we make sure that the last layer
 # is not activated since we chain the UNet with a sigmoid
 # activation function.
-from inferno.extensions.layers.unet import ResBlockUNet
+from inferno.extensions.layers import ResBlockUNet
 from inferno.extensions.layers import RemoveSingletonDimension
 
 model = torch.nn.Sequential(
