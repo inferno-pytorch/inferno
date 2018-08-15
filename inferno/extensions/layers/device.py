@@ -3,7 +3,7 @@ from ...utils.python_utils import from_iterable, to_iterable
 from ...utils.exceptions import assert_, DeviceError
 
 __all__ = ['DeviceTransfer', 'OnDevice']
-
+_all = __all__
 
 class DeviceTransfer(nn.Module):
     """Layer to transfer variables to a specified device."""

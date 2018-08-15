@@ -1,8 +1,16 @@
-import dill
 from datetime import datetime
 from inspect import signature
 import os
 import shutil
+import contextlib
+import warnings
+
+# These are fetched from globals, they're not unused
+# noinspection PyUnresolvedReferences
+import dill
+# noinspection PyUnresolvedReferences
+import pickle
+
 
 import torch
 from numpy import inf
@@ -52,6 +60,7 @@ class Trainer(object):
         self._model = None
         self._optimizer = None
         self._criterion = None
+        self._retain_graph = False
 
         # Metric evaluation
         self._metric = None
@@ -73,6 +82,7 @@ class Trainer(object):
         self._iteration_count = 0
         self._epoch_count = 0
         self._batch_count = 0
+        self._current_mode = 'train'
 
         # GPU and dtype business
         self._use_cuda = False
@@ -87,6 +97,7 @@ class Trainer(object):
         self._validate_every = None
         self._num_validation_iterations = None
         self._target_batch_dim = 0
+        self._validation_criterion = None
         # We should exclude the zero-th epoch from validation
         self._last_validated_at_epoch = 0
         self._last_validated_at_iteration = 0
@@ -97,6 +108,7 @@ class Trainer(object):
         # Checkpointing
         self._save_every = None
         self._save_to_directory = None
+        self._pickle_module = 'pickle'
         # Defaults for file names
         self._checkpoint_filename = 'checkpoint.pytorch'
         self._best_checkpoint_filename = 'best_checkpoint.pytorch'
@@ -125,6 +137,15 @@ class Trainer(object):
     def console(self):
         """Get the current console."""
         return self._console
+
+    def set_console(self, console):
+        assert_(isinstance(console, Console), "`console` must be a Console object.", TypeError)
+        self._console = console
+        return self
+
+    def quiet(self):
+        self.console.toggle_progress(False)
+        return self
 
     @property
     def callbacks(self):
@@ -192,6 +213,15 @@ class Trainer(object):
     @property
     def model_is_defined(self):
         return self._model is not None
+
+    @property
+    def retain_graph(self):
+        return self._retain_graph
+
+    @retain_graph.setter
+    def retain_graph(self, value):
+        assert isinstance(value, bool)
+        self._retain_graph = value
 
     @property
     def optimizer(self):
@@ -270,7 +300,8 @@ class Trainer(object):
         elif isinstance(value, dict):
             self.build_criterion(**value)
         else:
-            raise NotImplementedError
+            raise RuntimeError(f"Criterion can either be set to a string, callable or a dict. "
+                               f"Got {type(value).__name__} instead.")
 
     def build_criterion(self, method, **kwargs):
         """
@@ -328,6 +359,86 @@ class Trainer(object):
     @property
     def criterion_is_defined(self):
         return self._criterion is not None
+
+    @property
+    def validation_criterion(self):
+        if self._validation_criterion is None:
+            return self.criterion
+        else:
+            return self._validation_criterion
+
+    @validation_criterion.setter
+    def validation_criterion(self, value):
+        if isinstance(value, str) or callable(value):
+            self.build_validation_criterion(value)
+        elif isinstance(value, dict):
+            self.build_validation_criterion(**value)
+        else:
+            raise RuntimeError(f"Validation criterion can either be set to a string, callable "
+                               f"or a dict. Got {type(value).__name__} instead.")
+
+    def build_validation_criterion(self, method, **kwargs):
+        """
+        Builds the loss criterion for validation.
+
+        Parameters
+        ----------
+        method : str or callable or torch.nn.Module
+            Name of the criterion when str, criterion class when callable, or a
+            torch.nn.Module instance. If a name is provided, this method looks
+            for the criterion in `torch.nn`.
+        kwargs : dict
+            Keyword arguments to the criterion class' constructor if applicable.
+
+        Returns
+        -------
+        Trainer
+            self.
+
+        Raises
+        ------
+        AssertionError
+            if criterion is not found.
+        NotImplementedError
+            if method is neither a str nor a callable.
+        """
+        if isinstance(method, str):
+            # Look for criteria in torch
+            criterion_class = getattr(torch.nn, method, None)
+            if criterion_class is None:
+                # Look for it in extensions
+                criterion_class = getattr(criteria, method, None)
+            assert criterion_class is not None, "Criterion {} not found.".format(method)
+        elif callable(method) and isinstance(method, type):
+            criterion_class = method
+        elif isinstance(method, torch.nn.Module):
+            self._validation_criterion = method
+            return self
+        else:
+            raise NotImplementedError
+        self._validation_criterion = criterion_class(**kwargs)
+        # Transfer criterion to GPU if required. This is necessary for e.g. weighted loss,
+        # where the weight is registered as a buffer.
+        # The criterion is to be cuda'ed only if the model is on CUDA (self._use_cuda) and
+        # the base_device is not CPU (ordinal -1).
+        if hasattr(self, '_base_device_ordinal'):
+            # This is to not break old checkpoints
+            base_device_ordinal = self._base_device_ordinal
+        else:
+            base_device_ordinal = None
+        if self._use_cuda and base_device_ordinal != 1:
+            self._validation_criterion.cuda()
+        return self
+
+    def validation_criterion_is_train_criterion(self, yes=True):
+        if yes:
+            # This will cause the property to return train criterion
+            self._validation_criterion = None
+        return self
+
+    @property
+    def validation_criterion_is_defined(self):
+        return self._validation_criterion is not None
 
     @property
     def metric(self):
@@ -434,6 +545,7 @@ class Trainer(object):
 
     def eval_mode(self):
         """Set model, criterion and metric to eval mode"""
+        self._current_mode = 'eval'
         self.model.eval()
         if self.criterion_is_defined and isinstance(self.criterion, torch.nn.Module):
             self.criterion.eval()
@@ -443,6 +555,7 @@ class Trainer(object):
 
     def train_mode(self):
         """Set model, criterion and metric to train mode"""
+        self._current_mode = 'train'
         self.model.train()
         if self.criterion_is_defined and isinstance(self.criterion, torch.nn.Module):
             self.criterion.train()
@@ -492,6 +605,22 @@ class Trainer(object):
         """Sets the log directory,"""
         if value is not None:
             self.set_log_directory(value)
+
+    @property
+    def pickle_module(self):
+        module_ = globals().get(self._pickle_module, None)
+        assert_(module_ is not None, "Pickle module not found!", ModuleNotFoundError)
+        return module_
+
+    _ALLOWED_PICKLE_MODULES = {'pickle', 'dill'}
+
+    @pickle_module.setter
+    def pickle_module(self, value):
+        assert_(isinstance(value, str), "`pickle_module` must be set to a string.", TypeError)
+        assert_(value in self._ALLOWED_PICKLE_MODULES,
+                f"Pickle module must be one of {self._ALLOWED_PICKLE_MODULES}, "
+                f"got {value} instead.", ValueError)
+        self._pickle_module = value
 
     @property
     def saving_every(self):
@@ -1047,8 +1176,27 @@ class Trainer(object):
         # Cast to the right dtype
         batch = self.cast(batch)
         # Second, wrap as variable
-        batch = type(batch)([Variable(_batch, requires_grad=requires_grad, volatile=volatile)
-                             for _batch in batch])
+        variable_batch = []
+        for batch_num, _batch in enumerate(batch):
+            if thu.is_tensor(_batch):
+                # This supresses the volatile deprecated warning
+                # TODO remove after Pytorch 1.0
+                with warnings.catch_warnings():
+                    warnings.simplefilter('ignore')
+                    variable_batch.append(Variable(_batch, requires_grad=requires_grad,
+                                                   volatile=volatile))
+            elif pyu.is_listlike(_batch):
+                # This supresses the volatile deprecated warning
+                # TODO remove after Pytorch 1.0
+                with warnings.catch_warnings():
+                    warnings.simplefilter('ignore')
+                    variable_batch.append([Variable(__batch, requires_grad=requires_grad,
+                                                    volatile=volatile)
+                                           for __batch in _batch])
+            else:
+                raise RuntimeError(f"Was Expecting batch at index {batch_num} to be either a "
+                                   f"tensor or a list of tensors. Got {type(_batch)} instead.")
+        batch = type(batch)(variable_batch)
         return batch
 
     def next_iteration(self):
@@ -1200,7 +1348,11 @@ class Trainer(object):
 
         return self
 
-    def apply_model_and_loss(self, inputs, target, backward=True):
+    def apply_model_and_loss(self, inputs, target, backward=True, mode=None):
+        if mode is None:
+            mode = self._current_mode
+            assert_(mode in ['train', 'eval'],
+                    f"`mode` must be one of ['train', 'eval'], got {mode} instead.", ValueError)
         # Compute prediction
         prediction = self.apply_model(*inputs)
         # Compute loss
@@ -1208,10 +1360,17 @@ class Trainer(object):
         if (isinstance(self.criterion, torch.nn.Module) and
                 'trainer' in signature(self.criterion.forward).parameters):
             kwargs['trainer'] = self
-        loss = self.criterion(prediction, target, **kwargs)
+        if mode == 'train':
+            loss = self.criterion(prediction, target, **kwargs)
+        elif mode == 'eval':
+            loss = self.validation_criterion(prediction, target, **kwargs)
+        else:
+            raise ValueError
         if backward:
             # Backprop if required
-            loss.backward()
+            # retain_graph option is needed for some custom
+            # loss functions like malis, False per default
+            loss.backward(retain_graph=self.retain_graph)
         return prediction, loss
 
     def train_for(self, num_iterations=None, break_callback=None):
@@ -1225,7 +1384,7 @@ class Trainer(object):
         # self.next_iteration().
         iteration_num = 0
         while True:
-            if num_iterations is not None and iteration_num > num_iterations:
+            if num_iterations is not None and iteration_num >= num_iterations:
                 self.console.info("Finished {} iterations. Breaking...".format(num_iterations))
                 break
             # Break if break callback asks us to
@@ -1249,7 +1408,8 @@ class Trainer(object):
                 # Separate inputs from targets
                 inputs, target = self.split_batch(batch, from_loader='train')
                 # Apply model, compute loss and backprop
-                prediction, loss = self.apply_model_and_loss(inputs, target, backward=True)
+                prediction, loss = self.apply_model_and_loss(inputs, target, backward=True,
+                                                             mode='train')
             # Compute metric
             if self.metric_is_defined and self.evaluate_metric_now:
                 self._last_metric_evaluated_at_epoch = self._epoch_count
@@ -1337,7 +1497,7 @@ class Trainer(object):
 
 
         while True:
-            if num_iterations is not None and iteration_num > num_iterations:
+            if num_iterations is not None and iteration_num >= num_iterations:
                 break
 
             self.callbacks.call(self.callbacks.BEGIN_OF_VALIDATION_ITERATION,
@@ -1355,28 +1515,31 @@ class Trainer(object):
 
             self.console.progress("Validating iteration {}.".format(iteration_num))
 
+            no_grad = torch.no_grad if hasattr(torch, 'no_grad') else contextlib.suppress
             # Delay SIGINTs till after computation
-            with pyu.delayed_keyboard_interrupt():
+            with pyu.delayed_keyboard_interrupt(), no_grad():
                 # Wrap
+                # FIXME The volatile=True is required for compatibility with older 0.3 code.
+                # FIXME Remove when support is deprecated.
                 batch = self.wrap_batch(batch, from_loader=loader_name, volatile=True)
                 # Separate
                 inputs, target = self.split_batch(batch, from_loader=loader_name)
                 # Apply model, compute loss
-                output, loss = self.apply_model_and_loss(inputs, target, backward=False)
-            
+                output, loss = self.apply_model_and_loss(inputs, target, backward=False,
+                                                         mode='eval')
             if isinstance(target, (list,tuple)):
                 batch_size = target[0].size(self._target_batch_dim)
             else:
                 batch_size = target.size(self._target_batch_dim)
+            validation_loss_meter.update(thu.unwrap(loss, extract_item=True), n=batch_size)
 
-            validation_loss_meter.update(loss.data[0], n=batch_size)
             # Compute validation_error
             if self.metric_is_defined:
                 validation_error = self.metric(thu.unwrap(output, to_cpu=False),
                                                thu.unwrap(target, to_cpu=False))
                 if torch.is_tensor(validation_error):
                     # Convert to float
-                    validation_error = validation_error[0]
+                    validation_error = thu.unwrap(validation_error, extract_item=True)
                 self.update_state('validation_error', thu.unwrap(validation_error))
                 validation_error_meter.update(validation_error, n=batch_size)
 
@@ -1403,7 +1566,8 @@ class Trainer(object):
         }
         self.record_validation_results(**validation_results)
 
-        self.console.info("Validation loss: {validation_loss}; validation error: {validation_error}".format(**validation_results))
+        self.console.info("Validation loss: {validation_loss}; validation error: "
+                          "{validation_error}".format(**validation_results))
 
         self.callbacks.call(self.callbacks.END_OF_VALIDATION_RUN,
                             validation_loss_meter=validation_loss_meter,
@@ -1465,7 +1629,7 @@ class Trainer(object):
         # Save the state dictionary
         torch.save(self.get_config(exclude_loader=exclude_loader),
                    checkpoint_path,
-                   pickle_module=dill)
+                   pickle_module=self.pickle_module)
 
         self.callbacks.call(self.callbacks.END_OF_SAVE,
                             save_to_directory=self._save_to_directory,
@@ -1490,7 +1654,7 @@ class Trainer(object):
         # Save the state dictionary
         torch.save(self.model,
                    os.path.join(to_directory, 'model.pytorch'),
-                   pickle_module=dill)
+                   pickle_module=self.pickle_module)
         return self
 
     def load(self, from_directory=None, best=False, filename=None):
@@ -1520,7 +1684,7 @@ class Trainer(object):
             filename = self._best_checkpoint_filename if best else self._checkpoint_filename
         # Load the dictionary
         config_dict = torch.load(os.path.join(from_directory, filename),
-                                 pickle_module=dill)
+                                 pickle_module=self.pickle_module)
         # This is required to prevent an infinite save loop?
         self._is_iteration_with_best_validation_score = False
         # Set config
@@ -1531,7 +1695,8 @@ class Trainer(object):
         from_directory = self._save_to_directory if from_directory is None else from_directory
         filename = 'model.pytorch' if filename is None else filename
         # Load the model
-        model = torch.load(os.path.join(from_directory, filename), pickle_module=dill)
+        model = torch.load(os.path.join(from_directory, filename),
+                           pickle_module=self.pickle_module)
         # Set model
         self.model = model
         return self

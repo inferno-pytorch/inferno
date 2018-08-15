@@ -11,16 +11,25 @@ class ArandScore(Metric):
     ----------
     [1]: http://journal.frontiersin.org/article/10.3389/fnana.2015.00142/full#h3
     """
+    def __init__(self, average_slices=True):
+        self.average_slices = average_slices
+
     def forward(self, prediction, target):
-        assert(len(prediction) == len(target))
-        segmentation = prediction.cpu().numpy()
-        target = target.cpu().numpy()
-        return np.mean([adapted_rand(segmentation[i], target[i])[0]
-                        for i in range(len(prediction))])
+        assert(len(prediction) == len(target)), "%i, %i" % (len(prediction), len(target))
+        prediction = prediction.cpu().numpy().squeeze()
+        target = target.cpu().numpy().squeeze()
+        if self.average_slices:
+            return np.mean([adapted_rand(pred, targ)[0]
+                           for pred, targ in zip(prediction, target)])
+        else:
+            return adapted_rand(prediction, target)[0]
 
 
 class ArandError(ArandScore):
     """Arand Error = 1 - <arand score>"""
+    def __init__(self, **super_kwargs):
+        super(ArandError, self).__init__(**super_kwargs)
+
     def forward(self, prediction, target):
         return 1. - super(ArandError, self).forward(prediction, target)
 
@@ -56,14 +65,23 @@ def adapted_rand(seg, gt):
     """
     logger = logging.getLogger(__name__)
 
+    assert seg.shape == gt.shape, "%s, %s" % (str(seg.shape), str(gt.shape))
+
     if np.any(seg == 0):
         logger.debug("Zeros in segmentation, treating as background.")
     if np.any(gt == 0):
         logger.debug("Zeros in ground truth, 0's will be ignored.")
 
-    if np.all(seg == 0) or np.all(gt == 0):
-        logger.error("Either segmentation or groundtruth are all zeros.")
-        return [0, 0, 0]
+    seg_zeros = np.all(seg == 0)
+    gt_zeros = np.all(gt == 0)
+    if  seg_zeros or gt_zeros:
+        if seg_zeros:
+            logger.error("Segmentation is all zeros.")
+        else:
+            print(gt.shape)
+            print(np.unique(gt))
+            logger.error("Groundtruth is all zeros.")
+        return 0, 0, 0
 
     # segA is truth, segB is query
     segA = np.ravel(gt)
@@ -76,8 +94,8 @@ def adapted_rand(seg, gt):
 
     # number of nonzero pixels in original segA
     n = segA.size
-    n_labels_A = np.amax(segA) + 1
-    n_labels_B = np.amax(segB) + 1
+    n_labels_A = int(np.amax(segA)) + 1
+    n_labels_B = int(np.amax(segB)) + 1
 
     ones_data = np.ones(n)
     p_ij = sparse.csr_matrix((ones_data, (segA.ravel(), segB.ravel())),
@@ -110,4 +128,4 @@ def adapted_rand(seg, gt):
     precision = float(sum_p_ij) / sum_b
     recall = float(sum_p_ij) / sum_a
     f_score = 2.0 * precision * recall / (precision + recall)
-    return [f_score, precision, recall]
+    return f_score, precision, recall
