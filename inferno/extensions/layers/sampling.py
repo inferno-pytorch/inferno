@@ -29,3 +29,7 @@ class AnisotropicPool(nn.MaxPool3d):
         super(AnisotropicPool, self).__init__(kernel_size=(1, ds + 1, ds + 1),
                                               stride=(1, ds, ds),
                                               padding=(0, 1, 1))
+
+
+
+

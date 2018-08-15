@@ -1,12 +1,13 @@
 import unittest
 import torch
-import inferno.extensions.layers.unet as unet
+from inferno.extensions.layers import UNetBase
+from inferno.extensions.layers import ResBlockUNet
 from inferno.extensions.layers.convolutional import ConvELU2D
 
 
 
 
-class MyTestUNet(unet.UNetBase):
+class MyTestUNet(UNetBase):
 
     def __init__(self, dim, in_channels, out_channels, depth):
 
@@ -34,10 +35,10 @@ class MyTestUNet(unet.UNetBase):
         self.factory_calls_counter[part] += 1
         if self.dim  == 2:
             return ConvELU2D(kernel_size=3, in_channels=in_channels,
-                out_channels=out_channels)
+                out_channels=out_channels), False
         else:
             return ConvELU3D(kernel_size=3, in_channels=in_channels,
-                out_channels=out_channels)
+                out_channels=out_channels), False
 
 class CustomUnetTest(unittest.TestCase):
 
@@ -61,7 +62,7 @@ class ResidualUnetTest(unittest.TestCase):
         in_channels = 3
 
         x = torch.autograd.Variable(torch.rand(1,in_channels,64,56))
-        model = unet.ResBlockUNet(in_channels=in_channels, out_channels=6, dim=2)
+        model = ResBlockUNet(in_channels=in_channels, out_channels=6, dim=2)
         xx = model(x)
         out_size = xx.size()
         self.assertEqual(list(out_size), [1,in_channels*2, 64, 56])
@@ -71,7 +72,7 @@ class ResidualUnetTest(unittest.TestCase):
         in_channels = 3
 
         x = torch.autograd.Variable(torch.rand(1,in_channels,64,32,80))
-        model = unet.ResBlockUNet(in_channels=in_channels, out_channels=6, dim=3)
+        model = ResBlockUNet(in_channels=in_channels, out_channels=6, dim=3)
         xx = model(x)
         out_size = xx.size()
         self.assertEqual(list(out_size), [1,in_channels*2, 64,32, 80])
@@ -84,7 +85,7 @@ class ResidualUnetTest(unittest.TestCase):
         in_channels = 3
 
         x = torch.autograd.Variable(torch.rand(1,in_channels,64,32))
-        model = unet.ResBlockUNet(in_channels=in_channels, out_channels=8, dim=2, 
+        model = ResBlockUNet(in_channels=in_channels, out_channels=8, dim=2, 
             side_out_parts=['bottom','up'], unet_kwargs=dict(depth=depth))
 
         out_list = model(x)
@@ -103,7 +104,7 @@ class ResidualUnetTest(unittest.TestCase):
         in_channels = 3
 
         x = torch.autograd.Variable(torch.rand(1,in_channels,64,32))
-        model = unet.ResBlockUNet(in_channels=in_channels, out_channels=8, dim=2, 
+        model = ResBlockUNet(in_channels=in_channels, out_channels=8, dim=2, 
             side_out_parts=['up'], unet_kwargs=dict(depth=depth))
 
         out_list = model(x)
@@ -121,7 +122,7 @@ class ResidualUnetTest(unittest.TestCase):
         in_channels = 3
 
         x = torch.autograd.Variable(torch.rand(1,in_channels,64,32))
-        model = unet.ResBlockUNet(in_channels=in_channels, out_channels=8, dim=2, 
+        model = ResBlockUNet(in_channels=in_channels, out_channels=8, dim=2, 
             side_out_parts=['down'], unet_kwargs=dict(depth=depth))
 
         out_list = model(x)

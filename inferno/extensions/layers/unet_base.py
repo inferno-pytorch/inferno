@@ -1,16 +1,12 @@
-from inferno.extensions.layers.convolutional import ConvELU2D
 import torch 
 import torch.nn as nn
-from functools import partial
-
-from .building_blocks import ResBlock
-
-from ...utils.python_utils import require_dict_kwagrs
+from . identity import Identity
 from ...utils.math_utils import max_allowed_ds_steps
 
 
-__all__ = ['UNetBase', 'ResBlockUNet']
+__all__ = ['UNetBase']
 _all = __all__
+
 
 
 class UNetBase(nn.Module):
@@ -37,7 +33,7 @@ class UNetBase(nn.Module):
             Otherwise the results are concatenated.
     """
 
-    def __init__(self, in_channels, out_channels, dim, depth=3, gain=2, residual=False, upsample_mode=None):
+    def __init__(self, in_channels, out_channels, dim, depth=3, gain=2, residual=False, upsample_mode=None, p_dropout=None):
 
         super(UNetBase, self).__init__()
 
@@ -52,6 +48,7 @@ class UNetBase(nn.Module):
         self.depth        = int(depth)
         self.gain         = int(gain)
         self.residual     = bool(residual)
+        self.p_dropout = p_dropout
 
         # members to remember what to store as side output
         self.__store_conv_down = []
@@ -63,74 +60,96 @@ class UNetBase(nn.Module):
         
 
         # members to hold actual nn.Modules / nn.ModuleLists
-        self.__conv_down_ops = None
+        self.__pre_conv_down_ops  = None
+        self.__post_conv_down_ops = None
+        self.__conv_down_ops  = None
+
+        self.__pre_conv_up_ops  = None
+        self.__post_conv_up_ops = None
         self.__conv_up_ops = None
+
         self.__upsample_ops = None
         self.__downsample_ops = None
+
+        self.__pre_conv_bottom_ops  = None
+        self.__post_conv_bottom_ops = None
         self.__conv_bottom_op = None
 
         # upsample kwargs 
         self.__upsample_kwargs = self._make_upsample_kwargs(upsample_mode=upsample_mode)
 
 
-        # the conv. factory functions can return either a module
-        # or a module and a bool which indicated if the output
-        # of conv block shall be used as side output.
-        # If only a module is returned, this is an implicit `False`.
-        # This function eases the adding of factory results to lists
-        def add_conv_op(res, conv_list, store_res_list, out_channels):
-            if isinstance(res, tuple):
-                conv_list.append(res[0])
-                store_res_list.append(res[1])
-                if res[1]:
-                    self.n_channels_per_output.append(out_channels)
+        ########################################
+        # default dropout
+        ########################################
+        if self.p_dropout is not None:
+            self.use_dropout = True
+            if self.dim == 2 :
+                self.__channel_dropout_op =  self.torch.nn.Dropout2d(p=float(self.p_dropout), inplace=False)
             else:
-                conv_list.append(res)
-                store_res_list.append(False)
-            return conv_list, store_res_list
+                self.__channel_dropout_op = self.torch.nn.Dropout3d(p=float(self.p_dropout), inplace=False)
+        else:
+            self.use_dropout = False
 
-        
-        ########################################
+ 
         # down-stream convolution blocks
-        ########################################
-        conv_down_ops = [] 
-        add_conv_down_op = partial(add_conv_op, conv_list=conv_down_ops, 
-                                   store_res_list=self.__store_conv_down)
-
-        current_in_channels = in_channels
-        
-        for i in range(depth):
-            factory_res = self.conv_op_factory(in_channels=current_in_channels, 
-                                              out_channels=current_in_channels * self.gain,  
-                                              part='down',index=i)
-            add_conv_down_op(factory_res, out_channels=current_in_channels * self.gain)
-
-            # increase the number of channels
-            current_in_channels *= gain
-
-        # store as proper torch ModuleList
-        self.__conv_down_ops = nn.ModuleList(conv_down_ops)
-
-
-        ########################################
+        self.__init__downstream()
+      
         # pooling / downsample operators
-        ########################################
         self.__downsample_ops = nn.ModuleList([
             self.downsample_op_factory(i) for i in range(depth)
         ])
         
-        ########################################
         # upsample operators
-        ########################################
         self.__upsample_ops = nn.ModuleList([
             self.upsample_op_factory(i) for i in range(depth)
         ])
 
-        ########################################
         # bottom block of the unet
-        ########################################       
+        self.__init__bottom()  
+
+        # up-stream convolution blocks
+        self.__init__upstream()
+        
+       
+        assert len(self.n_channels_per_output) == self.__store_conv_down.count(True) + \
+            self.__store_conv_up.count(True)   + int(self.__store_conv_bottom)
+        
+
+
+    def __init__downstream(self):
+        conv_down_ops = [] 
+        self.__store_conv_down = []
+
+        current_in_channels = self.in_channels
+        
+        for i in range(self.depth):
+            out_channels = current_in_channels * self.gain
+            op, return_op_res = self.conv_op_factory(in_channels=current_in_channels, 
+                                                     out_channels=out_channels,
+                                                     part='down',index=i)
+            conv_down_ops.append(op)
+            if return_op_res:
+                self.n_channels_per_output.append(out_channels)
+                self.__store_conv_down.append(True)
+            else:
+                self.__store_conv_down.append(False)
+
+
+            # increase the number of channels
+            current_in_channels *= self.gain
+
+        # store as proper torch ModuleList
+        self.__conv_down_ops = nn.ModuleList(conv_down_ops)
+
+        return current_in_channels
+
+
+    def __init__bottom(self):
+   
         conv_up_ops = []
 
+        current_in_channels = self.in_channels * self.gain**self.depth
 
 
         factory_res = self.conv_op_factory(in_channels=current_in_channels, 
@@ -142,30 +161,32 @@ class UNetBase(nn.Module):
         else:
             self.__conv_bottom_op = factory_res
             self.__store_conv_bottom = False
-    
 
-        ########################################
-        # up-stream convolution blocks
-        ########################################
+
+    def __init__upstream(self):
         conv_up_ops = []
-        add_conv_up_op = partial(add_conv_op, conv_list=conv_up_ops, 
-                           store_res_list=self.__store_conv_up)
-        for i in range(depth):
+        current_in_channels = self.in_channels * self.gain**self.depth
 
-            
-
+        for i in range(self.depth):
             # the number of out channels (are we in the last block?)
-            out_c = self.out_channels if (i+1 == depth) else current_in_channels//gain
+            out_channels = self.out_channels if (i+1 == self.depth) else current_in_channels//self.gain
 
             # if not residual we concat which needs twice as many channels
             fac = 1 if self.residual else 2
 
-            factory_res = self.conv_op_factory(in_channels=fac*current_in_channels, 
-                                              out_channels=out_c, part='up', index=i)
-            add_conv_up_op(factory_res, out_channels=out_c)
+            op, return_op_res = self.conv_op_factory(in_channels=fac*current_in_channels, 
+                                                     out_channels=out_channels, 
+                                                     part='up', index=i)
+            conv_up_ops.append(op)
+            if return_op_res:
+                self.n_channels_per_output.append(out_channels)
+                self.__store_conv_up.append(True)
+            else:
+                self.__store_conv_up.append(False)
+            
 
             # decrease the number of input_channels
-            current_in_channels //= gain
+            current_in_channels //= self.gain
 
         # store as proper torch ModuleLis
         self.__conv_up_ops = nn.ModuleList(conv_up_ops)
@@ -175,11 +196,6 @@ class UNetBase(nn.Module):
             self.__store_conv_up[-1] = True
             self.n_channels_per_output.append(self.out_channels)
 
-       
-
-        assert len(self.n_channels_per_output) == self.__store_conv_down.count(True) + \
-            self.__store_conv_up.count(True)   + int(self.__store_conv_bottom)
-        
 
     
     def _make_upsample_kwargs(self, upsample_mode):
@@ -237,6 +253,8 @@ class UNetBase(nn.Module):
 
 
             out = self.__conv_down_ops[d](out)
+            #out = self.dropout
+
             down_res.append(out)
 
             if self.__store_conv_down[d]:
@@ -294,60 +312,24 @@ class UNetBase(nn.Module):
     def upsample_op_factory(self, index):
         return nn.Upsample(**self.__upsample_kwargs)
 
+
+    def pre_conv_op_regularizer_factory(self, in_channels, out_channels, part, index):
+            if self.use_dropout and in_channels > 2:
+                return self.__channel_dropout_op(x)
+            else:
+                return Identity()
+
+    def post_conv_op_regularizer_factory(self, in_channels, out_channels, part, index):
+            return Identity()
+
+
+
     def conv_op_factory(self, in_channels, out_channels, part, index):
         raise NotImplementedError("conv_op_factory need to be implemented by deriving class")
 
-class ResBlockUNet(UNetBase):
-    """TODO.
 
-        ACCC
-    
-    Attributes:
-        activated (TYPE): Description
-        dim (TYPE): Description
-        res_block_kwargs (TYPE): Description
-        side_out_parts (TYPE): Description
-        unet_kwargs (TYPE): Description
-    """
-    def __init__(self, in_channels, dim, out_channels, unet_kwargs=None, 
-                 res_block_kwargs=None, activated=True,
-                 side_out_parts=None
-        ):
-
-        self.dim = dim
-        self.unet_kwargs      = require_dict_kwagrs(unet_kwargs,      "unet_kwargs must be a dict or None")
-        self.res_block_kwargs = require_dict_kwagrs(res_block_kwargs, "res_block_kwargs must be a dict or None")
-        self.activated = activated
-        if isinstance(side_out_parts, str):
-            self.side_out_parts = set([side_out_parts])
-        elif isinstance(side_out_parts, (tuple,list)):
-            self.side_out_parts = set(side_out_parts)
+    def _dropout(self, x):
+        if self.use_dropout:
+            return self.__channel_dropout_op(x)
         else:
-            self.side_out_parts = set()
-
-        super(ResBlockUNet, self).__init__(
-            in_channels=in_channels, 
-            dim=dim,
-            out_channels=out_channels, 
-            **self.unet_kwargs
-        )
-
-
-
-    def conv_op_factory(self, in_channels, out_channels, part, index):
-
-        # is this the very last convolutional block?
-        very_last = (part == 'up' and index + 1 == self.depth)
-
-
-        # should the residual block be activated?
-        activated = not very_last or self.activated
-
-        # should the output be part of the overall 
-        # return-list in the forward pass of the UNet
-        use_as_output = part in self.side_out_parts
-
-        # residual block used within the UNet
-        return ResBlock(in_channels=in_channels, out_channels=out_channels, 
-                             dim=self.dim, activated=activated,
-                             **self.res_block_kwargs), use_as_output
+            return x
