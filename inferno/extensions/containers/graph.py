@@ -12,7 +12,7 @@ from torch import nn as nn
 from ...utils import python_utils as pyu
 from ...utils.exceptions import assert_
 from ..layers.device import OnDevice
-from ..identity import Identity
+from ..layers.identity import Identity
 
 __all__ = ['NNGraph', 'Graph']
 

@@ -17,6 +17,7 @@ from .reshape           import _all as _reshape_all
 from .unet_base         import _all as _unet_base_all
 from .res_unet          import _all as _res_unet_all
 from .building_blocks   import _all as _building_blocks_all
+from .identity          import _all as _identity_all
 
 __all__.extend(_activations_all)
 __all__.extend(_convolutional_all)
@@ -25,5 +26,6 @@ __all__.extend(_reshape_all)
 __all__.extend(_unet_base_all)
 __all__.extend(_res_unet_all)
 __all__.extend(_building_blocks_all)
+__all__.extend(_identity_all)
 
 _all = __all__
