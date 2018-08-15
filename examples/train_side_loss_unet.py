@@ -16,7 +16,7 @@ from inferno.trainers.basic import Trainer
 
 from inferno.extensions.layers.convolutional import  Conv2D
 from inferno.extensions.layers.building_blocks import ResBlock
-from inferno.extensions.layers.unet import ResBlockUNet
+from inferno.extensions.layers import ResBlockUNet
 from inferno.utils.torch_utils import unwrap
 from inferno.utils.python_utils import ensure_dir
 import pylab
