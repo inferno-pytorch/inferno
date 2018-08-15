@@ -29,7 +29,7 @@ It's a work-in-progress, but the first stable release (0.2) is underway!
 
 
 * Free software: Apache Software License 2.0
-* Documentation: https://pytorch-inferno.readthedocs.io (Work in progress).
+* Documentation: http://inferno-pytorch.readthedocs.io (Work in Progress).
 
 
 Features
