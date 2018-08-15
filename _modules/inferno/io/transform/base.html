@@ -1,0 +1,262 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.io.transform.base &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.io.transform.base</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">...utils</span> <span class="k">import</span> <span class="n">python_utils</span> <span class="k">as</span> <span class="n">pyu</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="Transform"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.base.Transform">[docs]</a><span class="k">class</span> <span class="nc">Transform</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for a Transform. The argument `apply_to` (list) specifies the indices of</span>
+<span class="sd">    the tensors this transform will be applied to.</span>
+
+<span class="sd">    The following methods are recognized (in order of descending priority):</span>
+<span class="sd">        - `batch_function`: Applies to all tensors in a batch simultaneously</span>
+<span class="sd">        - `tensor_function`: Applies to just __one__ tensor at a time.</span>
+<span class="sd">        - `volume_function`: For 3D volumes, applies to just __one__ volume at a time.</span>
+<span class="sd">        - `image_function`: For 2D or 3D volumes, applies to just __one__ image at a time.</span>
+
+<span class="sd">    For example, if both `volume_function` and `image_function` are defined, this means that</span>
+<span class="sd">    only the former will be called. If the inputs are therefore not 5D batch-tensors of 3D</span>
+<span class="sd">    volumes, a `NotImplementedError` is raised.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">apply_to</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        apply_to : list or tuple</span>
+<span class="sd">            Indices of tensors to apply this transform to. The indices are with respect</span>
+<span class="sd">            to the list of arguments this object is called with.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_random_variables</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_to</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">apply_to</span><span class="p">)</span> <span class="k">if</span> <span class="n">apply_to</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Transform.build_random_variables"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.base.Transform.build_random_variables">[docs]</a>    <span class="k">def</span> <span class="nf">build_random_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Transform.clear_random_variables"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.base.Transform.clear_random_variables">[docs]</a>    <span class="k">def</span> <span class="nf">clear_random_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_random_variables</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="Transform.get_random_variable"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.base.Transform.get_random_variable">[docs]</a>    <span class="k">def</span> <span class="nf">get_random_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">random_variable_building_kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_variables</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_variables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">build</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">default</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">build_random_variables</span><span class="p">(</span><span class="o">**</span><span class="n">random_variable_building_kwargs</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_random_variable</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Transform.set_random_variable"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.base.Transform.set_random_variable">[docs]</a>    <span class="k">def</span> <span class="nf">set_random_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_random_variables</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tensors</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">):</span>
+        <span class="n">tensors</span> <span class="o">=</span> <span class="n">pyu</span><span class="o">.</span><span class="n">to_iterable</span><span class="p">(</span><span class="n">tensors</span><span class="p">)</span>
+        <span class="c1"># Get the list of the indices of the tensors to which we&#39;re going to apply the transform</span>
+        <span class="n">apply_to</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tensors</span><span class="p">)))</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_to</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_to</span>
+        <span class="c1"># Flush random variables and assume they&#39;re built by image_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_random_variables</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;batch_function&#39;</span><span class="p">):</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_function</span><span class="p">(</span><span class="n">tensors</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pyu</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">transformed</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;tensor_function&#39;</span><span class="p">):</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tensor_function</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">)</span>
+                           <span class="k">if</span> <span class="n">tensor_index</span> <span class="ow">in</span> <span class="n">apply_to</span> <span class="k">else</span> <span class="n">tensor</span>
+                           <span class="k">for</span> <span class="n">tensor_index</span><span class="p">,</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tensors</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="n">pyu</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">transformed</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;volume_function&#39;</span><span class="p">):</span>
+            <span class="c1"># Loop over all tensors</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_apply_volume_function</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">)</span>
+                           <span class="k">if</span> <span class="n">tensor_index</span> <span class="ow">in</span> <span class="n">apply_to</span> <span class="k">else</span> <span class="n">tensor</span>
+                           <span class="k">for</span> <span class="n">tensor_index</span><span class="p">,</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tensors</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="n">pyu</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">transformed</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;image_function&#39;</span><span class="p">):</span>
+            <span class="c1"># Loop over all tensors</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_apply_image_function</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">)</span>
+                           <span class="k">if</span> <span class="n">tensor_index</span> <span class="ow">in</span> <span class="n">apply_to</span> <span class="k">else</span> <span class="n">tensor</span>
+                           <span class="k">for</span> <span class="n">tensor_index</span><span class="p">,</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tensors</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="n">pyu</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">transformed</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="c1"># noinspection PyUnresolvedReferences</span>
+    <span class="k">def</span> <span class="nf">_apply_image_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">pyu</span><span class="o">.</span><span class="n">has_callable_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;image_function&#39;</span><span class="p">)</span>
+        <span class="c1"># 2D case</span>
+        <span class="k">if</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">image_function</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">)</span>
+                                       <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">channel_image</span><span class="p">])</span>
+                             <span class="k">for</span> <span class="n">channel_image</span> <span class="ow">in</span> <span class="n">tensor</span><span class="p">])</span>
+        <span class="c1"># 3D case</span>
+        <span class="k">elif</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">image_function</span><span class="p">(</span><span class="n">image</span><span class="p">,</span>
+                                                                     <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">)</span>
+                                                 <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">volume</span><span class="p">])</span>
+                                       <span class="k">for</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">channel_volume</span><span class="p">])</span>
+                             <span class="k">for</span> <span class="n">channel_volume</span> <span class="ow">in</span> <span class="n">tensor</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="c1"># Assume we have a 3D volume (signature zyx) and apply the image function</span>
+            <span class="c1"># on all yx slices.</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">image_function</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">)</span>
+                             <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">tensor</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># Assume we really do have an image.</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_function</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="c1"># noinspection PyUnresolvedReferences</span>
+    <span class="k">def</span> <span class="nf">_apply_volume_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">pyu</span><span class="o">.</span><span class="n">has_callable_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;volume_function&#39;</span><span class="p">)</span>
+        <span class="c1"># 3D case</span>
+        <span class="k">if</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="c1"># tensor is bczyx</span>
+            <span class="c1"># volume function is applied to zyx, i.e. loop over b and c</span>
+            <span class="c1"># FIXME This loops one time too many</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">volume_function</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span>
+                                                                      <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">)</span>
+                                                 <span class="k">for</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">channel_volume</span><span class="p">])</span>
+                                       <span class="k">for</span> <span class="n">channel_volume</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">])</span>
+                             <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">tensor</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="c1"># We&#39;re applying the volume function on a czyx tensor, i.e. we loop over c and apply</span>
+            <span class="c1"># volume function to (zyx)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">volume_function</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">)</span>
+                             <span class="k">for</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">tensor</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="c1"># We&#39;re applying the volume function on the volume itself</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume_function</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="o">**</span><span class="n">transform_function_kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="Compose"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.base.Compose">[docs]</a><span class="k">class</span> <span class="nc">Compose</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Composes multiple callables (including but not limited to `Transform` objects).&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">transforms</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        transforms : list of callable or tuple of callable</span>
+<span class="sd">            Transforms to compose.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="n">callable</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span> <span class="k">for</span> <span class="n">transform</span> <span class="ow">in</span> <span class="n">transforms</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">transforms</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Compose.add"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.base.Compose.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Compose.remove"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.base.Compose.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">transform_idx</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">transform</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">transform_idx</span> <span class="o">=</span> <span class="n">idx</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="n">transform_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">transform_idx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tensors</span><span class="p">):</span>
+        <span class="n">intermediate</span> <span class="o">=</span> <span class="n">tensors</span>
+        <span class="k">for</span> <span class="n">transform</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">:</span>
+            <span class="n">intermediate</span> <span class="o">=</span> <span class="n">pyu</span><span class="o">.</span><span class="n">to_iterable</span><span class="p">(</span><span class="n">transform</span><span class="p">(</span><span class="o">*</span><span class="n">intermediate</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">pyu</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">intermediate</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DTypeMapping"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.base.DTypeMapping">[docs]</a><span class="k">class</span> <span class="nc">DTypeMapping</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">DTYPE_MAPPING</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;float32&#39;</span><span class="p">:</span> <span class="s1">&#39;float32&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;float&#39;</span><span class="p">:</span> <span class="s1">&#39;float32&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;double&#39;</span><span class="p">:</span> <span class="s1">&#39;float64&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;float64&#39;</span><span class="p">:</span> <span class="s1">&#39;float64&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;half&#39;</span><span class="p">:</span> <span class="s1">&#39;float16&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;float16&#39;</span><span class="p">:</span> <span class="s1">&#39;float16&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;long&#39;</span><span class="p">:</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;int64&#39;</span><span class="p">:</span> <span class="s1">&#39;int64&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;byte&#39;</span><span class="p">:</span> <span class="s1">&#39;uint8&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;uint8&#39;</span><span class="p">:</span> <span class="s1">&#39;uint8&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;int&#39;</span><span class="p">:</span> <span class="s1">&#39;int32&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;int32&#39;</span><span class="p">:</span> <span class="s1">&#39;int32&#39;</span><span class="p">}</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

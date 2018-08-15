@@ -1,0 +1,390 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.trainers.callbacks.logging package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inferno.utils package" href="inferno.utils.html" />
+    <link rel="prev" title="inferno.trainers.callbacks package" href="inferno.trainers.callbacks.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.utils.html" title="inferno.utils package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.trainers.callbacks.html" title="inferno.trainers.callbacks package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.trainers.html" >inferno.trainers package</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="inferno.trainers.callbacks.html" accesskey="U">inferno.trainers.callbacks package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-trainers-callbacks-logging-package">
+<h1>inferno.trainers.callbacks.logging package<a class="headerlink" href="#inferno-trainers-callbacks-logging-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.trainers.callbacks.logging.base">
+<span id="inferno-trainers-callbacks-logging-base-module"></span><h2>inferno.trainers.callbacks.logging.base module<a class="headerlink" href="#module-inferno.trainers.callbacks.logging.base" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.trainers.callbacks.logging.base.Logger">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.logging.base.</code><code class="descname">Logger</code><span class="sig-paren">(</span><em>log_directory=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/base.html#Logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.base.Logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="inferno.trainers.callbacks.html#inferno.trainers.callbacks.base.Callback" title="inferno.trainers.callbacks.base.Callback"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.base.Callback</tt></a></p>
+<p>A special callback for logging.</p>
+<p>Loggers are special because they’re required to be serializable, whereas other
+callbacks have no such guarantees. In this regard, they jointly handled by
+trainers and the callback engine.</p>
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.logging.base.Logger.log_directory">
+<code class="descname">log_directory</code><a class="headerlink" href="#inferno.trainers.callbacks.logging.base.Logger.log_directory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.base.Logger.set_log_directory">
+<code class="descname">set_log_directory</code><span class="sig-paren">(</span><em>log_directory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/base.html#Logger.set_log_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.base.Logger.set_log_directory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.trainers.callbacks.logging.tensorboard">
+<span id="inferno-trainers-callbacks-logging-tensorboard-module"></span><h2>inferno.trainers.callbacks.logging.tensorboard module<a class="headerlink" href="#module-inferno.trainers.callbacks.logging.tensorboard" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TaggedImage">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.logging.tensorboard.</code><code class="descname">TaggedImage</code><span class="sig-paren">(</span><em>array</em>, <em>tag</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TaggedImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TaggedImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.logging.tensorboard.</code><code class="descname">TensorboardLogger</code><span class="sig-paren">(</span><em>log_directory=None</em>, <em>log_scalars_every=None</em>, <em>log_images_every=None</em>, <em>send_image_at_batch_indices='all'</em>, <em>send_image_at_channel_indices='all'</em>, <em>send_volume_at_z_indices='mid'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.logging.base.Logger" title="inferno.trainers.callbacks.logging.base.Logger"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.logging.base.Logger</tt></a></p>
+<p>Class to enable logging of training progress to Tensorboard.</p>
+<p>Currently supports logging scalars and images.</p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.end_of_training_iteration">
+<code class="descname">end_of_training_iteration</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.end_of_training_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.end_of_training_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.end_of_validation_run">
+<code class="descname">end_of_validation_run</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.end_of_validation_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.end_of_validation_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.extract_images_from_batch">
+<code class="descname">extract_images_from_batch</code><span class="sig-paren">(</span><em>batch</em>, <em>base_tag=None</em>, <em>prefix=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.extract_images_from_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.extract_images_from_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.get_config">
+<code class="descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.get_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_histogram">
+<code class="descname">log_histogram</code><span class="sig-paren">(</span><em>tag</em>, <em>values</em>, <em>step</em>, <em>bins=1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.log_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs the histogram of a list/vector of values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_image_or_volume_batch">
+<code class="descname">log_image_or_volume_batch</code><span class="sig-paren">(</span><em>tag</em>, <em>batch</em>, <em>step=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.log_image_or_volume_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_image_or_volume_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_images">
+<code class="descname">log_images</code><span class="sig-paren">(</span><em>tag</em>, <em>images</em>, <em>step</em>, <em>image_format='CHW'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.log_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs a list of images.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_images_every">
+<code class="descname">log_images_every</code><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_images_every" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_images_now">
+<code class="descname">log_images_now</code><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_images_now" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_object">
+<code class="descname">log_object</code><span class="sig-paren">(</span><em>tag</em>, <em>object_</em>, <em>allow_scalar_logging=True</em>, <em>allow_image_logging=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.log_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_object" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_scalar">
+<code class="descname">log_scalar</code><span class="sig-paren">(</span><em>tag</em>, <em>value</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.log_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_scalar" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>tag <span class="classifier-delimiter">:</span> <span class="classifier">basestring</span></dt>
+<dd>Name of the scalar</dd>
+</dl>
+<p>value
+step : int</p>
+<blockquote>
+<div>training iteration</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_scalars_every">
+<code class="descname">log_scalars_every</code><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_scalars_every" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_scalars_now">
+<code class="descname">log_scalars_now</code><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_scalars_now" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.observe_state">
+<code class="descname">observe_state</code><span class="sig-paren">(</span><em>key</em>, <em>observe_while='training'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.observe_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.observe_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.observe_states">
+<code class="descname">observe_states</code><span class="sig-paren">(</span><em>keys</em>, <em>observe_while='training'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.observe_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.observe_states" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.observe_training_and_validation_state">
+<code class="descname">observe_training_and_validation_state</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.observe_training_and_validation_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.observe_training_and_validation_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.observe_training_and_validation_states">
+<code class="descname">observe_training_and_validation_states</code><span class="sig-paren">(</span><em>keys</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.observe_training_and_validation_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.observe_training_and_validation_states" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.writer">
+<code class="descname">writer</code><a class="headerlink" href="#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.writer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.trainers.callbacks.logging">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.trainers.callbacks.logging" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="inferno.trainers.callbacks.logging.get_logger">
+<code class="descclassname">inferno.trainers.callbacks.logging.</code><code class="descname">get_logger</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging.html#get_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.get_logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.logging.</code><code class="descname">TensorboardLogger</code><span class="sig-paren">(</span><em>log_directory=None</em>, <em>log_scalars_every=None</em>, <em>log_images_every=None</em>, <em>send_image_at_batch_indices='all'</em>, <em>send_image_at_channel_indices='all'</em>, <em>send_volume_at_z_indices='mid'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.logging.base.Logger" title="inferno.trainers.callbacks.logging.base.Logger"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.logging.base.Logger</tt></a></p>
+<p>Class to enable logging of training progress to Tensorboard.</p>
+<p>Currently supports logging scalars and images.</p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.end_of_training_iteration">
+<code class="descname">end_of_training_iteration</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.end_of_training_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.end_of_training_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.end_of_validation_run">
+<code class="descname">end_of_validation_run</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.end_of_validation_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.end_of_validation_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.extract_images_from_batch">
+<code class="descname">extract_images_from_batch</code><span class="sig-paren">(</span><em>batch</em>, <em>base_tag=None</em>, <em>prefix=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.extract_images_from_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.extract_images_from_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.get_config">
+<code class="descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.get_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.log_histogram">
+<code class="descname">log_histogram</code><span class="sig-paren">(</span><em>tag</em>, <em>values</em>, <em>step</em>, <em>bins=1000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.log_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.log_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs the histogram of a list/vector of values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.log_image_or_volume_batch">
+<code class="descname">log_image_or_volume_batch</code><span class="sig-paren">(</span><em>tag</em>, <em>batch</em>, <em>step=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.log_image_or_volume_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.log_image_or_volume_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.log_images">
+<code class="descname">log_images</code><span class="sig-paren">(</span><em>tag</em>, <em>images</em>, <em>step</em>, <em>image_format='CHW'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.log_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.log_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs a list of images.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.log_images_every">
+<code class="descname">log_images_every</code><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.log_images_every" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.log_images_now">
+<code class="descname">log_images_now</code><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.log_images_now" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.log_object">
+<code class="descname">log_object</code><span class="sig-paren">(</span><em>tag</em>, <em>object_</em>, <em>allow_scalar_logging=True</em>, <em>allow_image_logging=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.log_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.log_object" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.log_scalar">
+<code class="descname">log_scalar</code><span class="sig-paren">(</span><em>tag</em>, <em>value</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.log_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.log_scalar" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>tag <span class="classifier-delimiter">:</span> <span class="classifier">basestring</span></dt>
+<dd>Name of the scalar</dd>
+</dl>
+<p>value
+step : int</p>
+<blockquote>
+<div>training iteration</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.log_scalars_every">
+<code class="descname">log_scalars_every</code><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.log_scalars_every" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.log_scalars_now">
+<code class="descname">log_scalars_now</code><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.log_scalars_now" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.observe_state">
+<code class="descname">observe_state</code><span class="sig-paren">(</span><em>key</em>, <em>observe_while='training'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.observe_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.observe_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.observe_states">
+<code class="descname">observe_states</code><span class="sig-paren">(</span><em>keys</em>, <em>observe_while='training'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.observe_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.observe_states" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.observe_training_and_validation_state">
+<code class="descname">observe_training_and_validation_state</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.observe_training_and_validation_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.observe_training_and_validation_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.observe_training_and_validation_states">
+<code class="descname">observe_training_and_validation_states</code><span class="sig-paren">(</span><em>keys</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/logging/tensorboard.html#TensorboardLogger.observe_training_and_validation_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.observe_training_and_validation_states" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.logging.TensorboardLogger.writer">
+<code class="descname">writer</code><a class="headerlink" href="#inferno.trainers.callbacks.logging.TensorboardLogger.writer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.trainers.callbacks.logging package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.trainers.callbacks.logging.base">inferno.trainers.callbacks.logging.base module</a></li>
+<li><a class="reference internal" href="#module-inferno.trainers.callbacks.logging.tensorboard">inferno.trainers.callbacks.logging.tensorboard module</a></li>
+<li><a class="reference internal" href="#module-inferno.trainers.callbacks.logging">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.trainers.callbacks.html"
+                        title="previous chapter">inferno.trainers.callbacks package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inferno.utils.html"
+                        title="next chapter">inferno.utils package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.trainers.callbacks.logging.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.utils.html" title="inferno.utils package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.trainers.callbacks.html" title="inferno.trainers.callbacks package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.trainers.html" >inferno.trainers package</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="inferno.trainers.callbacks.html" >inferno.trainers.callbacks package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

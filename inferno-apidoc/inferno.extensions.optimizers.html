@@ -1,0 +1,226 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.extensions.optimizers package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inferno.io package" href="inferno.io.html" />
+    <link rel="prev" title="inferno.extensions.metrics package" href="inferno.extensions.metrics.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.html" title="inferno.io package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.metrics.html" title="inferno.extensions.metrics package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.extensions.html" accesskey="U">inferno.extensions package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-extensions-optimizers-package">
+<h1>inferno.extensions.optimizers package<a class="headerlink" href="#inferno-extensions-optimizers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.extensions.optimizers.adam">
+<span id="inferno-extensions-optimizers-adam-module"></span><h2>inferno.extensions.optimizers.adam module<a class="headerlink" href="#module-inferno.extensions.optimizers.adam" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.optimizers.adam.Adam">
+<em class="property">class </em><code class="descclassname">inferno.extensions.optimizers.adam.</code><code class="descname">Adam</code><span class="sig-paren">(</span><em>params</em>, <em>lr=0.001</em>, <em>betas=(0.9</em>, <em>0.999)</em>, <em>eps=1e-08</em>, <em>lambda_l1=0</em>, <em>weight_decay=0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/optimizers/adam.html#Adam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.optimizers.adam.Adam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.optim.optimizer.Optimizer</tt></p>
+<p>Implements Adam algorithm with the option of adding a L1 penalty.</p>
+<p>It has been proposed in <a class="reference external" href="https://arxiv.org/abs/1412.6980">Adam: A Method for Stochastic Optimization</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>params</strong> (<em>iterable</em>) – iterable of parameters to optimize or dicts defining
+parameter groups</li>
+<li><strong>lr</strong> (<em>float</em><em>, </em><em>optional</em>) – learning rate (default: 1e-3)</li>
+<li><strong>betas</strong> (<em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – coefficients used for computing
+running averages of gradient and its square (default: (0.9, 0.999))</li>
+<li><strong>eps</strong> (<em>float</em><em>, </em><em>optional</em>) – term added to the denominator to improve
+numerical stability (default: 1e-8)</li>
+<li><strong>weight_decay</strong> (<em>float</em><em>, </em><em>optional</em>) – weight decay (L2 penalty) (default: 0)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="inferno.extensions.optimizers.adam.Adam.step">
+<code class="descname">step</code><span class="sig-paren">(</span><em>closure=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/optimizers/adam.html#Adam.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.optimizers.adam.Adam.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a single optimization step.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>closure</strong> (<em>callable</em><em>, </em><em>optional</em>) – A closure that reevaluates the model
+and returns the loss.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.optimizers.annealed_adam">
+<span id="inferno-extensions-optimizers-annealed-adam-module"></span><h2>inferno.extensions.optimizers.annealed_adam module<a class="headerlink" href="#module-inferno.extensions.optimizers.annealed_adam" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.optimizers.annealed_adam.AnnealedAdam">
+<em class="property">class </em><code class="descclassname">inferno.extensions.optimizers.annealed_adam.</code><code class="descname">AnnealedAdam</code><span class="sig-paren">(</span><em>params</em>, <em>lr=0.001</em>, <em>betas=(0.9</em>, <em>0.999)</em>, <em>eps=1e-08</em>, <em>lambda_l1=0</em>, <em>weight_decay=0</em>, <em>lr_decay=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/optimizers/annealed_adam.html#AnnealedAdam"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.optimizers.annealed_adam.AnnealedAdam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.optimizers.adam.Adam" title="inferno.extensions.optimizers.adam.Adam"><tt class="xref py py-class docutils literal">inferno.extensions.optimizers.adam.Adam</tt></a></p>
+<p>Implements Adam algorithm with learning rate annealing and optional L1 penalty.</p>
+<p>It has been proposed in <a class="reference external" href="https://arxiv.org/abs/1412.6980">Adam: A Method for Stochastic Optimization</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>params</strong> (<em>iterable</em>) – iterable of parameters to optimize or dicts defining
+parameter groups</li>
+<li><strong>lr</strong> (<em>float</em><em>, </em><em>optional</em>) – learning rate (default: 1e-3)</li>
+<li><strong>betas</strong> (<em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – coefficients used for computing
+running averages of gradient and its square (default: (0.9, 0.999))</li>
+<li><strong>eps</strong> (<em>float</em><em>, </em><em>optional</em>) – term added to the denominator to improve
+numerical stability (default: 1e-8)</li>
+<li><strong>lambda_l1</strong> (<em>float</em><em>, </em><em>optional</em>) – L1 penalty (default: 0)</li>
+<li><strong>weight_decay</strong> (<em>float</em><em>, </em><em>optional</em>) – L2 penalty (weight decay) (default: 0)</li>
+<li><strong>lr_decay</strong> (<em>float</em><em>, </em><em>optional</em>) – decay learning rate by this factor after every step
+(default: 1.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="inferno.extensions.optimizers.annealed_adam.AnnealedAdam.step">
+<code class="descname">step</code><span class="sig-paren">(</span><em>closure=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/optimizers/annealed_adam.html#AnnealedAdam.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.optimizers.annealed_adam.AnnealedAdam.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a single optimization step.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>closure</strong> (<em>callable</em><em>, </em><em>optional</em>) – A closure that reevaluates the model
+and returns the loss.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.optimizers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.extensions.optimizers" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.extensions.optimizers package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.optimizers.adam">inferno.extensions.optimizers.adam module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.optimizers.annealed_adam">inferno.extensions.optimizers.annealed_adam module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.optimizers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.extensions.metrics.html"
+                        title="previous chapter">inferno.extensions.metrics package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inferno.io.html"
+                        title="next chapter">inferno.io package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.extensions.optimizers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.html" title="inferno.io package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.metrics.html" title="inferno.extensions.metrics package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.extensions.html" >inferno.extensions package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

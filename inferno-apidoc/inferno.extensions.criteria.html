@@ -1,0 +1,309 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.extensions.criteria package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inferno.extensions.initializers package" href="inferno.extensions.initializers.html" />
+    <link rel="prev" title="inferno.extensions.containers package" href="inferno.extensions.containers.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.initializers.html" title="inferno.extensions.initializers package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.containers.html" title="inferno.extensions.containers package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.extensions.html" accesskey="U">inferno.extensions package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-extensions-criteria-package">
+<h1>inferno.extensions.criteria package<a class="headerlink" href="#inferno-extensions-criteria-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.extensions.criteria.core">
+<span id="inferno-extensions-criteria-core-module"></span><h2>inferno.extensions.criteria.core module<a class="headerlink" href="#module-inferno.extensions.criteria.core" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.criteria.core.Criteria">
+<em class="property">class </em><code class="descclassname">inferno.extensions.criteria.core.</code><code class="descname">Criteria</code><span class="sig-paren">(</span><em>*criteria</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/core.html#Criteria"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.core.Criteria" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Aggregate multiple criteria to one.</p>
+<dl class="method">
+<dt id="inferno.extensions.criteria.core.Criteria.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>prediction</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/core.html#Criteria.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.core.Criteria.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.criteria.core.As2DCriterion">
+<em class="property">class </em><code class="descclassname">inferno.extensions.criteria.core.</code><code class="descname">As2DCriterion</code><span class="sig-paren">(</span><em>criterion</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/core.html#As2DCriterion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.core.As2DCriterion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Makes a given criterion applicable on (N, C, H, W) prediction and (N, H, W) target tensors,
+if they’re applicable to (N, C) prediction and (N,) target tensors .</p>
+<dl class="method">
+<dt id="inferno.extensions.criteria.core.As2DCriterion.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>prediction</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/core.html#As2DCriterion.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.core.As2DCriterion.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.criteria.elementwise_measures">
+<span id="inferno-extensions-criteria-elementwise-measures-module"></span><h2>inferno.extensions.criteria.elementwise_measures module<a class="headerlink" href="#module-inferno.extensions.criteria.elementwise_measures" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.criteria.elementwise_measures.WeightedMSELoss">
+<em class="property">class </em><code class="descclassname">inferno.extensions.criteria.elementwise_measures.</code><code class="descname">WeightedMSELoss</code><span class="sig-paren">(</span><em>positive_class_weight=1.0</em>, <em>positive_class_value=1.0</em>, <em>size_average=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/elementwise_measures.html#WeightedMSELoss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.elementwise_measures.WeightedMSELoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="attribute">
+<dt id="inferno.extensions.criteria.elementwise_measures.WeightedMSELoss.NEGATIVE_CLASS_WEIGHT">
+<code class="descname">NEGATIVE_CLASS_WEIGHT</code><em class="property"> = 1.0</em><a class="headerlink" href="#inferno.extensions.criteria.elementwise_measures.WeightedMSELoss.NEGATIVE_CLASS_WEIGHT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.criteria.elementwise_measures.WeightedMSELoss.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/elementwise_measures.html#WeightedMSELoss.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.elementwise_measures.WeightedMSELoss.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.criteria.regularized">
+<span id="inferno-extensions-criteria-regularized-module"></span><h2>inferno.extensions.criteria.regularized module<a class="headerlink" href="#module-inferno.extensions.criteria.regularized" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.criteria.regularized.RegularizedLoss">
+<em class="property">class </em><code class="descclassname">inferno.extensions.criteria.regularized.</code><code class="descname">RegularizedLoss</code><span class="sig-paren">(</span><em>criterion</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/regularized.html#RegularizedLoss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.regularized.RegularizedLoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Wrap a criterion. Collect regularization losses from model and combine with wrapped criterion.</p>
+<dl class="method">
+<dt id="inferno.extensions.criteria.regularized.RegularizedLoss.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*args</em>, <em>trainer=None</em>, <em>model=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/regularized.html#RegularizedLoss.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.regularized.RegularizedLoss.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.criteria.regularized.RegularizedCrossEntropyLoss">
+<em class="property">class </em><code class="descclassname">inferno.extensions.criteria.regularized.</code><code class="descname">RegularizedCrossEntropyLoss</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/regularized.html#RegularizedCrossEntropyLoss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.regularized.RegularizedCrossEntropyLoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.criteria.regularized.RegularizedLoss" title="inferno.extensions.criteria.regularized.RegularizedLoss"><tt class="xref py py-class docutils literal">inferno.extensions.criteria.regularized.RegularizedLoss</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.criteria.regularized.RegularizedBCEWithLogitsLoss">
+<em class="property">class </em><code class="descclassname">inferno.extensions.criteria.regularized.</code><code class="descname">RegularizedBCEWithLogitsLoss</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/regularized.html#RegularizedBCEWithLogitsLoss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.regularized.RegularizedBCEWithLogitsLoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.criteria.regularized.RegularizedLoss" title="inferno.extensions.criteria.regularized.RegularizedLoss"><tt class="xref py py-class docutils literal">inferno.extensions.criteria.regularized.RegularizedLoss</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.criteria.regularized.RegularizedBCELoss">
+<em class="property">class </em><code class="descclassname">inferno.extensions.criteria.regularized.</code><code class="descname">RegularizedBCELoss</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/regularized.html#RegularizedBCELoss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.regularized.RegularizedBCELoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.criteria.regularized.RegularizedLoss" title="inferno.extensions.criteria.regularized.RegularizedLoss"><tt class="xref py py-class docutils literal">inferno.extensions.criteria.regularized.RegularizedLoss</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.criteria.regularized.RegularizedMSELoss">
+<em class="property">class </em><code class="descclassname">inferno.extensions.criteria.regularized.</code><code class="descname">RegularizedMSELoss</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/regularized.html#RegularizedMSELoss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.regularized.RegularizedMSELoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.criteria.regularized.RegularizedLoss" title="inferno.extensions.criteria.regularized.RegularizedLoss"><tt class="xref py py-class docutils literal">inferno.extensions.criteria.regularized.RegularizedLoss</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.criteria.regularized.RegularizedNLLLoss">
+<em class="property">class </em><code class="descclassname">inferno.extensions.criteria.regularized.</code><code class="descname">RegularizedNLLLoss</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/regularized.html#RegularizedNLLLoss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.regularized.RegularizedNLLLoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.criteria.regularized.RegularizedLoss" title="inferno.extensions.criteria.regularized.RegularizedLoss"><tt class="xref py py-class docutils literal">inferno.extensions.criteria.regularized.RegularizedLoss</tt></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.criteria.set_similarity_measures">
+<span id="inferno-extensions-criteria-set-similarity-measures-module"></span><h2>inferno.extensions.criteria.set_similarity_measures module<a class="headerlink" href="#module-inferno.extensions.criteria.set_similarity_measures" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.criteria.set_similarity_measures.SorensenDiceLoss">
+<em class="property">class </em><code class="descclassname">inferno.extensions.criteria.set_similarity_measures.</code><code class="descname">SorensenDiceLoss</code><span class="sig-paren">(</span><em>weight=None</em>, <em>channelwise=True</em>, <em>eps=1e-06</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/set_similarity_measures.html#SorensenDiceLoss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.set_similarity_measures.SorensenDiceLoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Computes a loss scalar, which when minimized maximizes the Sorensen-Dice similarity
+between the input and the target. For both inputs and targets it must be the case that
+<cite>input_or_target.size(1) = num_channels</cite>.</p>
+<dl class="method">
+<dt id="inferno.extensions.criteria.set_similarity_measures.SorensenDiceLoss.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/set_similarity_measures.html#SorensenDiceLoss.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.set_similarity_measures.SorensenDiceLoss.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>input:      torch.FloatTensor or torch.cuda.FloatTensor
+target:     torch.FloatTensor or torch.cuda.FloatTensor</p>
+<p>Expected shape of the inputs: (batch_size, nb_channels, …)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.criteria.set_similarity_measures.GeneralizedDiceLoss">
+<em class="property">class </em><code class="descclassname">inferno.extensions.criteria.set_similarity_measures.</code><code class="descname">GeneralizedDiceLoss</code><span class="sig-paren">(</span><em>weight=None</em>, <em>channelwise=False</em>, <em>eps=1e-06</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/set_similarity_measures.html#GeneralizedDiceLoss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.set_similarity_measures.GeneralizedDiceLoss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Computes the scalar Generalized Dice Loss defined in <a class="reference external" href="https://arxiv.org/abs/1707.03237">https://arxiv.org/abs/1707.03237</a></p>
+<p>This version works for multiple classes and expects predictions for every class (e.g. softmax output) and
+one-hot targets for every class.</p>
+<dl class="method">
+<dt id="inferno.extensions.criteria.set_similarity_measures.GeneralizedDiceLoss.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/criteria/set_similarity_measures.html#GeneralizedDiceLoss.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.criteria.set_similarity_measures.GeneralizedDiceLoss.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>input: torch.FloatTensor or torch.cuda.FloatTensor
+target:     torch.FloatTensor or torch.cuda.FloatTensor</p>
+<dl class="docutils">
+<dt>Expected shape of the inputs:</dt>
+<dd><ul class="first last simple">
+<li>if not channelwise: (batch_size, nb_classes, …)</li>
+<li>if channelwise:     (batch_size, nb_channels, nb_classes, …)</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.criteria">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.extensions.criteria" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.extensions.criteria package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.criteria.core">inferno.extensions.criteria.core module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.criteria.elementwise_measures">inferno.extensions.criteria.elementwise_measures module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.criteria.regularized">inferno.extensions.criteria.regularized module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.criteria.set_similarity_measures">inferno.extensions.criteria.set_similarity_measures module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.criteria">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.extensions.containers.html"
+                        title="previous chapter">inferno.extensions.containers package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inferno.extensions.initializers.html"
+                        title="next chapter">inferno.extensions.initializers package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.extensions.criteria.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.initializers.html" title="inferno.extensions.initializers package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.containers.html" title="inferno.extensions.containers package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.extensions.html" >inferno.extensions package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

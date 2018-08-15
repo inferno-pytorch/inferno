@@ -1,0 +1,223 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.io.core package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inferno.io.transform package" href="inferno.io.transform.html" />
+    <link rel="prev" title="inferno.io.box package" href="inferno.io.box.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.transform.html" title="inferno.io.transform package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.box.html" title="inferno.io.box package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.io.html" accesskey="U">inferno.io package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-io-core-package">
+<h1>inferno.io.core package<a class="headerlink" href="#inferno-io-core-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.io.core.base">
+<span id="inferno-io-core-base-module"></span><h2>inferno.io.core.base module<a class="headerlink" href="#module-inferno.io.core.base" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.io.core.base.IndexSpec">
+<em class="property">class </em><code class="descclassname">inferno.io.core.base.</code><code class="descname">IndexSpec</code><span class="sig-paren">(</span><em>index=None</em>, <em>base_sequence_at_index=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/core/base.html#IndexSpec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.core.base.IndexSpec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>Class to wrap any extra index information a <cite>Dataset</cite> object might want to send back.
+This could be useful in (say) inference, where we would wish to (asynchronously) know
+more about the current input.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.core.base.SyncableDataset">
+<em class="property">class </em><code class="descclassname">inferno.io.core.base.</code><code class="descname">SyncableDataset</code><a class="reference internal" href="../_modules/inferno/io/core/base.html#SyncableDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.core.base.SyncableDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.utils.data.dataset.Dataset</tt></p>
+<dl class="method">
+<dt id="inferno.io.core.base.SyncableDataset.sync_with">
+<code class="descname">sync_with</code><span class="sig-paren">(</span><em>dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/core/base.html#SyncableDataset.sync_with"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.core.base.SyncableDataset.sync_with" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.io.core.concatenate">
+<span id="inferno-io-core-concatenate-module"></span><h2>inferno.io.core.concatenate module<a class="headerlink" href="#module-inferno.io.core.concatenate" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.io.core.concatenate.Concatenate">
+<em class="property">class </em><code class="descclassname">inferno.io.core.concatenate.</code><code class="descname">Concatenate</code><span class="sig-paren">(</span><em>*datasets</em>, <em>transforms=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/core/concatenate.html#Concatenate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.core.concatenate.Concatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.utils.data.dataset.Dataset</tt></p>
+<p>Concatenates mutliple datasets to one. This class does not implement
+synchronization primitives.</p>
+<dl class="method">
+<dt id="inferno.io.core.concatenate.Concatenate.map_index">
+<code class="descname">map_index</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/core/concatenate.html#Concatenate.map_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.core.concatenate.Concatenate.map_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.io.core.data_utils">
+<span id="inferno-io-core-data-utils-module"></span><h2>inferno.io.core.data_utils module<a class="headerlink" href="#module-inferno.io.core.data_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="inferno.io.core.data_utils.defines_base_sequence">
+<code class="descclassname">inferno.io.core.data_utils.</code><code class="descname">defines_base_sequence</code><span class="sig-paren">(</span><em>dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/core/data_utils.html#defines_base_sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.core.data_utils.defines_base_sequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.core.data_utils.implements_sync_primitives">
+<code class="descclassname">inferno.io.core.data_utils.</code><code class="descname">implements_sync_primitives</code><span class="sig-paren">(</span><em>dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/core/data_utils.html#implements_sync_primitives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.core.data_utils.implements_sync_primitives" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-inferno.io.core.zip">
+<span id="inferno-io-core-zip-module"></span><h2>inferno.io.core.zip module<a class="headerlink" href="#module-inferno.io.core.zip" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.io.core.zip.Zip">
+<em class="property">class </em><code class="descclassname">inferno.io.core.zip.</code><code class="descname">Zip</code><span class="sig-paren">(</span><em>*datasets</em>, <em>sync=False</em>, <em>transforms=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/core/zip.html#Zip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.core.zip.Zip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.core.base.SyncableDataset" title="inferno.io.core.base.SyncableDataset"><tt class="xref py py-class docutils literal">inferno.io.core.base.SyncableDataset</tt></a></p>
+<p>Zip two or more datasets to one dataset. If the datasets implement synchronization primitives,
+they are all synchronized with the first dataset.</p>
+<dl class="method">
+<dt id="inferno.io.core.zip.Zip.sync_datasets">
+<code class="descname">sync_datasets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/core/zip.html#Zip.sync_datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.core.zip.Zip.sync_datasets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.core.zip.Zip.sync_with">
+<code class="descname">sync_with</code><span class="sig-paren">(</span><em>dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/core/zip.html#Zip.sync_with"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.core.zip.Zip.sync_with" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.core.zip.ZipReject">
+<em class="property">class </em><code class="descclassname">inferno.io.core.zip.</code><code class="descname">ZipReject</code><span class="sig-paren">(</span><em>*datasets</em>, <em>sync=False</em>, <em>transforms=None</em>, <em>rejection_dataset_indices</em>, <em>rejection_criterion</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/core/zip.html#ZipReject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.core.zip.ZipReject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.core.zip.Zip" title="inferno.io.core.zip.Zip"><tt class="xref py py-class docutils literal">inferno.io.core.zip.Zip</tt></a></p>
+<p>Extends <cite>Zip</cite> by the functionality of rejecting samples that don’t fulfill
+a specified rejection criterion.</p>
+<dl class="method">
+<dt id="inferno.io.core.zip.ZipReject.fetch_from_rejection_datasets">
+<code class="descname">fetch_from_rejection_datasets</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/core/zip.html#ZipReject.fetch_from_rejection_datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.core.zip.ZipReject.fetch_from_rejection_datasets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.io.core">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.io.core" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.io.core package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.io.core.base">inferno.io.core.base module</a></li>
+<li><a class="reference internal" href="#module-inferno.io.core.concatenate">inferno.io.core.concatenate module</a></li>
+<li><a class="reference internal" href="#module-inferno.io.core.data_utils">inferno.io.core.data_utils module</a></li>
+<li><a class="reference internal" href="#module-inferno.io.core.zip">inferno.io.core.zip module</a></li>
+<li><a class="reference internal" href="#module-inferno.io.core">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.io.box.html"
+                        title="previous chapter">inferno.io.box package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inferno.io.transform.html"
+                        title="next chapter">inferno.io.transform package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.io.core.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.transform.html" title="inferno.io.transform package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.box.html" title="inferno.io.box package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.io.html" >inferno.io package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

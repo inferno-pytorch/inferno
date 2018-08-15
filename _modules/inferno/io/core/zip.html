@@ -1,0 +1,241 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.io.core.zip &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.io.core.zip</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">torch.utils.data.dataset</span> <span class="k">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">data_utils</span> <span class="k">as</span> <span class="n">du</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">SyncableDataset</span>
+<span class="kn">from</span> <span class="nn">...utils.exceptions</span> <span class="k">import</span> <span class="n">assert_</span>
+<span class="kn">from</span> <span class="nn">...utils</span> <span class="k">import</span> <span class="n">python_utils</span> <span class="k">as</span> <span class="n">pyu</span>
+
+
+<div class="viewcode-block" id="Zip"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.core.html#inferno.io.core.zip.Zip">[docs]</a><span class="k">class</span> <span class="nc">Zip</span><span class="p">(</span><span class="n">SyncableDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Zip two or more datasets to one dataset. If the datasets implement synchronization primitives,</span>
+<span class="sd">    they are all synchronized with the first dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">datasets</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">transforms</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Zip</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">assert_</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Expecting one or more datasets, got none.&quot;</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">dataset_index</span><span class="p">,</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasets</span><span class="p">):</span>
+            <span class="n">assert_</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">),</span>
+                    <span class="s2">&quot;Object at position </span><span class="si">{}</span><span class="s2"> of type </span><span class="si">{}</span><span class="s2"> is not a subclass of &quot;</span>
+                    <span class="s2">&quot;`torch.utils.data.dataset.Dataset`&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dataset_index</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+                    <span class="ne">TypeError</span><span class="p">)</span>
+        <span class="n">assert_</span><span class="p">(</span><span class="n">transforms</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">callable</span><span class="p">(</span><span class="n">transforms</span><span class="p">),</span>
+                <span class="s2">&quot;Given `transforms` is not callable.&quot;</span><span class="p">,</span>
+                <span class="ne">TypeError</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="n">datasets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sync</span> <span class="o">=</span> <span class="n">sync</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="n">transforms</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sync_datasets</span><span class="p">()</span>
+        <span class="c1"># Inherit base sequence if sync&#39;ing</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">([</span><span class="n">du</span><span class="o">.</span><span class="n">defines_base_sequence</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base_sequence</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">base_sequence</span> <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base_sequence</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Zip.sync_datasets"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.core.html#inferno.io.core.zip.Zip.sync_datasets">[docs]</a>    <span class="k">def</span> <span class="nf">sync_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">master_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">if</span> <span class="n">du</span><span class="o">.</span><span class="n">implements_sync_primitives</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+                <span class="n">dataset</span><span class="o">.</span><span class="n">sync_with</span><span class="p">(</span><span class="n">master_dataset</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Zip.sync_with"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.core.html#inferno.io.core.zip.Zip.sync_with">[docs]</a>    <span class="k">def</span> <span class="nf">sync_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="n">master_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">du</span><span class="o">.</span><span class="n">implements_sync_primitives</span><span class="p">(</span><span class="n">master_dataset</span><span class="p">):</span>
+            <span class="n">master_dataset</span><span class="o">.</span><span class="n">sync_with</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="c1"># Sync all other datasets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sync_datasets</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">assert_</span><span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">exception_type</span><span class="o">=</span><span class="ne">IndexError</span><span class="p">)</span>
+        <span class="n">fetched</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataset</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fetched</span>
+        <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">(</span><span class="o">*</span><span class="n">fetched</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">du</span><span class="o">.</span><span class="n">defines_base_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Zip</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">min</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">xDatasets)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="o">+</span> \
+                   <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">dataset</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span> <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> \
+                   <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span> <span class="o">+</span> \
+                   <span class="s1">&#39;)&#39;</span></div>
+
+
+<div class="viewcode-block" id="ZipReject"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.core.html#inferno.io.core.zip.ZipReject">[docs]</a><span class="k">class</span> <span class="nc">ZipReject</span><span class="p">(</span><span class="n">Zip</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extends `Zip` by the functionality of rejecting samples that don&#39;t fulfill</span>
+<span class="sd">    a specified rejection criterion.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">datasets</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">transforms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">rejection_dataset_indices</span><span class="p">,</span> <span class="n">rejection_criterion</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        datasets : list or tuple</span>
+<span class="sd">            Datasets to zip.</span>
+<span class="sd">        sync : bool</span>
+<span class="sd">            Whether to synchronize zipped datasets if a synchronization primitive is available.</span>
+<span class="sd">        transforms : callable</span>
+<span class="sd">            Transforms to apply on the fetched batch.</span>
+<span class="sd">        rejection_dataset_indices : int or list or tuple</span>
+<span class="sd">            Indices (or index) corresponding to the datasets which are used to determine whether</span>
+<span class="sd">            a batch should be rejected.</span>
+<span class="sd">        rejection_criterion : callable</span>
+<span class="sd">            Criterion for rejection of batch. Must be a callable that accepts one or more</span>
+<span class="sd">            arrays / tensors and returns True if the corresponding batch should be rejected,</span>
+<span class="sd">            False otherwise. Should accept as many inputs as the number of elements in</span>
+<span class="sd">            `rejection_dataset_indices` if the latter is a list, and 1 otherwise. Note that</span>
+<span class="sd">            the order of the inputs to the `rejection_criterion` is the same as the order of</span>
+<span class="sd">            the indices in `rejection_dataset_indices`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ZipReject</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">datasets</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="n">sync</span><span class="p">,</span> <span class="n">transforms</span><span class="o">=</span><span class="n">transforms</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">rejection_dataset_index</span> <span class="ow">in</span> <span class="n">pyu</span><span class="o">.</span><span class="n">to_iterable</span><span class="p">(</span><span class="n">rejection_dataset_indices</span><span class="p">):</span>
+            <span class="n">assert_</span><span class="p">(</span><span class="n">rejection_dataset_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">),</span>
+                    <span class="s2">&quot;Index of the dataset to be used for rejection (= </span><span class="si">{}</span><span class="s2">) is larger &quot;</span>
+                    <span class="s2">&quot;than the number of datasets (= </span><span class="si">{}</span><span class="s2">) minus one.&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rejection_dataset_index</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">)),</span>
+                    <span class="ne">IndexError</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rejection_dataset_indices</span> <span class="o">=</span> <span class="n">pyu</span><span class="o">.</span><span class="n">to_iterable</span><span class="p">(</span><span class="n">rejection_dataset_indices</span><span class="p">)</span>
+        <span class="n">assert_</span><span class="p">(</span><span class="n">callable</span><span class="p">(</span><span class="n">rejection_criterion</span><span class="p">),</span>
+                <span class="s2">&quot;Rejection criterion is not callable as it should be.&quot;</span><span class="p">,</span>
+                <span class="ne">TypeError</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rejection_criterion</span> <span class="o">=</span> <span class="n">rejection_criterion</span>  <span class="c1"># return true if fetched should be rejected</span>
+
+<div class="viewcode-block" id="ZipReject.fetch_from_rejection_datasets"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.core.html#inferno.io.core.zip.ZipReject.fetch_from_rejection_datasets">[docs]</a>    <span class="k">def</span> <span class="nf">fetch_from_rejection_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">rejection_fetched</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="n">rejection_dataset_index</span><span class="p">][</span><span class="n">index</span><span class="p">]</span>
+                             <span class="k">for</span> <span class="n">rejection_dataset_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rejection_dataset_indices</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">rejection_fetched</span></div>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="c1"># we increase the index until a valid batch of &#39;rejection_dataset&#39; is found</span>
+        <span class="n">assert_</span><span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">exception_type</span><span class="o">=</span><span class="ne">IndexError</span><span class="p">)</span>
+        <span class="n">index_</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="c1"># if we have a rejection dataset, check if the rejection criterion is fulfilled</span>
+        <span class="c1"># and update the index</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rejection_dataset_indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># we only fetch the dataset which has the rejection criterion</span>
+            <span class="c1"># and only fetch all datasets when a valid index is found</span>
+            <span class="n">rejection_fetched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_from_rejection_datasets</span><span class="p">(</span><span class="n">index_</span><span class="p">)</span>
+            <span class="n">num_fetch_attempts</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">rejection_criterion</span><span class="p">(</span><span class="o">*</span><span class="n">rejection_fetched</span><span class="p">):</span>
+                <span class="n">index_</span> <span class="o">=</span> <span class="p">(</span><span class="n">index_</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="n">rejection_fetched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_from_rejection_datasets</span><span class="p">(</span><span class="n">index_</span><span class="p">)</span>
+                <span class="n">num_fetch_attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">num_fetch_attempts</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;ZipReject: No valid batch was found!&quot;</span><span class="p">)</span>
+            <span class="c1"># fetch all other datasets and concatenate them with the valid rejection_fetch</span>
+            <span class="n">fetched</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">dataset_index</span><span class="p">,</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">dataset_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rejection_dataset_indices</span><span class="p">:</span>
+                    <span class="c1"># Find the index in `rejection_fetched` corresponding to this dataset_index</span>
+                    <span class="n">index_in_rejection_fetched</span> <span class="o">=</span> \
+                        <span class="bp">self</span><span class="o">.</span><span class="n">rejection_dataset_indices</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">dataset_index</span><span class="p">)</span>
+                    <span class="c1"># ... and append to fetched</span>
+                    <span class="n">fetched</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rejection_fetched</span><span class="p">[</span><span class="n">index_in_rejection_fetched</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Fetch and append to fetched</span>
+                    <span class="n">fetched</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">index_</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fetched</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataset</span><span class="p">[</span><span class="n">index_</span><span class="p">]</span> <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">]</span>
+        <span class="c1"># apply transforms if present</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">assert_</span><span class="p">(</span><span class="n">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">),</span> <span class="s2">&quot;`self.transforms` is not callable.&quot;</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">)</span>
+            <span class="n">fetched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">(</span><span class="o">*</span><span class="n">fetched</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fetched</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

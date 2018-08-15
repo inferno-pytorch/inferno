@@ -1,0 +1,226 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.extensions.criteria.set_similarity_measures &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.extensions.criteria.set_similarity_measures</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">...utils.torch_utils</span> <span class="k">import</span> <span class="n">flatten_samples</span>
+<span class="kn">from</span> <span class="nn">torch.autograd</span> <span class="k">import</span> <span class="n">Variable</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;SorensenDiceLoss&#39;</span><span class="p">,</span> <span class="s1">&#39;GeneralizedDiceLoss&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="SorensenDiceLoss"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.criteria.html#inferno.extensions.criteria.set_similarity_measures.SorensenDiceLoss">[docs]</a><span class="k">class</span> <span class="nc">SorensenDiceLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes a loss scalar, which when minimized maximizes the Sorensen-Dice similarity</span>
+<span class="sd">    between the input and the target. For both inputs and targets it must be the case that</span>
+<span class="sd">    `input_or_target.size(1) = num_channels`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">channelwise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        weight : torch.FloatTensor or torch.cuda.FloatTensor</span>
+<span class="sd">            Class weights. Applies only if `channelwise = True`.</span>
+<span class="sd">        channelwise : bool</span>
+<span class="sd">            Whether to apply the loss channelwise and sum the results (True)</span>
+<span class="sd">            or to apply it on all channels jointly (False).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SorensenDiceLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channelwise</span> <span class="o">=</span> <span class="n">channelwise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
+
+<div class="viewcode-block" id="SorensenDiceLoss.forward"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.criteria.html#inferno.extensions.criteria.set_similarity_measures.SorensenDiceLoss.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        input:      torch.FloatTensor or torch.cuda.FloatTensor</span>
+<span class="sd">        target:     torch.FloatTensor or torch.cuda.FloatTensor</span>
+
+<span class="sd">        Expected shape of the inputs: (batch_size, nb_channels, ...)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">input</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">target</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">channelwise</span><span class="p">:</span>
+            <span class="n">numerator</span> <span class="o">=</span> <span class="p">(</span><span class="nb">input</span> <span class="o">*</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">denominator</span> <span class="o">=</span> <span class="p">(</span><span class="nb">input</span> <span class="o">*</span> <span class="nb">input</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="n">target</span> <span class="o">*</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.</span> <span class="o">*</span> <span class="p">(</span><span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TODO This should be compatible with Pytorch 0.2, but check</span>
+            <span class="c1"># Flatten input and target to have the shape (C, N),</span>
+            <span class="c1"># where N is the number of samples</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="n">flatten_samples</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">flatten_samples</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="c1"># Compute numerator and denominator (by summing over samples and</span>
+            <span class="c1"># leaving the channels intact)</span>
+            <span class="n">numerator</span> <span class="o">=</span> <span class="p">(</span><span class="nb">input</span> <span class="o">*</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">denominator</span> <span class="o">=</span> <span class="p">(</span><span class="nb">input</span> <span class="o">*</span> <span class="nb">input</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">target</span> <span class="o">*</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">channelwise_loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># With pytorch &lt; 0.2, channelwise_loss.size = (C, 1).</span>
+                <span class="k">if</span> <span class="n">channelwise_loss</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">channelwise_loss</span> <span class="o">=</span> <span class="n">channelwise_loss</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># Wrap weights in a variable</span>
+                <span class="n">weight</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="n">weight</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">channelwise_loss</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+                <span class="c1"># Apply weight</span>
+                <span class="n">channelwise_loss</span> <span class="o">=</span> <span class="n">weight</span> <span class="o">*</span> <span class="n">channelwise_loss</span>
+            <span class="c1"># Sum over the channels to compute the total loss</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">channelwise_loss</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">loss</span></div></div>
+
+
+<div class="viewcode-block" id="GeneralizedDiceLoss"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.criteria.html#inferno.extensions.criteria.set_similarity_measures.GeneralizedDiceLoss">[docs]</a><span class="k">class</span> <span class="nc">GeneralizedDiceLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the scalar Generalized Dice Loss defined in https://arxiv.org/abs/1707.03237</span>
+
+<span class="sd">    This version works for multiple classes and expects predictions for every class (e.g. softmax output) and</span>
+<span class="sd">    one-hot targets for every class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">channelwise</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GeneralizedDiceLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channelwise</span> <span class="o">=</span> <span class="n">channelwise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
+
+<div class="viewcode-block" id="GeneralizedDiceLoss.forward"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.criteria.html#inferno.extensions.criteria.set_similarity_measures.GeneralizedDiceLoss.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        input: torch.FloatTensor or torch.cuda.FloatTensor</span>
+<span class="sd">        target:     torch.FloatTensor or torch.cuda.FloatTensor</span>
+
+<span class="sd">        Expected shape of the inputs:</span>
+<span class="sd">            - if not channelwise: (batch_size, nb_classes, ...)</span>
+<span class="sd">            - if channelwise:     (batch_size, nb_channels, nb_classes, ...)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">input</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">target</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">channelwise</span><span class="p">:</span>
+            <span class="c1"># Flatten input and target to have the shape (nb_classes, N),</span>
+            <span class="c1"># where N is the number of samples</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="n">flatten_samples</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">flatten_samples</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+            <span class="c1"># Find classes weights:</span>
+            <span class="n">sum_targets</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">class_weigths</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">sum_targets</span> <span class="o">*</span> <span class="n">sum_targets</span><span class="p">)</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+
+            <span class="c1"># Compute generalized Dice loss:</span>
+            <span class="n">numer</span> <span class="o">=</span> <span class="p">((</span><span class="nb">input</span> <span class="o">*</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">class_weigths</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">denom</span> <span class="o">=</span> <span class="p">((</span><span class="nb">input</span> <span class="o">+</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">class_weigths</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="n">loss</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">numer</span> <span class="o">/</span> <span class="n">denom</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">flatten_and_preserve_channels</span><span class="p">(</span><span class="n">tensor</span><span class="p">):</span>
+                <span class="n">tensor_dim</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span>
+                <span class="k">assert</span>  <span class="n">tensor_dim</span> <span class="o">&gt;=</span> <span class="mi">3</span>
+                <span class="n">num_channels</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">num_classes</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="c1"># Permute the channel axis to first</span>
+                <span class="n">permute_axes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">tensor_dim</span><span class="p">))</span>
+                <span class="n">permute_axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">permute_axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">permute_axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">permute_axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">permute_axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">permute_axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">permuted</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="o">*</span><span class="n">permute_axes</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+                <span class="n">flattened</span> <span class="o">=</span> <span class="n">permuted</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">num_channels</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">flattened</span>
+
+            <span class="c1"># Flatten input and target to have the shape (nb_channels, nb_classes, N)</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="n">flatten_and_preserve_channels</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">flatten_and_preserve_channels</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+            <span class="c1"># Find classes weights:</span>
+            <span class="n">sum_targets</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">class_weigths</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">sum_targets</span> <span class="o">*</span> <span class="n">sum_targets</span><span class="p">)</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+
+            <span class="c1"># Compute generalized Dice loss:</span>
+            <span class="n">numer</span> <span class="o">=</span> <span class="p">((</span><span class="nb">input</span> <span class="o">*</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">class_weigths</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">denom</span> <span class="o">=</span> <span class="p">((</span><span class="nb">input</span> <span class="o">+</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">class_weigths</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">channelwise_loss</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">numer</span> <span class="o">/</span> <span class="n">denom</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">channelwise_loss</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">channelwise_loss</span> <span class="o">=</span> <span class="n">channelwise_loss</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">channel_weights</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="n">channel_weights</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">channelwise_loss</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="s2">&quot;`weight` should have shape (nb_channels, ), `target` should have shape (batch_size, nb_channels, nb_classes, ...)&quot;</span>
+                <span class="c1"># Apply channel weights:</span>
+                <span class="n">channelwise_loss</span> <span class="o">=</span> <span class="n">channel_weights</span> <span class="o">*</span> <span class="n">channelwise_loss</span>
+
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">channelwise_loss</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">loss</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

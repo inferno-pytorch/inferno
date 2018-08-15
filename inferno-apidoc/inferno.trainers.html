@@ -1,0 +1,1940 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.trainers package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inferno.trainers.callbacks package" href="inferno.trainers.callbacks.html" />
+    <link rel="prev" title="inferno.io.volumetric package" href="inferno.io.volumetric.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.trainers.callbacks.html" title="inferno.trainers.callbacks package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.volumetric.html" title="inferno.io.volumetric package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" accesskey="U">inferno package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-trainers-package">
+<h1>inferno.trainers package<a class="headerlink" href="#inferno-trainers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="inferno.trainers.callbacks.html">inferno.trainers.callbacks package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="inferno.trainers.callbacks.logging.html">inferno.trainers.callbacks.logging package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="inferno.trainers.callbacks.logging.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferno.trainers.callbacks.logging.html#module-inferno.trainers.callbacks.logging.base">inferno.trainers.callbacks.logging.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferno.trainers.callbacks.logging.html#module-inferno.trainers.callbacks.logging.tensorboard">inferno.trainers.callbacks.logging.tensorboard module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferno.trainers.callbacks.logging.html#module-inferno.trainers.callbacks.logging">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.html#module-inferno.trainers.callbacks.base">inferno.trainers.callbacks.base module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.html#module-inferno.trainers.callbacks.console">inferno.trainers.callbacks.console module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.html#module-inferno.trainers.callbacks.essentials">inferno.trainers.callbacks.essentials module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.html#module-inferno.trainers.callbacks.scheduling">inferno.trainers.callbacks.scheduling module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.html#module-inferno.trainers.callbacks.tqdm">inferno.trainers.callbacks.tqdm module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.html#module-inferno.trainers.callbacks.tqdmstub">inferno.trainers.callbacks.tqdmstub module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.html#module-inferno.trainers.callbacks">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.trainers.basic">
+<span id="inferno-trainers-basic-module"></span><h2>inferno.trainers.basic module<a class="headerlink" href="#module-inferno.trainers.basic" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.trainers.basic.Trainer">
+<em class="property">class </em><code class="descclassname">inferno.trainers.basic.</code><code class="descname">Trainer</code><span class="sig-paren">(</span><em>model=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>A basic trainer.</p>
+<p>Given a torch model, this class encapsulates the training and validation loops,
+checkpoint creation, logging, CPU &lt;-&gt; GPU transfers and managing data-loaders.</p>
+<p>In addition, this class interacts with the callback engine (found at
+<cite>inferno.trainers.callbacks.base.CallbackEngine</cite>), which manages callbacks at
+certain preset events.</p>
+<p class="rubric">Notes</p>
+<p>Logging is implemented as a special callback, in the sense that it’s jointly
+managed by the this class and the callback engine. This is primarily because
+general callbacks are not intended to be serializable, but not being able to
+serialize the logger is a nuisance.</p>
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.DYNAMIC_STATES">
+<code class="descname">DYNAMIC_STATES</code><em class="property"> = {'learning_rate': 'current_learning_rate'}</em><a class="headerlink" href="#inferno.trainers.basic.Trainer.DYNAMIC_STATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.INF_STRINGS">
+<code class="descname">INF_STRINGS</code><em class="property"> = {'infinity', 'inf', 'infty'}</em><a class="headerlink" href="#inferno.trainers.basic.Trainer.INF_STRINGS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.apply_model">
+<code class="descname">apply_model</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.apply_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.apply_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.apply_model_and_loss">
+<code class="descname">apply_model_and_loss</code><span class="sig-paren">(</span><em>inputs</em>, <em>target</em>, <em>backward=True</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.apply_model_and_loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.apply_model_and_loss" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.bind_loader">
+<code class="descname">bind_loader</code><span class="sig-paren">(</span><em>name</em>, <em>loader</em>, <em>num_inputs=None</em>, <em>num_targets=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.bind_loader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.bind_loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bind a data loader to the trainer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>{'train'</em><em>, </em><em>'validate'</em><em>, </em><em>'test'}</em>) – Name of the loader, i.e. what it should be used for.</li>
+<li><strong>loader</strong> (<em>torch.utils.data.DataLoader</em>) – DataLoader object.</li>
+<li><strong>num_inputs</strong> (<em>int</em>) – Number of input tensors from the <cite>loader</cite>.</li>
+<li><strong>num_targets</strong> (<em>int</em>) – Number of target tensors from the <cite>loader</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><tt class="xref py py-exc docutils literal">KeyError</tt> – if name is invalid.</li>
+<li><tt class="xref py py-exc docutils literal">TypeError</tt> – if loader is not a DataLoader instance.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.bind_model">
+<code class="descname">bind_model</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.bind_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.bind_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Binds a model to the trainer. Equivalent to setting model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>model</strong> (<em>torch.nn.Module</em>) – Model to bind.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="inferno.trainers.basic.Trainer.build">
+<em class="property">classmethod </em><code class="descname">build</code><span class="sig-paren">(</span><em>model=None</em>, <em>**trainer_config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory function to build the trainer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.build_criterion">
+<code class="descname">build_criterion</code><span class="sig-paren">(</span><em>method</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.build_criterion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.build_criterion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the loss criterion for training.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method</strong> (<em>str</em><em> or </em><em>callable</em><em> or </em><em>torch.nn.Module</em>) – Name of the criterion when str, criterion class when callable, or a
+torch.nn.Module instance. If a name is provided, this method looks
+for the criterion in <cite>torch.nn</cite>.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments to the criterion class’ constructor if applicable.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><tt class="xref py py-exc docutils literal">AssertionError</tt> – if criterion is not found.</li>
+<li><tt class="xref py py-exc docutils literal">NotImplementedError</tt> – if method is neither a str nor a callable.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.build_logger">
+<code class="descname">build_logger</code><span class="sig-paren">(</span><em>logger=None</em>, <em>log_directory=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.build_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.build_logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build the logger.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>logger</strong> (<a class="reference internal" href="inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.base.Logger" title="inferno.trainers.callbacks.logging.base.Logger"><em>inferno.trainers.callbacks.logging.base.Logger</em></a><em> or </em><em>str</em><em> or </em><em>type</em>) – Must either be a Logger object or the name of a logger or the class of a logger.</li>
+<li><strong>log_directory</strong> (<em>str</em>) – Path to the directory where the log files are to be stored.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments to the logger class.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.build_metric">
+<code class="descname">build_metric</code><span class="sig-paren">(</span><em>method</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.build_metric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.build_metric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the metric for evaluation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method</strong> (<em>callable</em><em> or </em><em>str</em>) – Name of the metric when string, metric class or a callable object
+when callable. If a name is provided, this method looks for the metric in
+<cite>inferno.extensions.metrics</cite>.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments to the metric class’ constructor, if applicable.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">AssertionError: if the metric is not found.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.build_optimizer">
+<code class="descname">build_optimizer</code><span class="sig-paren">(</span><em>method</em>, <em>param_groups=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.build_optimizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.build_optimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the optimizer for training.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method</strong> (<em>str</em><em> or </em><em>callable</em><em> or </em><em>torch.optim.Optimizer</em>) – Name of the optimizer when str, handle to the optimizer class when callable,
+or a torch.optim.Optimizer instance. If a name is provided, this method looks
+for the optimizer in <cite>torch.optim</cite> module first and in
+inferno.extensions.optimizers second.</li>
+<li><strong>param_groups</strong> (<em>list of dict</em>) – Specifies the parameter group. Defaults to model.parameters() if None.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments to the optimizer.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><tt class="xref py py-exc docutils literal">AssertionError</tt> – if optimizer is not found</li>
+<li><tt class="xref py py-exc docutils literal">NotImplementedError</tt> – if method is not str or callable.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.build_validation_criterion">
+<code class="descname">build_validation_criterion</code><span class="sig-paren">(</span><em>method</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.build_validation_criterion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.build_validation_criterion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the loss criterion for validation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method</strong> (<em>str</em><em> or </em><em>callable</em><em> or </em><em>torch.nn.Module</em>) – Name of the criterion when str, criterion class when callable, or a
+torch.nn.Module instance. If a name is provided, this method looks
+for the criterion in <cite>torch.nn</cite>.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments to the criterion class’ constructor if applicable.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><tt class="xref py py-exc docutils literal">AssertionError</tt> – if criterion is not found.</li>
+<li><tt class="xref py py-exc docutils literal">NotImplementedError</tt> – if method is neither a str nor a callable.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.callbacks">
+<code class="descname">callbacks</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.callbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the callback engine.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.cast">
+<code class="descname">cast</code><span class="sig-paren">(</span><em>objects</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.cast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.cast" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.console">
+<code class="descname">console</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.console" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current console.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.cpu">
+<code class="descname">cpu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.cpu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.cpu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train on the CPU.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.criterion">
+<code class="descname">criterion</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.criterion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the loss criterion.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.criterion_is_defined">
+<code class="descname">criterion_is_defined</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.criterion_is_defined" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.cuda">
+<code class="descname">cuda</code><span class="sig-paren">(</span><em>devices=None</em>, <em>base_device=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.cuda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.cuda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train on the GPU.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>devices</strong> (<em>list</em>) – Specify the ordinals of the devices to use for dataparallel training.</li>
+<li><strong>base_device</strong> (<em>{'cpu'</em><em>, </em><em>'cuda'}</em>) – When using data-parallel training, specify where the result tensors
+are collected. If ‘cuda’, the results are collected in <cite>devices[0]</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.current_learning_rate">
+<code class="descname">current_learning_rate</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.current_learning_rate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.dtype">
+<code class="descname">dtype</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.epoch_count">
+<code class="descname">epoch_count</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.epoch_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.eval_mode">
+<code class="descname">eval_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.eval_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.eval_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set model, criterion and metric to eval mode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.evaluate_metric_every">
+<code class="descname">evaluate_metric_every</code><span class="sig-paren">(</span><em>frequency</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.evaluate_metric_every"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.evaluate_metric_every" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set frequency of metric evaluation __during <a href="#id1"><span class="problematic" id="id2">training__</span></a> (and not during validation).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>frequency</strong> (<a class="reference internal" href="inferno.utils.html#inferno.utils.train_utils.Frequency" title="inferno.utils.train_utils.Frequency"><em>inferno.utils.train_utils.Frequency</em></a><em> or </em><em>str</em><em> or </em><em>tuple</em><em> or </em><em>list</em><em> or </em><em>int</em>) – Metric evaluation frequency. If str, it could be (say) ‘10 iterations’ or ‘1 epoch’.
+If tuple (or list), it could be (10, ‘iterations’) or (1, ‘epoch’). If int
+(say 10), it’s interpreted as (10, ‘iterations’).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.evaluate_metric_now">
+<code class="descname">evaluate_metric_now</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.evaluate_metric_now" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.evaluating_metric_every">
+<code class="descname">evaluating_metric_every</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.evaluating_metric_every" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.fetch_next_batch">
+<code class="descname">fetch_next_batch</code><span class="sig-paren">(</span><em>from_loader='train'</em>, <em>restart_exhausted_generators=True</em>, <em>update_batch_count=True</em>, <em>update_epoch_count_if_generator_exhausted=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.fetch_next_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.fetch_next_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>max_num_iterations=None</em>, <em>max_num_epochs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>max_num_iterations</strong> (<em>int</em><em> or </em><em>float</em><em> or </em><em>str</em>) – (Optional) Maximum number of training iterations. Overrides the value set by
+<cite>Trainer.set_max_num_iterations</cite>. If float, it should equal numpy.inf.
+If str, it should be one of {‘inf’, ‘infinity’, ‘infty’}.</li>
+<li><strong>max_num_epochs</strong> (<em>int</em><em> or </em><em>float</em><em> or </em><em>str</em>) – (Optional) Maximum number of training epochs. Overrides the value set by
+<cite>Trainer.set_max_num_epochs</cite>. If float, it should equal numpy.inf.
+If str, it should be one of {‘inf’, ‘infinity’, ‘infty’}.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.get_config">
+<code class="descname">get_config</code><span class="sig-paren">(</span><em>exclude_loader=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.get_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.get_current_learning_rate">
+<code class="descname">get_current_learning_rate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.get_current_learning_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.get_current_learning_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the current learning rate.
+:returns: List of learning rates if there are multiple parameter groups, or a float</p>
+<blockquote>
+<div>if there’s just one.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list or float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.get_loader_specs">
+<code class="descname">get_loader_specs</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.get_loader_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.get_loader_specs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.get_state">
+<code class="descname">get_state</code><span class="sig-paren">(</span><em>key</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.get_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.get_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.is_cuda">
+<code class="descname">is_cuda</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.is_cuda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.is_cuda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether using GPU for training.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.iteration_count">
+<code class="descname">iteration_count</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.iteration_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>from_directory=None</em>, <em>best=False</em>, <em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the trainer from checkpoint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>from_directory</strong> (<em>str</em>) – Path to the directory where the checkpoint is located. The filename should be
+‘checkpoint.pytorch’ if best=False, or ‘best_checkpoint.pytorch’ if best=True.</li>
+<li><strong>best</strong> (<em>bool</em>) – Whether to load the best checkpoint. The filename in <cite>from_directory</cite> should be
+‘best_checkpoint.pytorch’.</li>
+<li><strong>filename</strong> (<em>str</em>) – Overrides the default filename.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.load_">
+<code class="descname">load_</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.load_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.load_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.load_model">
+<code class="descname">load_model</code><span class="sig-paren">(</span><em>from_directory=None</em>, <em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.load_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.load_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.log_directory">
+<code class="descname">log_directory</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.log_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the log directory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.logger">
+<code class="descname">logger</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the logger.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.metric">
+<code class="descname">metric</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.metric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the evaluation metric.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.metric_is_defined">
+<code class="descname">metric_is_defined</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.metric_is_defined" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the metric is defined.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.model">
+<code class="descname">model</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the model.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.model_is_defined">
+<code class="descname">model_is_defined</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.model_is_defined" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.next_epoch">
+<code class="descname">next_epoch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.next_epoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.next_epoch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.next_iteration">
+<code class="descname">next_iteration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.next_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.next_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.optimizer">
+<code class="descname">optimizer</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.optimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the optimizer.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.optimizer_is_defined">
+<code class="descname">optimizer_is_defined</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.optimizer_is_defined" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.pickle_module">
+<code class="descname">pickle_module</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.pickle_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.print">
+<code class="descname">print</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.print" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.quiet">
+<code class="descname">quiet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.quiet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.quiet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.record_validation_results">
+<code class="descname">record_validation_results</code><span class="sig-paren">(</span><em>validation_loss</em>, <em>validation_error</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.record_validation_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.record_validation_results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.register_callback">
+<code class="descname">register_callback</code><span class="sig-paren">(</span><em>callback</em>, <em>trigger='auto'</em>, <em>**callback_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.register_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.register_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers a callback with the internal callback engine.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>callback</strong> (<em>type</em><em> or </em><em>callable</em>) – Callback to register.</li>
+<li><strong>trigger</strong> (<em>str</em>) – Specify the event that triggers the callback. Leave at ‘auto’ to have the
+callback-engine figure out the triggers. See
+<cite>inferno.training.callbacks.base.CallbackEngine</cite> documentation for more on this.</li>
+<li><strong>callback_kwargs</strong> (<em>dict</em>) – If <cite>callback</cite> is a type, initialize an instance with these keywords to the
+__init__ method.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.restart_generators">
+<code class="descname">restart_generators</code><span class="sig-paren">(</span><em>of_loader=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.restart_generators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.restart_generators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.retain_graph">
+<code class="descname">retain_graph</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.retain_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>exclude_loader=True</em>, <em>stash_best_checkpoint=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.save_at_best_validation_score">
+<code class="descname">save_at_best_validation_score</code><span class="sig-paren">(</span><em>yes=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.save_at_best_validation_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.save_at_best_validation_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets whether to save when the validation score is the best seen.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.save_directory">
+<code class="descname">save_directory</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.save_directory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.save_every">
+<code class="descname">save_every</code><span class="sig-paren">(</span><em>frequency</em>, <em>to_directory=None</em>, <em>checkpoint_filename=None</em>, <em>best_checkpoint_filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.save_every"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.save_every" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set checkpoint creation frequency.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>frequency</strong> (<a class="reference internal" href="inferno.utils.html#inferno.utils.train_utils.Frequency" title="inferno.utils.train_utils.Frequency"><em>inferno.utils.train_utils.Frequency</em></a><em> or </em><em>tuple</em><em> or </em><em>str</em>) – Checkpoint creation frequency. Examples: ‘100 iterations’ or ‘1 epochs’.</li>
+<li><strong>to_directory</strong> (<em>str</em>) – Directory where the checkpoints are to be created.</li>
+<li><strong>checkpoint_filename</strong> (<em>str</em>) – Name of the checkpoint file.</li>
+<li><strong>best_checkpoint_filename</strong> (<em>str</em>) – Name of the best checkpoint file.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.save_model">
+<code class="descname">save_model</code><span class="sig-paren">(</span><em>to_directory=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.save_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.save_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.save_now">
+<code class="descname">save_now</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.save_now" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.save_to_directory">
+<code class="descname">save_to_directory</code><span class="sig-paren">(</span><em>to_directory=None</em>, <em>checkpoint_filename=None</em>, <em>best_checkpoint_filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.save_to_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.save_to_directory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.saving_every">
+<code class="descname">saving_every</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.saving_every" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the frequency at which checkpoints are made.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.set_config">
+<code class="descname">set_config</code><span class="sig-paren">(</span><em>config_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.set_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.set_console">
+<code class="descname">set_console</code><span class="sig-paren">(</span><em>console</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_console"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.set_console" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.set_log_directory">
+<code class="descname">set_log_directory</code><span class="sig-paren">(</span><em>log_directory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_log_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.set_log_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the directory where the log files are to be stored.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>log_directory</strong> (<em>str</em>) – Directory where the log files are to be stored.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.set_max_num_epochs">
+<code class="descname">set_max_num_epochs</code><span class="sig-paren">(</span><em>max_num_epochs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_max_num_epochs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.set_max_num_epochs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the maximum number of training epochs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>max_num_epochs</strong> (<em>int</em><em> or </em><em>float</em><em> or </em><em>str</em>) – Maximum number of training epochs. If float, it should equal numpy.inf.
+If str, it should be one of {‘inf’, ‘infinity’, ‘infty’}.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.set_max_num_iterations">
+<code class="descname">set_max_num_iterations</code><span class="sig-paren">(</span><em>max_num_iterations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_max_num_iterations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.set_max_num_iterations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the maximum number of training iterations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>max_num_iterations</strong> (<em>int</em><em> or </em><em>float</em><em> or </em><em>str</em>) – Maximum number of training iterations. If float, it should equal numpy.inf.
+If str, it should be one of {‘inf’, ‘infinity’, ‘infty’}.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.set_precision">
+<code class="descname">set_precision</code><span class="sig-paren">(</span><em>dtype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_precision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.set_precision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set training precision.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dtype</strong> (<em>{'double'</em><em>, </em><em>'float'</em><em>, </em><em>'half'}</em>) – Training precision.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.set_target_batch_dim">
+<code class="descname">set_target_batch_dim</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_target_batch_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.set_target_batch_dim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.split_batch">
+<code class="descname">split_batch</code><span class="sig-paren">(</span><em>batch</em>, <em>from_loader</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.split_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.split_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.stop_fitting">
+<code class="descname">stop_fitting</code><span class="sig-paren">(</span><em>max_num_iterations=None</em>, <em>max_num_epochs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.stop_fitting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.stop_fitting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.target_batch_dim">
+<code class="descname">target_batch_dim</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.target_batch_dim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.to_device">
+<code class="descname">to_device</code><span class="sig-paren">(</span><em>objects</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.to_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.to_device" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.train_for">
+<code class="descname">train_for</code><span class="sig-paren">(</span><em>num_iterations=None</em>, <em>break_callback=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.train_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.train_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.train_loader">
+<code class="descname">train_loader</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.train_loader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.train_mode">
+<code class="descname">train_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.train_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.train_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set model, criterion and metric to train mode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.update_state">
+<code class="descname">update_state</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.update_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.update_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.update_state_from_dictionary">
+<code class="descname">update_state_from_dictionary</code><span class="sig-paren">(</span><em>dictionary</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.update_state_from_dictionary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.update_state_from_dictionary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.update_state_from_model_state_hooks">
+<code class="descname">update_state_from_model_state_hooks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.update_state_from_model_state_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.update_state_from_model_state_hooks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.validate_every">
+<code class="descname">validate_every</code><span class="sig-paren">(</span><em>frequency</em>, <em>for_num_iterations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.validate_every"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.validate_every" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set validation frequency.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>frequency</strong> (<a class="reference internal" href="inferno.utils.html#inferno.utils.train_utils.Frequency" title="inferno.utils.train_utils.Frequency"><em>inferno.utils.train_utils.Frequency</em></a><em> or </em><em>str</em><em> or </em><em>tuple</em><em> or </em><em>list</em><em> or </em><em>int</em>) – Validation frequency. If str, it could be (say) ‘10 iterations’ or ‘1 epoch’.
+If tuple (or list), it could be (10, ‘iterations’) or (1, ‘epoch’). If int
+(say 10), it’s interpreted as (10, ‘iterations’).</li>
+<li><strong>for_num_iterations</strong> (<em>int</em>) – Number of iterations to validate for. If not set, the model is validated on
+the entire dataset (i.e. till the data loader is exhausted).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.validate_for">
+<code class="descname">validate_for</code><span class="sig-paren">(</span><em>num_iterations=None</em>, <em>loader_name='validate'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.validate_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.validate_for" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate for a given number of validation (if <cite>num_iterations is not None</cite>)
+or over the entire (validation) data set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num_iterations</strong> (<em>int</em>) – Number of iterations to validate for. To validate on the entire dataset,
+leave this as <cite>None</cite>.</li>
+<li><strong>loader_name</strong> (<em>str</em>) – Name of the data loader to use for validation. ‘validate’ is the obvious default.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.validate_loader">
+<code class="descname">validate_loader</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.validate_loader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.validate_now">
+<code class="descname">validate_now</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.validate_now" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.validating_every">
+<code class="descname">validating_every</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.validating_every" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.validation_criterion">
+<code class="descname">validation_criterion</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.validation_criterion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.basic.Trainer.validation_criterion_is_defined">
+<code class="descname">validation_criterion_is_defined</code><a class="headerlink" href="#inferno.trainers.basic.Trainer.validation_criterion_is_defined" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.validation_criterion_is_train_criterion">
+<code class="descname">validation_criterion_is_train_criterion</code><span class="sig-paren">(</span><em>yes=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.validation_criterion_is_train_criterion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.validation_criterion_is_train_criterion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.verify_batch">
+<code class="descname">verify_batch</code><span class="sig-paren">(</span><em>batch</em>, <em>from_loader</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.verify_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.verify_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.basic.Trainer.wrap_batch">
+<code class="descname">wrap_batch</code><span class="sig-paren">(</span><em>batch</em>, <em>from_loader=None</em>, <em>requires_grad=False</em>, <em>volatile=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.wrap_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.basic.Trainer.wrap_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.trainers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.trainers" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.trainers.Trainer">
+<em class="property">class </em><code class="descclassname">inferno.trainers.</code><code class="descname">Trainer</code><span class="sig-paren">(</span><em>model=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>A basic trainer.</p>
+<p>Given a torch model, this class encapsulates the training and validation loops,
+checkpoint creation, logging, CPU &lt;-&gt; GPU transfers and managing data-loaders.</p>
+<p>In addition, this class interacts with the callback engine (found at
+<cite>inferno.trainers.callbacks.base.CallbackEngine</cite>), which manages callbacks at
+certain preset events.</p>
+<p class="rubric">Notes</p>
+<p>Logging is implemented as a special callback, in the sense that it’s jointly
+managed by the this class and the callback engine. This is primarily because
+general callbacks are not intended to be serializable, but not being able to
+serialize the logger is a nuisance.</p>
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.DYNAMIC_STATES">
+<code class="descname">DYNAMIC_STATES</code><em class="property"> = {'learning_rate': 'current_learning_rate'}</em><a class="headerlink" href="#inferno.trainers.Trainer.DYNAMIC_STATES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.INF_STRINGS">
+<code class="descname">INF_STRINGS</code><em class="property"> = {'infinity', 'inf', 'infty'}</em><a class="headerlink" href="#inferno.trainers.Trainer.INF_STRINGS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.apply_model">
+<code class="descname">apply_model</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.apply_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.apply_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.apply_model_and_loss">
+<code class="descname">apply_model_and_loss</code><span class="sig-paren">(</span><em>inputs</em>, <em>target</em>, <em>backward=True</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.apply_model_and_loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.apply_model_and_loss" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.bind_loader">
+<code class="descname">bind_loader</code><span class="sig-paren">(</span><em>name</em>, <em>loader</em>, <em>num_inputs=None</em>, <em>num_targets=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.bind_loader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.bind_loader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bind a data loader to the trainer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>{'train'</em><em>, </em><em>'validate'</em><em>, </em><em>'test'}</em>) – Name of the loader, i.e. what it should be used for.</li>
+<li><strong>loader</strong> (<em>torch.utils.data.DataLoader</em>) – DataLoader object.</li>
+<li><strong>num_inputs</strong> (<em>int</em>) – Number of input tensors from the <cite>loader</cite>.</li>
+<li><strong>num_targets</strong> (<em>int</em>) – Number of target tensors from the <cite>loader</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><tt class="xref py py-exc docutils literal">KeyError</tt> – if name is invalid.</li>
+<li><tt class="xref py py-exc docutils literal">TypeError</tt> – if loader is not a DataLoader instance.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.bind_model">
+<code class="descname">bind_model</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.bind_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.bind_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Binds a model to the trainer. Equivalent to setting model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>model</strong> (<em>torch.nn.Module</em>) – Model to bind.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="inferno.trainers.Trainer.build">
+<em class="property">classmethod </em><code class="descname">build</code><span class="sig-paren">(</span><em>model=None</em>, <em>**trainer_config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory function to build the trainer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.build_criterion">
+<code class="descname">build_criterion</code><span class="sig-paren">(</span><em>method</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.build_criterion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.build_criterion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the loss criterion for training.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method</strong> (<em>str</em><em> or </em><em>callable</em><em> or </em><em>torch.nn.Module</em>) – Name of the criterion when str, criterion class when callable, or a
+torch.nn.Module instance. If a name is provided, this method looks
+for the criterion in <cite>torch.nn</cite>.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments to the criterion class’ constructor if applicable.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><tt class="xref py py-exc docutils literal">AssertionError</tt> – if criterion is not found.</li>
+<li><tt class="xref py py-exc docutils literal">NotImplementedError</tt> – if method is neither a str nor a callable.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.build_logger">
+<code class="descname">build_logger</code><span class="sig-paren">(</span><em>logger=None</em>, <em>log_directory=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.build_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.build_logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build the logger.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>logger</strong> (<a class="reference internal" href="inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.base.Logger" title="inferno.trainers.callbacks.logging.base.Logger"><em>inferno.trainers.callbacks.logging.base.Logger</em></a><em> or </em><em>str</em><em> or </em><em>type</em>) – Must either be a Logger object or the name of a logger or the class of a logger.</li>
+<li><strong>log_directory</strong> (<em>str</em>) – Path to the directory where the log files are to be stored.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments to the logger class.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.build_metric">
+<code class="descname">build_metric</code><span class="sig-paren">(</span><em>method</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.build_metric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.build_metric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the metric for evaluation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method</strong> (<em>callable</em><em> or </em><em>str</em>) – Name of the metric when string, metric class or a callable object
+when callable. If a name is provided, this method looks for the metric in
+<cite>inferno.extensions.metrics</cite>.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments to the metric class’ constructor, if applicable.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">AssertionError: if the metric is not found.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.build_optimizer">
+<code class="descname">build_optimizer</code><span class="sig-paren">(</span><em>method</em>, <em>param_groups=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.build_optimizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.build_optimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the optimizer for training.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method</strong> (<em>str</em><em> or </em><em>callable</em><em> or </em><em>torch.optim.Optimizer</em>) – Name of the optimizer when str, handle to the optimizer class when callable,
+or a torch.optim.Optimizer instance. If a name is provided, this method looks
+for the optimizer in <cite>torch.optim</cite> module first and in
+inferno.extensions.optimizers second.</li>
+<li><strong>param_groups</strong> (<em>list of dict</em>) – Specifies the parameter group. Defaults to model.parameters() if None.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments to the optimizer.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><tt class="xref py py-exc docutils literal">AssertionError</tt> – if optimizer is not found</li>
+<li><tt class="xref py py-exc docutils literal">NotImplementedError</tt> – if method is not str or callable.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.build_validation_criterion">
+<code class="descname">build_validation_criterion</code><span class="sig-paren">(</span><em>method</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.build_validation_criterion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.build_validation_criterion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds the loss criterion for validation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method</strong> (<em>str</em><em> or </em><em>callable</em><em> or </em><em>torch.nn.Module</em>) – Name of the criterion when str, criterion class when callable, or a
+torch.nn.Module instance. If a name is provided, this method looks
+for the criterion in <cite>torch.nn</cite>.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments to the criterion class’ constructor if applicable.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><tt class="xref py py-exc docutils literal">AssertionError</tt> – if criterion is not found.</li>
+<li><tt class="xref py py-exc docutils literal">NotImplementedError</tt> – if method is neither a str nor a callable.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.callbacks">
+<code class="descname">callbacks</code><a class="headerlink" href="#inferno.trainers.Trainer.callbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the callback engine.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.cast">
+<code class="descname">cast</code><span class="sig-paren">(</span><em>objects</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.cast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.cast" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.console">
+<code class="descname">console</code><a class="headerlink" href="#inferno.trainers.Trainer.console" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current console.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.cpu">
+<code class="descname">cpu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.cpu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.cpu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train on the CPU.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.criterion">
+<code class="descname">criterion</code><a class="headerlink" href="#inferno.trainers.Trainer.criterion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the loss criterion.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.criterion_is_defined">
+<code class="descname">criterion_is_defined</code><a class="headerlink" href="#inferno.trainers.Trainer.criterion_is_defined" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.cuda">
+<code class="descname">cuda</code><span class="sig-paren">(</span><em>devices=None</em>, <em>base_device=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.cuda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.cuda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train on the GPU.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>devices</strong> (<em>list</em>) – Specify the ordinals of the devices to use for dataparallel training.</li>
+<li><strong>base_device</strong> (<em>{'cpu'</em><em>, </em><em>'cuda'}</em>) – When using data-parallel training, specify where the result tensors
+are collected. If ‘cuda’, the results are collected in <cite>devices[0]</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.current_learning_rate">
+<code class="descname">current_learning_rate</code><a class="headerlink" href="#inferno.trainers.Trainer.current_learning_rate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.dtype">
+<code class="descname">dtype</code><a class="headerlink" href="#inferno.trainers.Trainer.dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.epoch_count">
+<code class="descname">epoch_count</code><a class="headerlink" href="#inferno.trainers.Trainer.epoch_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.eval_mode">
+<code class="descname">eval_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.eval_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.eval_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set model, criterion and metric to eval mode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.evaluate_metric_every">
+<code class="descname">evaluate_metric_every</code><span class="sig-paren">(</span><em>frequency</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.evaluate_metric_every"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.evaluate_metric_every" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set frequency of metric evaluation __during <a href="#id1"><span class="problematic" id="id3">training__</span></a> (and not during validation).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>frequency</strong> (<a class="reference internal" href="inferno.utils.html#inferno.utils.train_utils.Frequency" title="inferno.utils.train_utils.Frequency"><em>inferno.utils.train_utils.Frequency</em></a><em> or </em><em>str</em><em> or </em><em>tuple</em><em> or </em><em>list</em><em> or </em><em>int</em>) – Metric evaluation frequency. If str, it could be (say) ‘10 iterations’ or ‘1 epoch’.
+If tuple (or list), it could be (10, ‘iterations’) or (1, ‘epoch’). If int
+(say 10), it’s interpreted as (10, ‘iterations’).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.evaluate_metric_now">
+<code class="descname">evaluate_metric_now</code><a class="headerlink" href="#inferno.trainers.Trainer.evaluate_metric_now" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.evaluating_metric_every">
+<code class="descname">evaluating_metric_every</code><a class="headerlink" href="#inferno.trainers.Trainer.evaluating_metric_every" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.fetch_next_batch">
+<code class="descname">fetch_next_batch</code><span class="sig-paren">(</span><em>from_loader='train'</em>, <em>restart_exhausted_generators=True</em>, <em>update_batch_count=True</em>, <em>update_epoch_count_if_generator_exhausted=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.fetch_next_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.fetch_next_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>max_num_iterations=None</em>, <em>max_num_epochs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>max_num_iterations</strong> (<em>int</em><em> or </em><em>float</em><em> or </em><em>str</em>) – (Optional) Maximum number of training iterations. Overrides the value set by
+<cite>Trainer.set_max_num_iterations</cite>. If float, it should equal numpy.inf.
+If str, it should be one of {‘inf’, ‘infinity’, ‘infty’}.</li>
+<li><strong>max_num_epochs</strong> (<em>int</em><em> or </em><em>float</em><em> or </em><em>str</em>) – (Optional) Maximum number of training epochs. Overrides the value set by
+<cite>Trainer.set_max_num_epochs</cite>. If float, it should equal numpy.inf.
+If str, it should be one of {‘inf’, ‘infinity’, ‘infty’}.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.get_config">
+<code class="descname">get_config</code><span class="sig-paren">(</span><em>exclude_loader=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.get_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.get_current_learning_rate">
+<code class="descname">get_current_learning_rate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.get_current_learning_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.get_current_learning_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the current learning rate.
+:returns: List of learning rates if there are multiple parameter groups, or a float</p>
+<blockquote>
+<div>if there’s just one.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list or float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.get_loader_specs">
+<code class="descname">get_loader_specs</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.get_loader_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.get_loader_specs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.get_state">
+<code class="descname">get_state</code><span class="sig-paren">(</span><em>key</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.get_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.get_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.is_cuda">
+<code class="descname">is_cuda</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.is_cuda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.is_cuda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether using GPU for training.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.iteration_count">
+<code class="descname">iteration_count</code><a class="headerlink" href="#inferno.trainers.Trainer.iteration_count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>from_directory=None</em>, <em>best=False</em>, <em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the trainer from checkpoint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>from_directory</strong> (<em>str</em>) – Path to the directory where the checkpoint is located. The filename should be
+‘checkpoint.pytorch’ if best=False, or ‘best_checkpoint.pytorch’ if best=True.</li>
+<li><strong>best</strong> (<em>bool</em>) – Whether to load the best checkpoint. The filename in <cite>from_directory</cite> should be
+‘best_checkpoint.pytorch’.</li>
+<li><strong>filename</strong> (<em>str</em>) – Overrides the default filename.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.load_">
+<code class="descname">load_</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.load_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.load_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.load_model">
+<code class="descname">load_model</code><span class="sig-paren">(</span><em>from_directory=None</em>, <em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.load_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.load_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.log_directory">
+<code class="descname">log_directory</code><a class="headerlink" href="#inferno.trainers.Trainer.log_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the log directory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.logger">
+<code class="descname">logger</code><a class="headerlink" href="#inferno.trainers.Trainer.logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the logger.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.metric">
+<code class="descname">metric</code><a class="headerlink" href="#inferno.trainers.Trainer.metric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the evaluation metric.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.metric_is_defined">
+<code class="descname">metric_is_defined</code><a class="headerlink" href="#inferno.trainers.Trainer.metric_is_defined" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the metric is defined.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.model">
+<code class="descname">model</code><a class="headerlink" href="#inferno.trainers.Trainer.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the model.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.model_is_defined">
+<code class="descname">model_is_defined</code><a class="headerlink" href="#inferno.trainers.Trainer.model_is_defined" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.next_epoch">
+<code class="descname">next_epoch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.next_epoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.next_epoch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.next_iteration">
+<code class="descname">next_iteration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.next_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.next_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.optimizer">
+<code class="descname">optimizer</code><a class="headerlink" href="#inferno.trainers.Trainer.optimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the optimizer.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.optimizer_is_defined">
+<code class="descname">optimizer_is_defined</code><a class="headerlink" href="#inferno.trainers.Trainer.optimizer_is_defined" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.pickle_module">
+<code class="descname">pickle_module</code><a class="headerlink" href="#inferno.trainers.Trainer.pickle_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.print">
+<code class="descname">print</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.print" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.quiet">
+<code class="descname">quiet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.quiet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.quiet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.record_validation_results">
+<code class="descname">record_validation_results</code><span class="sig-paren">(</span><em>validation_loss</em>, <em>validation_error</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.record_validation_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.record_validation_results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.register_callback">
+<code class="descname">register_callback</code><span class="sig-paren">(</span><em>callback</em>, <em>trigger='auto'</em>, <em>**callback_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.register_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.register_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers a callback with the internal callback engine.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>callback</strong> (<em>type</em><em> or </em><em>callable</em>) – Callback to register.</li>
+<li><strong>trigger</strong> (<em>str</em>) – Specify the event that triggers the callback. Leave at ‘auto’ to have the
+callback-engine figure out the triggers. See
+<cite>inferno.training.callbacks.base.CallbackEngine</cite> documentation for more on this.</li>
+<li><strong>callback_kwargs</strong> (<em>dict</em>) – If <cite>callback</cite> is a type, initialize an instance with these keywords to the
+__init__ method.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.restart_generators">
+<code class="descname">restart_generators</code><span class="sig-paren">(</span><em>of_loader=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.restart_generators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.restart_generators" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.retain_graph">
+<code class="descname">retain_graph</code><a class="headerlink" href="#inferno.trainers.Trainer.retain_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>exclude_loader=True</em>, <em>stash_best_checkpoint=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.save_at_best_validation_score">
+<code class="descname">save_at_best_validation_score</code><span class="sig-paren">(</span><em>yes=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.save_at_best_validation_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.save_at_best_validation_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets whether to save when the validation score is the best seen.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.save_directory">
+<code class="descname">save_directory</code><a class="headerlink" href="#inferno.trainers.Trainer.save_directory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.save_every">
+<code class="descname">save_every</code><span class="sig-paren">(</span><em>frequency</em>, <em>to_directory=None</em>, <em>checkpoint_filename=None</em>, <em>best_checkpoint_filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.save_every"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.save_every" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set checkpoint creation frequency.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>frequency</strong> (<a class="reference internal" href="inferno.utils.html#inferno.utils.train_utils.Frequency" title="inferno.utils.train_utils.Frequency"><em>inferno.utils.train_utils.Frequency</em></a><em> or </em><em>tuple</em><em> or </em><em>str</em>) – Checkpoint creation frequency. Examples: ‘100 iterations’ or ‘1 epochs’.</li>
+<li><strong>to_directory</strong> (<em>str</em>) – Directory where the checkpoints are to be created.</li>
+<li><strong>checkpoint_filename</strong> (<em>str</em>) – Name of the checkpoint file.</li>
+<li><strong>best_checkpoint_filename</strong> (<em>str</em>) – Name of the best checkpoint file.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.save_model">
+<code class="descname">save_model</code><span class="sig-paren">(</span><em>to_directory=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.save_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.save_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.save_now">
+<code class="descname">save_now</code><a class="headerlink" href="#inferno.trainers.Trainer.save_now" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.save_to_directory">
+<code class="descname">save_to_directory</code><span class="sig-paren">(</span><em>to_directory=None</em>, <em>checkpoint_filename=None</em>, <em>best_checkpoint_filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.save_to_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.save_to_directory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.saving_every">
+<code class="descname">saving_every</code><a class="headerlink" href="#inferno.trainers.Trainer.saving_every" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the frequency at which checkpoints are made.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.set_config">
+<code class="descname">set_config</code><span class="sig-paren">(</span><em>config_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.set_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.set_console">
+<code class="descname">set_console</code><span class="sig-paren">(</span><em>console</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_console"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.set_console" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.set_log_directory">
+<code class="descname">set_log_directory</code><span class="sig-paren">(</span><em>log_directory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_log_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.set_log_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the directory where the log files are to be stored.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>log_directory</strong> (<em>str</em>) – Directory where the log files are to be stored.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.set_max_num_epochs">
+<code class="descname">set_max_num_epochs</code><span class="sig-paren">(</span><em>max_num_epochs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_max_num_epochs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.set_max_num_epochs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the maximum number of training epochs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>max_num_epochs</strong> (<em>int</em><em> or </em><em>float</em><em> or </em><em>str</em>) – Maximum number of training epochs. If float, it should equal numpy.inf.
+If str, it should be one of {‘inf’, ‘infinity’, ‘infty’}.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.set_max_num_iterations">
+<code class="descname">set_max_num_iterations</code><span class="sig-paren">(</span><em>max_num_iterations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_max_num_iterations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.set_max_num_iterations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the maximum number of training iterations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>max_num_iterations</strong> (<em>int</em><em> or </em><em>float</em><em> or </em><em>str</em>) – Maximum number of training iterations. If float, it should equal numpy.inf.
+If str, it should be one of {‘inf’, ‘infinity’, ‘infty’}.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.set_precision">
+<code class="descname">set_precision</code><span class="sig-paren">(</span><em>dtype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_precision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.set_precision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set training precision.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dtype</strong> (<em>{'double'</em><em>, </em><em>'float'</em><em>, </em><em>'half'}</em>) – Training precision.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.set_target_batch_dim">
+<code class="descname">set_target_batch_dim</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.set_target_batch_dim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.set_target_batch_dim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.split_batch">
+<code class="descname">split_batch</code><span class="sig-paren">(</span><em>batch</em>, <em>from_loader</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.split_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.split_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.stop_fitting">
+<code class="descname">stop_fitting</code><span class="sig-paren">(</span><em>max_num_iterations=None</em>, <em>max_num_epochs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.stop_fitting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.stop_fitting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.target_batch_dim">
+<code class="descname">target_batch_dim</code><a class="headerlink" href="#inferno.trainers.Trainer.target_batch_dim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.to_device">
+<code class="descname">to_device</code><span class="sig-paren">(</span><em>objects</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.to_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.to_device" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.train_for">
+<code class="descname">train_for</code><span class="sig-paren">(</span><em>num_iterations=None</em>, <em>break_callback=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.train_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.train_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.train_loader">
+<code class="descname">train_loader</code><a class="headerlink" href="#inferno.trainers.Trainer.train_loader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.train_mode">
+<code class="descname">train_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.train_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.train_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set model, criterion and metric to train mode</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.update_state">
+<code class="descname">update_state</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.update_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.update_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.update_state_from_dictionary">
+<code class="descname">update_state_from_dictionary</code><span class="sig-paren">(</span><em>dictionary</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.update_state_from_dictionary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.update_state_from_dictionary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.update_state_from_model_state_hooks">
+<code class="descname">update_state_from_model_state_hooks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.update_state_from_model_state_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.update_state_from_model_state_hooks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.validate_every">
+<code class="descname">validate_every</code><span class="sig-paren">(</span><em>frequency</em>, <em>for_num_iterations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.validate_every"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.validate_every" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set validation frequency.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>frequency</strong> (<a class="reference internal" href="inferno.utils.html#inferno.utils.train_utils.Frequency" title="inferno.utils.train_utils.Frequency"><em>inferno.utils.train_utils.Frequency</em></a><em> or </em><em>str</em><em> or </em><em>tuple</em><em> or </em><em>list</em><em> or </em><em>int</em>) – Validation frequency. If str, it could be (say) ‘10 iterations’ or ‘1 epoch’.
+If tuple (or list), it could be (10, ‘iterations’) or (1, ‘epoch’). If int
+(say 10), it’s interpreted as (10, ‘iterations’).</li>
+<li><strong>for_num_iterations</strong> (<em>int</em>) – Number of iterations to validate for. If not set, the model is validated on
+the entire dataset (i.e. till the data loader is exhausted).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.validate_for">
+<code class="descname">validate_for</code><span class="sig-paren">(</span><em>num_iterations=None</em>, <em>loader_name='validate'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.validate_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.validate_for" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate for a given number of validation (if <cite>num_iterations is not None</cite>)
+or over the entire (validation) data set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num_iterations</strong> (<em>int</em>) – Number of iterations to validate for. To validate on the entire dataset,
+leave this as <cite>None</cite>.</li>
+<li><strong>loader_name</strong> (<em>str</em>) – Name of the data loader to use for validation. ‘validate’ is the obvious default.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.trainers.basic.Trainer" title="inferno.trainers.basic.Trainer">Trainer</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.validate_loader">
+<code class="descname">validate_loader</code><a class="headerlink" href="#inferno.trainers.Trainer.validate_loader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.validate_now">
+<code class="descname">validate_now</code><a class="headerlink" href="#inferno.trainers.Trainer.validate_now" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.validating_every">
+<code class="descname">validating_every</code><a class="headerlink" href="#inferno.trainers.Trainer.validating_every" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.validation_criterion">
+<code class="descname">validation_criterion</code><a class="headerlink" href="#inferno.trainers.Trainer.validation_criterion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.Trainer.validation_criterion_is_defined">
+<code class="descname">validation_criterion_is_defined</code><a class="headerlink" href="#inferno.trainers.Trainer.validation_criterion_is_defined" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.validation_criterion_is_train_criterion">
+<code class="descname">validation_criterion_is_train_criterion</code><span class="sig-paren">(</span><em>yes=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.validation_criterion_is_train_criterion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.validation_criterion_is_train_criterion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.verify_batch">
+<code class="descname">verify_batch</code><span class="sig-paren">(</span><em>batch</em>, <em>from_loader</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.verify_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.verify_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.Trainer.wrap_batch">
+<code class="descname">wrap_batch</code><span class="sig-paren">(</span><em>batch</em>, <em>from_loader=None</em>, <em>requires_grad=False</em>, <em>volatile=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/basic.html#Trainer.wrap_batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.Trainer.wrap_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.trainers package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.trainers.basic">inferno.trainers.basic module</a></li>
+<li><a class="reference internal" href="#module-inferno.trainers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.io.volumetric.html"
+                        title="previous chapter">inferno.io.volumetric package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inferno.trainers.callbacks.html"
+                        title="next chapter">inferno.trainers.callbacks package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.trainers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.trainers.callbacks.html" title="inferno.trainers.callbacks package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.volumetric.html" title="inferno.io.volumetric package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

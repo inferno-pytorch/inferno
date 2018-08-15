@@ -1,0 +1,150 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.utils.io_utils &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.utils.io_utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">h5py</span> <span class="k">as</span> <span class="nn">h5</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">scipy.misc</span> <span class="k">import</span> <span class="n">imsave</span>
+
+
+<span class="c1"># Function to load in a dataset from a h5file</span>
+<div class="viewcode-block" id="fromh5"><a class="viewcode-back" href="../../../inferno-apidoc/inferno.utils.html#inferno.utils.io_utils.fromh5">[docs]</a><span class="k">def</span> <span class="nf">fromh5</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">datapath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dataslice</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">asnumpy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">preptrain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Opens a hdf5 file at path, loads in the dataset at datapath, and returns dataset</span>
+<span class="sd">    as a numpy array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if path exists (thanks Lukas!)</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="s2">&quot;Path </span><span class="si">{}</span><span class="s2"> does not exist.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="c1"># Init file</span>
+    <span class="n">h5file</span> <span class="o">=</span> <span class="n">h5</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="c1"># Init dataset</span>
+    <span class="n">h5dataset</span> <span class="o">=</span> <span class="n">h5file</span><span class="p">[</span><span class="n">datapath</span><span class="p">]</span> <span class="k">if</span> <span class="n">datapath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">h5file</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># Slice dataset</span>
+    <span class="n">h5dataset</span> <span class="o">=</span> <span class="n">h5dataset</span><span class="p">[</span><span class="n">dataslice</span><span class="p">]</span> <span class="k">if</span> <span class="n">dataslice</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">h5dataset</span>
+    <span class="c1"># Convert to numpy if required</span>
+    <span class="n">h5dataset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">h5dataset</span><span class="p">)</span> <span class="k">if</span> <span class="n">asnumpy</span> <span class="k">else</span> <span class="n">h5dataset</span>
+    <span class="c1"># Apply preptrain</span>
+    <span class="n">h5dataset</span> <span class="o">=</span> <span class="n">preptrain</span><span class="p">(</span><span class="n">h5dataset</span><span class="p">)</span> <span class="k">if</span> <span class="n">preptrain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">h5dataset</span>
+    <span class="c1"># Close file</span>
+    <span class="n">h5file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c1"># Return</span>
+    <span class="k">return</span> <span class="n">h5dataset</span></div>
+
+
+<span class="c1"># TODO we could also do **h5_kwargs instead</span>
+<div class="viewcode-block" id="toh5"><a class="viewcode-back" href="../../../inferno-apidoc/inferno.utils.html#inferno.utils.io_utils.toh5">[docs]</a><span class="k">def</span> <span class="nf">toh5</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">datapath</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write `data` to a HDF5 volume.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">h5</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">datapath</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunks</span><span class="p">)</span></div>
+
+
+<span class="c1"># Yaml to dict reader</span>
+<div class="viewcode-block" id="yaml2dict"><a class="viewcode-back" href="../../../inferno-apidoc/inferno.utils.html#inferno.utils.io_utils.yaml2dict">[docs]</a><span class="k">def</span> <span class="nf">yaml2dict</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># Forgivable mistake that path is a dict already</span>
+        <span class="k">return</span> <span class="n">path</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">readict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">readict</span></div>
+
+
+<div class="viewcode-block" id="print_tensor"><a class="viewcode-back" href="../../../inferno-apidoc/inferno.utils.html#inferno.utils.io_utils.print_tensor">[docs]</a><span class="k">def</span> <span class="nf">print_tensor</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Prints a image or volume tensor to file as images.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_print_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">z</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">--B-</span><span class="si">{}</span><span class="s2">--CH-</span><span class="si">{}</span><span class="s2">.png&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">--B-</span><span class="si">{}</span><span class="s2">--CH-</span><span class="si">{}</span><span class="s2">--Z-</span><span class="si">{}</span><span class="s2">.png&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">full_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="n">imsave</span><span class="p">(</span><span class="n">arr</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">full_file_name</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">_print_image</span><span class="p">(</span><span class="n">tensor</span><span class="p">[</span><span class="n">batch</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+                    <span class="n">_print_image</span><span class="p">(</span><span class="n">tensor</span><span class="p">[</span><span class="n">batch</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">plane</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

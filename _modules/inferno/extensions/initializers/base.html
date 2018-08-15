@@ -1,0 +1,216 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.extensions.initializers.base &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.extensions.initializers.base</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch.nn.init</span> <span class="k">as</span> <span class="nn">init</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Initializer&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Initialization&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;WeightInitFunction&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;BiasInitFunction&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;TensorInitFunction&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Initializer"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.Initializer">[docs]</a><span class="k">class</span> <span class="nc">Initializer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all initializers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO Support LSTMs and GRUs</span>
+    <span class="n">VALID_LAYERS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Conv1d&#39;</span><span class="p">,</span> <span class="s1">&#39;Conv2d&#39;</span><span class="p">,</span> <span class="s1">&#39;Conv3d&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;ConvTranspose1d&#39;</span><span class="p">,</span> <span class="s1">&#39;ConvTranspose2d&#39;</span><span class="p">,</span> <span class="s1">&#39;ConvTranspose3d&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;Linear&#39;</span><span class="p">,</span> <span class="s1">&#39;Bilinear&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;Embedding&#39;</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">):</span>
+        <span class="n">module_class_name</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">if</span> <span class="n">module_class_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">VALID_LAYERS</span><span class="p">:</span>
+            <span class="c1"># Apply to weight and bias</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">call_on_weight</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+                <span class="c1"># Don&#39;t cry if it&#39;s not implemented</span>
+                <span class="k">pass</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s1">&#39;bias&#39;</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">call_on_bias</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="n">module</span>
+
+<div class="viewcode-block" id="Initializer.call_on_bias"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.Initializer.call_on_bias">[docs]</a>    <span class="k">def</span> <span class="nf">call_on_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_on_tensor</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Initializer.call_on_weight"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.Initializer.call_on_weight">[docs]</a>    <span class="k">def</span> <span class="nf">call_on_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_on_tensor</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Initializer.call_on_tensor"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.Initializer.call_on_tensor">[docs]</a>    <span class="k">def</span> <span class="nf">call_on_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Initializer.initializes_weight"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.Initializer.initializes_weight">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">initializes_weight</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;call_on_tensor&#39;</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span> <span class="ow">or</span> <span class="s1">&#39;call_on_weight&#39;</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span></div>
+
+<div class="viewcode-block" id="Initializer.initializes_bias"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.Initializer.initializes_bias">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">initializes_bias</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;call_on_tensor&#39;</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span> <span class="ow">or</span> <span class="s1">&#39;call_on_bias&#39;</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span></div></div>
+
+
+<div class="viewcode-block" id="Initialization"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.Initialization">[docs]</a><span class="k">class</span> <span class="nc">Initialization</span><span class="p">(</span><span class="n">Initializer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight_initializer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bias_initializer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">weight_initializer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weight_initializer</span> <span class="o">=</span> <span class="n">Initializer</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weight_initializer</span><span class="p">,</span> <span class="n">Initializer</span><span class="p">):</span>
+                <span class="k">assert</span> <span class="n">weight_initializer</span><span class="o">.</span><span class="n">initializes_weight</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">weight_initializer</span> <span class="o">=</span> <span class="n">weight_initializer</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weight_initializer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">init_function</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="n">weight_initializer</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="n">init_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">weight_initializer</span> <span class="o">=</span> <span class="n">WeightInitFunction</span><span class="p">(</span><span class="n">init_function</span><span class="o">=</span><span class="n">init_function</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Provison for weight_initializer to be a function</span>
+                <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">weight_initializer</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">weight_initializer</span> <span class="o">=</span> <span class="n">WeightInitFunction</span><span class="p">(</span><span class="n">init_function</span><span class="o">=</span><span class="n">weight_initializer</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">bias_initializer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span> <span class="o">=</span> <span class="n">Initializer</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bias_initializer</span><span class="p">,</span> <span class="n">Initializer</span><span class="p">):</span>
+                <span class="k">assert</span> <span class="n">bias_initializer</span><span class="o">.</span><span class="n">initializes_bias</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span> <span class="o">=</span> <span class="n">bias_initializer</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bias_initializer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">init_function</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="n">bias_initializer</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="n">init_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span> <span class="o">=</span> <span class="n">BiasInitFunction</span><span class="p">(</span><span class="n">init_function</span><span class="o">=</span><span class="n">init_function</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">bias_initializer</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span> <span class="o">=</span> <span class="n">BiasInitFunction</span><span class="p">(</span><span class="n">init_function</span><span class="o">=</span><span class="n">bias_initializer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Initialization.call_on_weight"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.Initialization.call_on_weight">[docs]</a>    <span class="k">def</span> <span class="nf">call_on_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_initializer</span><span class="o">.</span><span class="n">call_on_weight</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Initialization.call_on_bias"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.Initialization.call_on_bias">[docs]</a>    <span class="k">def</span> <span class="nf">call_on_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="o">.</span><span class="n">call_on_bias</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="WeightInitFunction"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.WeightInitFunction">[docs]</a><span class="k">class</span> <span class="nc">WeightInitFunction</span><span class="p">(</span><span class="n">Initializer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_function</span><span class="p">,</span> <span class="o">*</span><span class="n">init_function_args</span><span class="p">,</span> <span class="o">**</span><span class="n">init_function_kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WeightInitFunction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">init_function</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_function</span> <span class="o">=</span> <span class="n">init_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_function_args</span> <span class="o">=</span> <span class="n">init_function_args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_function_kwargs</span> <span class="o">=</span> <span class="n">init_function_kwargs</span>
+
+<div class="viewcode-block" id="WeightInitFunction.call_on_weight"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.WeightInitFunction.call_on_weight">[docs]</a>    <span class="k">def</span> <span class="nf">call_on_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_function</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">init_function_args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">init_function_kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BiasInitFunction"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.BiasInitFunction">[docs]</a><span class="k">class</span> <span class="nc">BiasInitFunction</span><span class="p">(</span><span class="n">Initializer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_function</span><span class="p">,</span> <span class="o">*</span><span class="n">init_function_args</span><span class="p">,</span> <span class="o">**</span><span class="n">init_function_kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BiasInitFunction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">init_function</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_function</span> <span class="o">=</span> <span class="n">init_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_function_args</span> <span class="o">=</span> <span class="n">init_function_args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_function_kwargs</span> <span class="o">=</span> <span class="n">init_function_kwargs</span>
+
+<div class="viewcode-block" id="BiasInitFunction.call_on_bias"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.BiasInitFunction.call_on_bias">[docs]</a>    <span class="k">def</span> <span class="nf">call_on_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_function</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">init_function_args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">init_function_kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TensorInitFunction"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.TensorInitFunction">[docs]</a><span class="k">class</span> <span class="nc">TensorInitFunction</span><span class="p">(</span><span class="n">Initializer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_function</span><span class="p">,</span> <span class="o">*</span><span class="n">init_function_args</span><span class="p">,</span> <span class="o">**</span><span class="n">init_function_kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TensorInitFunction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">init_function</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_function</span> <span class="o">=</span> <span class="n">init_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_function_args</span> <span class="o">=</span> <span class="n">init_function_args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_function_kwargs</span> <span class="o">=</span> <span class="n">init_function_kwargs</span>
+
+<div class="viewcode-block" id="TensorInitFunction.call_on_tensor"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.base.TensorInitFunction.call_on_tensor">[docs]</a>    <span class="k">def</span> <span class="nf">call_on_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_function</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">init_function_args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">init_function_kwargs</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

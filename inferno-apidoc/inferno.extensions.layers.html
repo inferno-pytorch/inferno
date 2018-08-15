@@ -1,0 +1,1547 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.extensions.layers package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inferno.extensions.metrics package" href="inferno.extensions.metrics.html" />
+    <link rel="prev" title="inferno.extensions.initializers package" href="inferno.extensions.initializers.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.metrics.html" title="inferno.extensions.metrics package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.initializers.html" title="inferno.extensions.initializers package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.extensions.html" accesskey="U">inferno.extensions package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-extensions-layers-package">
+<h1>inferno.extensions.layers package<a class="headerlink" href="#inferno-extensions-layers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.extensions.layers.activations">
+<span id="inferno-extensions-layers-activations-module"></span><h2>inferno.extensions.layers.activations module<a class="headerlink" href="#module-inferno.extensions.layers.activations" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.layers.activations.SELU">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.activations.</code><code class="descname">SELU</code><a class="reference internal" href="../_modules/inferno/extensions/layers/activations.html#SELU"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.activations.SELU" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.activations.SELU.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/activations.html#SELU.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.activations.SELU.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="inferno.extensions.layers.activations.SELU.selu">
+<em class="property">static </em><code class="descname">selu</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/activations.html#SELU.selu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.activations.SELU.selu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.layers.building_blocks">
+<span id="inferno-extensions-layers-building-blocks-module"></span><h2>inferno.extensions.layers.building_blocks module<a class="headerlink" href="#module-inferno.extensions.layers.building_blocks" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.layers.building_blocks.ResBlockBase">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.building_blocks.</code><code class="descname">ResBlockBase</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>dim</em>, <em>size=2</em>, <em>force_skip_op=False</em>, <em>activated=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlockBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.building_blocks.ResBlockBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.building_blocks.ResBlockBase.activated_skip_op_factory">
+<code class="descname">activated_skip_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlockBase.activated_skip_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.building_blocks.ResBlockBase.activated_skip_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.building_blocks.ResBlockBase.activation_op_factory">
+<code class="descname">activation_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlockBase.activation_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.building_blocks.ResBlockBase.activation_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.building_blocks.ResBlockBase.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlockBase.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.building_blocks.ResBlockBase.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.building_blocks.ResBlockBase.nonactivated_conv_op_factory">
+<code class="descname">nonactivated_conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlockBase.nonactivated_conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.building_blocks.ResBlockBase.nonactivated_conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.building_blocks.ResBlock">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.building_blocks.</code><code class="descname">ResBlock</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>dim</em>, <em>size=2</em>, <em>activated=True</em>, <em>activation='ReLU'</em>, <em>batchnorm=True</em>, <em>force_skip_op=False</em>, <em>conv_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.building_blocks.ResBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.building_blocks.ResBlockBase" title="inferno.extensions.layers.building_blocks.ResBlockBase"><tt class="xref py py-class docutils literal">inferno.extensions.layers.building_blocks.ResBlockBase</tt></a></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.building_blocks.ResBlock.activated_skip_op_factory">
+<code class="descname">activated_skip_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlock.activated_skip_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.building_blocks.ResBlock.activated_skip_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.building_blocks.ResBlock.activation_op_factory">
+<code class="descname">activation_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlock.activation_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.building_blocks.ResBlock.activation_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.building_blocks.ResBlock.batchnorm_op_factory">
+<code class="descname">batchnorm_op_factory</code><span class="sig-paren">(</span><em>in_channels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlock.batchnorm_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.building_blocks.ResBlock.batchnorm_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.building_blocks.ResBlock.nonactivated_conv_op_factory">
+<code class="descname">nonactivated_conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlock.nonactivated_conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.building_blocks.ResBlock.nonactivated_conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.layers.convolutional">
+<span id="inferno-extensions-layers-convolutional-module"></span><h2>inferno.extensions.layers.convolutional module<a class="headerlink" href="#module-inferno.extensions.layers.convolutional" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.ConvActivation">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">ConvActivation</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>dim</em>, <em>activation</em>, <em>stride=1</em>, <em>dilation=1</em>, <em>groups=None</em>, <em>depthwise=False</em>, <em>bias=True</em>, <em>deconv=False</em>, <em>initialization=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvActivation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.ConvActivation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Convolutional layer with ‘SAME’ padding followed by an activation.</p>
+<dl class="method">
+<dt id="inferno.extensions.layers.convolutional.ConvActivation.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvActivation.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.ConvActivation.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.convolutional.ConvActivation.get_padding">
+<code class="descname">get_padding</code><span class="sig-paren">(</span><em>kernel_size</em>, <em>dilation</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvActivation.get_padding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.ConvActivation.get_padding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.ConvELU2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">ConvELU2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvELU2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.ConvELU2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D Convolutional layer with ‘SAME’ padding, ELU and orthogonal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.ConvELU3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">ConvELU3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvELU3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.ConvELU3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D Convolutional layer with ‘SAME’ padding, ELU and orthogonal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.ConvSigmoid2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">ConvSigmoid2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvSigmoid2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.ConvSigmoid2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D Convolutional layer with ‘SAME’ padding, Sigmoid and orthogonal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.ConvSigmoid3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">ConvSigmoid3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvSigmoid3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.ConvSigmoid3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D Convolutional layer with ‘SAME’ padding, Sigmoid and orthogonal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.DeconvELU2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">DeconvELU2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#DeconvELU2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.DeconvELU2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D deconvolutional layer with ELU and orthogonal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.DeconvELU3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">DeconvELU3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#DeconvELU3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.DeconvELU3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D deconvolutional layer with ELU and orthogonal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.StridedConvELU2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">StridedConvELU2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>stride=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#StridedConvELU2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.StridedConvELU2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D strided convolutional layer with ‘SAME’ padding, ELU and orthogonal
+weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.StridedConvELU3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">StridedConvELU3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>stride=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#StridedConvELU3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.StridedConvELU3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D strided convolutional layer with ‘SAME’ padding, ELU and orthogonal
+weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.DilatedConvELU2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">DilatedConvELU2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>dilation=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#DilatedConvELU2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.DilatedConvELU2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D dilated convolutional layer with ‘SAME’ padding, ELU and orthogonal
+weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.DilatedConvELU3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">DilatedConvELU3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>dilation=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#DilatedConvELU3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.DilatedConvELU3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D dilated convolutional layer with ‘SAME’ padding, ELU and orthogonal
+weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.Conv2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">Conv2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>dilation=1</em>, <em>stride=1</em>, <em>activation=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#Conv2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.Conv2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D convolutional layer with same padding and orthogonal weight initialization.
+By default, this layer does not apply an activation function.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.Conv3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">Conv3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>dilation=1</em>, <em>stride=1</em>, <em>activation=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#Conv3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.Conv3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D convolutional layer with same padding and orthogonal weight initialization.
+By default, this layer does not apply an activation function.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.BNReLUConv2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">BNReLUConv2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>stride=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#BNReLUConv2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.BNReLUConv2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional._BNReLUSomeConv</tt>, <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D BN-ReLU-Conv layer with ‘SAME’ padding and He weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.BNReLUConv3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">BNReLUConv3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>stride=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#BNReLUConv3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.BNReLUConv3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional._BNReLUSomeConv</tt>, <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D BN-ReLU-Conv layer with ‘SAME’ padding and He weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.BNReLUDepthwiseConv2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">BNReLUDepthwiseConv2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#BNReLUDepthwiseConv2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.BNReLUDepthwiseConv2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional._BNReLUSomeConv</tt>, <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D BN-ReLU-Conv layer with ‘SAME’ padding, He weight initialization and depthwise convolution.
+Note that depthwise convolutions require <cite>in_channels == out_channels</cite>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.ConvSELU2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">ConvSELU2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvSELU2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.ConvSELU2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D Convolutional layer with SELU activation and the appropriate weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.ConvSELU3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">ConvSELU3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvSELU3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.ConvSELU3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D Convolutional layer with SELU activation and the appropriate weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.ConvReLU2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">ConvReLU2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvReLU2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.ConvReLU2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D Convolutional layer with ‘SAME’ padding, ReLU and Kaiming normal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.convolutional.ConvReLU3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.convolutional.</code><code class="descname">ConvReLU3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvReLU3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.convolutional.ConvReLU3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D Convolutional layer with ‘SAME’ padding, ReLU and Kaiming normal weight initialization.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.layers.device">
+<span id="inferno-extensions-layers-device-module"></span><h2>inferno.extensions.layers.device module<a class="headerlink" href="#module-inferno.extensions.layers.device" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.layers.device.DeviceTransfer">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.device.</code><code class="descname">DeviceTransfer</code><span class="sig-paren">(</span><em>target_device</em>, <em>device_ordinal=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/device.html#DeviceTransfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.device.DeviceTransfer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Layer to transfer variables to a specified device.</p>
+<dl class="method">
+<dt id="inferno.extensions.layers.device.DeviceTransfer.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/device.html#DeviceTransfer.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.device.DeviceTransfer.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.device.OnDevice">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.device.</code><code class="descname">OnDevice</code><span class="sig-paren">(</span><em>module</em>, <em>target_device</em>, <em>device_ordinal=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/device.html#OnDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.device.OnDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Moves a module to a device. The advantage of using this over <cite>torch.nn.Module.cuda</cite> is
+that the inputs are transferred to the same device as the module, enabling easy model
+parallelism.</p>
+<dl class="method">
+<dt id="inferno.extensions.layers.device.OnDevice.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/device.html#OnDevice.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.device.OnDevice.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.device.OnDevice.transfer_module">
+<code class="descname">transfer_module</code><span class="sig-paren">(</span><em>module</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/device.html#OnDevice.transfer_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.device.OnDevice.transfer_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.layers.prefab">
+<span id="inferno-extensions-layers-prefab-module"></span><h2>inferno.extensions.layers.prefab module<a class="headerlink" href="#module-inferno.extensions.layers.prefab" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.layers.prefab.PreActSimpleResidualBlock">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.prefab.</code><code class="descname">PreActSimpleResidualBlock</code><span class="sig-paren">(</span><em>in_channels</em>, <em>num_hidden_channels</em>, <em>upsample=False</em>, <em>downsample=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/prefab.html#PreActSimpleResidualBlock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.prefab.PreActSimpleResidualBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.prefab.ResidualBlock" title="inferno.extensions.layers.prefab.ResidualBlock"><tt class="xref py py-class docutils literal">inferno.extensions.layers.prefab.ResidualBlock</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.prefab.ResidualBlock">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.prefab.</code><code class="descname">ResidualBlock</code><span class="sig-paren">(</span><em>layers</em>, <em>resample=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/prefab.html#ResidualBlock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.prefab.ResidualBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.prefab.ResidualBlock.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/prefab.html#ResidualBlock.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.prefab.ResidualBlock.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.layers.reshape">
+<span id="inferno-extensions-layers-reshape-module"></span><h2>inferno.extensions.layers.reshape module<a class="headerlink" href="#module-inferno.extensions.layers.reshape" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.View">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">View</code><span class="sig-paren">(</span><em>as_shape</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#View"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.View" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.reshape.View.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#View.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.View.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.reshape.View.validate_as_shape">
+<code class="descname">validate_as_shape</code><span class="sig-paren">(</span><em>as_shape</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#View.validate_as_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.View.validate_as_shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.AsMatrix">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">AsMatrix</code><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#AsMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.AsMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.reshape.View" title="inferno.extensions.layers.reshape.View"><tt class="xref py py-class docutils literal">inferno.extensions.layers.reshape.View</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.Flatten">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">Flatten</code><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Flatten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.Flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.reshape.View" title="inferno.extensions.layers.reshape.View"><tt class="xref py py-class docutils literal">inferno.extensions.layers.reshape.View</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.As3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">As3D</code><span class="sig-paren">(</span><em>channel_as_z=False</em>, <em>num_channels_or_num_z_slices=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#As3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.As3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.reshape.As3D.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#As3D.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.As3D.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.As2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">As2D</code><span class="sig-paren">(</span><em>z_as_channel=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#As2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.As2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.reshape.As2D.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#As2D.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.As2D.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.Concatenate">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">Concatenate</code><span class="sig-paren">(</span><em>dim=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Concatenate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.Concatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Concatenate input tensors along a specified dimension.</p>
+<dl class="method">
+<dt id="inferno.extensions.layers.reshape.Concatenate.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Concatenate.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.Concatenate.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.Cat">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">Cat</code><span class="sig-paren">(</span><em>dim=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Cat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.Cat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.reshape.Concatenate" title="inferno.extensions.layers.reshape.Concatenate"><tt class="xref py py-class docutils literal">inferno.extensions.layers.reshape.Concatenate</tt></a></p>
+<p>An alias for <cite>Concatenate</cite>. Hey, everyone knows who Cat is.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.ResizeAndConcatenate">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">ResizeAndConcatenate</code><span class="sig-paren">(</span><em>target_size</em>, <em>pool_mode='average'</em>, <em>dim=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#ResizeAndConcatenate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.ResizeAndConcatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Resize input tensors spatially (to a specified target size) before concatenating
+them along the a given dim (channel, i.e. 1 by default). The down-sampling mode can
+be specified (‘average’ or ‘max’), but the up-sampling is always ‘nearest’.</p>
+<dl class="attribute">
+<dt id="inferno.extensions.layers.reshape.ResizeAndConcatenate.POOL_MODE_MAPPING">
+<code class="descname">POOL_MODE_MAPPING</code><em class="property"> = {'average': 'avg', 'avg': 'avg', 'max': 'max', 'mean': 'avg'}</em><a class="headerlink" href="#inferno.extensions.layers.reshape.ResizeAndConcatenate.POOL_MODE_MAPPING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.reshape.ResizeAndConcatenate.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#ResizeAndConcatenate.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.ResizeAndConcatenate.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.PoolCat">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">PoolCat</code><span class="sig-paren">(</span><em>target_size</em>, <em>pool_mode='average'</em>, <em>dim=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#PoolCat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.PoolCat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.reshape.ResizeAndConcatenate" title="inferno.extensions.layers.reshape.ResizeAndConcatenate"><tt class="xref py py-class docutils literal">inferno.extensions.layers.reshape.ResizeAndConcatenate</tt></a></p>
+<p>Alias for <cite>ResizeAndConcatenate</cite>, just to annoy snarky web developers.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.GlobalMeanPooling">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">GlobalMeanPooling</code><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#GlobalMeanPooling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.GlobalMeanPooling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.reshape.ResizeAndConcatenate" title="inferno.extensions.layers.reshape.ResizeAndConcatenate"><tt class="xref py py-class docutils literal">inferno.extensions.layers.reshape.ResizeAndConcatenate</tt></a></p>
+<p>Global mean pooling layer.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.GlobalMaxPooling">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">GlobalMaxPooling</code><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#GlobalMaxPooling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.GlobalMaxPooling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.reshape.ResizeAndConcatenate" title="inferno.extensions.layers.reshape.ResizeAndConcatenate"><tt class="xref py py-class docutils literal">inferno.extensions.layers.reshape.ResizeAndConcatenate</tt></a></p>
+<p>Global max pooling layer.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.Sum">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">Sum</code><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Sum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.Sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Sum all inputs.</p>
+<dl class="method">
+<dt id="inferno.extensions.layers.reshape.Sum.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Sum.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.Sum.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.SplitChannels">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">SplitChannels</code><span class="sig-paren">(</span><em>channel_index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#SplitChannels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.SplitChannels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Split input at a given index along the channel axis.</p>
+<dl class="method">
+<dt id="inferno.extensions.layers.reshape.SplitChannels.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#SplitChannels.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.SplitChannels.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.Squeeze">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">Squeeze</code><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Squeeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.Squeeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.reshape.Squeeze.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Squeeze.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.Squeeze.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.reshape.RemoveSingletonDimension">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.reshape.</code><code class="descname">RemoveSingletonDimension</code><span class="sig-paren">(</span><em>dim=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#RemoveSingletonDimension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.RemoveSingletonDimension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.reshape.RemoveSingletonDimension.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#RemoveSingletonDimension.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.reshape.RemoveSingletonDimension.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.layers.sampling">
+<span id="inferno-extensions-layers-sampling-module"></span><h2>inferno.extensions.layers.sampling module<a class="headerlink" href="#module-inferno.extensions.layers.sampling" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.layers.sampling.AnisotropicUpsample">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.sampling.</code><code class="descname">AnisotropicUpsample</code><span class="sig-paren">(</span><em>scale_factor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/sampling.html#AnisotropicUpsample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.sampling.AnisotropicUpsample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.sampling.AnisotropicUpsample.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/sampling.html#AnisotropicUpsample.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.sampling.AnisotropicUpsample.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.sampling.AnisotropicPool">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.sampling.</code><code class="descname">AnisotropicPool</code><span class="sig-paren">(</span><em>downscale_factor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/sampling.html#AnisotropicPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.sampling.AnisotropicPool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.pooling.MaxPool3d</tt></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.layers.unet">
+<span id="inferno-extensions-layers-unet-module"></span><h2>inferno.extensions.layers.unet module<a class="headerlink" href="#module-inferno.extensions.layers.unet" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.layers.unet.UNetBase">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.unet.</code><code class="descname">UNetBase</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>dim</em>, <em>depth=3</em>, <em>gain=2</em>, <em>residual=False</em>, <em>upsample_mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="docutils">
+<dt>Base class for implementing UNets.</dt>
+<dd>The depth and dimension of the UNet is flexible.
+The deriving classes must implement
+<cite>conv_op_factory</cite> and can implement
+<cite>upsample_op_factory</cite> and
+<cite>downsample_op_factory</cite>.</dd>
+</dl>
+<dl class="attribute">
+<dt id="inferno.extensions.layers.unet.UNetBase.in_channels">
+<code class="descname">in_channels</code><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.in_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.unet.UNetBase.out_channels">
+<code class="descname">out_channels</code><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.out_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.unet.UNetBase.dim">
+<code class="descname">dim</code><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – Spatial dimension of data (must be 2 or 3)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.unet.UNetBase.depth">
+<code class="descname">depth</code><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.depth" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – How many down-sampling / up-sampling steps
+shall be performed</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.unet.UNetBase.gain">
+<code class="descname">gain</code><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.gain" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – Multiplicative increase of channels while going down in the UNet.
+The same factor is used to decrease the number of channels while
+going up in the UNet.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.unet.UNetBase.residual">
+<code class="descname">residual</code><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.residual" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – If residual is true, the output of the down-streams
+are added to the up-stream results.
+Otherwise the results are concatenated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.unet.UNetBase.conv_op_factory">
+<code class="descname">conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.unet.UNetBase.downsample_op_factory">
+<code class="descname">downsample_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.downsample_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.downsample_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.unet.UNetBase.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.unet.UNetBase.upsample_op_factory">
+<code class="descname">upsample_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.upsample_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.upsample_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.unet.ResBlockUNet">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.unet.</code><code class="descname">ResBlockUNet</code><span class="sig-paren">(</span><em>in_channels</em>, <em>dim</em>, <em>out_channels</em>, <em>unet_kwargs=None</em>, <em>res_block_kwargs=None</em>, <em>activated=True</em>, <em>side_out_parts=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#ResBlockUNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.unet.UNetBase" title="inferno.extensions.layers.unet.UNetBase"><tt class="xref py py-class docutils literal">inferno.extensions.layers.unet.UNetBase</tt></a></p>
+<p>TODO.</p>
+<blockquote>
+<div>ACCC</div></blockquote>
+<dl class="attribute">
+<dt id="inferno.extensions.layers.unet.ResBlockUNet.activated">
+<code class="descname">activated</code><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet.activated" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.unet.ResBlockUNet.dim">
+<code class="descname">dim</code><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.unet.ResBlockUNet.res_block_kwargs">
+<code class="descname">res_block_kwargs</code><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet.res_block_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.unet.ResBlockUNet.side_out_parts">
+<code class="descname">side_out_parts</code><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet.side_out_parts" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.unet.ResBlockUNet.unet_kwargs">
+<code class="descname">unet_kwargs</code><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet.unet_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.unet.ResBlockUNet.conv_op_factory">
+<code class="descname">conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#ResBlockUNet.conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet.conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.layers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.extensions.layers" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.layers.SELU">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">SELU</code><a class="reference internal" href="../_modules/inferno/extensions/layers/activations.html#SELU"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.SELU" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.SELU.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/activations.html#SELU.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.SELU.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="inferno.extensions.layers.SELU.selu">
+<em class="property">static </em><code class="descname">selu</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/activations.html#SELU.selu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.SELU.selu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ConvActivation">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ConvActivation</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>dim</em>, <em>activation</em>, <em>stride=1</em>, <em>dilation=1</em>, <em>groups=None</em>, <em>depthwise=False</em>, <em>bias=True</em>, <em>deconv=False</em>, <em>initialization=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvActivation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ConvActivation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Convolutional layer with ‘SAME’ padding followed by an activation.</p>
+<dl class="method">
+<dt id="inferno.extensions.layers.ConvActivation.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvActivation.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ConvActivation.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.ConvActivation.get_padding">
+<code class="descname">get_padding</code><span class="sig-paren">(</span><em>kernel_size</em>, <em>dilation</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvActivation.get_padding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ConvActivation.get_padding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ConvELU2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ConvELU2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvELU2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ConvELU2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D Convolutional layer with ‘SAME’ padding, ELU and orthogonal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ConvELU3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ConvELU3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvELU3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ConvELU3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D Convolutional layer with ‘SAME’ padding, ELU and orthogonal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ConvSigmoid2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ConvSigmoid2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvSigmoid2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ConvSigmoid2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D Convolutional layer with ‘SAME’ padding, Sigmoid and orthogonal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ConvSigmoid3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ConvSigmoid3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvSigmoid3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ConvSigmoid3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D Convolutional layer with ‘SAME’ padding, Sigmoid and orthogonal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.DeconvELU2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">DeconvELU2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#DeconvELU2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.DeconvELU2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D deconvolutional layer with ELU and orthogonal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.DeconvELU3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">DeconvELU3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#DeconvELU3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.DeconvELU3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D deconvolutional layer with ELU and orthogonal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.StridedConvELU2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">StridedConvELU2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>stride=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#StridedConvELU2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.StridedConvELU2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D strided convolutional layer with ‘SAME’ padding, ELU and orthogonal
+weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.StridedConvELU3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">StridedConvELU3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>stride=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#StridedConvELU3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.StridedConvELU3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D strided convolutional layer with ‘SAME’ padding, ELU and orthogonal
+weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.DilatedConvELU2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">DilatedConvELU2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>dilation=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#DilatedConvELU2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.DilatedConvELU2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D dilated convolutional layer with ‘SAME’ padding, ELU and orthogonal
+weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.DilatedConvELU3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">DilatedConvELU3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>dilation=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#DilatedConvELU3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.DilatedConvELU3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D dilated convolutional layer with ‘SAME’ padding, ELU and orthogonal
+weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.Conv2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">Conv2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>dilation=1</em>, <em>stride=1</em>, <em>activation=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#Conv2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.Conv2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D convolutional layer with same padding and orthogonal weight initialization.
+By default, this layer does not apply an activation function.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.Conv3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">Conv3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>dilation=1</em>, <em>stride=1</em>, <em>activation=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#Conv3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.Conv3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D convolutional layer with same padding and orthogonal weight initialization.
+By default, this layer does not apply an activation function.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.BNReLUConv2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">BNReLUConv2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>stride=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#BNReLUConv2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.BNReLUConv2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional._BNReLUSomeConv</tt>, <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D BN-ReLU-Conv layer with ‘SAME’ padding and He weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.BNReLUConv3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">BNReLUConv3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em>, <em>stride=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#BNReLUConv3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.BNReLUConv3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional._BNReLUSomeConv</tt>, <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D BN-ReLU-Conv layer with ‘SAME’ padding and He weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.BNReLUDepthwiseConv2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">BNReLUDepthwiseConv2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#BNReLUDepthwiseConv2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.BNReLUDepthwiseConv2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional._BNReLUSomeConv</tt>, <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D BN-ReLU-Conv layer with ‘SAME’ padding, He weight initialization and depthwise convolution.
+Note that depthwise convolutions require <cite>in_channels == out_channels</cite>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ConvSELU2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ConvSELU2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvSELU2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ConvSELU2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D Convolutional layer with SELU activation and the appropriate weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ConvSELU3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ConvSELU3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvSELU3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ConvSELU3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D Convolutional layer with SELU activation and the appropriate weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ConvReLU2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ConvReLU2D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvReLU2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ConvReLU2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>2D Convolutional layer with ‘SAME’ padding, ReLU and Kaiming normal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ConvReLU3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ConvReLU3D</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>kernel_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/convolutional.html#ConvReLU3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ConvReLU3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.convolutional.ConvActivation" title="inferno.extensions.layers.convolutional.ConvActivation"><tt class="xref py py-class docutils literal">inferno.extensions.layers.convolutional.ConvActivation</tt></a></p>
+<p>3D Convolutional layer with ‘SAME’ padding, ReLU and Kaiming normal weight initialization.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.DeviceTransfer">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">DeviceTransfer</code><span class="sig-paren">(</span><em>target_device</em>, <em>device_ordinal=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/device.html#DeviceTransfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.DeviceTransfer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Layer to transfer variables to a specified device.</p>
+<dl class="method">
+<dt id="inferno.extensions.layers.DeviceTransfer.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/device.html#DeviceTransfer.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.DeviceTransfer.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.OnDevice">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">OnDevice</code><span class="sig-paren">(</span><em>module</em>, <em>target_device</em>, <em>device_ordinal=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/device.html#OnDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.OnDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Moves a module to a device. The advantage of using this over <cite>torch.nn.Module.cuda</cite> is
+that the inputs are transferred to the same device as the module, enabling easy model
+parallelism.</p>
+<dl class="method">
+<dt id="inferno.extensions.layers.OnDevice.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/device.html#OnDevice.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.OnDevice.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.OnDevice.transfer_module">
+<code class="descname">transfer_module</code><span class="sig-paren">(</span><em>module</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/device.html#OnDevice.transfer_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.OnDevice.transfer_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.View">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">View</code><span class="sig-paren">(</span><em>as_shape</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#View"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.View" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.View.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#View.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.View.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.View.validate_as_shape">
+<code class="descname">validate_as_shape</code><span class="sig-paren">(</span><em>as_shape</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#View.validate_as_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.View.validate_as_shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.AsMatrix">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">AsMatrix</code><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#AsMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.AsMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.reshape.View" title="inferno.extensions.layers.reshape.View"><tt class="xref py py-class docutils literal">inferno.extensions.layers.reshape.View</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.Flatten">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">Flatten</code><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Flatten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.Flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.reshape.View" title="inferno.extensions.layers.reshape.View"><tt class="xref py py-class docutils literal">inferno.extensions.layers.reshape.View</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.As3D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">As3D</code><span class="sig-paren">(</span><em>channel_as_z=False</em>, <em>num_channels_or_num_z_slices=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#As3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.As3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.As3D.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#As3D.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.As3D.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.As2D">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">As2D</code><span class="sig-paren">(</span><em>z_as_channel=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#As2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.As2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.As2D.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#As2D.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.As2D.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.Concatenate">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">Concatenate</code><span class="sig-paren">(</span><em>dim=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Concatenate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.Concatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Concatenate input tensors along a specified dimension.</p>
+<dl class="method">
+<dt id="inferno.extensions.layers.Concatenate.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Concatenate.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.Concatenate.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.Cat">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">Cat</code><span class="sig-paren">(</span><em>dim=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Cat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.Cat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.reshape.Concatenate" title="inferno.extensions.layers.reshape.Concatenate"><tt class="xref py py-class docutils literal">inferno.extensions.layers.reshape.Concatenate</tt></a></p>
+<p>An alias for <cite>Concatenate</cite>. Hey, everyone knows who Cat is.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ResizeAndConcatenate">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ResizeAndConcatenate</code><span class="sig-paren">(</span><em>target_size</em>, <em>pool_mode='average'</em>, <em>dim=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#ResizeAndConcatenate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResizeAndConcatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Resize input tensors spatially (to a specified target size) before concatenating
+them along the a given dim (channel, i.e. 1 by default). The down-sampling mode can
+be specified (‘average’ or ‘max’), but the up-sampling is always ‘nearest’.</p>
+<dl class="attribute">
+<dt id="inferno.extensions.layers.ResizeAndConcatenate.POOL_MODE_MAPPING">
+<code class="descname">POOL_MODE_MAPPING</code><em class="property"> = {'average': 'avg', 'avg': 'avg', 'max': 'max', 'mean': 'avg'}</em><a class="headerlink" href="#inferno.extensions.layers.ResizeAndConcatenate.POOL_MODE_MAPPING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.ResizeAndConcatenate.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#ResizeAndConcatenate.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResizeAndConcatenate.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.PoolCat">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">PoolCat</code><span class="sig-paren">(</span><em>target_size</em>, <em>pool_mode='average'</em>, <em>dim=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#PoolCat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.PoolCat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.reshape.ResizeAndConcatenate" title="inferno.extensions.layers.reshape.ResizeAndConcatenate"><tt class="xref py py-class docutils literal">inferno.extensions.layers.reshape.ResizeAndConcatenate</tt></a></p>
+<p>Alias for <cite>ResizeAndConcatenate</cite>, just to annoy snarky web developers.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.GlobalMeanPooling">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">GlobalMeanPooling</code><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#GlobalMeanPooling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.GlobalMeanPooling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.reshape.ResizeAndConcatenate" title="inferno.extensions.layers.reshape.ResizeAndConcatenate"><tt class="xref py py-class docutils literal">inferno.extensions.layers.reshape.ResizeAndConcatenate</tt></a></p>
+<p>Global mean pooling layer.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.GlobalMaxPooling">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">GlobalMaxPooling</code><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#GlobalMaxPooling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.GlobalMaxPooling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.reshape.ResizeAndConcatenate" title="inferno.extensions.layers.reshape.ResizeAndConcatenate"><tt class="xref py py-class docutils literal">inferno.extensions.layers.reshape.ResizeAndConcatenate</tt></a></p>
+<p>Global max pooling layer.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.Sum">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">Sum</code><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Sum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.Sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Sum all inputs.</p>
+<dl class="method">
+<dt id="inferno.extensions.layers.Sum.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Sum.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.Sum.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.SplitChannels">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">SplitChannels</code><span class="sig-paren">(</span><em>channel_index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#SplitChannels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.SplitChannels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>Split input at a given index along the channel axis.</p>
+<dl class="method">
+<dt id="inferno.extensions.layers.SplitChannels.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#SplitChannels.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.SplitChannels.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.Squeeze">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">Squeeze</code><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Squeeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.Squeeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.Squeeze.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#Squeeze.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.Squeeze.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.RemoveSingletonDimension">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">RemoveSingletonDimension</code><span class="sig-paren">(</span><em>dim=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#RemoveSingletonDimension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.RemoveSingletonDimension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.RemoveSingletonDimension.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/reshape.html#RemoveSingletonDimension.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.RemoveSingletonDimension.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.UNetBase">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">UNetBase</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>dim</em>, <em>depth=3</em>, <em>gain=2</em>, <em>residual=False</em>, <em>upsample_mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="docutils">
+<dt>Base class for implementing UNets.</dt>
+<dd>The depth and dimension of the UNet is flexible.
+The deriving classes must implement
+<cite>conv_op_factory</cite> and can implement
+<cite>upsample_op_factory</cite> and
+<cite>downsample_op_factory</cite>.</dd>
+</dl>
+<dl class="attribute">
+<dt id="inferno.extensions.layers.UNetBase.in_channels">
+<code class="descname">in_channels</code><a class="headerlink" href="#inferno.extensions.layers.UNetBase.in_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.UNetBase.out_channels">
+<code class="descname">out_channels</code><a class="headerlink" href="#inferno.extensions.layers.UNetBase.out_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.UNetBase.dim">
+<code class="descname">dim</code><a class="headerlink" href="#inferno.extensions.layers.UNetBase.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – Spatial dimension of data (must be 2 or 3)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.UNetBase.depth">
+<code class="descname">depth</code><a class="headerlink" href="#inferno.extensions.layers.UNetBase.depth" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – How many down-sampling / up-sampling steps
+shall be performed</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.UNetBase.gain">
+<code class="descname">gain</code><a class="headerlink" href="#inferno.extensions.layers.UNetBase.gain" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – Multiplicative increase of channels while going down in the UNet.
+The same factor is used to decrease the number of channels while
+going up in the UNet.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.UNetBase.residual">
+<code class="descname">residual</code><a class="headerlink" href="#inferno.extensions.layers.UNetBase.residual" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – If residual is true, the output of the down-streams
+are added to the up-stream results.
+Otherwise the results are concatenated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.UNetBase.conv_op_factory">
+<code class="descname">conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.UNetBase.downsample_op_factory">
+<code class="descname">downsample_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.downsample_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.downsample_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.UNetBase.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.UNetBase.upsample_op_factory">
+<code class="descname">upsample_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.upsample_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.upsample_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ResBlockUNet">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ResBlockUNet</code><span class="sig-paren">(</span><em>in_channels</em>, <em>dim</em>, <em>out_channels</em>, <em>unet_kwargs=None</em>, <em>res_block_kwargs=None</em>, <em>activated=True</em>, <em>side_out_parts=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#ResBlockUNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlockUNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.unet.UNetBase" title="inferno.extensions.layers.unet.UNetBase"><tt class="xref py py-class docutils literal">inferno.extensions.layers.unet.UNetBase</tt></a></p>
+<p>TODO.</p>
+<blockquote>
+<div>ACCC</div></blockquote>
+<dl class="attribute">
+<dt id="inferno.extensions.layers.ResBlockUNet.activated">
+<code class="descname">activated</code><a class="headerlink" href="#inferno.extensions.layers.ResBlockUNet.activated" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.ResBlockUNet.dim">
+<code class="descname">dim</code><a class="headerlink" href="#inferno.extensions.layers.ResBlockUNet.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.ResBlockUNet.res_block_kwargs">
+<code class="descname">res_block_kwargs</code><a class="headerlink" href="#inferno.extensions.layers.ResBlockUNet.res_block_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.ResBlockUNet.side_out_parts">
+<code class="descname">side_out_parts</code><a class="headerlink" href="#inferno.extensions.layers.ResBlockUNet.side_out_parts" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.ResBlockUNet.unet_kwargs">
+<code class="descname">unet_kwargs</code><a class="headerlink" href="#inferno.extensions.layers.ResBlockUNet.unet_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.ResBlockUNet.conv_op_factory">
+<code class="descname">conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#ResBlockUNet.conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlockUNet.conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ResBlockBase">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ResBlockBase</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>dim</em>, <em>size=2</em>, <em>force_skip_op=False</em>, <em>activated=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlockBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlockBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.ResBlockBase.activated_skip_op_factory">
+<code class="descname">activated_skip_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlockBase.activated_skip_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlockBase.activated_skip_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.ResBlockBase.activation_op_factory">
+<code class="descname">activation_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlockBase.activation_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlockBase.activation_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.ResBlockBase.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlockBase.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlockBase.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.ResBlockBase.nonactivated_conv_op_factory">
+<code class="descname">nonactivated_conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlockBase.nonactivated_conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlockBase.nonactivated_conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.layers.ResBlock">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ResBlock</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>dim</em>, <em>size=2</em>, <em>activated=True</em>, <em>activation='ReLU'</em>, <em>batchnorm=True</em>, <em>force_skip_op=False</em>, <em>conv_kwargs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.building_blocks.ResBlockBase" title="inferno.extensions.layers.building_blocks.ResBlockBase"><tt class="xref py py-class docutils literal">inferno.extensions.layers.building_blocks.ResBlockBase</tt></a></p>
+<dl class="method">
+<dt id="inferno.extensions.layers.ResBlock.activated_skip_op_factory">
+<code class="descname">activated_skip_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlock.activated_skip_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlock.activated_skip_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.ResBlock.activation_op_factory">
+<code class="descname">activation_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlock.activation_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlock.activation_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.ResBlock.batchnorm_op_factory">
+<code class="descname">batchnorm_op_factory</code><span class="sig-paren">(</span><em>in_channels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlock.batchnorm_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlock.batchnorm_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.ResBlock.nonactivated_conv_op_factory">
+<code class="descname">nonactivated_conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/building_blocks.html#ResBlock.nonactivated_conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlock.nonactivated_conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.extensions.layers package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.layers.activations">inferno.extensions.layers.activations module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.layers.building_blocks">inferno.extensions.layers.building_blocks module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.layers.convolutional">inferno.extensions.layers.convolutional module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.layers.device">inferno.extensions.layers.device module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.layers.prefab">inferno.extensions.layers.prefab module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.layers.reshape">inferno.extensions.layers.reshape module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.layers.sampling">inferno.extensions.layers.sampling module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.layers.unet">inferno.extensions.layers.unet module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.layers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.extensions.initializers.html"
+                        title="previous chapter">inferno.extensions.initializers package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inferno.extensions.metrics.html"
+                        title="next chapter">inferno.extensions.metrics package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.extensions.layers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.metrics.html" title="inferno.extensions.metrics package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.initializers.html" title="inferno.extensions.initializers package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.extensions.html" >inferno.extensions package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

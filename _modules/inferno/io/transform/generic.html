@@ -1,0 +1,263 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.io.transform.generic &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.io.transform.generic</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">DTypeMapping</span>
+
+
+<div class="viewcode-block" id="Normalize"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.generic.Normalize">[docs]</a><span class="k">class</span> <span class="nc">Normalize</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Normalizes input to zero mean unit variance.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">super_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        eps : float</span>
+<span class="sd">            A small epsilon for numerical stability.</span>
+<span class="sd">        mean : list or float or numpy.ndarray</span>
+<span class="sd">            Global dataset mean for all channels.</span>
+<span class="sd">        std : list or float or numpy.ndarray</span>
+<span class="sd">            Global dataset std for all channels.</span>
+<span class="sd">        super_kwargs : dict</span>
+<span class="sd">            Kwargs to the superclass `inferno.io.transform.base.Transform`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Normalize</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">super_kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span> <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">std</span><span class="p">)</span> <span class="k">if</span> <span class="n">std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Normalize.tensor_function"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.generic.Normalize.tensor_function">[docs]</a>    <span class="k">def</span> <span class="nf">tensor_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">std</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">std</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">std</span>
+        <span class="c1"># Figure out how to reshape mean and std</span>
+        <span class="n">reshape_as</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Normalize</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="p">(</span><span class="n">tensor</span> <span class="o">-</span> <span class="n">mean</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">*</span><span class="n">reshape_as</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">std</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">*</span><span class="n">reshape_as</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tensor</span></div></div>
+
+
+<div class="viewcode-block" id="NormalizeRange"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.generic.NormalizeRange">[docs]</a><span class="k">class</span> <span class="nc">NormalizeRange</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Normalizes input by a constant.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normalize_by</span><span class="o">=</span><span class="mf">255.</span><span class="p">,</span> <span class="o">**</span><span class="n">super_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        normalize_by : float or int</span>
+<span class="sd">            Scalar to normalize by.</span>
+<span class="sd">        super_kwargs : dict</span>
+<span class="sd">            Kwargs to the superclass `inferno.io.transform.base.Transform`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NormalizeRange</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">super_kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalize_by</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">normalize_by</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NormalizeRange.tensor_function"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.generic.NormalizeRange.tensor_function">[docs]</a>    <span class="k">def</span> <span class="nf">tensor_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">tensor</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_by</span></div></div>
+
+
+<div class="viewcode-block" id="Project"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.generic.Project">[docs]</a><span class="k">class</span> <span class="nc">Project</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a projection mapping (i.e. a dict) and an input tensor, this transform replaces</span>
+<span class="sd">    all values in the tensor that equal a key in the mapping with the value corresponding to</span>
+<span class="sd">    the key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projection</span><span class="p">,</span> <span class="o">**</span><span class="n">super_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        projection : dict</span>
+<span class="sd">            The projection mapping.</span>
+<span class="sd">        super_kwargs : dict</span>
+<span class="sd">            Keywords to the super class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Project</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">super_kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projection</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">projection</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Project.tensor_function"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.generic.Project.tensor_function">[docs]</a>    <span class="k">def</span> <span class="nf">tensor_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">output</span><span class="p">[</span><span class="n">tensor</span> <span class="o">==</span> <span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="k">return</span> <span class="n">output</span></div></div>
+
+
+<div class="viewcode-block" id="Label2OneHot"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.generic.Label2OneHot">[docs]</a><span class="k">class</span> <span class="nc">Label2OneHot</span><span class="p">(</span><span class="n">Transform</span><span class="p">,</span> <span class="n">DTypeMapping</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert integer labels to one-hot vectors for arbitrary dimensional data.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">super_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        num_classes : int</span>
+<span class="sd">            Number of classes.</span>
+<span class="sd">        dtype : str</span>
+<span class="sd">            Datatype of the output.</span>
+<span class="sd">        super_kwargs : dict</span>
+<span class="sd">            Keyword arguments to the superclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Label2OneHot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">super_kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span> <span class="o">=</span> <span class="n">num_classes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DTYPE_MAPPING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Label2OneHot.tensor_function"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.generic.Label2OneHot.tensor_function">[docs]</a>    <span class="k">def</span> <span class="nf">tensor_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="n">reshaped_arange</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="p">,)</span><span class="o">*</span><span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">reshaped_arange</span><span class="p">,</span> <span class="n">tensor</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="c1"># output = np.zeros(shape=(self.num_classes,) + tensor.shape, dtype=self.dtype)</span>
+        <span class="c1"># # Optimizing for simplicity and memory efficiency, because one would usually</span>
+        <span class="c1"># # spawn multiple workers</span>
+        <span class="c1"># for class_num in range(self.num_classes):</span>
+        <span class="c1">#     output[class_num] = tensor == class_num</span>
+        <span class="k">return</span> <span class="n">output</span></div></div>
+
+
+<div class="viewcode-block" id="Cast"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.generic.Cast">[docs]</a><span class="k">class</span> <span class="nc">Cast</span><span class="p">(</span><span class="n">Transform</span><span class="p">,</span> <span class="n">DTypeMapping</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Casts inputs to a specified datatype.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">super_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dtype : {&#39;float16&#39;, &#39;float32&#39;, &#39;float64&#39;, &#39;half&#39;, &#39;float&#39;, &#39;double&#39;}</span>
+<span class="sd">            Datatype to cast to.</span>
+<span class="sd">        super_kwargs : dict</span>
+<span class="sd">            Kwargs to the superclass `inferno.io.transform.base.Transform`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Cast</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">super_kwargs</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DTYPE_MAPPING</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DTYPE_MAPPING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Cast.tensor_function"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.generic.Cast.tensor_function">[docs]</a>    <span class="k">def</span> <span class="nf">tensor_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">np</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)(</span><span class="n">tensor</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AsTorchBatch"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.generic.AsTorchBatch">[docs]</a><span class="k">class</span> <span class="nc">AsTorchBatch</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Converts a given numpy array to a torch batch tensor.</span>
+
+<span class="sd">    The result is a torch tensor __without__ the leading batch axis. For example,</span>
+<span class="sd">    if the input is an image of shape `(100, 100)`, the output is a batch of shape</span>
+<span class="sd">    `(1, 100, 100)`. The collate function will add the leading batch axis to obtain</span>
+<span class="sd">    a tensor of shape `(N, 1, 100, 100)`, where `N` is the batch-size.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dimensionality</span><span class="p">,</span> <span class="n">add_channel_axis_if_necessary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">super_kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dimensionality : {1, 2, 3}</span>
+<span class="sd">            Dimensionality of the data: 1 if vector, 2 if image, 3 if volume.</span>
+<span class="sd">        add_channel_axis_if_necessary : bool</span>
+<span class="sd">            Whether to add a channel axis where necessary. For example, if `dimensionality = 2`</span>
+<span class="sd">            and the input temperature has 2 dimensions (i.e. an image), setting</span>
+<span class="sd">            `add_channel_axis_if_necessary` to True results in the output being a 3 dimensional</span>
+<span class="sd">            tensor, where the leading dimension is a singleton and corresponds to `channel`.</span>
+<span class="sd">        super_kwargs : dict</span>
+<span class="sd">            Kwargs to the superclass `inferno.io.transform.base.Transform`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AsTorchBatch</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">super_kwargs</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">dimensionality</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimensionality</span> <span class="o">=</span> <span class="n">dimensionality</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_channel_axis_if_necessary</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">add_channel_axis_if_necessary</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AsTorchBatch.tensor_function"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.transform.html#inferno.io.transform.generic.AsTorchBatch.tensor_function">[docs]</a>    <span class="k">def</span> <span class="nf">tensor_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensionality</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="c1"># We&#39;re dealing with a volume. tensor can either be 3D or 4D</span>
+            <span class="k">assert</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_channel_axis_if_necessary</span><span class="p">:</span>
+                <span class="c1"># Add channel axis</span>
+                <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">tensor</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Channel axis is in already</span>
+                <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensionality</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># We&#39;re dealing with an image. tensor can either be 2D or 3D</span>
+            <span class="k">assert</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_channel_axis_if_necessary</span><span class="p">:</span>
+                <span class="c1"># Add channel axis</span>
+                <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">tensor</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Channel axis is in already</span>
+                <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensionality</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># We&#39;re dealing with a vector - it has to be 1D</span>
+            <span class="k">assert</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

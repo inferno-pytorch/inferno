@@ -1,0 +1,375 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Usage &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Inferno Examples Gallery" href="examples.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Inferno Examples Gallery"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">inferno 0.1.7 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>Inferno is a utility library built around [PyTorch](<a class="reference external" href="http://pytorch.org/">http://pytorch.org/</a>), designed to help you train and even build complex pytorch models. And in this tutorial, we’ll see how! If you’re new to PyTorch, I highly recommended you work through the [Pytorch tutorials](<a class="reference external" href="http://pytorch.org/tutorials/">http://pytorch.org/tutorials/</a>) first.</p>
+<div class="section" id="building-a-pytorch-model">
+<h2>Building a PyTorch Model<a class="headerlink" href="#building-a-pytorch-model" title="Permalink to this headline">¶</a></h2>
+<p>Inferno’s training machinery works with just about any valid [Pytorch module](<a class="reference external" href="http://pytorch.org/docs/master/nn.html#torch.nn.Module">http://pytorch.org/docs/master/nn.html#torch.nn.Module</a>). However, to make things even easier, we also provide pre-configured layers that work out-of-the-box. Let’s use them to build a convolutional neural network for Cifar-10.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">inferno.extensions.layers.convolutional</span> <span class="k">import</span> <span class="n">ConvELU2D</span>
+<span class="kn">from</span> <span class="nn">inferno.extensions.layers.reshape</span> <span class="k">import</span> <span class="n">Flatten</span>
+</pre></div>
+</div>
+<p><cite>ConvELU2D</cite> is a 2-dimensional convolutional layer with orthogonal weight initialization and [ELU](<a class="reference external" href="http://pytorch.org/docs/master/nn.html#torch.nn.ELU">http://pytorch.org/docs/master/nn.html#torch.nn.ELU</a>) activation. <cite>Flatten</cite> reshapes the 4 dimensional activation tensor to a matrix. Let’s use the Sequential container to chain together a bunch of convolutional and pooling layers, followed by a linear and softmax layer.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">ConvELU2D</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">ConvELU2D</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">ConvELU2D</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">Flatten</span><span class="p">(),</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Softmax</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Models this size don’t win competitions anymore, but it’ll do for our purpose.</p>
+<div class="section" id="data-logistics">
+<h3>Data Logistics<a class="headerlink" href="#data-logistics" title="Permalink to this headline">¶</a></h3>
+<p>With our model built, it’s time to worry about the data generators. Or is it?</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">inferno.io.box.cifar</span> <span class="k">import</span> <span class="n">get_cifar10_loaders</span>
+<span class="n">train_loader</span><span class="p">,</span> <span class="n">validate_loader</span> <span class="o">=</span> <span class="n">get_cifar10_loaders</span><span class="p">(</span><span class="s1">&#39;path/to/cifar10&#39;</span><span class="p">,</span>
+                                                    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                    <span class="n">train_batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+                                                    <span class="n">test_batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>CIFAR-10 works out-of-the-<cite>box</cite> (pun very much intended) with all the fancy data-augmentation and normalization. Of course, it’s perfectly fine if you have your own [<cite>DataLoader</cite>](<a class="reference external" href="http://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader">http://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader</a>).</p>
+</div>
+</div>
+<div class="section" id="preparing-the-trainer">
+<h2>Preparing the Trainer<a class="headerlink" href="#preparing-the-trainer" title="Permalink to this headline">¶</a></h2>
+<p>With our model and data loaders good to go, it’s finally time to build the trainer. To start, let’s initialize one.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">inferno.trainers.basic</span> <span class="k">import</span> <span class="n">Trainer</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="c1"># Tell trainer about the data loaders</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">bind_loader</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">)</span><span class="o">.</span><span class="n">bind_loader</span><span class="p">(</span><span class="s1">&#39;validate&#39;</span><span class="p">,</span> <span class="n">validate_loader</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now to the things we could do with it.</p>
+<div class="section" id="setting-up-checkpointing">
+<h3>Setting up Checkpointing<a class="headerlink" href="#setting-up-checkpointing" title="Permalink to this headline">¶</a></h3>
+<p>When training a model for days, it’s usually a good idea to store the current training state to disk every once in a while. To set this up, we tell <cite>trainer</cite> where to store these <em>checkpoints</em> and how often.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">save_to_directory</span><span class="p">(</span><span class="s1">&#39;path/to/save/directory&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">save_every</span><span class="p">((</span><span class="mi">25</span><span class="p">,</span> <span class="s1">&#39;epochs&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>So we’re saving once every 25 epochs. But what if an epoch takes forever, and you don’t wish to wait that long?</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">save_every</span><span class="p">((</span><span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;iterations&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>In this setting, you’re saving once every 1000 iterations (= batches). But we might also want to create a checkpoint when the validation score is the best. Easy as 1, 2,</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">save_at_best_validation_score</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Remember that a checkpoint contains the entire training state, and not just the model. Everything is included in the checkpoint file, including optimizer, criterion, and callbacks but __not the data <a href="#id5"><span class="problematic" id="id6">loaders__</span></a>.</p>
+</div>
+<div class="section" id="setting-up-validation">
+<h3>Setting up Validation<a class="headerlink" href="#setting-up-validation" title="Permalink to this headline">¶</a></h3>
+<p>Let’s say you wish to validate once every 2 epochs.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">validate_every</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;epochs&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>To be able to validate, you’ll need to specify a validation metric.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">build_metric</span><span class="p">(</span><span class="s1">&#39;CategoricalError&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Inferno looks for a metric <cite>‘CategoricalError’</cite> in <cite>inferno.extensions.metrics</cite>. To specify your own metric, subclass <cite>inferno.extensions.metrics.base.Metric</cite> and implement the <cite>forward</cite> method. With that done, you could:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">build_metric</span><span class="p">(</span><span class="n">MyMetric</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">build_metric</span><span class="p">(</span><span class="n">MyMetric</span><span class="p">,</span> <span class="o">**</span><span class="n">my_metric_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the metric applies to <a href="#id1"><span class="problematic" id="id2">`</span></a>torch.Tensor`s, and not on <a href="#id3"><span class="problematic" id="id4">`</span></a>torch.autograd.Variable`s. Also, a metric might be way too expensive to evaluate every training iteration without slowing down the training. If this is the case and you’d like to evaluate the metric every (say) 10 <em>training</em> iterations:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">evaluate_metric_every</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;iterations&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>However, while validating, the metric is evaluated once every iteration.</p>
+</div>
+<div class="section" id="setting-up-the-criterion-and-optimizer">
+<h3>Setting up the Criterion and Optimizer<a class="headerlink" href="#setting-up-the-criterion-and-optimizer" title="Permalink to this headline">¶</a></h3>
+<p>With that out of the way, let’s set up a training criterion and an optimizer.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># set up the criterion</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">build_criterion</span><span class="p">(</span><span class="s1">&#39;CrossEntropyLoss&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <cite>trainer</cite> looks for a <cite>‘CrossEntropyLoss’</cite> in <cite>torch.nn</cite>, which it finds. But any of the following would have worked:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">build_criterion</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">build_criterion</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>What this means is that if you have your own loss criterion that has the same API as any of the criteria found in <cite>torch.nn</cite>, you should be fine by just plugging it in.</p>
+<p>The same holds for the optimizer:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">build_optimizer</span><span class="p">(</span><span class="s1">&#39;Adam&#39;</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.0005</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Like for criteria, the <cite>trainer</cite> looks for a <cite>‘Adam’</cite> in <cite>torch.optim</cite> (among other places), and initializes it with <cite>model</cite>’s parameters. Any keywords you might use for <cite>torch.optim.Adam</cite>, you could pass them to the <cite>build_optimizer</cite> method.</p>
+<p>Or alternatively, you could use:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torch.optim</span> <span class="k">import</span> <span class="n">Adam</span>
+
+<span class="n">trainer</span><span class="o">.</span><span class="n">build_optimizer</span><span class="p">(</span><span class="n">Adam</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.0005</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you implemented your own optimizer (by subclassing <cite>torch.optim.Optimizer</cite>), you should be able to use it instead of <cite>Adam</cite>. Alternatively, if you already have an optimizer <em>instance</em>, you could do:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">MyOptimizer</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="o">**</span><span class="n">optimizer_kwargs</span><span class="p">)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">build_optimizer</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setting-up-training-duration">
+<h3>Setting up Training Duration<a class="headerlink" href="#setting-up-training-duration" title="Permalink to this headline">¶</a></h3>
+<p>You probably don’t want to train forever, in which case you must specify:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">set_max_num_epochs</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">set_max_num_iterations</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you like to train indefinitely (or until you’re happy with the results), use:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">set_max_num_iterations</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, you’ll need to interrupt the training manually with a <cite>KeyboardInterrupt</cite>.</p>
+</div>
+<div class="section" id="setting-up-callbacks">
+<h3>Setting up Callbacks<a class="headerlink" href="#setting-up-callbacks" title="Permalink to this headline">¶</a></h3>
+<p>Callbacks are pretty handy when it comes to interacting with the <cite>Trainer</cite>. More precisely: <cite>Trainer</cite> defines a number of events as ‘triggers’ for callbacks. Currently, these are:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BEGIN_OF_FIT</span><span class="p">,</span>
+<span class="n">END_OF_FIT</span><span class="p">,</span>
+<span class="n">BEGIN_OF_TRAINING_RUN</span><span class="p">,</span>
+<span class="n">END_OF_TRAINING_RUN</span><span class="p">,</span>
+<span class="n">BEGIN_OF_EPOCH</span><span class="p">,</span>
+<span class="n">END_OF_EPOCH</span><span class="p">,</span>
+<span class="n">BEGIN_OF_TRAINING_ITERATION</span><span class="p">,</span>
+<span class="n">END_OF_TRAINING_ITERATION</span><span class="p">,</span>
+<span class="n">BEGIN_OF_VALIDATION_RUN</span><span class="p">,</span>
+<span class="n">END_OF_VALIDATION_RUN</span><span class="p">,</span>
+<span class="n">BEGIN_OF_VALIDATION_ITERATION</span><span class="p">,</span>
+<span class="n">END_OF_VALIDATION_ITERATION</span><span class="p">,</span>
+<span class="n">BEGIN_OF_SAVE</span><span class="p">,</span>
+<span class="n">END_OF_SAVE</span>
+</pre></div>
+</div>
+<p>As an example, let’s build a simple callback to interrupt the training on NaNs. We check at the end of every training iteration whether the training loss is NaN, and accordingly raise a <cite>RuntimeError</cite>.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">inferno.trainers.callbacks.base</span> <span class="k">import</span> <span class="n">Callback</span>
+
+<span class="k">class</span> <span class="nc">NaNDetector</span><span class="p">(</span><span class="n">Callback</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">end_of_training_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">):</span>
+        <span class="c1"># The callback object has the trainer as an attribute.</span>
+        <span class="c1"># The trainer populates its &#39;states&#39; with torch tensors (NOT VARIABLES!)</span>
+        <span class="n">training_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="s1">&#39;training_loss&#39;</span><span class="p">)</span>
+        <span class="c1"># Extract float from torch tensor</span>
+        <span class="n">training_loss</span> <span class="o">=</span> <span class="n">training_loss</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">training_loss</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;NaNs detected!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With the callback defined, all we need to do is register it with the trainer:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="n">NaNDetector</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>So the next time you get <cite>RuntimeError: “NaNs detected!</cite>, you know the drill.</p>
+</div>
+<div class="section" id="using-tensorboard">
+<h3>Using Tensorboard<a class="headerlink" href="#using-tensorboard" title="Permalink to this headline">¶</a></h3>
+<p>Inferno supports logging scalars and images to Tensorboard out-of-the-box, though this requires you have at least [tensorflow-cpu](<a class="reference external" href="https://github.com/tensorflow/tensorflow">https://github.com/tensorflow/tensorflow</a>) installed. Let’s say you want to log scalars every iteration and images every 20 iterations:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">inferno.trainers.callbacks.logging.tensorboard</span> <span class="k">import</span> <span class="n">TensorboardLogger</span>
+
+<span class="n">trainer</span><span class="o">.</span><span class="n">build_logger</span><span class="p">(</span><span class="n">TensorboardLogger</span><span class="p">(</span><span class="n">log_scalars_every</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;iteration&#39;</span><span class="p">),</span>
+                                       <span class="n">log_images_every</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;iterations&#39;</span><span class="p">)),</span>
+                     <span class="n">log_directory</span><span class="o">=</span><span class="s1">&#39;/path/to/log/directory&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After you’ve started training, use a bash shell to fire up tensorboard with:</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ tensorboard --logdir=/path/to/log/directory --port=6007
+</pre></div>
+</div>
+<p>and navigate to <cite>localhost:6007</cite> with your favorite browser.</p>
+<p>Fine print: missing the <cite>log_images_every</cite> keyword argument to <cite>TensorboardLogger</cite> will result in images being logged every iteration. If you don’t have a fast hard drive, this might actually slow down the training. To not log images, just use <cite>log_images_every=’never’</cite>.</p>
+</div>
+<div class="section" id="using-gpus">
+<h3>Using GPUs<a class="headerlink" href="#using-gpus" title="Permalink to this headline">¶</a></h3>
+<p>To use just one GPU:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For multi-GPU data-parallel training, simply pass <cite>trainer.cuda</cite> a list of devices:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">cuda</span><span class="p">(</span><span class="n">devices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>__Pro-<a href="#id5"><span class="problematic" id="id7">tip__</span></a>: Say you only want to use GPUs 0, 3, 5 and 7 (your colleagues might love you for this). Before running your training script, simply:</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span>$ export CUDA_VISIBLE_DEVICES=0,3,5,7
+$ python train.py
+</pre></div>
+</div>
+<p>This maps device 0 to 0, 3 to 1, 5 to 2 and 7 to 3.</p>
+</div>
+<div class="section" id="one-more-thing">
+<h3>One more thing<a class="headerlink" href="#one-more-thing" title="Permalink to this headline">¶</a></h3>
+<p>Once you have everything configured, use</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>to commence training! This last step is kinda important. :wink:</p>
+</div>
+</div>
+<div class="section" id="cherries">
+<h2>Cherries:<a class="headerlink" href="#cherries" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="building-complex-models-with-the-graph-api">
+<h3>Building Complex Models with the Graph API<a class="headerlink" href="#building-complex-models-with-the-graph-api" title="Permalink to this headline">¶</a></h3>
+<p>Work in Progress:</p>
+</div>
+<div class="section" id="parameter-initialization">
+<h3>Parameter Initialization<a class="headerlink" href="#parameter-initialization" title="Permalink to this headline">¶</a></h3>
+<p>Work in Progress:</p>
+</div>
+<div class="section" id="support">
+<h3>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h3>
+<p>Work in Progress:</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Usage</a><ul>
+<li><a class="reference internal" href="#building-a-pytorch-model">Building a PyTorch Model</a><ul>
+<li><a class="reference internal" href="#data-logistics">Data Logistics</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#preparing-the-trainer">Preparing the Trainer</a><ul>
+<li><a class="reference internal" href="#setting-up-checkpointing">Setting up Checkpointing</a></li>
+<li><a class="reference internal" href="#setting-up-validation">Setting up Validation</a></li>
+<li><a class="reference internal" href="#setting-up-the-criterion-and-optimizer">Setting up the Criterion and Optimizer</a></li>
+<li><a class="reference internal" href="#setting-up-training-duration">Setting up Training Duration</a></li>
+<li><a class="reference internal" href="#setting-up-callbacks">Setting up Callbacks</a></li>
+<li><a class="reference internal" href="#using-tensorboard">Using Tensorboard</a></li>
+<li><a class="reference internal" href="#using-gpus">Using GPUs</a></li>
+<li><a class="reference internal" href="#one-more-thing">One more thing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cherries">Cherries:</a><ul>
+<li><a class="reference internal" href="#building-complex-models-with-the-graph-api">Building Complex Models with the Graph API</a></li>
+<li><a class="reference internal" href="#parameter-initialization">Parameter Initialization</a></li>
+<li><a class="reference internal" href="#support">Support</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="next chapter">Inferno Examples Gallery</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/usage.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Inferno Examples Gallery"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">inferno 0.1.7 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,281 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.extensions.initializers package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inferno.extensions.layers package" href="inferno.extensions.layers.html" />
+    <link rel="prev" title="inferno.extensions.criteria package" href="inferno.extensions.criteria.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.layers.html" title="inferno.extensions.layers package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.criteria.html" title="inferno.extensions.criteria package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.extensions.html" accesskey="U">inferno.extensions package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-extensions-initializers-package">
+<h1>inferno.extensions.initializers package<a class="headerlink" href="#inferno-extensions-initializers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.extensions.initializers.base">
+<span id="inferno-extensions-initializers-base-module"></span><h2>inferno.extensions.initializers.base module<a class="headerlink" href="#module-inferno.extensions.initializers.base" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.initializers.base.Initializer">
+<em class="property">class </em><code class="descclassname">inferno.extensions.initializers.base.</code><code class="descname">Initializer</code><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#Initializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.Initializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>Base class for all initializers.</p>
+<dl class="attribute">
+<dt id="inferno.extensions.initializers.base.Initializer.VALID_LAYERS">
+<code class="descname">VALID_LAYERS</code><em class="property"> = {'Conv1d', 'Conv3d', 'ConvTranspose3d', 'ConvTranspose2d', 'Conv2d', 'Linear', 'Embedding', 'Bilinear', 'ConvTranspose1d'}</em><a class="headerlink" href="#inferno.extensions.initializers.base.Initializer.VALID_LAYERS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.initializers.base.Initializer.call_on_bias">
+<code class="descname">call_on_bias</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#Initializer.call_on_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.Initializer.call_on_bias" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.initializers.base.Initializer.call_on_tensor">
+<code class="descname">call_on_tensor</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#Initializer.call_on_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.Initializer.call_on_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.initializers.base.Initializer.call_on_weight">
+<code class="descname">call_on_weight</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#Initializer.call_on_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.Initializer.call_on_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="inferno.extensions.initializers.base.Initializer.initializes_bias">
+<em class="property">classmethod </em><code class="descname">initializes_bias</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#Initializer.initializes_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.Initializer.initializes_bias" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="inferno.extensions.initializers.base.Initializer.initializes_weight">
+<em class="property">classmethod </em><code class="descname">initializes_weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#Initializer.initializes_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.Initializer.initializes_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.initializers.base.Initialization">
+<em class="property">class </em><code class="descclassname">inferno.extensions.initializers.base.</code><code class="descname">Initialization</code><span class="sig-paren">(</span><em>weight_initializer=None</em>, <em>bias_initializer=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#Initialization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.Initialization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.initializers.base.Initializer" title="inferno.extensions.initializers.base.Initializer"><tt class="xref py py-class docutils literal">inferno.extensions.initializers.base.Initializer</tt></a></p>
+<dl class="method">
+<dt id="inferno.extensions.initializers.base.Initialization.call_on_bias">
+<code class="descname">call_on_bias</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#Initialization.call_on_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.Initialization.call_on_bias" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.initializers.base.Initialization.call_on_weight">
+<code class="descname">call_on_weight</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#Initialization.call_on_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.Initialization.call_on_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.initializers.base.WeightInitFunction">
+<em class="property">class </em><code class="descclassname">inferno.extensions.initializers.base.</code><code class="descname">WeightInitFunction</code><span class="sig-paren">(</span><em>init_function</em>, <em>*init_function_args</em>, <em>**init_function_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#WeightInitFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.WeightInitFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.initializers.base.Initializer" title="inferno.extensions.initializers.base.Initializer"><tt class="xref py py-class docutils literal">inferno.extensions.initializers.base.Initializer</tt></a></p>
+<dl class="method">
+<dt id="inferno.extensions.initializers.base.WeightInitFunction.call_on_weight">
+<code class="descname">call_on_weight</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#WeightInitFunction.call_on_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.WeightInitFunction.call_on_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.initializers.base.BiasInitFunction">
+<em class="property">class </em><code class="descclassname">inferno.extensions.initializers.base.</code><code class="descname">BiasInitFunction</code><span class="sig-paren">(</span><em>init_function</em>, <em>*init_function_args</em>, <em>**init_function_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#BiasInitFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.BiasInitFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.initializers.base.Initializer" title="inferno.extensions.initializers.base.Initializer"><tt class="xref py py-class docutils literal">inferno.extensions.initializers.base.Initializer</tt></a></p>
+<dl class="method">
+<dt id="inferno.extensions.initializers.base.BiasInitFunction.call_on_bias">
+<code class="descname">call_on_bias</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#BiasInitFunction.call_on_bias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.BiasInitFunction.call_on_bias" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.initializers.base.TensorInitFunction">
+<em class="property">class </em><code class="descclassname">inferno.extensions.initializers.base.</code><code class="descname">TensorInitFunction</code><span class="sig-paren">(</span><em>init_function</em>, <em>*init_function_args</em>, <em>**init_function_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#TensorInitFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.TensorInitFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.initializers.base.Initializer" title="inferno.extensions.initializers.base.Initializer"><tt class="xref py py-class docutils literal">inferno.extensions.initializers.base.Initializer</tt></a></p>
+<dl class="method">
+<dt id="inferno.extensions.initializers.base.TensorInitFunction.call_on_tensor">
+<code class="descname">call_on_tensor</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/base.html#TensorInitFunction.call_on_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.base.TensorInitFunction.call_on_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.initializers.presets">
+<span id="inferno-extensions-initializers-presets-module"></span><h2>inferno.extensions.initializers.presets module<a class="headerlink" href="#module-inferno.extensions.initializers.presets" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.initializers.presets.Constant">
+<em class="property">class </em><code class="descclassname">inferno.extensions.initializers.presets.</code><code class="descname">Constant</code><span class="sig-paren">(</span><em>constant</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/presets.html#Constant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.presets.Constant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.initializers.base.Initializer" title="inferno.extensions.initializers.base.Initializer"><tt class="xref py py-class docutils literal">inferno.extensions.initializers.base.Initializer</tt></a></p>
+<p>Initialize with a constant.</p>
+<dl class="method">
+<dt id="inferno.extensions.initializers.presets.Constant.call_on_tensor">
+<code class="descname">call_on_tensor</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/presets.html#Constant.call_on_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.presets.Constant.call_on_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.initializers.presets.NormalWeights">
+<em class="property">class </em><code class="descclassname">inferno.extensions.initializers.presets.</code><code class="descname">NormalWeights</code><span class="sig-paren">(</span><em>mean=0.0</em>, <em>stddev=1.0</em>, <em>sqrt_gain_over_fan_in=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/presets.html#NormalWeights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.presets.NormalWeights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.initializers.base.Initializer" title="inferno.extensions.initializers.base.Initializer"><tt class="xref py py-class docutils literal">inferno.extensions.initializers.base.Initializer</tt></a></p>
+<p>Initialize weights with random numbers drawn from the normal distribution at
+<cite>mean</cite> and <cite>stddev</cite>.</p>
+<dl class="method">
+<dt id="inferno.extensions.initializers.presets.NormalWeights.call_on_weight">
+<code class="descname">call_on_weight</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/presets.html#NormalWeights.call_on_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.presets.NormalWeights.call_on_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.initializers.presets.NormalWeights.compute_fan_in">
+<code class="descname">compute_fan_in</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/presets.html#NormalWeights.compute_fan_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.presets.NormalWeights.compute_fan_in" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.initializers.presets.SELUWeightsZeroBias">
+<em class="property">class </em><code class="descclassname">inferno.extensions.initializers.presets.</code><code class="descname">SELUWeightsZeroBias</code><a class="reference internal" href="../_modules/inferno/extensions/initializers/presets.html#SELUWeightsZeroBias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.presets.SELUWeightsZeroBias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.initializers.base.Initialization" title="inferno.extensions.initializers.base.Initialization"><tt class="xref py py-class docutils literal">inferno.extensions.initializers.base.Initialization</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.initializers.presets.ELUWeightsZeroBias">
+<em class="property">class </em><code class="descclassname">inferno.extensions.initializers.presets.</code><code class="descname">ELUWeightsZeroBias</code><a class="reference internal" href="../_modules/inferno/extensions/initializers/presets.html#ELUWeightsZeroBias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.presets.ELUWeightsZeroBias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.initializers.base.Initialization" title="inferno.extensions.initializers.base.Initialization"><tt class="xref py py-class docutils literal">inferno.extensions.initializers.base.Initialization</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.initializers.presets.OrthogonalWeightsZeroBias">
+<em class="property">class </em><code class="descclassname">inferno.extensions.initializers.presets.</code><code class="descname">OrthogonalWeightsZeroBias</code><span class="sig-paren">(</span><em>orthogonal_gain=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/presets.html#OrthogonalWeightsZeroBias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.presets.OrthogonalWeightsZeroBias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.initializers.base.Initialization" title="inferno.extensions.initializers.base.Initialization"><tt class="xref py py-class docutils literal">inferno.extensions.initializers.base.Initialization</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.initializers.presets.KaimingNormalWeightsZeroBias">
+<em class="property">class </em><code class="descclassname">inferno.extensions.initializers.presets.</code><code class="descname">KaimingNormalWeightsZeroBias</code><span class="sig-paren">(</span><em>relu_leakage=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/initializers/presets.html#KaimingNormalWeightsZeroBias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.initializers.presets.KaimingNormalWeightsZeroBias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.initializers.base.Initialization" title="inferno.extensions.initializers.base.Initialization"><tt class="xref py py-class docutils literal">inferno.extensions.initializers.base.Initialization</tt></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.initializers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.extensions.initializers" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.extensions.initializers package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.initializers.base">inferno.extensions.initializers.base module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.initializers.presets">inferno.extensions.initializers.presets module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.initializers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.extensions.criteria.html"
+                        title="previous chapter">inferno.extensions.criteria package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inferno.extensions.layers.html"
+                        title="next chapter">inferno.extensions.layers package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.extensions.initializers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.layers.html" title="inferno.extensions.layers package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.criteria.html" title="inferno.extensions.criteria package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.extensions.html" >inferno.extensions package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

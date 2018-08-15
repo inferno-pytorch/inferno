@@ -1,0 +1,450 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.trainers.callbacks.logging.tensorboard &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../logging.html" accesskey="U">inferno.trainers.callbacks.logging</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.trainers.callbacks.logging.tensorboard</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">tensorboardX</span> <span class="k">as</span> <span class="nn">tX</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">torch_utils</span> <span class="k">as</span> <span class="n">tu</span>
+<span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">python_utils</span> <span class="k">as</span> <span class="n">pyu</span>
+<span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">train_utils</span> <span class="k">as</span> <span class="n">tru</span>
+<span class="kn">from</span> <span class="nn">....utils.exceptions</span> <span class="k">import</span> <span class="n">assert_</span>
+
+
+<div class="viewcode-block" id="TaggedImage"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TaggedImage">[docs]</a><span class="k">class</span> <span class="nc">TaggedImage</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span></div>
+
+
+<div class="viewcode-block" id="TensorboardLogger"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger">[docs]</a><span class="k">class</span> <span class="nc">TensorboardLogger</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class to enable logging of training progress to Tensorboard.</span>
+
+<span class="sd">    Currently supports logging scalars and images.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_scalars_every</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_images_every</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">send_image_at_batch_indices</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">send_image_at_channel_indices</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
+                 <span class="n">send_volume_at_z_indices</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        log_directory : str</span>
+<span class="sd">            Path to the directory where the log files will be placed.</span>
+<span class="sd">        log_scalars_every : str or tuple or inferno.utils.train_utils.Frequency</span>
+<span class="sd">            How often scalars should be logged to Tensorboard. By default, once every iteration.</span>
+<span class="sd">        log_images_every : str or tuple or inferno.utils.train_utils.Frequency</span>
+<span class="sd">            How often images should be logged to Tensorboard. By default, once every iteration.</span>
+<span class="sd">        send_image_at_batch_indices : list or str</span>
+<span class="sd">            The indices of the batches to be logged. An `image_batch` usually has the shape</span>
+<span class="sd">            (num_samples, num_channels, num_rows, num_cols). By setting this argument to say</span>
+<span class="sd">            [0, 2], only images corresponding to `image_batch[0]` and `image_batch[2]` are</span>
+<span class="sd">            logged. When a str, it should be &#39;all&#39;, in which case, all samples are logged.</span>
+<span class="sd">        send_image_at_channel_indices : list or str</span>
+<span class="sd">            Similar to `send_image_at_batch_indices`, but applying to channels.</span>
+<span class="sd">        send_volume_at_z_indices : list or str</span>
+<span class="sd">            For 3D batches of shape (num_samples, num_channels, num_z_slices, num_rows, num_cols),</span>
+<span class="sd">            select the indices of the z slices to be logged. When a str, it could be &#39;all&#39; or</span>
+<span class="sd">            &#39;mid&#39; (to log the central z slice).</span>
+
+<span class="sd">        Warnings</span>
+<span class="sd">        --------</span>
+<span class="sd">        Leaving log_images_every to the default (i.e. once every iteration) might generate a</span>
+<span class="sd">        large logfile and/or slow down the training.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TensorboardLogger</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">log_directory</span><span class="o">=</span><span class="n">log_directory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_scalars_every</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_images_every</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;image_batch_indices&#39;</span><span class="p">:</span> <span class="n">send_image_at_batch_indices</span><span class="p">,</span>
+                        <span class="s1">&#39;image_channel_indices&#39;</span><span class="p">:</span> <span class="n">send_image_at_channel_indices</span><span class="p">,</span>
+                        <span class="s1">&#39;volume_z_indices&#39;</span><span class="p">:</span> <span class="n">send_volume_at_z_indices</span><span class="p">}</span>
+        <span class="c1"># We ought to know the trainer states we&#39;re observing (and plotting to tensorboard).</span>
+        <span class="c1"># These are the defaults.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trainer_states_being_observed_while_training</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;training_loss&#39;</span><span class="p">,</span>
+                                                              <span class="s1">&#39;training_error&#39;</span><span class="p">,</span>
+                                                              <span class="s1">&#39;training_prediction&#39;</span><span class="p">,</span>
+                                                              <span class="s1">&#39;training_inputs&#39;</span><span class="p">,</span>
+                                                              <span class="s1">&#39;training_target&#39;</span><span class="p">,</span>
+                                                              <span class="s1">&#39;learning_rate&#39;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trainer_states_being_observed_while_validating</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;validation_error_averaged&#39;</span><span class="p">,</span>
+                                                                <span class="s1">&#39;validation_loss_averaged&#39;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">log_scalars_every</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_scalars_every</span> <span class="o">=</span> <span class="n">log_scalars_every</span>
+        <span class="k">if</span> <span class="n">log_images_every</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_images_every</span> <span class="o">=</span> <span class="n">log_images_every</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">writer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="o">=</span> <span class="n">tX</span><span class="o">.</span><span class="n">SummaryWriter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_directory</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log_scalars_every</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_scalars_every</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_scalars_every</span> <span class="o">=</span> <span class="n">tru</span><span class="o">.</span><span class="n">Frequency</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;iterations&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_scalars_every</span>
+
+    <span class="nd">@log_scalars_every</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">log_scalars_every</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_scalars_every</span> <span class="o">=</span> <span class="n">tru</span><span class="o">.</span><span class="n">Frequency</span><span class="o">.</span><span class="n">build_from</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log_scalars_now</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Using persistent=True in a property getter is probably not a very good idea...</span>
+        <span class="c1"># We need to make sure that this getter is called only once per callback-call.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_scalars_every</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">iteration_count</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">iteration_count</span><span class="p">,</span>
+                                            <span class="n">epoch_count</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">epoch_count</span><span class="p">,</span>
+                                            <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log_images_every</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_images_every</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_images_every</span> <span class="o">=</span> <span class="n">tru</span><span class="o">.</span><span class="n">Frequency</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;iterations&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_images_every</span>
+
+    <span class="nd">@log_images_every</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">log_images_every</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_images_every</span> <span class="o">=</span> <span class="n">tru</span><span class="o">.</span><span class="n">Frequency</span><span class="o">.</span><span class="n">build_from</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log_images_now</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Using persistent=True in a property getter is probably not a very good idea...</span>
+        <span class="c1"># We need to make sure that this getter is called only once per callback-call.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_images_every</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">iteration_count</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">iteration_count</span><span class="p">,</span>
+                                           <span class="n">epoch_count</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">epoch_count</span><span class="p">,</span>
+                                           <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TensorboardLogger.observe_state"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.observe_state">[docs]</a>    <span class="k">def</span> <span class="nf">observe_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">observe_while</span><span class="o">=</span><span class="s1">&#39;training&#39;</span><span class="p">):</span>
+        <span class="c1"># Validate arguments</span>
+        <span class="n">keyword_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;training&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;training&#39;</span><span class="p">:</span> <span class="s1">&#39;training&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;validation&#39;</span><span class="p">:</span> <span class="s1">&#39;validating&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;validating&#39;</span><span class="p">:</span> <span class="s1">&#39;validating&#39;</span><span class="p">}</span>
+        <span class="n">observe_while</span> <span class="o">=</span> <span class="n">keyword_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">observe_while</span><span class="p">)</span>
+        <span class="n">assert_</span><span class="p">(</span><span class="n">observe_while</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;The keyword observe_while must be one of: </span><span class="si">{}</span><span class="s2">.&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">keyword_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span>
+                <span class="ne">ValueError</span><span class="p">)</span>
+        <span class="n">assert_</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+                <span class="s2">&quot;State key must be a string, got </span><span class="si">{}</span><span class="s2"> instead.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+                <span class="ne">TypeError</span><span class="p">)</span>
+        <span class="c1"># Add to set of observed states</span>
+        <span class="k">if</span> <span class="n">observe_while</span> <span class="o">==</span> <span class="s1">&#39;training&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trainer_states_being_observed_while_training</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">observe_while</span> <span class="o">==</span> <span class="s1">&#39;validating&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trainer_states_being_observed_while_validating</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="TensorboardLogger.observe_training_and_validation_state"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.observe_training_and_validation_state">[docs]</a>    <span class="k">def</span> <span class="nf">observe_training_and_validation_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;training&#39;</span><span class="p">,</span> <span class="s1">&#39;validation&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">observe_state</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">key</span><span class="p">),</span> <span class="n">observe_while</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TensorboardLogger.observe_states"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.observe_states">[docs]</a>    <span class="k">def</span> <span class="nf">observe_states</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">observe_while</span><span class="o">=</span><span class="s1">&#39;training&#39;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">observe_state</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">observe_while</span><span class="o">=</span><span class="n">observe_while</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="TensorboardLogger.observe_training_and_validation_states"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.observe_training_and_validation_states">[docs]</a>    <span class="k">def</span> <span class="nf">observe_training_and_validation_states</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">observe_training_and_validation_state</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="TensorboardLogger.log_object"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_object">[docs]</a>    <span class="k">def</span> <span class="nf">log_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">object_</span><span class="p">,</span> <span class="n">allow_scalar_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_image_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">object_</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">object_num</span><span class="p">,</span> <span class="n">_object</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">object_</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_object</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">object_num</span><span class="p">),</span>
+                                <span class="n">_object</span><span class="p">,</span>
+                                <span class="n">allow_scalar_logging</span><span class="p">,</span>
+                                <span class="n">allow_image_logging</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># Check whether object is a scalar</span>
+        <span class="k">if</span> <span class="n">tu</span><span class="o">.</span><span class="n">is_scalar_tensor</span><span class="p">(</span><span class="n">object_</span><span class="p">)</span> <span class="ow">and</span> <span class="n">allow_scalar_logging</span><span class="p">:</span>
+            <span class="c1"># Log scalar</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">tu</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">object_</span><span class="o">.</span><span class="n">float</span><span class="p">(),</span> <span class="n">extract_item</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_scalar</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">iteration_count</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">object_</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span> <span class="ow">and</span> <span class="n">allow_scalar_logging</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">object_</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_scalar</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">iteration_count</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">tu</span><span class="o">.</span><span class="n">is_label_image_or_volume_tensor</span><span class="p">(</span><span class="n">object_</span><span class="p">)</span> <span class="ow">and</span> <span class="n">allow_image_logging</span><span class="p">:</span>
+            <span class="c1"># Add a channel axis and log as images</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_image_or_volume_batch</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">object_</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">iteration_count</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">tu</span><span class="o">.</span><span class="n">is_image_or_volume_tensor</span><span class="p">(</span><span class="n">object_</span><span class="p">)</span> <span class="ow">and</span> <span class="n">allow_image_logging</span><span class="p">:</span>
+            <span class="c1"># Log images</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_image_or_volume_batch</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">object_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">iteration_count</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Object is neither a scalar nor an image, there&#39;s nothing we can do</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TensorboardLogger.end_of_training_iteration"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.end_of_training_iteration">[docs]</a>    <span class="k">def</span> <span class="nf">end_of_training_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">):</span>
+        <span class="n">log_scalars_now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_scalars_now</span>
+        <span class="n">log_images_now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_images_now</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">log_scalars_now</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">log_images_now</span><span class="p">:</span>
+            <span class="c1"># Nothing to log, so we won&#39;t bother</span>
+            <span class="k">return</span>
+        <span class="c1"># Read states</span>
+        <span class="k">for</span> <span class="n">state_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trainer_states_being_observed_while_training</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">state_key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># State not found in trainer but don&#39;t throw a hissy fit</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_object</span><span class="p">(</span><span class="n">state_key</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span>
+                            <span class="n">allow_scalar_logging</span><span class="o">=</span><span class="n">log_scalars_now</span><span class="p">,</span>
+                            <span class="n">allow_image_logging</span><span class="o">=</span><span class="n">log_images_now</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TensorboardLogger.end_of_validation_run"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.end_of_validation_run">[docs]</a>    <span class="k">def</span> <span class="nf">end_of_validation_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">):</span>
+        <span class="c1"># Log everything</span>
+        <span class="c1"># Read states</span>
+        <span class="k">for</span> <span class="n">state_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trainer_states_being_observed_while_validating</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">state_key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># State not found in trainer but don&#39;t throw a hissy fit</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_object</span><span class="p">(</span><span class="n">state_key</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span>
+                            <span class="n">allow_scalar_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">allow_image_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_tag_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">base_tag</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">instance_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">channel_num</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">slice_num</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="n">base_tag</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">base_tag</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">instance_num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/instance_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">instance_num</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">channel_num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/channel_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">channel_num</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slice_num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/slice_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">slice_num</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">TaggedImage</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TensorboardLogger.extract_images_from_batch"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.extract_images_from_batch">[docs]</a>    <span class="k">def</span> <span class="nf">extract_images_from_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">base_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">base_tag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">assert_</span><span class="p">(</span><span class="n">prefix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">&quot;`base_tag` is not provided - `prefix` must be None in this case.&quot;</span><span class="p">,</span>
+                    <span class="ne">ValueError</span><span class="p">)</span>
+        <span class="c1"># Special case when batch is a list or tuple of batches</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">image_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">batch_num</span><span class="p">,</span> <span class="n">_batch</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">:</span>
+                <span class="n">image_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">extract_images_from_batch</span><span class="p">(</span><span class="n">_batch</span><span class="p">,</span> <span class="n">base_tag</span><span class="o">=</span><span class="n">base_tag</span><span class="p">,</span>
+                                                   <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;batch_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">batch_num</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="n">image_list</span>
+        <span class="c1"># `batch` really is a tensor from now on.</span>
+        <span class="n">batch_is_image_tensor</span> <span class="o">=</span> <span class="n">tu</span><span class="o">.</span><span class="n">is_image_tensor</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="n">batch_is_volume_tensor</span> <span class="o">=</span> <span class="n">tu</span><span class="o">.</span><span class="n">is_volume_tensor</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">batch_is_volume_tensor</span> <span class="o">!=</span> <span class="n">batch_is_image_tensor</span><span class="p">,</span> \
+            <span class="s2">&quot;Batch must either be a image or a volume tensor.&quot;</span>
+        <span class="c1"># Convert to numpy</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="c1"># Get the indices of the batches we want to send to tensorboard</span>
+        <span class="n">batch_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;image_batch_indices&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">batch_indices</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">batch_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_indices</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_indices</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">batch_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">batch_indices</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="c1"># Get the indices of the channels we want to send to tensorboard</span>
+        <span class="n">channel_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;image_channel_indices&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">channel_indices</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">channel_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channel_indices</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channel_indices</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">channel_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">channel_indices</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="c1"># Extract images from batch</span>
+        <span class="k">if</span> <span class="n">batch_is_image_tensor</span><span class="p">:</span>
+            <span class="n">image_list</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tag_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span>
+                                           <span class="n">base_tag</span><span class="o">=</span><span class="n">base_tag</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+                                           <span class="n">instance_num</span><span class="o">=</span><span class="n">instance_num</span><span class="p">,</span>
+                                           <span class="n">channel_num</span><span class="o">=</span><span class="n">channel_num</span><span class="p">)</span>
+                           <span class="k">if</span> <span class="n">base_tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">image</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">instance_num</span><span class="p">,</span> <span class="n">instance</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">channel_num</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+                          <span class="k">if</span> <span class="n">instance_num</span> <span class="ow">in</span> <span class="n">batch_indices</span> <span class="ow">and</span> <span class="n">channel_num</span> <span class="ow">in</span> <span class="n">channel_indices</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">batch_is_volume_tensor</span>
+            <span class="c1"># Trim away along the z axis</span>
+            <span class="n">z_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;volume_z_indices&#39;</span><span class="p">,</span> <span class="s1">&#39;mid&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">z_indices</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+                <span class="n">z_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+            <span class="k">elif</span> <span class="n">z_indices</span> <span class="o">==</span> <span class="s1">&#39;mid&#39;</span><span class="p">:</span>
+                <span class="n">z_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">z_indices</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">z_indices</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">z_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">z_indices</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+            <span class="c1"># I&#39;m going to hell for this.</span>
+            <span class="n">image_list</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tag_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span>
+                                           <span class="n">base_tag</span><span class="o">=</span><span class="n">base_tag</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+                                           <span class="n">instance_num</span><span class="o">=</span><span class="n">instance_num</span><span class="p">,</span>
+                                           <span class="n">channel_num</span><span class="o">=</span><span class="n">channel_num</span><span class="p">,</span>
+                                           <span class="n">slice_num</span><span class="o">=</span><span class="n">slice_num</span><span class="p">)</span>
+                           <span class="k">if</span> <span class="n">base_tag</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">image</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">instance_num</span><span class="p">,</span> <span class="n">instance</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">channel_num</span><span class="p">,</span> <span class="n">volume</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">slice_num</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span>
+                          <span class="k">if</span> <span class="n">instance_num</span> <span class="ow">in</span> <span class="n">batch_indices</span> <span class="ow">and</span>
+                          <span class="n">channel_num</span> <span class="ow">in</span> <span class="n">channel_indices</span> <span class="ow">and</span>
+                          <span class="n">slice_num</span> <span class="ow">in</span> <span class="n">z_indices</span><span class="p">]</span>
+        <span class="c1"># Done.</span>
+        <span class="k">return</span> <span class="n">image_list</span></div>
+
+<div class="viewcode-block" id="TensorboardLogger.log_image_or_volume_batch"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_image_or_volume_batch">[docs]</a>    <span class="k">def</span> <span class="nf">log_image_or_volume_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">pyu</span><span class="o">.</span><span class="n">is_maybe_list_of</span><span class="p">(</span><span class="n">tu</span><span class="o">.</span><span class="n">is_image_or_volume_tensor</span><span class="p">)(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">step</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">iteration_count</span>
+        <span class="n">image_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_images_from_batch</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">base_tag</span><span class="o">=</span><span class="n">tag</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_images</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">image_list</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TensorboardLogger.log_scalar"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_scalar">[docs]</a>    <span class="k">def</span> <span class="nf">log_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameter</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tag : basestring</span>
+<span class="sd">            Name of the scalar</span>
+<span class="sd">        value</span>
+<span class="sd">        step : int</span>
+<span class="sd">            training iteration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">scalar_value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">global_step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TensorboardLogger.log_images"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_images">[docs]</a>    <span class="k">def</span> <span class="nf">log_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">images</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">image_format</span><span class="o">=</span><span class="s1">&#39;CHW&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Logs a list of images.&quot;&quot;&quot;</span>
+        <span class="n">assert_</span><span class="p">(</span><span class="n">image_format</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;CHW&#39;</span><span class="p">,</span> <span class="s1">&#39;HWC&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;Image format must be either &#39;CHW&#39; or &#39;HWC&#39;. Got </span><span class="si">{}</span><span class="s2"> instead.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">image_format</span><span class="p">),</span>
+                <span class="ne">ValueError</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">image_num</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">images</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">TaggedImage</span><span class="p">):</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">tag</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">array</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">image_num</span><span class="p">)</span>
+            <span class="c1"># image axis gymnastics</span>
+            <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># image is 2D - tensorboardX needs a channel axis in the end</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">image</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image_format</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;CHW&#39;</span><span class="p">:</span>
+                <span class="c1"># We have a CHW image, but need HWC.</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">image</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image_format</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;HWC&#39;</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span>
+            <span class="c1"># tensorboardX borks if the number of image channels is not 3</span>
+            <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize_image</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">img_tensor</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">global_step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_normalize_image</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+        <span class="n">normalized_image</span> <span class="o">=</span> <span class="n">image</span> <span class="o">-</span> <span class="n">image</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">normalized_image</span> <span class="o">=</span> <span class="n">normalized_image</span> <span class="o">/</span> <span class="n">normalized_image</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">normalized_image</span>
+
+<div class="viewcode-block" id="TensorboardLogger.log_histogram"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.log_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">log_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Logs the histogram of a list/vector of values.&quot;&quot;&quot;</span>
+        <span class="c1"># TODO</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="TensorboardLogger.get_config"><a class="viewcode-back" href="../../../../../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger.get_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Apparently, some SwigPyObject objects cannot be pickled - so we need to build the</span>
+        <span class="c1"># writer on the fly.</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">TensorboardLogger</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;_writer&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">config</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../logging.html" >inferno.trainers.callbacks.logging</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

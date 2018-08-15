@@ -1,0 +1,686 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.io.transform package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inferno.io.volumetric package" href="inferno.io.volumetric.html" />
+    <link rel="prev" title="inferno.io.core package" href="inferno.io.core.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.volumetric.html" title="inferno.io.volumetric package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.core.html" title="inferno.io.core package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.io.html" accesskey="U">inferno.io package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-io-transform-package">
+<h1>inferno.io.transform package<a class="headerlink" href="#inferno-io-transform-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.io.transform.base">
+<span id="inferno-io-transform-base-module"></span><h2>inferno.io.transform.base module<a class="headerlink" href="#module-inferno.io.transform.base" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.io.transform.base.Compose">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.base.</code><code class="descname">Compose</code><span class="sig-paren">(</span><em>*transforms</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/base.html#Compose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.base.Compose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>Composes multiple callables (including but not limited to <cite>Transform</cite> objects).</p>
+<dl class="method">
+<dt id="inferno.io.transform.base.Compose.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>transform</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/base.html#Compose.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.base.Compose.add" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.base.Compose.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/base.html#Compose.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.base.Compose.remove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.base.DTypeMapping">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.base.</code><code class="descname">DTypeMapping</code><a class="reference internal" href="../_modules/inferno/io/transform/base.html#DTypeMapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.base.DTypeMapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<dl class="attribute">
+<dt id="inferno.io.transform.base.DTypeMapping.DTYPE_MAPPING">
+<code class="descname">DTYPE_MAPPING</code><em class="property"> = {'byte': 'uint8', 'double': 'float64', 'float': 'float32', 'float16': 'float16', 'float32': 'float32', 'float64': 'float64', 'half': 'float16', 'int': 'int32', 'int32': 'int32', 'int64': 'int64', 'long': 'int64', 'uint8': 'uint8'}</em><a class="headerlink" href="#inferno.io.transform.base.DTypeMapping.DTYPE_MAPPING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.base.Transform">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.base.</code><code class="descname">Transform</code><span class="sig-paren">(</span><em>apply_to=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/base.html#Transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.base.Transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>Base class for a Transform. The argument <cite>apply_to</cite> (list) specifies the indices of
+the tensors this transform will be applied to.</p>
+<dl class="docutils">
+<dt>The following methods are recognized (in order of descending priority):</dt>
+<dd><ul class="first last simple">
+<li><cite>batch_function</cite>: Applies to all tensors in a batch simultaneously</li>
+<li><cite>tensor_function</cite>: Applies to just __one__ tensor at a time.</li>
+<li><cite>volume_function</cite>: For 3D volumes, applies to just __one__ volume at a time.</li>
+<li><cite>image_function</cite>: For 2D or 3D volumes, applies to just __one__ image at a time.</li>
+</ul>
+</dd>
+</dl>
+<p>For example, if both <cite>volume_function</cite> and <cite>image_function</cite> are defined, this means that
+only the former will be called. If the inputs are therefore not 5D batch-tensors of 3D
+volumes, a <cite>NotImplementedError</cite> is raised.</p>
+<dl class="method">
+<dt id="inferno.io.transform.base.Transform.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/base.html#Transform.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.base.Transform.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.base.Transform.clear_random_variables">
+<code class="descname">clear_random_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/base.html#Transform.clear_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.base.Transform.clear_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.base.Transform.get_random_variable">
+<code class="descname">get_random_variable</code><span class="sig-paren">(</span><em>key</em>, <em>default=None</em>, <em>build=True</em>, <em>**random_variable_building_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/base.html#Transform.get_random_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.base.Transform.get_random_variable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.base.Transform.set_random_variable">
+<code class="descname">set_random_variable</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/base.html#Transform.set_random_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.base.Transform.set_random_variable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.io.transform.generic">
+<span id="inferno-io-transform-generic-module"></span><h2>inferno.io.transform.generic module<a class="headerlink" href="#module-inferno.io.transform.generic" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.io.transform.generic.AsTorchBatch">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.generic.</code><code class="descname">AsTorchBatch</code><span class="sig-paren">(</span><em>dimensionality</em>, <em>add_channel_axis_if_necessary=True</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/generic.html#AsTorchBatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.generic.AsTorchBatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Converts a given numpy array to a torch batch tensor.</p>
+<p>The result is a torch tensor __without__ the leading batch axis. For example,
+if the input is an image of shape <cite>(100, 100)</cite>, the output is a batch of shape
+<cite>(1, 100, 100)</cite>. The collate function will add the leading batch axis to obtain
+a tensor of shape <cite>(N, 1, 100, 100)</cite>, where <cite>N</cite> is the batch-size.</p>
+<dl class="method">
+<dt id="inferno.io.transform.generic.AsTorchBatch.tensor_function">
+<code class="descname">tensor_function</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/generic.html#AsTorchBatch.tensor_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.generic.AsTorchBatch.tensor_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.generic.Cast">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.generic.</code><code class="descname">Cast</code><span class="sig-paren">(</span><em>dtype='float'</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/generic.html#Cast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.generic.Cast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a>, <a class="reference internal" href="#inferno.io.transform.base.DTypeMapping" title="inferno.io.transform.base.DTypeMapping"><tt class="xref py py-class docutils literal">inferno.io.transform.base.DTypeMapping</tt></a></p>
+<p>Casts inputs to a specified datatype.</p>
+<dl class="method">
+<dt id="inferno.io.transform.generic.Cast.tensor_function">
+<code class="descname">tensor_function</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/generic.html#Cast.tensor_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.generic.Cast.tensor_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.generic.Label2OneHot">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.generic.</code><code class="descname">Label2OneHot</code><span class="sig-paren">(</span><em>num_classes</em>, <em>dtype='float'</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/generic.html#Label2OneHot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.generic.Label2OneHot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a>, <a class="reference internal" href="#inferno.io.transform.base.DTypeMapping" title="inferno.io.transform.base.DTypeMapping"><tt class="xref py py-class docutils literal">inferno.io.transform.base.DTypeMapping</tt></a></p>
+<p>Convert integer labels to one-hot vectors for arbitrary dimensional data.</p>
+<dl class="method">
+<dt id="inferno.io.transform.generic.Label2OneHot.tensor_function">
+<code class="descname">tensor_function</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/generic.html#Label2OneHot.tensor_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.generic.Label2OneHot.tensor_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.generic.Normalize">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.generic.</code><code class="descname">Normalize</code><span class="sig-paren">(</span><em>eps=0.0001</em>, <em>mean=None</em>, <em>std=None</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/generic.html#Normalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.generic.Normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Normalizes input to zero mean unit variance.</p>
+<dl class="method">
+<dt id="inferno.io.transform.generic.Normalize.tensor_function">
+<code class="descname">tensor_function</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/generic.html#Normalize.tensor_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.generic.Normalize.tensor_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.generic.NormalizeRange">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.generic.</code><code class="descname">NormalizeRange</code><span class="sig-paren">(</span><em>normalize_by=255.0</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/generic.html#NormalizeRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.generic.NormalizeRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Normalizes input by a constant.</p>
+<dl class="method">
+<dt id="inferno.io.transform.generic.NormalizeRange.tensor_function">
+<code class="descname">tensor_function</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/generic.html#NormalizeRange.tensor_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.generic.NormalizeRange.tensor_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.generic.Project">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.generic.</code><code class="descname">Project</code><span class="sig-paren">(</span><em>projection</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/generic.html#Project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.generic.Project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Given a projection mapping (i.e. a dict) and an input tensor, this transform replaces
+all values in the tensor that equal a key in the mapping with the value corresponding to
+the key.</p>
+<dl class="method">
+<dt id="inferno.io.transform.generic.Project.tensor_function">
+<code class="descname">tensor_function</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/generic.html#Project.tensor_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.generic.Project.tensor_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.io.transform.image">
+<span id="inferno-io-transform-image-module"></span><h2>inferno.io.transform.image module<a class="headerlink" href="#module-inferno.io.transform.image" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.io.transform.image.AdditiveGaussianNoise">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">AdditiveGaussianNoise</code><span class="sig-paren">(</span><em>sigma</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#AdditiveGaussianNoise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.AdditiveGaussianNoise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Add gaussian noise to the input.</p>
+<dl class="method">
+<dt id="inferno.io.transform.image.AdditiveGaussianNoise.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#AdditiveGaussianNoise.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.AdditiveGaussianNoise.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.AdditiveGaussianNoise.image_function">
+<code class="descname">image_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#AdditiveGaussianNoise.image_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.AdditiveGaussianNoise.image_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.BinaryDilation">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">BinaryDilation</code><span class="sig-paren">(</span><em>num_iterations=1</em>, <em>morphology_kwargs=None</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#BinaryDilation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.BinaryDilation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.image.BinaryMorphology" title="inferno.io.transform.image.BinaryMorphology"><tt class="xref py py-class docutils literal">inferno.io.transform.image.BinaryMorphology</tt></a></p>
+<p>Apply a binary dilation operation on an image.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.BinaryErosion">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">BinaryErosion</code><span class="sig-paren">(</span><em>num_iterations=1</em>, <em>morphology_kwargs=None</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#BinaryErosion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.BinaryErosion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.image.BinaryMorphology" title="inferno.io.transform.image.BinaryMorphology"><tt class="xref py py-class docutils literal">inferno.io.transform.image.BinaryMorphology</tt></a></p>
+<p>Apply a binary erosion operation on an image.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.BinaryMorphology">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">BinaryMorphology</code><span class="sig-paren">(</span><em>mode</em>, <em>num_iterations=1</em>, <em>morphology_kwargs=None</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#BinaryMorphology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.BinaryMorphology" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Apply a binary morphology operation on an image. Supported operations are dilation
+and erosion.</p>
+<dl class="method">
+<dt id="inferno.io.transform.image.BinaryMorphology.image_function">
+<code class="descname">image_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#BinaryMorphology.image_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.BinaryMorphology.image_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.CenterCrop">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">CenterCrop</code><span class="sig-paren">(</span><em>size</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#CenterCrop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.CenterCrop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Crop patch of size <cite>size</cite> from the center of the image</p>
+<dl class="method">
+<dt id="inferno.io.transform.image.CenterCrop.image_function">
+<code class="descname">image_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#CenterCrop.image_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.CenterCrop.image_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.ElasticTransform">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">ElasticTransform</code><span class="sig-paren">(</span><em>alpha</em>, <em>sigma</em>, <em>order=1</em>, <em>invert=False</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#ElasticTransform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.ElasticTransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Random Elastic Transformation.</p>
+<dl class="attribute">
+<dt id="inferno.io.transform.image.ElasticTransform.NATIVE_DTYPES">
+<code class="descname">NATIVE_DTYPES</code><em class="property"> = {'float32', 'float64'}</em><a class="headerlink" href="#inferno.io.transform.image.ElasticTransform.NATIVE_DTYPES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.transform.image.ElasticTransform.PREFERRED_DTYPE">
+<code class="descname">PREFERRED_DTYPE</code><em class="property"> = 'float32'</em><a class="headerlink" href="#inferno.io.transform.image.ElasticTransform.PREFERRED_DTYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.ElasticTransform.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#ElasticTransform.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.ElasticTransform.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.ElasticTransform.cast">
+<code class="descname">cast</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#ElasticTransform.cast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.ElasticTransform.cast" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.ElasticTransform.image_function">
+<code class="descname">image_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#ElasticTransform.image_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.ElasticTransform.image_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.ElasticTransform.uncast">
+<code class="descname">uncast</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#ElasticTransform.uncast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.ElasticTransform.uncast" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.FineRandomRotations">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">FineRandomRotations</code><span class="sig-paren">(</span><em>angle_range</em>, <em>axes=(1</em>, <em>2)</em>, <em>mask_label=0</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#FineRandomRotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.FineRandomRotations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Random Rotation with random uniform angle distribution
+batch_function applies to rotation of input and label image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>angle_range</strong> (<em>int</em>) – maximum angle of rotation</li>
+<li><strong>axes</strong> (<em>tuple</em><em>, </em><em>default</em><em> (</em><em>1</em><em>,</em><em>2</em><em>) </em><em>assuming that channel axis is 0</em>) – pair of axis that define the 2d-plane of rotation</li>
+<li><strong>mask_label</strong> (<em>constant value that is used to pad the label images</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="inferno.io.transform.image.FineRandomRotations.batch_function">
+<code class="descname">batch_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#FineRandomRotations.batch_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.FineRandomRotations.batch_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.FineRandomRotations.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#FineRandomRotations.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.FineRandomRotations.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.PILImage2NumPyArray">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">PILImage2NumPyArray</code><span class="sig-paren">(</span><em>apply_to=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#PILImage2NumPyArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.PILImage2NumPyArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Convert a PIL Image object to a numpy array.</p>
+<p>For images with multiple channels (say RGB), the channel axis is moved to front. Therefore,
+a (100, 100, 3) RGB image becomes an array of shape (3, 100, 100).</p>
+<dl class="method">
+<dt id="inferno.io.transform.image.PILImage2NumPyArray.tensor_function">
+<code class="descname">tensor_function</code><span class="sig-paren">(</span><em>tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#PILImage2NumPyArray.tensor_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.PILImage2NumPyArray.tensor_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.RandomCrop">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">RandomCrop</code><span class="sig-paren">(</span><em>output_image_shape</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomCrop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomCrop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Crop input to a given size.</p>
+<p>This is similar to torchvision.transforms.RandomCrop, except that it operates on
+numpy arrays instead of PIL images. If you do have a PIL image and wish to use this
+transform, consider applying <cite>PILImage2NumPyArray</cite> first.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If <cite>output_image_shape</cite> is larger than the image itself, the image is not cropped
+(along the relevant dimensions).</p>
+</div>
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomCrop.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><em>height_leeway</em>, <em>width_leeway</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomCrop.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomCrop.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomCrop.clear_random_variables">
+<code class="descname">clear_random_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomCrop.clear_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomCrop.clear_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomCrop.image_function">
+<code class="descname">image_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomCrop.image_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomCrop.image_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.RandomFlip">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">RandomFlip</code><span class="sig-paren">(</span><em>allow_lr_flips=True</em>, <em>allow_ud_flips=True</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomFlip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomFlip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Random left-right or up-down flips.</p>
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomFlip.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomFlip.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomFlip.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomFlip.image_function">
+<code class="descname">image_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomFlip.image_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomFlip.image_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.RandomGammaCorrection">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">RandomGammaCorrection</code><span class="sig-paren">(</span><em>gamma_between=(0.5</em>, <em>2.0)</em>, <em>gain=1</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomGammaCorrection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomGammaCorrection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Applies gamma correction [1] with a random gamma.</p>
+<p>This transform uses <cite>skimage.exposure.adjust_gamma</cite>, which requires the input be positive.</p>
+<p class="rubric">References</p>
+<p>[1] <a class="reference external" href="https://en.wikipedia.org/wiki/Gamma_correction">https://en.wikipedia.org/wiki/Gamma_correction</a></p>
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomGammaCorrection.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomGammaCorrection.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomGammaCorrection.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomGammaCorrection.image_function">
+<code class="descname">image_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomGammaCorrection.image_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomGammaCorrection.image_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.RandomRotate">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">RandomRotate</code><span class="sig-paren">(</span><em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomRotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomRotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Random 90-degree rotations.</p>
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomRotate.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomRotate.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomRotate.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomRotate.image_function">
+<code class="descname">image_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomRotate.image_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomRotate.image_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.RandomScaleSegmentation">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">RandomScaleSegmentation</code><span class="sig-paren">(</span><em>scale_range</em>, <em>resize=True</em>, <em>pad_const=0</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomScaleSegmentation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomScaleSegmentation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Random Scale input and label image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>scale_range</strong> (<em>tuple of floats defining</em><em> (</em><em>min</em><em>, </em><em>max</em><em>) </em><em>scales</em>) – maximum angle of rotation</li>
+<li><strong>resize</strong> (<em>if True</em><em>, </em><em>image is cropped</em><em> or </em><em>padded to the original size</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomScaleSegmentation.batch_function">
+<code class="descname">batch_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomScaleSegmentation.batch_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomScaleSegmentation.batch_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomScaleSegmentation.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomScaleSegmentation.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomScaleSegmentation.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.RandomSizedCrop">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">RandomSizedCrop</code><span class="sig-paren">(</span><em>ratio_between=None</em>, <em>height_ratio_between=None</em>, <em>width_ratio_between=None</em>, <em>preserve_aspect_ratio=False</em>, <em>relative_target_aspect_ratio=None</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomSizedCrop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomSizedCrop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Extract a randomly sized crop from the image.</p>
+<p>The ratio of the sizes of the cropped and the original image can be limited within
+specified bounds along both axes. To resize back to a constant sized image, compose
+with <cite>Scale</cite>.</p>
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomSizedCrop.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><em>image_shape</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomSizedCrop.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomSizedCrop.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomSizedCrop.image_function">
+<code class="descname">image_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomSizedCrop.image_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomSizedCrop.image_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.RandomTranspose">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">RandomTranspose</code><span class="sig-paren">(</span><em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomTranspose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomTranspose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Random 2d transpose.</p>
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomTranspose.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomTranspose.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomTranspose.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.image.RandomTranspose.image_function">
+<code class="descname">image_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#RandomTranspose.image_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.RandomTranspose.image_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.image.Scale">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.image.</code><code class="descname">Scale</code><span class="sig-paren">(</span><em>output_image_shape</em>, <em>interpolation_order=3</em>, <em>zoom_kwargs=None</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#Scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.Scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Scales an image to a given size with spline interpolation of requested order.</p>
+<p>Unlike torchvision.transforms.Scale, this does not depend on PIL and therefore works
+with numpy arrays. If you do have a PIL image and wish to use this transform, consider
+applying <cite>PILImage2NumPyArray</cite> first.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This transform uses <cite>scipy.ndimage.zoom</cite> and requires scipy &gt;= 0.13.0 to work correctly.</p>
+</div>
+<dl class="method">
+<dt id="inferno.io.transform.image.Scale.image_function">
+<code class="descname">image_function</code><span class="sig-paren">(</span><em>image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/image.html#Scale.image_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.image.Scale.image_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.io.transform.volume">
+<span id="inferno-io-transform-volume-module"></span><h2>inferno.io.transform.volume module<a class="headerlink" href="#module-inferno.io.transform.volume" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.io.transform.volume.AdditiveRandomNoise3D">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.volume.</code><code class="descname">AdditiveRandomNoise3D</code><span class="sig-paren">(</span><em>shape</em>, <em>std</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#AdditiveRandomNoise3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.AdditiveRandomNoise3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<dl class="method">
+<dt id="inferno.io.transform.volume.AdditiveRandomNoise3D.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#AdditiveRandomNoise3D.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.AdditiveRandomNoise3D.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.volume.AdditiveRandomNoise3D.volume_function">
+<code class="descname">volume_function</code><span class="sig-paren">(</span><em>volume</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#AdditiveRandomNoise3D.volume_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.AdditiveRandomNoise3D.volume_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.volume.CentralSlice">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.volume.</code><code class="descname">CentralSlice</code><span class="sig-paren">(</span><em>apply_to=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#CentralSlice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.CentralSlice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<dl class="method">
+<dt id="inferno.io.transform.volume.CentralSlice.volume_function">
+<code class="descname">volume_function</code><span class="sig-paren">(</span><em>volume</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#CentralSlice.volume_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.CentralSlice.volume_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.volume.RandomFlip3D">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.volume.</code><code class="descname">RandomFlip3D</code><span class="sig-paren">(</span><em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#RandomFlip3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.RandomFlip3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<dl class="method">
+<dt id="inferno.io.transform.volume.RandomFlip3D.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#RandomFlip3D.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.RandomFlip3D.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.volume.RandomFlip3D.volume_function">
+<code class="descname">volume_function</code><span class="sig-paren">(</span><em>volume</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#RandomFlip3D.volume_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.RandomFlip3D.volume_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.volume.RandomRot3D">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.volume.</code><code class="descname">RandomRot3D</code><span class="sig-paren">(</span><em>rot_range</em>, <em>p=0.125</em>, <em>only_one=True</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#RandomRot3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.RandomRot3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<dl class="method">
+<dt id="inferno.io.transform.volume.RandomRot3D.build_random_variables">
+<code class="descname">build_random_variables</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#RandomRot3D.build_random_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.RandomRot3D.build_random_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.transform.volume.RandomRot3D.volume_function">
+<code class="descname">volume_function</code><span class="sig-paren">(</span><em>volume</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#RandomRot3D.volume_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.RandomRot3D.volume_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.volume.VolumeAsymmetricCrop">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.volume.</code><code class="descname">VolumeAsymmetricCrop</code><span class="sig-paren">(</span><em>crop_left</em>, <em>crop_right</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#VolumeAsymmetricCrop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.VolumeAsymmetricCrop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Crop <cite>crop_left</cite> from the left borders and <cite>crop_right</cite> from the right borders</p>
+<dl class="method">
+<dt id="inferno.io.transform.volume.VolumeAsymmetricCrop.volume_function">
+<code class="descname">volume_function</code><span class="sig-paren">(</span><em>volume</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#VolumeAsymmetricCrop.volume_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.VolumeAsymmetricCrop.volume_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.transform.volume.VolumeCenterCrop">
+<em class="property">class </em><code class="descclassname">inferno.io.transform.volume.</code><code class="descname">VolumeCenterCrop</code><span class="sig-paren">(</span><em>size</em>, <em>**super_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#VolumeCenterCrop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.VolumeCenterCrop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.io.transform.base.Transform" title="inferno.io.transform.base.Transform"><tt class="xref py py-class docutils literal">inferno.io.transform.base.Transform</tt></a></p>
+<p>Crop patch of size <cite>size</cite> from the center of the volume</p>
+<dl class="method">
+<dt id="inferno.io.transform.volume.VolumeCenterCrop.volume_function">
+<code class="descname">volume_function</code><span class="sig-paren">(</span><em>volume</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/transform/volume.html#VolumeCenterCrop.volume_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.transform.volume.VolumeCenterCrop.volume_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.io.transform">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.io.transform" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.io.transform package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.io.transform.base">inferno.io.transform.base module</a></li>
+<li><a class="reference internal" href="#module-inferno.io.transform.generic">inferno.io.transform.generic module</a></li>
+<li><a class="reference internal" href="#module-inferno.io.transform.image">inferno.io.transform.image module</a></li>
+<li><a class="reference internal" href="#module-inferno.io.transform.volume">inferno.io.transform.volume module</a></li>
+<li><a class="reference internal" href="#module-inferno.io.transform">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.io.core.html"
+                        title="previous chapter">inferno.io.core package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inferno.io.volumetric.html"
+                        title="next chapter">inferno.io.volumetric package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.io.transform.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.volumetric.html" title="inferno.io.volumetric package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.core.html" title="inferno.io.core package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.io.html" >inferno.io package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,305 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.io.box.camvid &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.io.box.camvid</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Adapted from felixgwu&#39;s PR here:</span>
+<span class="c1"># https://github.com/felixgwu/vision/blob/cf491d301f62ae9c77ff7250fb7def5cd55ec963/torchvision/datasets/camvid.py</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.utils.data</span> <span class="k">as</span> <span class="nn">data</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="k">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">torchvision.datasets.folder</span> <span class="k">import</span> <span class="n">default_loader</span>
+<span class="kn">from</span> <span class="nn">...utils.exceptions</span> <span class="k">import</span> <span class="n">assert_</span>
+<span class="kn">from</span> <span class="nn">..transform.base</span> <span class="k">import</span> <span class="n">Compose</span>
+<span class="kn">from</span> <span class="nn">..transform.generic</span> <span class="k">import</span> <span class="n">Normalize</span><span class="p">,</span> <span class="n">NormalizeRange</span><span class="p">,</span> <span class="n">Cast</span><span class="p">,</span> <span class="n">AsTorchBatch</span><span class="p">,</span> <span class="n">Label2OneHot</span>
+<span class="kn">from</span> <span class="nn">..transform.image</span> <span class="k">import</span> \
+    <span class="n">RandomSizedCrop</span><span class="p">,</span> <span class="n">RandomGammaCorrection</span><span class="p">,</span> <span class="n">RandomFlip</span><span class="p">,</span> <span class="n">Scale</span><span class="p">,</span> <span class="n">PILImage2NumPyArray</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">torchvision.datasets.folder</span> <span class="k">import</span> <span class="n">is_image_file</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">torchvision.datasets.folder</span> <span class="k">import</span> <span class="n">IMG_EXTENSIONS</span><span class="p">,</span> <span class="n">has_file_allowed_extension</span>
+
+
+    <span class="k">def</span> <span class="nf">is_image_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">has_file_allowed_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">IMG_EXTENSIONS</span><span class="p">)</span>
+
+<span class="n">CAMVID_CLASSES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Sky&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Building&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Column-Pole&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Road&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Sidewalk&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Tree&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Sign-Symbol&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Fence&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Car&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Pedestrain&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Bicyclist&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;Void&#39;</span><span class="p">]</span>
+
+<span class="c1"># weights when using median frequency balancing used in SegNet paper</span>
+<span class="c1"># https://arxiv.org/pdf/1511.00561.pdf</span>
+<span class="c1"># The numbers were generated by:</span>
+<span class="c1"># https://github.com/yandex/segnet-torch/blob/master/datasets/camvid-gen.lua</span>
+<span class="n">CAMVID_CLASS_WEIGHTS</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.58872014284134</span><span class="p">,</span>
+                        <span class="mf">0.51052379608154</span><span class="p">,</span>
+                        <span class="mf">2.6966278553009</span><span class="p">,</span>
+                        <span class="mf">0.45021694898605</span><span class="p">,</span>
+                        <span class="mf">1.1785038709641</span><span class="p">,</span>
+                        <span class="mf">0.77028578519821</span><span class="p">,</span>
+                        <span class="mf">2.4782588481903</span><span class="p">,</span>
+                        <span class="mf">2.5273461341858</span><span class="p">,</span>
+                        <span class="mf">1.0122526884079</span><span class="p">,</span>
+                        <span class="mf">3.2375309467316</span><span class="p">,</span>
+                        <span class="mf">4.1312313079834</span><span class="p">,</span>
+                        <span class="mi">0</span><span class="p">]</span>
+<span class="c1"># mean and std</span>
+<span class="n">CAMVID_MEAN</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.41189489566336</span><span class="p">,</span> <span class="mf">0.4251328133025</span><span class="p">,</span> <span class="mf">0.4326707089857</span><span class="p">]</span>
+<span class="n">CAMVID_STD</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.27413549931506</span><span class="p">,</span> <span class="mf">0.28506257482912</span><span class="p">,</span> <span class="mf">0.28284674400252</span><span class="p">]</span>
+
+<span class="n">CAMVID_CLASS_COLORS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">192</span><span class="p">,</span> <span class="mi">192</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">192</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">192</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">192</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="make_dataset"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.camvid.make_dataset">[docs]</a><span class="k">def</span> <span class="nf">make_dataset</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">fnames</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="nb">dir</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_image_file</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">path</span>
+                <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">images</span></div>
+
+
+<div class="viewcode-block" id="label_to_long_tensor"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.camvid.label_to_long_tensor">[docs]</a><span class="k">def</span> <span class="nf">label_to_long_tensor</span><span class="p">(</span><span class="n">pic</span><span class="p">):</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ByteTensor</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ByteStorage</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">pic</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()))</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">pic</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pic</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">label</span></div>
+
+
+<div class="viewcode-block" id="label_to_pil_image"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.camvid.label_to_pil_image">[docs]</a><span class="k">def</span> <span class="nf">label_to_pil_image</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">colored_label</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">label</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">byte</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">CAMVID_CLASS_COLORS</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">colored_label</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">masked_fill_</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">color</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+    <span class="n">npimg</span> <span class="o">=</span> <span class="n">colored_label</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">npimg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">npimg</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">npimg</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">npimg</span> <span class="o">=</span> <span class="n">npimg</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;L&quot;</span>
+
+    <span class="k">return</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">npimg</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CamVid"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.camvid.CamVid">[docs]</a><span class="k">class</span> <span class="nc">CamVid</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="n">SPLIT_NAME_MAPPING</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;training&#39;</span><span class="p">:</span> <span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;validate&#39;</span><span class="p">:</span> <span class="s1">&#39;val&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;val&#39;</span><span class="p">:</span> <span class="s1">&#39;val&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;validation&#39;</span><span class="p">:</span> <span class="s1">&#39;val&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;testing&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span><span class="p">}</span>
+    <span class="c1"># Dataset statistics</span>
+    <span class="n">CLASS_WEIGHTS</span> <span class="o">=</span> <span class="n">CAMVID_CLASS_WEIGHTS</span>
+    <span class="n">CLASSES</span> <span class="o">=</span> <span class="n">CAMVID_CLASSES</span>
+    <span class="n">MEAN</span> <span class="o">=</span> <span class="n">CAMVID_MEAN</span>
+    <span class="n">STD</span> <span class="o">=</span> <span class="n">CAMVID_STD</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                 <span class="n">image_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">joint_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">loader</span><span class="o">=</span><span class="n">default_loader</span><span class="p">):</span>
+        <span class="c1"># Validate</span>
+        <span class="n">assert_</span><span class="p">(</span><span class="n">split</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_NAME_MAPPING</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+                <span class="s2">&quot;`split` must be one of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_NAME_MAPPING</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span>
+                <span class="ne">KeyError</span><span class="p">)</span>
+        <span class="c1"># Root directory and split</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_directory</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_NAME_MAPPING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">split</span><span class="p">)</span>
+        <span class="c1"># Utils</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_loader</span> <span class="o">=</span> <span class="n">loader</span>
+        <span class="c1"># Transforms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_transform</span> <span class="o">=</span> <span class="n">image_transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_transform</span> <span class="o">=</span> <span class="n">label_transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">joint_transform</span> <span class="o">=</span> <span class="n">joint_transform</span>
+        <span class="c1"># For when we implement download:</span>
+        <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+        <span class="c1"># Make dataset with paths to the image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_paths</span> <span class="o">=</span> <span class="n">make_dataset</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_directory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_paths</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_loader</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="o">+</span> <span class="s1">&#39;annot&#39;</span><span class="p">))</span>
+        <span class="c1"># Apply transforms</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_transform</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_transform</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">image</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_transform</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">image</span><span class="p">,</span> <span class="n">label</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_paths</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CamVid.download"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.camvid.CamVid.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO: please download the dataset from</span>
+        <span class="c1"># https://github.com/alexgkendall/SegNet-Tutorial/tree/master/CamVid</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<span class="c1"># noinspection PyTypeChecker</span>
+<div class="viewcode-block" id="get_camvid_loaders"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.camvid.get_camvid_loaders">[docs]</a><span class="k">def</span> <span class="nf">get_camvid_loaders</span><span class="p">(</span><span class="n">root_directory</span><span class="p">,</span> <span class="n">image_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">360</span><span class="p">,</span> <span class="mi">480</span><span class="p">),</span> <span class="n">labels_as_onehot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">train_batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">validate_batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">test_batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                       <span class="n">num_workers</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="c1"># Make transforms</span>
+    <span class="n">image_transforms</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">(</span><span class="n">PILImage2NumPyArray</span><span class="p">(),</span>
+                               <span class="n">NormalizeRange</span><span class="p">(),</span>
+                               <span class="n">RandomGammaCorrection</span><span class="p">(),</span>
+                               <span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="n">CAMVID_MEAN</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">CAMVID_STD</span><span class="p">))</span>
+    <span class="n">label_transforms</span> <span class="o">=</span> <span class="n">PILImage2NumPyArray</span><span class="p">()</span>
+    <span class="n">joint_transforms</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">(</span><span class="n">RandomSizedCrop</span><span class="p">(</span><span class="n">ratio_between</span><span class="o">=</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                                               <span class="n">preserve_aspect_ratio</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                               <span class="c1"># Scale raw image back to the original shape</span>
+                               <span class="n">Scale</span><span class="p">(</span><span class="n">output_image_shape</span><span class="o">=</span><span class="n">image_shape</span><span class="p">,</span>
+                                     <span class="n">interpolation_order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">apply_to</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                               <span class="c1"># Scale segmentation back to the original shape</span>
+                               <span class="c1"># (without interpolation)</span>
+                               <span class="n">Scale</span><span class="p">(</span><span class="n">output_image_shape</span><span class="o">=</span><span class="n">image_shape</span><span class="p">,</span>
+                                     <span class="n">interpolation_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">apply_to</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                               <span class="n">RandomFlip</span><span class="p">(</span><span class="n">allow_ud_flips</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                               <span class="c1"># Cast raw image to float</span>
+                               <span class="n">Cast</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">,</span> <span class="n">apply_to</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">labels_as_onehot</span><span class="p">:</span>
+        <span class="c1"># See cityscapes loader to understand why this is here.</span>
+        <span class="n">joint_transforms</span>\
+            <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Label2OneHot</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">CAMVID_CLASS_WEIGHTS</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">,</span>
+                              <span class="n">apply_to</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>\
+            <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Cast</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">,</span> <span class="n">apply_to</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Cast label image to long</span>
+        <span class="n">joint_transforms</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Cast</span><span class="p">(</span><span class="s1">&#39;long&#39;</span><span class="p">,</span> <span class="n">apply_to</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="c1"># Batchify</span>
+    <span class="n">joint_transforms</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">AsTorchBatch</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">add_channel_axis_if_necessary</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="c1"># Build datasets</span>
+    <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">CamVid</span><span class="p">(</span><span class="n">root_directory</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                           <span class="n">image_transform</span><span class="o">=</span><span class="n">image_transforms</span><span class="p">,</span>
+                           <span class="n">label_transform</span><span class="o">=</span><span class="n">label_transforms</span><span class="p">,</span>
+                           <span class="n">joint_transform</span><span class="o">=</span><span class="n">joint_transforms</span><span class="p">)</span>
+    <span class="n">validate_dataset</span> <span class="o">=</span> <span class="n">CamVid</span><span class="p">(</span><span class="n">root_directory</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;validate&#39;</span><span class="p">,</span>
+                              <span class="n">image_transform</span><span class="o">=</span><span class="n">image_transforms</span><span class="p">,</span>
+                              <span class="n">label_transform</span><span class="o">=</span><span class="n">label_transforms</span><span class="p">,</span>
+                              <span class="n">joint_transform</span><span class="o">=</span><span class="n">joint_transforms</span><span class="p">)</span>
+    <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">CamVid</span><span class="p">(</span><span class="n">root_directory</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span>
+                          <span class="n">image_transform</span><span class="o">=</span><span class="n">image_transforms</span><span class="p">,</span>
+                          <span class="n">label_transform</span><span class="o">=</span><span class="n">label_transforms</span><span class="p">,</span>
+                          <span class="n">joint_transform</span><span class="o">=</span><span class="n">joint_transforms</span><span class="p">)</span>
+    <span class="c1"># Build loaders</span>
+    <span class="n">train_loader</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">train_batch_size</span><span class="p">,</span>
+                                   <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">validate_loader</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">validate_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">validate_batch_size</span><span class="p">,</span>
+                                      <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">test_loader</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">test_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">test_batch_size</span><span class="p">,</span>
+                                  <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">validate_loader</span><span class="p">,</span> <span class="n">test_loader</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

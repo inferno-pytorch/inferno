@@ -1,0 +1,1097 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.trainers.callbacks package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inferno.trainers.callbacks.logging package" href="inferno.trainers.callbacks.logging.html" />
+    <link rel="prev" title="inferno.trainers package" href="inferno.trainers.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.trainers.callbacks.logging.html" title="inferno.trainers.callbacks.logging package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.trainers.html" title="inferno.trainers package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.trainers.html" accesskey="U">inferno.trainers package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-trainers-callbacks-package">
+<h1>inferno.trainers.callbacks package<a class="headerlink" href="#inferno-trainers-callbacks-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="inferno.trainers.callbacks.logging.html">inferno.trainers.callbacks.logging package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.logging.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.logging.html#module-inferno.trainers.callbacks.logging.base">inferno.trainers.callbacks.logging.base module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.logging.html#module-inferno.trainers.callbacks.logging.tensorboard">inferno.trainers.callbacks.logging.tensorboard module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferno.trainers.callbacks.logging.html#module-inferno.trainers.callbacks.logging">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.trainers.callbacks.base">
+<span id="inferno-trainers-callbacks-base-module"></span><h2>inferno.trainers.callbacks.base module<a class="headerlink" href="#module-inferno.trainers.callbacks.base" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.trainers.callbacks.base.Callback">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.base.</code><code class="descname">Callback</code><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.Callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>Recommended (but not required) base class for callbacks.</p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.Callback.bind_trainer">
+<code class="descname">bind_trainer</code><span class="sig-paren">(</span><em>trainer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.bind_trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.Callback.bind_trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.Callback.debug_print">
+<code class="descname">debug_print</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.debug_print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.Callback.debug_print" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.Callback.get_config">
+<code class="descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.Callback.get_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="inferno.trainers.callbacks.base.Callback.get_instances">
+<em class="property">classmethod </em><code class="descname">get_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.get_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.Callback.get_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="inferno.trainers.callbacks.base.Callback.register_instance">
+<em class="property">classmethod </em><code class="descname">register_instance</code><span class="sig-paren">(</span><em>instance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.register_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.Callback.register_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.Callback.set_config">
+<code class="descname">set_config</code><span class="sig-paren">(</span><em>config_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.set_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.Callback.set_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.Callback.toggle_debug">
+<code class="descname">toggle_debug</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.toggle_debug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.Callback.toggle_debug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.Callback.trainer">
+<code class="descname">trainer</code><a class="headerlink" href="#inferno.trainers.callbacks.base.Callback.trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.Callback.unbind_trainer">
+<code class="descname">unbind_trainer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.unbind_trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.Callback.unbind_trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.base.</code><code class="descname">CallbackEngine</code><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>Gathers and manages callbacks.</p>
+<p>Callbacks are callables which are to be called by trainers when certain events (‘triggers’)
+occur. They could be any callable object, but if endowed with a <cite>bind_trainer</cite> method,
+it’s called when the callback is registered. It is recommended that callbacks
+(or their <cite>__call__</cite> methods) use the double-star syntax for keyword arguments.</p>
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_EPOCH">
+<code class="descname">BEGIN_OF_EPOCH</code><em class="property"> = 'begin_of_epoch'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_EPOCH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_FIT">
+<code class="descname">BEGIN_OF_FIT</code><em class="property"> = 'begin_of_fit'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_FIT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_SAVE">
+<code class="descname">BEGIN_OF_SAVE</code><em class="property"> = 'begin_of_save'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_SAVE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_TRAINING_ITERATION">
+<code class="descname">BEGIN_OF_TRAINING_ITERATION</code><em class="property"> = 'begin_of_training_iteration'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_TRAINING_ITERATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_TRAINING_RUN">
+<code class="descname">BEGIN_OF_TRAINING_RUN</code><em class="property"> = 'begin_of_training_run'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_TRAINING_RUN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_VALIDATION_ITERATION">
+<code class="descname">BEGIN_OF_VALIDATION_ITERATION</code><em class="property"> = 'begin_of_validation_iteration'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_VALIDATION_ITERATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_VALIDATION_RUN">
+<code class="descname">BEGIN_OF_VALIDATION_RUN</code><em class="property"> = 'begin_of_validation_run'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.BEGIN_OF_VALIDATION_RUN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.END_OF_EPOCH">
+<code class="descname">END_OF_EPOCH</code><em class="property"> = 'end_of_epoch'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.END_OF_EPOCH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.END_OF_FIT">
+<code class="descname">END_OF_FIT</code><em class="property"> = 'end_of_fit'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.END_OF_FIT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.END_OF_SAVE">
+<code class="descname">END_OF_SAVE</code><em class="property"> = 'end_of_save'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.END_OF_SAVE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.END_OF_TRAINING_ITERATION">
+<code class="descname">END_OF_TRAINING_ITERATION</code><em class="property"> = 'end_of_training_iteration'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.END_OF_TRAINING_ITERATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.END_OF_TRAINING_RUN">
+<code class="descname">END_OF_TRAINING_RUN</code><em class="property"> = 'end_of_training_run'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.END_OF_TRAINING_RUN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.END_OF_VALIDATION_ITERATION">
+<code class="descname">END_OF_VALIDATION_ITERATION</code><em class="property"> = 'end_of_validation_iteration'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.END_OF_VALIDATION_ITERATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.END_OF_VALIDATION_RUN">
+<code class="descname">END_OF_VALIDATION_RUN</code><em class="property"> = 'end_of_validation_run'</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.END_OF_VALIDATION_RUN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.TRIGGERS">
+<code class="descname">TRIGGERS</code><em class="property"> = {'begin_of_fit', 'end_of_save', 'begin_of_save', 'end_of_validation_run', 'end_of_epoch', 'begin_of_epoch', 'end_of_fit', 'end_of_validation_iteration', 'begin_of_training_run', 'begin_of_training_iteration', 'begin_of_validation_run', 'end_of_training_run', 'end_of_training_iteration', 'begin_of_validation_iteration'}</em><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.TRIGGERS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.bind_trainer">
+<code class="descname">bind_trainer</code><span class="sig-paren">(</span><em>trainer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.bind_trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.bind_trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.call">
+<code class="descname">call</code><span class="sig-paren">(</span><em>trigger</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.call" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.get_config">
+<code class="descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.get_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.rebind_trainer_to_all_callbacks">
+<code class="descname">rebind_trainer_to_all_callbacks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.rebind_trainer_to_all_callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.rebind_trainer_to_all_callbacks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.register_callback">
+<code class="descname">register_callback</code><span class="sig-paren">(</span><em>callback</em>, <em>trigger='auto'</em>, <em>bind_trainer=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.register_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.register_callback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.register_new_trigger">
+<code class="descname">register_new_trigger</code><span class="sig-paren">(</span><em>trigger_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.register_new_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.register_new_trigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.set_config">
+<code class="descname">set_config</code><span class="sig-paren">(</span><em>config_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.set_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.set_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.trainer_is_bound">
+<code class="descname">trainer_is_bound</code><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.trainer_is_bound" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.base.CallbackEngine.unbind_trainer">
+<code class="descname">unbind_trainer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.unbind_trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.base.CallbackEngine.unbind_trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.trainers.callbacks.console">
+<span id="inferno-trainers-callbacks-console-module"></span><h2>inferno.trainers.callbacks.console module<a class="headerlink" href="#module-inferno.trainers.callbacks.console" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.trainers.callbacks.console.Console">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.console.</code><code class="descname">Console</code><span class="sig-paren">(</span><em>printer=&lt;inferno.trainers.callbacks.console.StdoutPrinter object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.console.Console" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.console.Console.LEVEL_DEBUG">
+<code class="descname">LEVEL_DEBUG</code><em class="property"> = 4</em><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.LEVEL_DEBUG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.console.Console.LEVEL_INFO">
+<code class="descname">LEVEL_INFO</code><em class="property"> = 1</em><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.LEVEL_INFO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.console.Console.LEVEL_PROGRESS">
+<code class="descname">LEVEL_PROGRESS</code><em class="property"> = 2</em><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.LEVEL_PROGRESS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.console.Console.LEVEL_WARNING">
+<code class="descname">LEVEL_WARNING</code><em class="property"> = 3</em><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.LEVEL_WARNING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.console.Console.debug">
+<code class="descname">debug</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.debug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.debug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.console.Console.info">
+<code class="descname">info</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.console.Console.print">
+<code class="descname">print</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.print" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.console.Console.progress">
+<code class="descname">progress</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.progress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.console.Console.set_console">
+<code class="descname">set_console</code><span class="sig-paren">(</span><em>console</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.set_console"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.set_console" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.console.Console.toggle_info">
+<code class="descname">toggle_info</code><span class="sig-paren">(</span><em>state</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.toggle_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.toggle_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.console.Console.toggle_progress">
+<code class="descname">toggle_progress</code><span class="sig-paren">(</span><em>state</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.toggle_progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.toggle_progress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.console.Console.toggle_warning">
+<code class="descname">toggle_warning</code><span class="sig-paren">(</span><em>state</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.toggle_warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.toggle_warning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.console.Console.warning">
+<code class="descname">warning</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.console.Console.warning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.console.StdoutPrinter">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.console.</code><code class="descname">StdoutPrinter</code><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#StdoutPrinter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.console.StdoutPrinter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.console.StdoutPrinter.print">
+<code class="descname">print</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#StdoutPrinter.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.console.StdoutPrinter.print" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.trainers.callbacks.essentials">
+<span id="inferno-trainers-callbacks-essentials-module"></span><h2>inferno.trainers.callbacks.essentials module<a class="headerlink" href="#module-inferno.trainers.callbacks.essentials" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.trainers.callbacks.essentials.DumpHDF5Every">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.essentials.</code><code class="descname">DumpHDF5Every</code><span class="sig-paren">(</span><em>frequency</em>, <em>to_directory</em>, <em>filename_template='dump.{mode}.epoch{epoch_count}.iteration{iteration_count}.h5'</em>, <em>force_dump=False</em>, <em>dump_after_every_validation_run=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#DumpHDF5Every"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.DumpHDF5Every" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.base.Callback" title="inferno.trainers.callbacks.base.Callback"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.base.Callback</tt></a></p>
+<p>Dumps intermediate training states to a HDF5 file.</p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.DumpHDF5Every.add_to_dump_cache">
+<code class="descname">add_to_dump_cache</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#DumpHDF5Every.add_to_dump_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.DumpHDF5Every.add_to_dump_cache" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.DumpHDF5Every.clear_dump_cache">
+<code class="descname">clear_dump_cache</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#DumpHDF5Every.clear_dump_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.DumpHDF5Every.clear_dump_cache" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.DumpHDF5Every.dump">
+<code class="descname">dump</code><span class="sig-paren">(</span><em>mode</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#DumpHDF5Every.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.DumpHDF5Every.dump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.essentials.DumpHDF5Every.dump_every">
+<code class="descname">dump_every</code><a class="headerlink" href="#inferno.trainers.callbacks.essentials.DumpHDF5Every.dump_every" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.essentials.DumpHDF5Every.dump_now">
+<code class="descname">dump_now</code><a class="headerlink" href="#inferno.trainers.callbacks.essentials.DumpHDF5Every.dump_now" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.DumpHDF5Every.dump_state">
+<code class="descname">dump_state</code><span class="sig-paren">(</span><em>key</em>, <em>dump_while='training'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#DumpHDF5Every.dump_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.DumpHDF5Every.dump_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.DumpHDF5Every.dump_states">
+<code class="descname">dump_states</code><span class="sig-paren">(</span><em>keys</em>, <em>dump_while='training'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#DumpHDF5Every.dump_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.DumpHDF5Every.dump_states" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.DumpHDF5Every.end_of_training_iteration">
+<code class="descname">end_of_training_iteration</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#DumpHDF5Every.end_of_training_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.DumpHDF5Every.end_of_training_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.DumpHDF5Every.end_of_validation_run">
+<code class="descname">end_of_validation_run</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#DumpHDF5Every.end_of_validation_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.DumpHDF5Every.end_of_validation_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.DumpHDF5Every.get_file_path">
+<code class="descname">get_file_path</code><span class="sig-paren">(</span><em>mode</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#DumpHDF5Every.get_file_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.DumpHDF5Every.get_file_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.essentials.NaNDetector">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.essentials.</code><code class="descname">NaNDetector</code><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#NaNDetector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.NaNDetector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.base.Callback" title="inferno.trainers.callbacks.base.Callback"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.base.Callback</tt></a></p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.NaNDetector.end_of_training_iteration">
+<code class="descname">end_of_training_iteration</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#NaNDetector.end_of_training_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.NaNDetector.end_of_training_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.essentials.ParameterEMA">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.essentials.</code><code class="descname">ParameterEMA</code><span class="sig-paren">(</span><em>momentum</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#ParameterEMA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.ParameterEMA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.base.Callback" title="inferno.trainers.callbacks.base.Callback"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.base.Callback</tt></a></p>
+<p>Maintain a moving average of network parameters.</p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.ParameterEMA.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#ParameterEMA.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.ParameterEMA.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.ParameterEMA.end_of_training_iteration">
+<code class="descname">end_of_training_iteration</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#ParameterEMA.end_of_training_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.ParameterEMA.end_of_training_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.ParameterEMA.maintain">
+<code class="descname">maintain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#ParameterEMA.maintain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.ParameterEMA.maintain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.essentials.PersistentSave">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.essentials.</code><code class="descname">PersistentSave</code><span class="sig-paren">(</span><em>template='checkpoint.pytorch.epoch{epoch_count}.iteration{iteration_count}'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#PersistentSave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.PersistentSave" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.base.Callback" title="inferno.trainers.callbacks.base.Callback"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.base.Callback</tt></a></p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.PersistentSave.begin_of_save">
+<code class="descname">begin_of_save</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#PersistentSave.begin_of_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.PersistentSave.begin_of_save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.PersistentSave.end_of_save">
+<code class="descname">end_of_save</code><span class="sig-paren">(</span><em>save_to_directory</em>, <em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#PersistentSave.end_of_save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.PersistentSave.end_of_save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.essentials.SaveAtBestValidationScore">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.essentials.</code><code class="descname">SaveAtBestValidationScore</code><span class="sig-paren">(</span><em>smoothness=0</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#SaveAtBestValidationScore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.SaveAtBestValidationScore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.base.Callback" title="inferno.trainers.callbacks.base.Callback"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.base.Callback</tt></a></p>
+<p>Triggers a save at the best EMA (exponential moving average) validation score.
+The basic <cite>Trainer</cite> has built in support for saving at the best validation score, but this
+callback might eventually replace that functionality.</p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.essentials.SaveAtBestValidationScore.end_of_validation_run">
+<code class="descname">end_of_validation_run</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/essentials.html#SaveAtBestValidationScore.end_of_validation_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.essentials.SaveAtBestValidationScore.end_of_validation_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.trainers.callbacks.scheduling">
+<span id="inferno-trainers-callbacks-scheduling-module"></span><h2>inferno.trainers.callbacks.scheduling module<a class="headerlink" href="#module-inferno.trainers.callbacks.scheduling" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.scheduling.</code><code class="descname">AutoLR</code><span class="sig-paren">(</span><em>factor</em>, <em>patience</em>, <em>required_minimum_relative_improvement=0</em>, <em>consider_improvement_with_respect_to='best'</em>, <em>cooldown_duration=None</em>, <em>monitor='auto'</em>, <em>monitor_momentum=0</em>, <em>monitor_while='auto'</em>, <em>exclude_param_groups=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#AutoLR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">inferno.trainers.callbacks.scheduling._Scheduler</tt></p>
+<p>Callback to decay or hike the learning rate automatically when a specified monitor
+stops improving.</p>
+<p>The monitor should be decreasing, i.e. lower value –&gt; better performance.</p>
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR.cooldown_duration">
+<code class="descname">cooldown_duration</code><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR.cooldown_duration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR.decay">
+<code class="descname">decay</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#AutoLR.decay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR.decay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR.duration_since_last_decay">
+<code class="descname">duration_since_last_decay</code><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR.duration_since_last_decay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR.duration_since_last_improvment">
+<code class="descname">duration_since_last_improvment</code><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR.duration_since_last_improvment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR.end_of_training_iteration">
+<code class="descname">end_of_training_iteration</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#AutoLR.end_of_training_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR.end_of_training_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR.end_of_validation_run">
+<code class="descname">end_of_validation_run</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#AutoLR.end_of_validation_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR.end_of_validation_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR.in_cooldown">
+<code class="descname">in_cooldown</code><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR.in_cooldown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR.is_significantly_less_than">
+<em class="property">static </em><code class="descname">is_significantly_less_than</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>min_relative_delta</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#AutoLR.is_significantly_less_than"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR.is_significantly_less_than" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR.maintain_monitor_moving_average">
+<code class="descname">maintain_monitor_moving_average</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#AutoLR.maintain_monitor_moving_average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR.maintain_monitor_moving_average" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR.monitor_value_has_significantly_improved">
+<code class="descname">monitor_value_has_significantly_improved</code><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR.monitor_value_has_significantly_improved" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR.out_of_patience">
+<code class="descname">out_of_patience</code><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR.out_of_patience" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLR.patience">
+<code class="descname">patience</code><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLR.patience" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.scheduling.AutoLRDecay">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.scheduling.</code><code class="descname">AutoLRDecay</code><span class="sig-paren">(</span><em>factor</em>, <em>patience</em>, <em>required_minimum_relative_improvement=0</em>, <em>consider_improvement_with_respect_to='best'</em>, <em>cooldown_duration=None</em>, <em>monitor='auto'</em>, <em>monitor_momentum=0</em>, <em>monitor_while='auto'</em>, <em>exclude_param_groups=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#AutoLRDecay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.AutoLRDecay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.scheduling.AutoLR" title="inferno.trainers.callbacks.scheduling.AutoLR"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.scheduling.AutoLR</tt></a></p>
+<p>Callback to decay the learning rate automatically when a specified monitor
+stops improving.</p>
+<p>The monitor should be decreasing, i.e. lower value –&gt; better performance.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.scheduling.DecaySpec">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.scheduling.</code><code class="descname">DecaySpec</code><span class="sig-paren">(</span><em>duration</em>, <em>factor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#DecaySpec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.DecaySpec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>A class to specify when to decay (or hike) LR and by what factor.</p>
+<dl class="classmethod">
+<dt id="inferno.trainers.callbacks.scheduling.DecaySpec.build_from">
+<em class="property">classmethod </em><code class="descname">build_from</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#DecaySpec.build_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.DecaySpec.build_from" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.scheduling.DecaySpec.match">
+<code class="descname">match</code><span class="sig-paren">(</span><em>iteration_count=None</em>, <em>epoch_count=None</em>, <em>when_equal_return=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#DecaySpec.match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.DecaySpec.match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.scheduling.DecaySpec.new">
+<code class="descname">new</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#DecaySpec.new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.DecaySpec.new" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.scheduling.ManualLR">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.scheduling.</code><code class="descname">ManualLR</code><span class="sig-paren">(</span><em>decay_specs</em>, <em>exclude_param_groups=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#ManualLR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.ManualLR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.base.Callback" title="inferno.trainers.callbacks.base.Callback"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.base.Callback</tt></a></p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.scheduling.ManualLR.decay">
+<code class="descname">decay</code><span class="sig-paren">(</span><em>factor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#ManualLR.decay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.ManualLR.decay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.scheduling.ManualLR.end_of_training_iteration">
+<code class="descname">end_of_training_iteration</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#ManualLR.end_of_training_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.ManualLR.end_of_training_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.scheduling.ManualLR.match">
+<code class="descname">match</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/scheduling.html#ManualLR.match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.scheduling.ManualLR.match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.trainers.callbacks.tqdm">
+<span id="inferno-trainers-callbacks-tqdm-module"></span><h2>inferno.trainers.callbacks.tqdm module<a class="headerlink" href="#module-inferno.trainers.callbacks.tqdm" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMConsole">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.tqdm.</code><code class="descname">TQDMConsole</code><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMConsole"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMConsole" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.console.Console" title="inferno.trainers.callbacks.console.Console"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.console.Console</tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMPrinter">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.tqdm.</code><code class="descname">TQDMPrinter</code><span class="sig-paren">(</span><em>progress</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMPrinter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMPrinter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMPrinter.print">
+<code class="descname">print</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMPrinter.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMPrinter.print" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.tqdm.</code><code class="descname">TQDMProgressBar</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.base.Callback" title="inferno.trainers.callbacks.base.Callback"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.base.Callback</tt></a></p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar.begin_of_epoch">
+<code class="descname">begin_of_epoch</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.begin_of_epoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar.begin_of_epoch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar.begin_of_fit">
+<code class="descname">begin_of_fit</code><span class="sig-paren">(</span><em>max_num_epochs</em>, <em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.begin_of_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar.begin_of_fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar.begin_of_training_iteration">
+<code class="descname">begin_of_training_iteration</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.begin_of_training_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar.begin_of_training_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar.begin_of_training_run">
+<code class="descname">begin_of_training_run</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.begin_of_training_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar.begin_of_training_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar.begin_of_validation_iteration">
+<code class="descname">begin_of_validation_iteration</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.begin_of_validation_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar.begin_of_validation_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar.begin_of_validation_run">
+<code class="descname">begin_of_validation_run</code><span class="sig-paren">(</span><em>num_iterations</em>, <em>num_iterations_in_generator</em>, <em>last_validated_at_epoch</em>, <em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.begin_of_validation_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar.begin_of_validation_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar.bind_trainer">
+<code class="descname">bind_trainer</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.bind_trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar.bind_trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar.end_of_epoch">
+<code class="descname">end_of_epoch</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.end_of_epoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar.end_of_epoch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar.end_of_fit">
+<code class="descname">end_of_fit</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.end_of_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar.end_of_fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar.end_of_training_run">
+<code class="descname">end_of_training_run</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.end_of_training_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar.end_of_training_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar.end_of_validation_run">
+<code class="descname">end_of_validation_run</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.end_of_validation_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar.end_of_validation_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdm.TQDMProgressBar.print">
+<code class="descname">print</code><span class="sig-paren">(</span><em>message</em>, <em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdm.TQDMProgressBar.print" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.trainers.callbacks.tqdmstub">
+<span id="inferno-trainers-callbacks-tqdmstub-module"></span><h2>inferno.trainers.callbacks.tqdmstub module<a class="headerlink" href="#module-inferno.trainers.callbacks.tqdmstub" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.trainers.callbacks.tqdmstub.TQDMProgressBar">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.tqdmstub.</code><code class="descname">TQDMProgressBar</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdmstub.html#TQDMProgressBar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdmstub.TQDMProgressBar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.base.Callback" title="inferno.trainers.callbacks.base.Callback"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.base.Callback</tt></a></p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdmstub.TQDMProgressBar.begin_of_fit">
+<code class="descname">begin_of_fit</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdmstub.html#TQDMProgressBar.begin_of_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdmstub.TQDMProgressBar.begin_of_fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.tqdmstub.TQDMProgressBar.bind_trainer">
+<code class="descname">bind_trainer</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdmstub.html#TQDMProgressBar.bind_trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.tqdmstub.TQDMProgressBar.bind_trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.trainers.callbacks">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.trainers.callbacks" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.trainers.callbacks.CallbackEngine">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.</code><code class="descname">CallbackEngine</code><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>Gathers and manages callbacks.</p>
+<p>Callbacks are callables which are to be called by trainers when certain events (‘triggers’)
+occur. They could be any callable object, but if endowed with a <cite>bind_trainer</cite> method,
+it’s called when the callback is registered. It is recommended that callbacks
+(or their <cite>__call__</cite> methods) use the double-star syntax for keyword arguments.</p>
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_EPOCH">
+<code class="descname">BEGIN_OF_EPOCH</code><em class="property"> = 'begin_of_epoch'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_EPOCH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_FIT">
+<code class="descname">BEGIN_OF_FIT</code><em class="property"> = 'begin_of_fit'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_FIT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_SAVE">
+<code class="descname">BEGIN_OF_SAVE</code><em class="property"> = 'begin_of_save'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_SAVE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_TRAINING_ITERATION">
+<code class="descname">BEGIN_OF_TRAINING_ITERATION</code><em class="property"> = 'begin_of_training_iteration'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_TRAINING_ITERATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_TRAINING_RUN">
+<code class="descname">BEGIN_OF_TRAINING_RUN</code><em class="property"> = 'begin_of_training_run'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_TRAINING_RUN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_VALIDATION_ITERATION">
+<code class="descname">BEGIN_OF_VALIDATION_ITERATION</code><em class="property"> = 'begin_of_validation_iteration'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_VALIDATION_ITERATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_VALIDATION_RUN">
+<code class="descname">BEGIN_OF_VALIDATION_RUN</code><em class="property"> = 'begin_of_validation_run'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.BEGIN_OF_VALIDATION_RUN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.END_OF_EPOCH">
+<code class="descname">END_OF_EPOCH</code><em class="property"> = 'end_of_epoch'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.END_OF_EPOCH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.END_OF_FIT">
+<code class="descname">END_OF_FIT</code><em class="property"> = 'end_of_fit'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.END_OF_FIT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.END_OF_SAVE">
+<code class="descname">END_OF_SAVE</code><em class="property"> = 'end_of_save'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.END_OF_SAVE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.END_OF_TRAINING_ITERATION">
+<code class="descname">END_OF_TRAINING_ITERATION</code><em class="property"> = 'end_of_training_iteration'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.END_OF_TRAINING_ITERATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.END_OF_TRAINING_RUN">
+<code class="descname">END_OF_TRAINING_RUN</code><em class="property"> = 'end_of_training_run'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.END_OF_TRAINING_RUN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.END_OF_VALIDATION_ITERATION">
+<code class="descname">END_OF_VALIDATION_ITERATION</code><em class="property"> = 'end_of_validation_iteration'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.END_OF_VALIDATION_ITERATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.END_OF_VALIDATION_RUN">
+<code class="descname">END_OF_VALIDATION_RUN</code><em class="property"> = 'end_of_validation_run'</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.END_OF_VALIDATION_RUN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.TRIGGERS">
+<code class="descname">TRIGGERS</code><em class="property"> = {'begin_of_fit', 'end_of_save', 'begin_of_save', 'end_of_validation_run', 'end_of_epoch', 'begin_of_epoch', 'end_of_fit', 'end_of_validation_iteration', 'begin_of_training_run', 'begin_of_training_iteration', 'begin_of_validation_run', 'end_of_training_run', 'end_of_training_iteration', 'begin_of_validation_iteration'}</em><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.TRIGGERS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.CallbackEngine.bind_trainer">
+<code class="descname">bind_trainer</code><span class="sig-paren">(</span><em>trainer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.bind_trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.bind_trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.CallbackEngine.call">
+<code class="descname">call</code><span class="sig-paren">(</span><em>trigger</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.call" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.CallbackEngine.get_config">
+<code class="descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.get_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.CallbackEngine.rebind_trainer_to_all_callbacks">
+<code class="descname">rebind_trainer_to_all_callbacks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.rebind_trainer_to_all_callbacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.rebind_trainer_to_all_callbacks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.CallbackEngine.register_callback">
+<code class="descname">register_callback</code><span class="sig-paren">(</span><em>callback</em>, <em>trigger='auto'</em>, <em>bind_trainer=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.register_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.register_callback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.CallbackEngine.register_new_trigger">
+<code class="descname">register_new_trigger</code><span class="sig-paren">(</span><em>trigger_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.register_new_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.register_new_trigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.CallbackEngine.set_config">
+<code class="descname">set_config</code><span class="sig-paren">(</span><em>config_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.set_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.set_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.CallbackEngine.trainer_is_bound">
+<code class="descname">trainer_is_bound</code><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.trainer_is_bound" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.CallbackEngine.unbind_trainer">
+<code class="descname">unbind_trainer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#CallbackEngine.unbind_trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.CallbackEngine.unbind_trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.Callback">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.</code><code class="descname">Callback</code><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>Recommended (but not required) base class for callbacks.</p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Callback.bind_trainer">
+<code class="descname">bind_trainer</code><span class="sig-paren">(</span><em>trainer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.bind_trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Callback.bind_trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Callback.debug_print">
+<code class="descname">debug_print</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.debug_print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Callback.debug_print" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Callback.get_config">
+<code class="descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Callback.get_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="inferno.trainers.callbacks.Callback.get_instances">
+<em class="property">classmethod </em><code class="descname">get_instances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.get_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Callback.get_instances" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="inferno.trainers.callbacks.Callback.register_instance">
+<em class="property">classmethod </em><code class="descname">register_instance</code><span class="sig-paren">(</span><em>instance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.register_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Callback.register_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Callback.set_config">
+<code class="descname">set_config</code><span class="sig-paren">(</span><em>config_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.set_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Callback.set_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Callback.toggle_debug">
+<code class="descname">toggle_debug</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.toggle_debug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Callback.toggle_debug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.Callback.trainer">
+<code class="descname">trainer</code><a class="headerlink" href="#inferno.trainers.callbacks.Callback.trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Callback.unbind_trainer">
+<code class="descname">unbind_trainer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/base.html#Callback.unbind_trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Callback.unbind_trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.Console">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.</code><code class="descname">Console</code><span class="sig-paren">(</span><em>printer=&lt;inferno.trainers.callbacks.console.StdoutPrinter object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Console" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.Console.LEVEL_DEBUG">
+<code class="descname">LEVEL_DEBUG</code><em class="property"> = 4</em><a class="headerlink" href="#inferno.trainers.callbacks.Console.LEVEL_DEBUG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.Console.LEVEL_INFO">
+<code class="descname">LEVEL_INFO</code><em class="property"> = 1</em><a class="headerlink" href="#inferno.trainers.callbacks.Console.LEVEL_INFO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.Console.LEVEL_PROGRESS">
+<code class="descname">LEVEL_PROGRESS</code><em class="property"> = 2</em><a class="headerlink" href="#inferno.trainers.callbacks.Console.LEVEL_PROGRESS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.trainers.callbacks.Console.LEVEL_WARNING">
+<code class="descname">LEVEL_WARNING</code><em class="property"> = 3</em><a class="headerlink" href="#inferno.trainers.callbacks.Console.LEVEL_WARNING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Console.debug">
+<code class="descname">debug</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.debug"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Console.debug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Console.info">
+<code class="descname">info</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Console.info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Console.print">
+<code class="descname">print</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Console.print" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Console.progress">
+<code class="descname">progress</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Console.progress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Console.set_console">
+<code class="descname">set_console</code><span class="sig-paren">(</span><em>console</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.set_console"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Console.set_console" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Console.toggle_info">
+<code class="descname">toggle_info</code><span class="sig-paren">(</span><em>state</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.toggle_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Console.toggle_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Console.toggle_progress">
+<code class="descname">toggle_progress</code><span class="sig-paren">(</span><em>state</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.toggle_progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Console.toggle_progress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Console.toggle_warning">
+<code class="descname">toggle_warning</code><span class="sig-paren">(</span><em>state</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.toggle_warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Console.toggle_warning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.Console.warning">
+<code class="descname">warning</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/console.html#Console.warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.Console.warning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar">
+<em class="property">class </em><code class="descclassname">inferno.trainers.callbacks.</code><code class="descname">TQDMProgressBar</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.trainers.callbacks.base.Callback" title="inferno.trainers.callbacks.base.Callback"><tt class="xref py py-class docutils literal">inferno.trainers.callbacks.base.Callback</tt></a></p>
+<dl class="method">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar.begin_of_epoch">
+<code class="descname">begin_of_epoch</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.begin_of_epoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar.begin_of_epoch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar.begin_of_fit">
+<code class="descname">begin_of_fit</code><span class="sig-paren">(</span><em>max_num_epochs</em>, <em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.begin_of_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar.begin_of_fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar.begin_of_training_iteration">
+<code class="descname">begin_of_training_iteration</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.begin_of_training_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar.begin_of_training_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar.begin_of_training_run">
+<code class="descname">begin_of_training_run</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.begin_of_training_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar.begin_of_training_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar.begin_of_validation_iteration">
+<code class="descname">begin_of_validation_iteration</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.begin_of_validation_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar.begin_of_validation_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar.begin_of_validation_run">
+<code class="descname">begin_of_validation_run</code><span class="sig-paren">(</span><em>num_iterations</em>, <em>num_iterations_in_generator</em>, <em>last_validated_at_epoch</em>, <em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.begin_of_validation_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar.begin_of_validation_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar.bind_trainer">
+<code class="descname">bind_trainer</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.bind_trainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar.bind_trainer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar.end_of_epoch">
+<code class="descname">end_of_epoch</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.end_of_epoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar.end_of_epoch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar.end_of_fit">
+<code class="descname">end_of_fit</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.end_of_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar.end_of_fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar.end_of_training_run">
+<code class="descname">end_of_training_run</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.end_of_training_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar.end_of_training_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar.end_of_validation_run">
+<code class="descname">end_of_validation_run</code><span class="sig-paren">(</span><em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.end_of_validation_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar.end_of_validation_run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.trainers.callbacks.TQDMProgressBar.print">
+<code class="descname">print</code><span class="sig-paren">(</span><em>message</em>, <em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/trainers/callbacks/tqdm.html#TQDMProgressBar.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.trainers.callbacks.TQDMProgressBar.print" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.trainers.callbacks package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.trainers.callbacks.base">inferno.trainers.callbacks.base module</a></li>
+<li><a class="reference internal" href="#module-inferno.trainers.callbacks.console">inferno.trainers.callbacks.console module</a></li>
+<li><a class="reference internal" href="#module-inferno.trainers.callbacks.essentials">inferno.trainers.callbacks.essentials module</a></li>
+<li><a class="reference internal" href="#module-inferno.trainers.callbacks.scheduling">inferno.trainers.callbacks.scheduling module</a></li>
+<li><a class="reference internal" href="#module-inferno.trainers.callbacks.tqdm">inferno.trainers.callbacks.tqdm module</a></li>
+<li><a class="reference internal" href="#module-inferno.trainers.callbacks.tqdmstub">inferno.trainers.callbacks.tqdmstub module</a></li>
+<li><a class="reference internal" href="#module-inferno.trainers.callbacks">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.trainers.html"
+                        title="previous chapter">inferno.trainers package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inferno.trainers.callbacks.logging.html"
+                        title="next chapter">inferno.trainers.callbacks.logging package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.trainers.callbacks.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.trainers.callbacks.logging.html" title="inferno.trainers.callbacks.logging package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.trainers.html" title="inferno.trainers package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.trainers.html" >inferno.trainers package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

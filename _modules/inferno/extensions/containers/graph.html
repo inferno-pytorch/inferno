@@ -1,0 +1,567 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.extensions.containers.graph &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.extensions.containers.graph</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">gc</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx</span> <span class="k">import</span> <span class="n">is_directed_acyclic_graph</span><span class="p">,</span> <span class="n">topological_sort</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="k">import</span> <span class="n">nn</span> <span class="k">as</span> <span class="n">nn</span>
+
+<span class="kn">from</span> <span class="nn">...utils</span> <span class="k">import</span> <span class="n">python_utils</span> <span class="k">as</span> <span class="n">pyu</span>
+<span class="kn">from</span> <span class="nn">...utils.exceptions</span> <span class="k">import</span> <span class="n">assert_</span>
+<span class="kn">from</span> <span class="nn">..layers.device</span> <span class="k">import</span> <span class="n">OnDevice</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NNGraph&#39;</span><span class="p">,</span> <span class="s1">&#39;Graph&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="NNGraph"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.NNGraph">[docs]</a><span class="k">class</span> <span class="nc">NNGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A NetworkX DiGraph, except that node and edge ordering matters.&quot;&quot;&quot;</span>
+    <span class="c1"># We don&#39;t copy torch tensors, only to have them deleted.</span>
+    <span class="n">ATTRIBUTES_TO_NOT_COPY</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;payload&#39;</span><span class="p">}</span>
+    <span class="n">node_dict_factory</span> <span class="o">=</span> <span class="n">OrderedDict</span>
+    <span class="n">adjlist_dict_factory</span> <span class="o">=</span> <span class="n">OrderedDict</span>
+
+<div class="viewcode-block" id="NNGraph.copy"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.NNGraph.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">init_kwargs</span><span class="p">):</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="o">**</span><span class="n">init_kwargs</span><span class="p">)</span>
+        <span class="c1"># Remove all attributes and copy only the graph structure</span>
+        <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_iter</span><span class="p">():</span>
+            <span class="c1"># Add new nodes</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="c1"># Copy attributes</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+                                                   <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                                                   <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ATTRIBUTES_TO_NOT_COPY</span><span class="p">}))</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+                                                   <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                                                   <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ATTRIBUTES_TO_NOT_COPY</span><span class="p">}))</span>
+            <span class="c1"># Add new edge</span>
+            <span class="n">new</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">source</span><span class="p">),</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+            <span class="n">old_edge_attributes</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">source</span><span class="p">][</span><span class="n">target</span><span class="p">]</span>
+            <span class="n">new_edge_attributes</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">old_edge_attributes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                                   <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ATTRIBUTES_TO_NOT_COPY</span><span class="p">}</span>
+            <span class="n">new_edge_attributes</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">new_edge_attributes</span><span class="p">)</span>
+            <span class="n">new</span><span class="p">[</span><span class="n">source</span><span class="p">][</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_edge_attributes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">Identity</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A torch.nn.Module to do nothing.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">input</span>
+
+
+<div class="viewcode-block" id="Graph"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph">[docs]</a><span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A graph structure to build networks with complex architectures. The resulting graph model</span>
+<span class="sd">    can be used like any other `torch.nn.Module`. The graph structure used behind the scenes</span>
+<span class="sd">    is a `networkx.DiGraph`. This internal graph is exposed by the `apply_on_graph` method,</span>
+<span class="sd">    which can be used with any NetworkX function (e.g. for plotting with matplotlib or GraphViz).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    The naive inception module (without the max-pooling for simplicity) with ELU-layers of 64 units</span>
+<span class="sd">    can be built as following, (assuming 64 input channels):</span>
+
+<span class="sd">        &gt;&gt;&gt; from inferno.extensions.layers.reshape import Concatenate</span>
+<span class="sd">        &gt;&gt;&gt; from inferno.extensions.layers.convolutional import ConvELU2D</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; from torch.autograd import Variable</span>
+<span class="sd">        &gt;&gt;&gt; # Build the model</span>
+<span class="sd">        &gt;&gt;&gt; inception_module = Graph()</span>
+<span class="sd">        &gt;&gt;&gt; inception_module.add_input_node(&#39;input&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; inception_module.add_node(&#39;conv1x1&#39;, ConvELU2D(64, 64, 3), previous=&#39;input&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; inception_module.add_node(&#39;conv3x3&#39;, ConvELU2D(64, 64, 3), previous=&#39;input&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; inception_module.add_node(&#39;conv5x5&#39;, ConvELU2D(64, 64, 3), previous=&#39;input&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; inception_module.add_node(&#39;cat&#39;, Concatenate(),</span>
+<span class="sd">        &gt;&gt;&gt;                           previous=[&#39;conv1x1&#39;, &#39;conv3x3&#39;, &#39;conv5x5&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; inception_module.add_output_node(&#39;output&#39;, &#39;cat&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # Build dummy variable</span>
+<span class="sd">        &gt;&gt;&gt; input = Variable(torch.rand(1, 64, 100, 100))</span>
+<span class="sd">        &gt;&gt;&gt; # Get output</span>
+<span class="sd">        &gt;&gt;&gt; output = inception_module(input)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct the graph object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">            graph : networkx.DiGraph or NNGraph</span>
+<span class="sd">                Graph to build the object from (optional).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Graph</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># Privates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread_to_graph_mapping</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_creator_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">get_ident</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_creator_pid</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">current_process</span><span class="p">()</span><span class="o">.</span><span class="n">pid</span>
+        <span class="c1"># Publics</span>
+        <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">NNGraph</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># `graph` needs to be different for every thread, because torch.nn.parallel.replicate does</span>
+        <span class="c1"># not make a copy.</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread_to_graph_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">get_ident</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">creator_thread_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread_to_graph_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_creator_thread</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">creator_thread_graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">graph</span> <span class="o">=</span> <span class="n">creator_thread_graph</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="c1"># We don&#39;t need to clear payloads because the copy method of NNGraph copies only the</span>
+            <span class="c1"># graph structure and not the attributes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_thread_to_graph_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">threading</span><span class="o">.</span><span class="n">get_ident</span><span class="p">():</span> <span class="n">graph</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">graph</span>
+
+    <span class="nd">@graph</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">assert_</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">NNGraph</span><span class="p">),</span> <span class="n">exception_type</span><span class="o">=</span><span class="ne">TypeError</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_thread_to_graph_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">threading</span><span class="o">.</span><span class="n">get_ident</span><span class="p">():</span> <span class="n">value</span><span class="p">})</span>
+
+<div class="viewcode-block" id="Graph.is_node_in_graph"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.is_node_in_graph">[docs]</a>    <span class="k">def</span> <span class="nf">is_node_in_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether a node is in the graph.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the node.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">node</span></div>
+
+<div class="viewcode-block" id="Graph.is_source_node"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.is_source_node">[docs]</a>    <span class="k">def</span> <span class="nf">is_source_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether a given node (by name) is a source node.</span>
+<span class="sd">        A source node has no incoming edges.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the node.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        AssertionError</span>
+<span class="sd">            if node is not found in the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_node_in_graph</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">in_degree</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Graph.is_sink_node"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.is_sink_node">[docs]</a>    <span class="k">def</span> <span class="nf">is_sink_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether a given node (by name) is a sink node.</span>
+<span class="sd">        A sink node has no outgoing edges.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the node.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        AssertionError</span>
+<span class="sd">            if node is not found in the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_node_in_graph</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">out_degree</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a list of output nodes. The order is relevant and is the same as that</span>
+<span class="sd">        in which the forward method returns its outputs.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list of names (str) of the output nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">node_attributes</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">node_attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;is_output_node&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a list of input nodes. The order is relevant and is the same as that</span>
+<span class="sd">        in which the forward method accepts its inputs.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list of names (str) of the input nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">node_attributes</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">node_attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;is_input_node&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">graph_is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks if the graph is valid.&quot;&quot;&quot;</span>
+        <span class="c1"># Check if the graph is a DAG</span>
+        <span class="n">is_dag</span> <span class="o">=</span> <span class="n">is_directed_acyclic_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+        <span class="c1"># Check if output nodes are sinks</span>
+        <span class="n">output_nodes_are_sinks</span> <span class="o">=</span> <span class="nb">all</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">is_sink_node</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_nodes</span><span class="p">])</span>
+        <span class="c1"># Check inf input nodes are sources</span>
+        <span class="n">input_nodes_are_sources</span> <span class="o">=</span> <span class="nb">all</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">is_source_node</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_nodes</span><span class="p">])</span>
+        <span class="c1"># TODO Check whether only input nodes are sources and only output nodes are sinks</span>
+        <span class="c1"># Conclude</span>
+        <span class="n">is_valid</span> <span class="o">=</span> <span class="n">is_dag</span> <span class="ow">and</span> <span class="n">output_nodes_are_sinks</span> <span class="ow">and</span> <span class="n">input_nodes_are_sources</span>
+        <span class="k">return</span> <span class="n">is_valid</span>
+
+<div class="viewcode-block" id="Graph.assert_graph_is_valid"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.assert_graph_is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">assert_graph_is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Asserts that the graph is valid.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">is_directed_acyclic_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">),</span> <span class="s2">&quot;Graph is not a DAG.&quot;</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_nodes</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sink_node</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="s2">&quot;Output node </span><span class="si">{}</span><span class="s2"> is not a sink.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_source_node</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="s2">&quot;Output node </span><span class="si">{}</span><span class="s2"> is a source node. &quot;</span> \
+                                                  <span class="s2">&quot;Make sure it&#39;s connected.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_nodes</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_source_node</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="s2">&quot;Input node </span><span class="si">{}</span><span class="s2"> is not a source.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sink_node</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="s2">&quot;Input node </span><span class="si">{}</span><span class="s2"> is a sink node. &quot;</span> \
+                                                <span class="s2">&quot;Make sure it&#39;s connected.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Graph.add_node"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.add_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a node to the graph.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the node. Nodes are identified by their names.</span>
+
+<span class="sd">        module : torch.nn.Module</span>
+<span class="sd">            Torch module for this node.</span>
+
+<span class="sd">        previous : str or list of str</span>
+<span class="sd">            (List of) name(s) of the previous node(s).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Graph</span>
+<span class="sd">            self</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_previous</span> <span class="ow">in</span> <span class="n">pyu</span><span class="o">.</span><span class="n">to_iterable</span><span class="p">(</span><span class="n">previous</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">_previous</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Graph.add_input_node"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.add_input_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_input_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an input to the graph. The order in which input nodes are added is the</span>
+<span class="sd">        order in which the forward method accepts its inputs.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the input node.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Graph</span>
+<span class="sd">            self</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">Identity</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_input_node</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Graph.add_output_node"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.add_output_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_output_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">previous</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an output to the graph. The order in which output nodes are added is the</span>
+<span class="sd">        order in which the forward method returns its outputs.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the output node.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Graph</span>
+<span class="sd">            self</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">is_output_node</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">previous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_previous</span> <span class="ow">in</span> <span class="n">pyu</span><span class="o">.</span><span class="n">to_iterable</span><span class="p">(</span><span class="n">previous</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">_previous</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Graph.add_edge"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_node</span><span class="p">,</span> <span class="n">to_node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an edge between two nodes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        from_node : str</span>
+<span class="sd">            Name of the source node.</span>
+<span class="sd">        to_node : str</span>
+<span class="sd">            Name of the target node.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Graph</span>
+<span class="sd">            self</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        AssertionError</span>
+<span class="sd">            if either of the two nodes is not in the graph,</span>
+<span class="sd">            or if the edge is not &#39;legal&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_node_in_graph</span><span class="p">(</span><span class="n">from_node</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_node_in_graph</span><span class="p">(</span><span class="n">to_node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">from_node</span><span class="p">,</span> <span class="n">to_node</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_is_valid</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Graph.apply_on_graph"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.apply_on_graph">[docs]</a>    <span class="k">def</span> <span class="nf">apply_on_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Applies a `function` on the internal graph.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Graph.get_module_for_nodes"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.get_module_for_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_module_for_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the `torch.nn.Module` object for nodes corresponding to `names`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        names : str or list of str</span>
+<span class="sd">            Names of the nodes to fetch the modules of.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list or torch.nn.Module</span>
+<span class="sd">            Module or a list of modules corresponding to `names`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">pyu</span><span class="o">.</span><span class="n">to_iterable</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        <span class="n">modules</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_node_in_graph</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="s2">&quot;Node &#39;</span><span class="si">{}</span><span class="s2">&#39; is not in graph.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">module</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Node &#39;</span><span class="si">{}</span><span class="s2">&#39; is in the graph but could not find a module &quot;</span> \
+                                       <span class="s2">&quot;corresponding to it.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">modules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pyu</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">modules</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Graph.to_device"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.to_device">[docs]</a>    <span class="k">def</span> <span class="nf">to_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">target_device</span><span class="p">,</span> <span class="n">device_ordinal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="k">async</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Transfer nodes in the network to a specified device.&quot;&quot;&quot;</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">pyu</span><span class="o">.</span><span class="n">to_iterable</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_node_in_graph</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="s2">&quot;Node &#39;</span><span class="si">{}</span><span class="s2">&#39; is not in graph.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">module</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Node &#39;</span><span class="si">{}</span><span class="s2">&#39; is in the graph but could not find a module &quot;</span> \
+                                       <span class="s2">&quot;corresponding to it.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="c1"># Transfer</span>
+            <span class="n">module_on_device</span> <span class="o">=</span> <span class="n">OnDevice</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">target_device</span><span class="p">,</span>
+                                        <span class="n">device_ordinal</span><span class="o">=</span><span class="n">device_ordinal</span><span class="p">,</span>
+                                        <span class="k">async</span><span class="o">=</span><span class="k">async</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module_on_device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Graph.get_parameters_for_nodes"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.get_parameters_for_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_parameters_for_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">named</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get parameters of all nodes listed in `names`.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">named</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">parameter</span>
+                          <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">pyu</span><span class="o">.</span><span class="n">to_iterable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_module_for_nodes</span><span class="p">(</span><span class="n">names</span><span class="p">))</span>
+                          <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">module</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">parameter</span><span class="p">)</span>
+                          <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">pyu</span><span class="o">.</span><span class="n">to_iterable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_module_for_nodes</span><span class="p">(</span><span class="n">names</span><span class="p">))</span>
+                          <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">module</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">parameters</span></div>
+
+<div class="viewcode-block" id="Graph.clear_payloads"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.clear_payloads">[docs]</a>    <span class="k">def</span> <span class="nf">clear_payloads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="n">graph</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">graph</span>
+        <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges_iter</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;payload&#39;</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">source</span><span class="p">][</span><span class="n">target</span><span class="p">]:</span>
+                <span class="k">del</span> <span class="n">graph</span><span class="p">[</span><span class="n">source</span><span class="p">][</span><span class="n">target</span><span class="p">][</span><span class="s1">&#39;payload&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Graph.forward_through_node"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.forward_through_node">[docs]</a>    <span class="k">def</span> <span class="nf">forward_through_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># If input is a tuple/list, it will NOT be unpacked.</span>
+        <span class="c1"># Make sure the node is in the graph</span>
+        <span class="k">if</span> <span class="nb">input</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Make sure the node is not a source node</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_source_node</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> \
+                <span class="s2">&quot;Node &#39;</span><span class="si">{}</span><span class="s2">&#39; did not get an input but is a source node.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="c1"># Get input from payload</span>
+            <span class="n">incoming_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">incoming</span><span class="p">,</span> <span class="n">this</span> <span class="ow">in</span> <span class="n">incoming_edges</span><span class="p">:</span>
+                <span class="c1"># Append to input</span>
+                <span class="nb">input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">incoming</span><span class="p">][</span><span class="n">this</span><span class="p">][</span><span class="s1">&#39;payload&#39;</span><span class="p">])</span>
+                <span class="c1"># Clear reference for the garbage collector to do its thing</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">incoming</span><span class="p">][</span><span class="n">this</span><span class="p">][</span><span class="s1">&#39;payload&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_node_in_graph</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="c1"># Convert input to list</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="p">[</span><span class="nb">input</span><span class="p">]</span>
+        <span class="c1"># Get outputs</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">outputs</span> <span class="o">=</span> <span class="n">pyu</span><span class="o">.</span><span class="n">to_iterable</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="o">*</span><span class="nb">input</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">input_spec_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;--[</span><span class="si">{}</span><span class="s2">]-</span><span class="si">{}</span><span class="s2">--&gt;[</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">incoming</span><span class="p">,</span>
+                                                                     <span class="nb">tuple</span><span class="p">(</span><span class="n">_input</span><span class="o">.</span><span class="n">size</span><span class="p">()),</span>
+                                                                     <span class="n">this</span><span class="p">)</span>
+                                           <span class="k">for</span> <span class="p">(</span><span class="n">incoming</span><span class="p">,</span> <span class="n">this</span><span class="p">),</span> <span class="n">_input</span> <span class="ow">in</span>
+                                           <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="nb">input</span><span class="p">)])</span>
+
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;In node &#39;</span><span class="si">{}</span><span class="s2">&#39;: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                      <span class="s2">&quot;Inputs to this node were:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span>\
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">input_spec_string</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)(</span><span class="n">message</span><span class="p">)</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="c1"># Distribute outputs to outgoing payloads if required</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sink_node</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="n">outgoing_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">out_edges</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Support for replication</span>
+                <span class="n">outputs</span> <span class="o">*=</span> <span class="nb">len</span><span class="p">(</span><span class="n">outgoing_edges</span><span class="p">)</span>
+            <span class="c1"># Make sure the number of outputs check out</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">outgoing_edges</span><span class="p">),</span> \
+                <span class="s2">&quot;Number of outputs from the model (</span><span class="si">{}</span><span class="s2">) does not match the number &quot;</span> \
+                <span class="s2">&quot;of out-edges (</span><span class="si">{}</span><span class="s2">) in the graph for this node (&#39;</span><span class="si">{}</span><span class="s2">&#39;).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">),</span>
+                                                                              <span class="nb">len</span><span class="p">(</span><span class="n">outgoing_edges</span><span class="p">),</span>
+                                                                              <span class="n">name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">outgoing</span><span class="p">),</span> <span class="n">output</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">outgoing_edges</span><span class="p">,</span> <span class="n">outputs</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">this</span><span class="p">][</span><span class="n">outgoing</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;payload&#39;</span><span class="p">:</span> <span class="n">output</span><span class="p">})</span>
+        <span class="c1"># Collect garbage to free some GPU memory?</span>
+        <span class="k">del</span> <span class="nb">input</span>
+        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+        <span class="c1"># Return outputs</span>
+        <span class="k">return</span> <span class="n">pyu</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Graph.forward"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">inputs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assert_graph_is_valid</span><span class="p">()</span>
+        <span class="n">input_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_nodes</span>
+        <span class="n">output_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_nodes</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_nodes</span><span class="p">),</span> <span class="s2">&quot;Was expecting </span><span class="si">{}</span><span class="s2"> &quot;</span> \
+                                                <span class="s2">&quot;arguments for as many input nodes, got </span><span class="si">{}</span><span class="s2">.&quot;</span>\
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_nodes</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">))</span>
+        <span class="c1"># Unpack inputs to input nodes</span>
+        <span class="k">for</span> <span class="nb">input</span><span class="p">,</span> <span class="n">input_node</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">input_nodes</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">forward_through_node</span><span class="p">(</span><span class="n">input_node</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">)</span>
+        <span class="c1"># Toposort the graph</span>
+        <span class="n">toposorted</span> <span class="o">=</span> <span class="n">topological_sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+        <span class="c1"># Remove all input and output nodes</span>
+        <span class="n">toposorted</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">toposorted</span>
+                      <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_nodes</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output_nodes</span><span class="p">]</span>
+        <span class="c1"># Since we&#39;ll be clearing payloads anyway, it makes no sense whatsoever</span>
+        <span class="c1"># to evaluate sink nodes</span>
+        <span class="n">toposorted</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">toposorted</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sink_node</span><span class="p">(</span><span class="n">name</span><span class="p">)]</span>
+        <span class="c1"># Forward</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">toposorted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">forward_through_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="c1"># Read outputs from output nodes</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">output_node</span> <span class="ow">in</span> <span class="n">output_nodes</span><span class="p">:</span>
+            <span class="c1"># Get all incoming edges to output node</span>
+            <span class="n">outputs_from_node</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">incoming</span><span class="p">][</span><span class="n">this</span><span class="p">][</span><span class="s1">&#39;payload&#39;</span><span class="p">]</span>
+                                 <span class="k">for</span> <span class="n">incoming</span><span class="p">,</span> <span class="n">this</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">output_node</span><span class="p">)]</span>
+            <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pyu</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">outputs_from_node</span><span class="p">))</span>
+        <span class="c1"># Clear payloads for next pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_payloads</span><span class="p">()</span>
+        <span class="c1"># Done.</span>
+        <span class="k">return</span> <span class="n">pyu</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

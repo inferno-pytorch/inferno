@@ -1,0 +1,250 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.io.volumetric.volumetric_utils &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.io.volumetric.volumetric_utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
+
+
+<div class="viewcode-block" id="slidingwindowslices"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.volumetric.html#inferno.io.volumetric.volumetric_utils.slidingwindowslices">[docs]</a><span class="k">def</span> <span class="nf">slidingwindowslices</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> <span class="n">strides</span><span class="p">,</span>
+                        <span class="n">ds</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rngseed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">dataslice</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_overhanging</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="c1"># only support lists or tuples for shape, window_size and strides</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window_size</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)),</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">window_size</span><span class="p">)))</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">strides</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
+
+    <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">window_size</span><span class="p">)</span> <span class="o">==</span> <span class="n">dim</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">strides</span><span class="p">)</span> <span class="o">==</span> <span class="n">dim</span>
+
+    <span class="c1"># check for downsampling</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="p">[</span><span class="n">ds</span><span class="p">]</span> <span class="o">*</span> <span class="n">dim</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span> <span class="o">==</span> <span class="n">dim</span>
+
+    <span class="c1"># Seed RNG if a seed is provided</span>
+    <span class="k">if</span> <span class="n">rngseed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">rngseed</span><span class="p">)</span>
+
+    <span class="c1"># sliding windows in one dimenstion</span>
+    <span class="k">def</span> <span class="nf">dimension_window</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">wsize</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">dimsize</span><span class="p">,</span> <span class="n">ds_dim</span><span class="p">):</span>
+        <span class="n">starts</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
+        <span class="n">slices</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">st</span> <span class="o">+</span> <span class="n">wsize</span><span class="p">,</span> <span class="n">ds_dim</span><span class="p">)</span> <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">starts</span> <span class="k">if</span> <span class="n">st</span> <span class="o">+</span> <span class="n">wsize</span> <span class="o">&lt;=</span> <span class="n">dimsize</span><span class="p">]</span>
+
+        <span class="c1"># add an overhanging window at the end if the windoes</span>
+        <span class="c1"># do not fit and `add_overhanging`</span>
+        <span class="k">if</span> <span class="n">slices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span> <span class="o">!=</span> <span class="n">dimsize</span> <span class="ow">and</span> <span class="n">add_overhanging</span><span class="p">:</span>
+            <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">dimsize</span> <span class="o">-</span> <span class="n">wsize</span><span class="p">,</span> <span class="n">dimsize</span><span class="p">,</span> <span class="n">ds_dim</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
+            <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">slices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">slices</span>
+
+    <span class="c1"># determine adjusted start and stop coordinates if we have a dataslice</span>
+    <span class="c1"># otherwise predict the whole volume</span>
+    <span class="k">if</span> <span class="n">dataslice</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataslice</span><span class="p">)</span> <span class="o">==</span> <span class="n">dim</span><span class="p">,</span> <span class="s2">&quot;Dataslice must be a tuple with len = data dimension.&quot;</span>
+        <span class="n">starts</span> <span class="o">=</span> <span class="p">[</span><span class="n">sl</span><span class="o">.</span><span class="n">start</span> <span class="k">for</span> <span class="n">sl</span> <span class="ow">in</span> <span class="n">dataslice</span><span class="p">]</span>
+        <span class="n">stops</span>  <span class="o">=</span> <span class="p">[</span><span class="n">sl</span><span class="o">.</span><span class="n">stop</span> <span class="o">-</span> <span class="n">wsize</span> <span class="k">for</span> <span class="n">sl</span><span class="p">,</span> <span class="n">wsize</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dataslice</span><span class="p">,</span> <span class="n">window_size</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">starts</span> <span class="o">=</span> <span class="n">dim</span> <span class="o">*</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">stops</span>  <span class="o">=</span> <span class="p">[</span><span class="n">dimsize</span> <span class="o">-</span> <span class="n">wsize</span> <span class="k">if</span> <span class="n">wsize</span> <span class="o">!=</span> <span class="n">dimsize</span> <span class="k">else</span> <span class="n">dimsize</span>
+                  <span class="k">for</span> <span class="n">dimsize</span><span class="p">,</span> <span class="n">wsize</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">window_size</span><span class="p">)]</span>
+
+    <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">stp</span> <span class="o">&gt;</span> <span class="n">strt</span> <span class="k">for</span> <span class="n">strt</span><span class="p">,</span> <span class="n">stp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">stops</span><span class="p">)),</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">starts</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">stops</span><span class="p">))</span>
+    <span class="n">nslices</span> <span class="o">=</span> <span class="p">[</span><span class="n">dimension_window</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">wsize</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">dimsize</span><span class="p">,</span> <span class="n">ds_dim</span><span class="p">)</span>
+               <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">wsize</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">dimsize</span><span class="p">,</span> <span class="n">ds_dim</span>
+               <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">stops</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> <span class="n">strides</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">ds</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">nslices</span><span class="p">)</span></div>
+
+
+<span class="c1"># This code is legacy af, don&#39;t judge</span>
+<span class="c1"># Define a sliding window iterator (this time, more readable than a wannabe one-liner)</span>
+<div class="viewcode-block" id="slidingwindowslices_depr"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.volumetric.html#inferno.io.volumetric.volumetric_utils.slidingwindowslices_depr">[docs]</a><span class="k">def</span> <span class="nf">slidingwindowslices_depr</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">nhoodsize</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ds</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignoreborder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rngseed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">startmins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">startmaxs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dataslice</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a generator yielding (shuffled) sliding window slice objects.</span>
+<span class="sd">    :type shape: int or list of int</span>
+<span class="sd">    :param shape: Shape of the input data</span>
+<span class="sd">    :type nhoodsize: int or list of int</span>
+<span class="sd">    :param nhoodsize: Window size of the sliding window.</span>
+<span class="sd">    :type stride: int or list of int</span>
+<span class="sd">    :param stride: Stride of the sliding window.</span>
+<span class="sd">    :type shuffle: bool</span>
+<span class="sd">    :param shuffle: Whether to shuffle the iterator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Determine dimensionality of the data</span>
+    <span class="n">datadim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="c1"># Parse window</span>
+    <span class="k">if</span> <span class="n">window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">datadim</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">window</span><span class="p">)</span> <span class="o">==</span> <span class="n">datadim</span><span class="p">,</span> \
+            <span class="s2">&quot;Window must have the same length as the number of data dimensions.&quot;</span>
+
+    <span class="c1"># Parse nhoodsize and stride</span>
+    <span class="n">nhoodsize</span> <span class="o">=</span> <span class="p">[</span><span class="n">nhoodsize</span><span class="p">,</span> <span class="p">]</span> <span class="o">*</span> <span class="n">datadim</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nhoodsize</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="n">nhoodsize</span>
+    <span class="n">stride</span> <span class="o">=</span> <span class="p">[</span><span class="n">stride</span><span class="p">,</span> <span class="p">]</span> <span class="o">*</span> <span class="n">datadim</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stride</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="n">stride</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="p">[</span><span class="n">ds</span><span class="p">,</span> <span class="p">]</span> <span class="o">*</span> <span class="n">datadim</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="n">ds</span>
+
+    <span class="c1"># Seed RNG if a seed is provided</span>
+    <span class="k">if</span> <span class="n">rngseed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">rngseed</span><span class="p">)</span>
+
+    <span class="c1"># Define a function that gets a 1D slice</span>
+    <span class="k">def</span> <span class="nf">_1Dwindow</span><span class="p">(</span><span class="n">startmin</span><span class="p">,</span> <span class="n">startmax</span><span class="p">,</span> <span class="n">nhoodsize</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">seqsize</span><span class="p">,</span> <span class="n">shuffle</span><span class="p">):</span>
+        <span class="n">starts</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">startmin</span><span class="p">,</span> <span class="n">startmax</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ignoreborder</span><span class="p">:</span>
+            <span class="n">slices</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">st</span> <span class="o">+</span> <span class="n">nhoodsize</span><span class="p">,</span> <span class="n">ds</span><span class="p">)</span> <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">starts</span> <span class="k">if</span> <span class="n">st</span> <span class="o">+</span> <span class="n">nhoodsize</span> <span class="o">&lt;=</span> <span class="n">seqsize</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">slices</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="p">((</span><span class="n">st</span> <span class="o">+</span> <span class="n">nhoodsize</span><span class="p">)</span> <span class="k">if</span> <span class="n">st</span> <span class="o">+</span> <span class="n">nhoodsize</span> <span class="o">&lt;=</span> <span class="n">seqsize</span> <span class="k">else</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ds</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">starts</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
+            <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">slices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">slices</span>
+
+    <span class="c1"># Get window start limits</span>
+    <span class="k">if</span> <span class="n">dataslice</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">startmins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">]</span> <span class="o">*</span> <span class="n">datadim</span> <span class="k">if</span> <span class="n">startmins</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">startmins</span>
+        <span class="n">startmaxs</span> <span class="o">=</span> <span class="p">[</span><span class="n">shp</span> <span class="o">-</span> <span class="n">nhoodsiz</span> <span class="k">for</span> <span class="n">shp</span><span class="p">,</span> <span class="n">nhoodsiz</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">nhoodsize</span><span class="p">)]</span> \
+            <span class="k">if</span> <span class="n">startmaxs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">startmaxs</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataslice</span><span class="p">)</span> <span class="o">==</span> <span class="n">datadim</span><span class="p">,</span> \
+            <span class="s2">&quot;Dataslice must be a tuple with len = data dimension.&quot;</span>
+        <span class="n">startmins</span> <span class="o">=</span> <span class="p">[</span><span class="n">sl</span><span class="o">.</span><span class="n">start</span> <span class="k">for</span> <span class="n">sl</span> <span class="ow">in</span> <span class="n">dataslice</span><span class="p">]</span>
+        <span class="n">startmaxs</span> <span class="o">=</span> <span class="p">[</span><span class="n">sl</span><span class="o">.</span><span class="n">stop</span> <span class="o">-</span> <span class="n">nhoodsiz</span> <span class="k">for</span> <span class="n">sl</span><span class="p">,</span> <span class="n">nhoodsiz</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dataslice</span><span class="p">,</span> <span class="n">nhoodsize</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">_to_list</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+
+    <span class="c1"># The final iterator is going to be a cartesian product of the lists in nslices</span>
+    <span class="n">nslices</span> <span class="o">=</span> <span class="p">[</span><span class="n">_1Dwindow</span><span class="p">(</span><span class="n">startmin</span><span class="p">,</span> <span class="n">startmax</span><span class="p">,</span> <span class="n">nhoodsiz</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">dsample</span><span class="p">,</span> <span class="n">datalen</span><span class="p">,</span> <span class="n">shuffle</span><span class="p">)</span> <span class="k">if</span> <span class="n">windowspec</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span>
+               <span class="k">else</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">ws</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">ws</span> <span class="ow">in</span> <span class="n">_to_list</span><span class="p">(</span><span class="n">windowspec</span><span class="p">)]</span>
+               <span class="k">for</span> <span class="n">startmin</span><span class="p">,</span> <span class="n">startmax</span><span class="p">,</span> <span class="n">datalen</span><span class="p">,</span> <span class="n">nhoodsiz</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">windowspec</span><span class="p">,</span> <span class="n">dsample</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">startmins</span><span class="p">,</span> <span class="n">startmaxs</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span>
+                                                                                <span class="n">nhoodsize</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">ds</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">nslices</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="parse_data_slice"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.volumetric.html#inferno.io.volumetric.volumetric_utils.parse_data_slice">[docs]</a><span class="k">def</span> <span class="nf">parse_data_slice</span><span class="p">(</span><span class="n">data_slice</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parse a dataslice as a list of slice objects.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">data_slice</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data_slice</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_slice</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> \
+            <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">_slice</span><span class="p">,</span> <span class="nb">slice</span><span class="p">)</span> <span class="k">for</span> <span class="n">_slice</span> <span class="ow">in</span> <span class="n">data_slice</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">data_slice</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_slice</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="c1"># Get rid of whitespace</span>
+    <span class="n">data_slice</span> <span class="o">=</span> <span class="n">data_slice</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="c1"># Split by commas</span>
+    <span class="n">dim_slices</span> <span class="o">=</span> <span class="n">data_slice</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+    <span class="c1"># Build slice objects</span>
+    <span class="n">slices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">dim_slice</span> <span class="ow">in</span> <span class="n">dim_slices</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">dim_slice</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">indices</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span>
+        <span class="c1"># Convert to ints</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span> <span class="k">if</span> <span class="n">stop</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="c1"># Build slices</span>
+        <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">))</span>
+    <span class="c1"># Done.</span>
+    <span class="k">return</span> <span class="n">slices</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,395 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.io.box package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inferno.io.core package" href="inferno.io.core.html" />
+    <link rel="prev" title="inferno.io package" href="inferno.io.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.core.html" title="inferno.io.core package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.html" title="inferno.io package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.io.html" accesskey="U">inferno.io package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-io-box-package">
+<h1>inferno.io.box package<a class="headerlink" href="#inferno-io-box-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.io.box.binary_blobs">
+<span id="inferno-io-box-binary-blobs-module"></span><h2>inferno.io.box.binary_blobs module<a class="headerlink" href="#module-inferno.io.box.binary_blobs" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.io.box.binary_blobs.BinaryBlobs">
+<em class="property">class </em><code class="descclassname">inferno.io.box.binary_blobs.</code><code class="descname">BinaryBlobs</code><span class="sig-paren">(</span><em>size=20</em>, <em>length=512</em>, <em>blob_size_fraction=0.1</em>, <em>n_dim=2</em>, <em>volume_fraction=0.5</em>, <em>split='train'</em>, <em>uniform_noise_range=(-1.2</em>, <em>1.2)</em>, <em>gaussian_noise_sigma=1.2</em>, <em>noise_scale_factor=8</em>, <em>image_transform=None</em>, <em>label_transform=None</em>, <em>joint_transform=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/binary_blobs.html#BinaryBlobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.binary_blobs.BinaryBlobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.utils.data.dataset.Dataset</tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.binary_blobs.get_binary_blob_loaders">
+<code class="descclassname">inferno.io.box.binary_blobs.</code><code class="descname">get_binary_blob_loaders</code><span class="sig-paren">(</span><em>train_batch_size=1</em>, <em>test_batch_size=1</em>, <em>num_workers=1</em>, <em>train_image_transform=None</em>, <em>train_label_transform=None</em>, <em>train_joint_transform=None</em>, <em>validate_image_transform=None</em>, <em>validate_label_transform=None</em>, <em>validate_joint_transform=None</em>, <em>test_image_transform=None</em>, <em>test_label_transform=None</em>, <em>test_joint_transform=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/binary_blobs.html#get_binary_blob_loaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.binary_blobs.get_binary_blob_loaders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-inferno.io.box.camvid">
+<span id="inferno-io-box-camvid-module"></span><h2>inferno.io.box.camvid module<a class="headerlink" href="#module-inferno.io.box.camvid" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.io.box.camvid.CamVid">
+<em class="property">class </em><code class="descclassname">inferno.io.box.camvid.</code><code class="descname">CamVid</code><span class="sig-paren">(</span><em>root</em>, <em>split='train'</em>, <em>image_transform=None</em>, <em>label_transform=None</em>, <em>joint_transform=None</em>, <em>download=False</em>, <em>loader=&lt;function default_loader&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/camvid.html#CamVid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.camvid.CamVid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.utils.data.dataset.Dataset</tt></p>
+<dl class="attribute">
+<dt id="inferno.io.box.camvid.CamVid.CLASSES">
+<code class="descname">CLASSES</code><em class="property"> = ['Sky', 'Building', 'Column-Pole', 'Road', 'Sidewalk', 'Tree', 'Sign-Symbol', 'Fence', 'Car', 'Pedestrain', 'Bicyclist', 'Void']</em><a class="headerlink" href="#inferno.io.box.camvid.CamVid.CLASSES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.camvid.CamVid.CLASS_WEIGHTS">
+<code class="descname">CLASS_WEIGHTS</code><em class="property"> = [0.58872014284134, 0.51052379608154, 2.6966278553009, 0.45021694898605, 1.1785038709641, 0.77028578519821, 2.4782588481903, 2.5273461341858, 1.0122526884079, 3.2375309467316, 4.1312313079834, 0]</em><a class="headerlink" href="#inferno.io.box.camvid.CamVid.CLASS_WEIGHTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.camvid.CamVid.MEAN">
+<code class="descname">MEAN</code><em class="property"> = [0.41189489566336, 0.4251328133025, 0.4326707089857]</em><a class="headerlink" href="#inferno.io.box.camvid.CamVid.MEAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.camvid.CamVid.SPLIT_NAME_MAPPING">
+<code class="descname">SPLIT_NAME_MAPPING</code><em class="property"> = {'test': 'test', 'testing': 'test', 'train': 'train', 'training': 'train', 'val': 'val', 'validate': 'val', 'validation': 'val'}</em><a class="headerlink" href="#inferno.io.box.camvid.CamVid.SPLIT_NAME_MAPPING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.camvid.CamVid.STD">
+<code class="descname">STD</code><em class="property"> = [0.27413549931506, 0.28506257482912, 0.28284674400252]</em><a class="headerlink" href="#inferno.io.box.camvid.CamVid.STD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.box.camvid.CamVid.download">
+<code class="descname">download</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/camvid.html#CamVid.download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.camvid.CamVid.download" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.camvid.get_camvid_loaders">
+<code class="descclassname">inferno.io.box.camvid.</code><code class="descname">get_camvid_loaders</code><span class="sig-paren">(</span><em>root_directory</em>, <em>image_shape=(360</em>, <em>480)</em>, <em>labels_as_onehot=False</em>, <em>train_batch_size=1</em>, <em>validate_batch_size=1</em>, <em>test_batch_size=1</em>, <em>num_workers=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/camvid.html#get_camvid_loaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.camvid.get_camvid_loaders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.camvid.label_to_long_tensor">
+<code class="descclassname">inferno.io.box.camvid.</code><code class="descname">label_to_long_tensor</code><span class="sig-paren">(</span><em>pic</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/camvid.html#label_to_long_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.camvid.label_to_long_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.camvid.label_to_pil_image">
+<code class="descclassname">inferno.io.box.camvid.</code><code class="descname">label_to_pil_image</code><span class="sig-paren">(</span><em>label</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/camvid.html#label_to_pil_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.camvid.label_to_pil_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.camvid.make_dataset">
+<code class="descclassname">inferno.io.box.camvid.</code><code class="descname">make_dataset</code><span class="sig-paren">(</span><em>dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/camvid.html#make_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.camvid.make_dataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-inferno.io.box.cifar">
+<span id="inferno-io-box-cifar-module"></span><h2>inferno.io.box.cifar module<a class="headerlink" href="#module-inferno.io.box.cifar" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="inferno.io.box.cifar.get_cifar100_loaders">
+<code class="descclassname">inferno.io.box.cifar.</code><code class="descname">get_cifar100_loaders</code><span class="sig-paren">(</span><em>root_directory</em>, <em>train_batch_size=128</em>, <em>test_batch_size=100</em>, <em>download=False</em>, <em>augment=False</em>, <em>validation_dataset_size=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cifar.html#get_cifar100_loaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.cifar.get_cifar100_loaders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.cifar.get_cifar10_loaders">
+<code class="descclassname">inferno.io.box.cifar.</code><code class="descname">get_cifar10_loaders</code><span class="sig-paren">(</span><em>root_directory</em>, <em>train_batch_size=128</em>, <em>test_batch_size=256</em>, <em>download=False</em>, <em>augment=False</em>, <em>validation_dataset_size=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cifar.html#get_cifar10_loaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.cifar.get_cifar10_loaders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-inferno.io.box.cityscapes">
+<span id="inferno-io-box-cityscapes-module"></span><h2>inferno.io.box.cityscapes module<a class="headerlink" href="#module-inferno.io.box.cityscapes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.io.box.cityscapes.Cityscapes">
+<em class="property">class </em><code class="descclassname">inferno.io.box.cityscapes.</code><code class="descname">Cityscapes</code><span class="sig-paren">(</span><em>root_folder</em>, <em>split='train'</em>, <em>read_from_zip_archive=True</em>, <em>image_transform=None</em>, <em>label_transform=None</em>, <em>joint_transform=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#Cityscapes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.cityscapes.Cityscapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.utils.data.dataset.Dataset</tt></p>
+<dl class="attribute">
+<dt id="inferno.io.box.cityscapes.Cityscapes.BLACKLIST">
+<code class="descname">BLACKLIST</code><em class="property"> = ['leftImg8bit/train_extra/troisdorf/troisdorf_000000_000073_leftImg8bit.png']</em><a class="headerlink" href="#inferno.io.box.cityscapes.Cityscapes.BLACKLIST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.cityscapes.Cityscapes.CLASSES">
+<code class="descname">CLASSES</code><em class="property"> = {-1: 'license plate', 0: 'unlabeled', 1: 'ego vehicle', 2: 'rectification border', 3: 'out of roi', 4: 'static', 5: 'dynamic', 6: 'ground', 7: 'road', 8: 'sidewalk', 9: 'parking', 10: 'rail track', 11: 'building', 12: 'wall', 13: 'fence', 14: 'guard rail', 15: 'bridge', 16: 'tunnel', 17: 'pole', 18: 'polegroup', 19: 'traffic light', 20: 'traffic sign', 21: 'vegetation', 22: 'terrain', 23: 'sky', 24: 'person', 25: 'rider', 26: 'car', 27: 'truck', 28: 'bus', 29: 'caravan', 30: 'trailer', 31: 'train', 32: 'motorcycle', 33: 'bicycle'}</em><a class="headerlink" href="#inferno.io.box.cityscapes.Cityscapes.CLASSES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.cityscapes.Cityscapes.MEAN">
+<code class="descname">MEAN</code><em class="property"> = [0.28689554, 0.32513303, 0.28389177]</em><a class="headerlink" href="#inferno.io.box.cityscapes.Cityscapes.MEAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.cityscapes.Cityscapes.SPLIT_NAME_MAPPING">
+<code class="descname">SPLIT_NAME_MAPPING</code><em class="property"> = {'test': 'test', 'testing': 'test', 'train': 'train', 'train_extra': 'train_extra', 'training': 'train', 'training_extra': 'train_extra', 'val': 'val', 'validate': 'val', 'validation': 'val'}</em><a class="headerlink" href="#inferno.io.box.cityscapes.Cityscapes.SPLIT_NAME_MAPPING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.cityscapes.Cityscapes.STD">
+<code class="descname">STD</code><em class="property"> = [0.18696375, 0.19017339, 0.18720214]</em><a class="headerlink" href="#inferno.io.box.cityscapes.Cityscapes.STD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.box.cityscapes.Cityscapes.download">
+<code class="descname">download</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#Cityscapes.download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.cityscapes.Cityscapes.download" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.box.cityscapes.Cityscapes.get_image_and_label_roots">
+<code class="descname">get_image_and_label_roots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#Cityscapes.get_image_and_label_roots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.cityscapes.Cityscapes.get_image_and_label_roots" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.cityscapes.extract_image">
+<code class="descclassname">inferno.io.box.cityscapes.</code><code class="descname">extract_image</code><span class="sig-paren">(</span><em>path</em>, <em>image_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#extract_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.cityscapes.extract_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.cityscapes.get_cityscapes_loaders">
+<code class="descclassname">inferno.io.box.cityscapes.</code><code class="descname">get_cityscapes_loaders</code><span class="sig-paren">(</span><em>root_directory</em>, <em>image_shape=(1024</em>, <em>2048)</em>, <em>labels_as_onehot=False</em>, <em>include_coarse_dataset=False</em>, <em>read_from_zip_archive=True</em>, <em>train_batch_size=1</em>, <em>validate_batch_size=1</em>, <em>num_workers=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#get_cityscapes_loaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.cityscapes.get_cityscapes_loaders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.cityscapes.get_filelist">
+<code class="descclassname">inferno.io.box.cityscapes.</code><code class="descname">get_filelist</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#get_filelist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.cityscapes.get_filelist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.cityscapes.get_matching_labelimage_file">
+<code class="descclassname">inferno.io.box.cityscapes.</code><code class="descname">get_matching_labelimage_file</code><span class="sig-paren">(</span><em>f</em>, <em>groundtruth</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#get_matching_labelimage_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.cityscapes.get_matching_labelimage_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.cityscapes.make_dataset">
+<code class="descclassname">inferno.io.box.cityscapes.</code><code class="descname">make_dataset</code><span class="sig-paren">(</span><em>path</em>, <em>split</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#make_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.cityscapes.make_dataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.cityscapes.make_transforms">
+<code class="descclassname">inferno.io.box.cityscapes.</code><code class="descname">make_transforms</code><span class="sig-paren">(</span><em>image_shape</em>, <em>labels_as_onehot</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#make_transforms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.cityscapes.make_transforms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-inferno.io.box">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.io.box" title="Permalink to this headline">¶</a></h2>
+<p>Things that work out of the box. ;)</p>
+<dl class="class">
+<dt id="inferno.io.box.CamVid">
+<em class="property">class </em><code class="descclassname">inferno.io.box.</code><code class="descname">CamVid</code><span class="sig-paren">(</span><em>root</em>, <em>split='train'</em>, <em>image_transform=None</em>, <em>label_transform=None</em>, <em>joint_transform=None</em>, <em>download=False</em>, <em>loader=&lt;function default_loader&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/camvid.html#CamVid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.CamVid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.utils.data.dataset.Dataset</tt></p>
+<dl class="attribute">
+<dt id="inferno.io.box.CamVid.CLASSES">
+<code class="descname">CLASSES</code><em class="property"> = ['Sky', 'Building', 'Column-Pole', 'Road', 'Sidewalk', 'Tree', 'Sign-Symbol', 'Fence', 'Car', 'Pedestrain', 'Bicyclist', 'Void']</em><a class="headerlink" href="#inferno.io.box.CamVid.CLASSES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.CamVid.CLASS_WEIGHTS">
+<code class="descname">CLASS_WEIGHTS</code><em class="property"> = [0.58872014284134, 0.51052379608154, 2.6966278553009, 0.45021694898605, 1.1785038709641, 0.77028578519821, 2.4782588481903, 2.5273461341858, 1.0122526884079, 3.2375309467316, 4.1312313079834, 0]</em><a class="headerlink" href="#inferno.io.box.CamVid.CLASS_WEIGHTS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.CamVid.MEAN">
+<code class="descname">MEAN</code><em class="property"> = [0.41189489566336, 0.4251328133025, 0.4326707089857]</em><a class="headerlink" href="#inferno.io.box.CamVid.MEAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.CamVid.SPLIT_NAME_MAPPING">
+<code class="descname">SPLIT_NAME_MAPPING</code><em class="property"> = {'test': 'test', 'testing': 'test', 'train': 'train', 'training': 'train', 'val': 'val', 'validate': 'val', 'validation': 'val'}</em><a class="headerlink" href="#inferno.io.box.CamVid.SPLIT_NAME_MAPPING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.CamVid.STD">
+<code class="descname">STD</code><em class="property"> = [0.27413549931506, 0.28506257482912, 0.28284674400252]</em><a class="headerlink" href="#inferno.io.box.CamVid.STD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.box.CamVid.download">
+<code class="descname">download</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/camvid.html#CamVid.download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.CamVid.download" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.get_camvid_loaders">
+<code class="descclassname">inferno.io.box.</code><code class="descname">get_camvid_loaders</code><span class="sig-paren">(</span><em>root_directory</em>, <em>image_shape=(360</em>, <em>480)</em>, <em>labels_as_onehot=False</em>, <em>train_batch_size=1</em>, <em>validate_batch_size=1</em>, <em>test_batch_size=1</em>, <em>num_workers=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/camvid.html#get_camvid_loaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.get_camvid_loaders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="inferno.io.box.Cityscapes">
+<em class="property">class </em><code class="descclassname">inferno.io.box.</code><code class="descname">Cityscapes</code><span class="sig-paren">(</span><em>root_folder</em>, <em>split='train'</em>, <em>read_from_zip_archive=True</em>, <em>image_transform=None</em>, <em>label_transform=None</em>, <em>joint_transform=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#Cityscapes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.Cityscapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.utils.data.dataset.Dataset</tt></p>
+<dl class="attribute">
+<dt id="inferno.io.box.Cityscapes.BLACKLIST">
+<code class="descname">BLACKLIST</code><em class="property"> = ['leftImg8bit/train_extra/troisdorf/troisdorf_000000_000073_leftImg8bit.png']</em><a class="headerlink" href="#inferno.io.box.Cityscapes.BLACKLIST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.Cityscapes.CLASSES">
+<code class="descname">CLASSES</code><em class="property"> = {-1: 'license plate', 0: 'unlabeled', 1: 'ego vehicle', 2: 'rectification border', 3: 'out of roi', 4: 'static', 5: 'dynamic', 6: 'ground', 7: 'road', 8: 'sidewalk', 9: 'parking', 10: 'rail track', 11: 'building', 12: 'wall', 13: 'fence', 14: 'guard rail', 15: 'bridge', 16: 'tunnel', 17: 'pole', 18: 'polegroup', 19: 'traffic light', 20: 'traffic sign', 21: 'vegetation', 22: 'terrain', 23: 'sky', 24: 'person', 25: 'rider', 26: 'car', 27: 'truck', 28: 'bus', 29: 'caravan', 30: 'trailer', 31: 'train', 32: 'motorcycle', 33: 'bicycle'}</em><a class="headerlink" href="#inferno.io.box.Cityscapes.CLASSES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.Cityscapes.MEAN">
+<code class="descname">MEAN</code><em class="property"> = [0.28689554, 0.32513303, 0.28389177]</em><a class="headerlink" href="#inferno.io.box.Cityscapes.MEAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.Cityscapes.SPLIT_NAME_MAPPING">
+<code class="descname">SPLIT_NAME_MAPPING</code><em class="property"> = {'test': 'test', 'testing': 'test', 'train': 'train', 'train_extra': 'train_extra', 'training': 'train', 'training_extra': 'train_extra', 'val': 'val', 'validate': 'val', 'validation': 'val'}</em><a class="headerlink" href="#inferno.io.box.Cityscapes.SPLIT_NAME_MAPPING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.io.box.Cityscapes.STD">
+<code class="descname">STD</code><em class="property"> = [0.18696375, 0.19017339, 0.18720214]</em><a class="headerlink" href="#inferno.io.box.Cityscapes.STD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.box.Cityscapes.download">
+<code class="descname">download</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#Cityscapes.download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.Cityscapes.download" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.io.box.Cityscapes.get_image_and_label_roots">
+<code class="descname">get_image_and_label_roots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#Cityscapes.get_image_and_label_roots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.Cityscapes.get_image_and_label_roots" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.get_cityscapes_loaders">
+<code class="descclassname">inferno.io.box.</code><code class="descname">get_cityscapes_loaders</code><span class="sig-paren">(</span><em>root_directory</em>, <em>image_shape=(1024</em>, <em>2048)</em>, <em>labels_as_onehot=False</em>, <em>include_coarse_dataset=False</em>, <em>read_from_zip_archive=True</em>, <em>train_batch_size=1</em>, <em>validate_batch_size=1</em>, <em>num_workers=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cityscapes.html#get_cityscapes_loaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.get_cityscapes_loaders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.get_cifar10_loaders">
+<code class="descclassname">inferno.io.box.</code><code class="descname">get_cifar10_loaders</code><span class="sig-paren">(</span><em>root_directory</em>, <em>train_batch_size=128</em>, <em>test_batch_size=256</em>, <em>download=False</em>, <em>augment=False</em>, <em>validation_dataset_size=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cifar.html#get_cifar10_loaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.get_cifar10_loaders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.io.box.get_cifar100_loaders">
+<code class="descclassname">inferno.io.box.</code><code class="descname">get_cifar100_loaders</code><span class="sig-paren">(</span><em>root_directory</em>, <em>train_batch_size=128</em>, <em>test_batch_size=100</em>, <em>download=False</em>, <em>augment=False</em>, <em>validation_dataset_size=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/io/box/cifar.html#get_cifar100_loaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.io.box.get_cifar100_loaders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.io.box package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.io.box.binary_blobs">inferno.io.box.binary_blobs module</a></li>
+<li><a class="reference internal" href="#module-inferno.io.box.camvid">inferno.io.box.camvid module</a></li>
+<li><a class="reference internal" href="#module-inferno.io.box.cifar">inferno.io.box.cifar module</a></li>
+<li><a class="reference internal" href="#module-inferno.io.box.cityscapes">inferno.io.box.cityscapes module</a></li>
+<li><a class="reference internal" href="#module-inferno.io.box">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.io.html"
+                        title="previous chapter">inferno.io package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inferno.io.core.html"
+                        title="next chapter">inferno.io.core package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.io.box.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.core.html" title="inferno.io.core package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.io.html" title="inferno.io package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.io.html" >inferno.io package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

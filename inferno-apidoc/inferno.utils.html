@@ -1,0 +1,713 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.utils package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Credits" href="../authors.html" />
+    <link rel="prev" title="inferno.trainers.callbacks.logging package" href="inferno.trainers.callbacks.logging.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../authors.html" title="Credits"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.trainers.callbacks.logging.html" title="inferno.trainers.callbacks.logging package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" accesskey="U">inferno package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-utils-package">
+<h1>inferno.utils package<a class="headerlink" href="#inferno-utils-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.utils.exceptions">
+<span id="inferno-utils-exceptions-module"></span><h2>inferno.utils.exceptions module<a class="headerlink" href="#module-inferno.utils.exceptions" title="Permalink to this headline">¶</a></h2>
+<p>Exceptions and Error Handling</p>
+<dl class="exception">
+<dt id="inferno.utils.exceptions.ClassNotFoundError">
+<em class="property">exception </em><code class="descclassname">inferno.utils.exceptions.</code><code class="descname">ClassNotFoundError</code><a class="reference internal" href="../_modules/inferno/utils/exceptions.html#ClassNotFoundError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.exceptions.ClassNotFoundError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">LookupError</tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="inferno.utils.exceptions.DTypeError">
+<em class="property">exception </em><code class="descclassname">inferno.utils.exceptions.</code><code class="descname">DTypeError</code><a class="reference internal" href="../_modules/inferno/utils/exceptions.html#DTypeError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.exceptions.DTypeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">TypeError</tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="inferno.utils.exceptions.DeviceError">
+<em class="property">exception </em><code class="descclassname">inferno.utils.exceptions.</code><code class="descname">DeviceError</code><a class="reference internal" href="../_modules/inferno/utils/exceptions.html#DeviceError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.exceptions.DeviceError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">ValueError</tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="inferno.utils.exceptions.FrequencyTypeError">
+<em class="property">exception </em><code class="descclassname">inferno.utils.exceptions.</code><code class="descname">FrequencyTypeError</code><a class="reference internal" href="../_modules/inferno/utils/exceptions.html#FrequencyTypeError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.exceptions.FrequencyTypeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">TypeError</tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="inferno.utils.exceptions.FrequencyValueError">
+<em class="property">exception </em><code class="descclassname">inferno.utils.exceptions.</code><code class="descname">FrequencyValueError</code><a class="reference internal" href="../_modules/inferno/utils/exceptions.html#FrequencyValueError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.exceptions.FrequencyValueError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">ValueError</tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="inferno.utils.exceptions.NotSetError">
+<em class="property">exception </em><code class="descclassname">inferno.utils.exceptions.</code><code class="descname">NotSetError</code><a class="reference internal" href="../_modules/inferno/utils/exceptions.html#NotSetError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.exceptions.NotSetError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">ValueError</tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="inferno.utils.exceptions.NotTorchModuleError">
+<em class="property">exception </em><code class="descclassname">inferno.utils.exceptions.</code><code class="descname">NotTorchModuleError</code><a class="reference internal" href="../_modules/inferno/utils/exceptions.html#NotTorchModuleError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.exceptions.NotTorchModuleError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">TypeError</tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="inferno.utils.exceptions.NotUnwrappableError">
+<em class="property">exception </em><code class="descclassname">inferno.utils.exceptions.</code><code class="descname">NotUnwrappableError</code><a class="reference internal" href="../_modules/inferno/utils/exceptions.html#NotUnwrappableError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.exceptions.NotUnwrappableError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">NotImplementedError</tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="inferno.utils.exceptions.ShapeError">
+<em class="property">exception </em><code class="descclassname">inferno.utils.exceptions.</code><code class="descname">ShapeError</code><a class="reference internal" href="../_modules/inferno/utils/exceptions.html#ShapeError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.exceptions.ShapeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">ValueError</tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.exceptions.assert_">
+<code class="descclassname">inferno.utils.exceptions.</code><code class="descname">assert_</code><span class="sig-paren">(</span><em>condition</em>, <em>message=''</em>, <em>exception_type=&lt;class 'AssertionError'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/exceptions.html#assert_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.exceptions.assert_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like assert, but with arbitrary exception types.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.utils.io_utils">
+<span id="inferno-utils-io-utils-module"></span><h2>inferno.utils.io_utils module<a class="headerlink" href="#module-inferno.utils.io_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="inferno.utils.io_utils.fromh5">
+<code class="descclassname">inferno.utils.io_utils.</code><code class="descname">fromh5</code><span class="sig-paren">(</span><em>path</em>, <em>datapath=None</em>, <em>dataslice=None</em>, <em>asnumpy=True</em>, <em>preptrain=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/io_utils.html#fromh5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.io_utils.fromh5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a hdf5 file at path, loads in the dataset at datapath, and returns dataset
+as a numpy array.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.io_utils.print_tensor">
+<code class="descclassname">inferno.utils.io_utils.</code><code class="descname">print_tensor</code><span class="sig-paren">(</span><em>tensor</em>, <em>prefix</em>, <em>directory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/io_utils.html#print_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.io_utils.print_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a image or volume tensor to file as images.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.io_utils.toh5">
+<code class="descclassname">inferno.utils.io_utils.</code><code class="descname">toh5</code><span class="sig-paren">(</span><em>data</em>, <em>path</em>, <em>datapath='data'</em>, <em>compression=None</em>, <em>chunks=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/io_utils.html#toh5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.io_utils.toh5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write <cite>data</cite> to a HDF5 volume.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.io_utils.yaml2dict">
+<code class="descclassname">inferno.utils.io_utils.</code><code class="descname">yaml2dict</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/io_utils.html#yaml2dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.io_utils.yaml2dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-inferno.utils.math_utils">
+<span id="inferno-utils-math-utils-module"></span><h2>inferno.utils.math_utils module<a class="headerlink" href="#module-inferno.utils.math_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="inferno.utils.math_utils.max_allowed_ds_steps">
+<code class="descclassname">inferno.utils.math_utils.</code><code class="descname">max_allowed_ds_steps</code><span class="sig-paren">(</span><em>shape</em>, <em>factor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/math_utils.html#max_allowed_ds_steps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.math_utils.max_allowed_ds_steps" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>How often can a shape be down-sampled by a given factor</dt>
+<dd>such that non of the divisions will give non-integers.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shape</strong> (<em>listlike</em>) – tensor shape</li>
+<li><strong>factor</strong> (<em>integer</em>) – downsample factor</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">maximum allowed downsample operations</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.utils.model_utils">
+<span id="inferno-utils-model-utils-module"></span><h2>inferno.utils.model_utils module<a class="headerlink" href="#module-inferno.utils.model_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.utils.model_utils.ModelTester">
+<em class="property">class </em><code class="descclassname">inferno.utils.model_utils.</code><code class="descname">ModelTester</code><span class="sig-paren">(</span><em>input_shape</em>, <em>expected_output_shape</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/model_utils.html#ModelTester"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.model_utils.ModelTester" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<dl class="method">
+<dt id="inferno.utils.model_utils.ModelTester.cuda">
+<code class="descname">cuda</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/model_utils.html#ModelTester.cuda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.model_utils.ModelTester.cuda" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.utils.model_utils.ModelTester.get_input">
+<code class="descname">get_input</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/model_utils.html#ModelTester.get_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.model_utils.ModelTester.get_input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.utils.model_utils.MultiscaleModelTester">
+<em class="property">class </em><code class="descclassname">inferno.utils.model_utils.</code><code class="descname">MultiscaleModelTester</code><span class="sig-paren">(</span><em>input_shape</em>, <em>expected_output_shape</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/model_utils.html#MultiscaleModelTester"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.model_utils.MultiscaleModelTester" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.utils.model_utils.ModelTester" title="inferno.utils.model_utils.ModelTester"><tt class="xref py py-class docutils literal">inferno.utils.model_utils.ModelTester</tt></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.model_utils.is_model_cuda">
+<code class="descclassname">inferno.utils.model_utils.</code><code class="descname">is_model_cuda</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/model_utils.html#is_model_cuda"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.model_utils.is_model_cuda" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-inferno.utils.python_utils">
+<span id="inferno-utils-python-utils-module"></span><h2>inferno.utils.python_utils module<a class="headerlink" href="#module-inferno.utils.python_utils" title="Permalink to this headline">¶</a></h2>
+<p>Utility functions with no external dependencies.</p>
+<dl class="function">
+<dt id="inferno.utils.python_utils.as_tuple_of_len">
+<code class="descclassname">inferno.utils.python_utils.</code><code class="descname">as_tuple_of_len</code><span class="sig-paren">(</span><em>x</em>, <em>len_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#as_tuple_of_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.as_tuple_of_len" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="inferno.utils.python_utils.delayed_keyboard_interrupt">
+<em class="property">class </em><code class="descclassname">inferno.utils.python_utils.</code><code class="descname">delayed_keyboard_interrupt</code><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#delayed_keyboard_interrupt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.delayed_keyboard_interrupt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>Delays SIGINT over critical code.
+Borrowed from:
+<a class="reference external" href="https://stackoverflow.com/questions/842557/">https://stackoverflow.com/questions/842557/</a>
+how-to-prevent-a-block-of-code-from-being-interrupted-by-keyboardinterrupt-in-py</p>
+<dl class="method">
+<dt id="inferno.utils.python_utils.delayed_keyboard_interrupt.handler">
+<code class="descname">handler</code><span class="sig-paren">(</span><em>sig</em>, <em>frame</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#delayed_keyboard_interrupt.handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.delayed_keyboard_interrupt.handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.python_utils.deprecated">
+<code class="descclassname">inferno.utils.python_utils.</code><code class="descname">deprecated</code><span class="sig-paren">(</span><em>reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#deprecated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.deprecated" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a decorator which can be used to mark functions
+as deprecated. It will result in a warning being emitted
+when the function is used.</p>
+<p>Borrowed from
+<a class="reference external" href="https://stackoverflow.com/questions/2536307/">https://stackoverflow.com/questions/2536307/</a>
+decorators-in-the-python-standard-lib-deprecated-specifically
+by Laurent LAPORTE
+<a class="reference external" href="https://stackoverflow.com/users/1513933/laurent-laporte">https://stackoverflow.com/users/1513933/laurent-laporte</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.python_utils.ensure_dir">
+<code class="descclassname">inferno.utils.python_utils.</code><code class="descname">ensure_dir</code><span class="sig-paren">(</span><em>directory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#ensure_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.ensure_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>ensure the existence of e directory at a given path</p>
+<blockquote>
+<div>If the directory does not exist it is created</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>directory</strong> (<em>str</em>) – path of the directory</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">path of the directory</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.python_utils.from_iterable">
+<code class="descclassname">inferno.utils.python_utils.</code><code class="descname">from_iterable</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#from_iterable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.from_iterable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.python_utils.get_config_for_name">
+<code class="descclassname">inferno.utils.python_utils.</code><code class="descname">get_config_for_name</code><span class="sig-paren">(</span><em>config</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#get_config_for_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.get_config_for_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.python_utils.has_callable_attr">
+<code class="descclassname">inferno.utils.python_utils.</code><code class="descname">has_callable_attr</code><span class="sig-paren">(</span><em>object_</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#has_callable_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.has_callable_attr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.python_utils.is_listlike">
+<code class="descclassname">inferno.utils.python_utils.</code><code class="descname">is_listlike</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#is_listlike"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.is_listlike" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.python_utils.is_maybe_list_of">
+<code class="descclassname">inferno.utils.python_utils.</code><code class="descname">is_maybe_list_of</code><span class="sig-paren">(</span><em>check_function</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#is_maybe_list_of"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.is_maybe_list_of" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.python_utils.require_dict_kwagrs">
+<code class="descclassname">inferno.utils.python_utils.</code><code class="descname">require_dict_kwagrs</code><span class="sig-paren">(</span><em>kwargs</em>, <em>msg=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#require_dict_kwagrs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.require_dict_kwagrs" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Ensure arguments passed kwargs are either None or a dict.</dt>
+<dd>If arguments are neither a dict nor None a RuntimeError
+is thrown</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>kwargs</strong> (<em>object</em>) – possible dict or None</li>
+<li><strong>msg</strong> (<em>None</em><em>, </em><em>optional</em>) – Error msg</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">kwargs dict</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">dict</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><tt class="xref py py-exc docutils literal">RuntimeError</tt> – if the passed value is neither a dict nor None
+this error is raised</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.python_utils.robust_len">
+<code class="descclassname">inferno.utils.python_utils.</code><code class="descname">robust_len</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#robust_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.robust_len" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.python_utils.to_iterable">
+<code class="descclassname">inferno.utils.python_utils.</code><code class="descname">to_iterable</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/python_utils.html#to_iterable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.python_utils.to_iterable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-inferno.utils.test_utils">
+<span id="inferno-utils-test-utils-module"></span><h2>inferno.utils.test_utils module<a class="headerlink" href="#module-inferno.utils.test_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="inferno.utils.test_utils.generate_random_data">
+<code class="descclassname">inferno.utils.test_utils.</code><code class="descname">generate_random_data</code><span class="sig-paren">(</span><em>num_samples</em>, <em>shape</em>, <em>num_classes</em>, <em>hardness=0.3</em>, <em>dtype=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/test_utils.html#generate_random_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.test_utils.generate_random_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random dataset with a given hardness and number of classes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.test_utils.generate_random_dataloader">
+<code class="descclassname">inferno.utils.test_utils.</code><code class="descname">generate_random_dataloader</code><span class="sig-paren">(</span><em>num_samples</em>, <em>shape</em>, <em>num_classes</em>, <em>hardness=0.3</em>, <em>dtype=None</em>, <em>batch_size=1</em>, <em>shuffle=False</em>, <em>num_workers=0</em>, <em>pin_memory=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/test_utils.html#generate_random_dataloader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.test_utils.generate_random_dataloader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a loader with a random dataset of given hardness and number of classes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.test_utils.generate_random_dataset">
+<code class="descclassname">inferno.utils.test_utils.</code><code class="descname">generate_random_dataset</code><span class="sig-paren">(</span><em>num_samples</em>, <em>shape</em>, <em>num_classes</em>, <em>hardness=0.3</em>, <em>dtype=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/test_utils.html#generate_random_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.test_utils.generate_random_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random dataset with a given hardness and number of classes.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.utils.torch_utils">
+<span id="inferno-utils-torch-utils-module"></span><h2>inferno.utils.torch_utils module<a class="headerlink" href="#module-inferno.utils.torch_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="inferno.utils.torch_utils.assert_same_size">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">assert_same_size</code><span class="sig-paren">(</span><em>tensor_1</em>, <em>tensor_2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#assert_same_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.assert_same_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.flatten_samples">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">flatten_samples</code><span class="sig-paren">(</span><em>tensor_or_variable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#flatten_samples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.flatten_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flattens a tensor or a variable such that the channel axis is first and the sample axis
+is second. The shapes are transformed as follows:</p>
+<blockquote>
+<div>(N, C, H, W) –&gt; (C, N * H * W)
+(N, C, D, H, W) –&gt; (C, N * D * H * W)
+(N, C) –&gt; (C, N)</div></blockquote>
+<p>The input must be atleast 2d.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.is_image_or_volume_tensor">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">is_image_or_volume_tensor</code><span class="sig-paren">(</span><em>object_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#is_image_or_volume_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.is_image_or_volume_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.is_image_tensor">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">is_image_tensor</code><span class="sig-paren">(</span><em>object_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#is_image_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.is_image_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.is_label_image_or_volume_tensor">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">is_label_image_or_volume_tensor</code><span class="sig-paren">(</span><em>object_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#is_label_image_or_volume_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.is_label_image_or_volume_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.is_label_image_tensor">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">is_label_image_tensor</code><span class="sig-paren">(</span><em>object_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#is_label_image_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.is_label_image_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.is_label_tensor">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">is_label_tensor</code><span class="sig-paren">(</span><em>object_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#is_label_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.is_label_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.is_label_volume_tensor">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">is_label_volume_tensor</code><span class="sig-paren">(</span><em>object_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#is_label_volume_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.is_label_volume_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.is_matrix_tensor">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">is_matrix_tensor</code><span class="sig-paren">(</span><em>object_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#is_matrix_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.is_matrix_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.is_scalar_tensor">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">is_scalar_tensor</code><span class="sig-paren">(</span><em>object_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#is_scalar_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.is_scalar_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.is_tensor">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">is_tensor</code><span class="sig-paren">(</span><em>object_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#is_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.is_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.is_volume_tensor">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">is_volume_tensor</code><span class="sig-paren">(</span><em>object_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#is_volume_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.is_volume_tensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.unwrap">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">unwrap</code><span class="sig-paren">(</span><em>tensor_or_variable</em>, <em>to_cpu=True</em>, <em>as_numpy=False</em>, <em>extract_item=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#unwrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.unwrap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.torch_utils.where">
+<code class="descclassname">inferno.utils.torch_utils.</code><code class="descname">where</code><span class="sig-paren">(</span><em>condition</em>, <em>if_true</em>, <em>if_false</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/torch_utils.html#where"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.torch_utils.where" title="Permalink to this definition">¶</a></dt>
+<dd><p>Torch equivalent of numpy.where.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>condition</strong> (<em>torch.ByteTensor</em><em> or </em><em>torch.cuda.ByteTensor</em><em> or </em><em>torch.autograd.Variable</em>) – Condition to check.</li>
+<li><strong>if_true</strong> (<em>torch.Tensor</em><em> or </em><em>torch.cuda.Tensor</em><em> or </em><em>torch.autograd.Variable</em>) – Output value if condition is true.</li>
+<li><strong>if_false</strong> (<em>torch.Tensor</em><em> or </em><em>torch.cuda.Tensor</em><em> or </em><em>torch.autograd.Variable</em>) – Output value if condition is false</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">torch.Tensor</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><tt class="xref py py-exc docutils literal">AssertionError</tt> – if if_true and if_false are not both variables or both tensors.</li>
+<li><tt class="xref py py-exc docutils literal">AssertionError</tt> – if if_true and if_false don’t have the same datatype.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.utils.train_utils">
+<span id="inferno-utils-train-utils-module"></span><h2>inferno.utils.train_utils module<a class="headerlink" href="#module-inferno.utils.train_utils" title="Permalink to this headline">¶</a></h2>
+<p>Utilities for training.</p>
+<dl class="class">
+<dt id="inferno.utils.train_utils.AverageMeter">
+<em class="property">class </em><code class="descclassname">inferno.utils.train_utils.</code><code class="descname">AverageMeter</code><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#AverageMeter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.AverageMeter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>Computes and stores the average and current value.
+Taken from <a class="reference external" href="https://github.com/pytorch/examples/blob/master/imagenet/main.py">https://github.com/pytorch/examples/blob/master/imagenet/main.py</a></p>
+<dl class="method">
+<dt id="inferno.utils.train_utils.AverageMeter.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#AverageMeter.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.AverageMeter.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.utils.train_utils.AverageMeter.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>val</em>, <em>n=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#AverageMeter.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.AverageMeter.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.utils.train_utils.CLUI">
+<em class="property">class </em><code class="descclassname">inferno.utils.train_utils.</code><code class="descname">CLUI</code><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#CLUI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.CLUI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>Command Line User Interface</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.utils.train_utils.Duration">
+<em class="property">class </em><code class="descclassname">inferno.utils.train_utils.</code><code class="descname">Duration</code><span class="sig-paren">(</span><em>value=None</em>, <em>units=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#Duration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.Duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.utils.train_utils.Frequency" title="inferno.utils.train_utils.Frequency"><tt class="xref py py-class docutils literal">inferno.utils.train_utils.Frequency</tt></a></p>
+<p>Like frequency, but measures a duration.</p>
+<dl class="method">
+<dt id="inferno.utils.train_utils.Duration.compare">
+<code class="descname">compare</code><span class="sig-paren">(</span><em>iteration_count=None</em>, <em>epoch_count=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#Duration.compare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.Duration.compare" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.utils.train_utils.Duration.match">
+<code class="descname">match</code><span class="sig-paren">(</span><em>iteration_count=None</em>, <em>epoch_count=None</em>, <em>when_equal_return=False</em>, <em>**_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#Duration.match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.Duration.match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.utils.train_utils.Frequency">
+<em class="property">class </em><code class="descclassname">inferno.utils.train_utils.</code><code class="descname">Frequency</code><span class="sig-paren">(</span><em>value=None</em>, <em>units=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#Frequency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.Frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<dl class="attribute">
+<dt id="inferno.utils.train_utils.Frequency.UNIT_PRIORITY">
+<code class="descname">UNIT_PRIORITY</code><em class="property"> = 'iterations'</em><a class="headerlink" href="#inferno.utils.train_utils.Frequency.UNIT_PRIORITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.utils.train_utils.Frequency.VALID_UNIT_NAME_MAPPING">
+<code class="descname">VALID_UNIT_NAME_MAPPING</code><em class="property"> = {'epoch': 'epochs', 'epochs': 'epochs', 'iteration': 'iterations', 'iterations': 'iterations'}</em><a class="headerlink" href="#inferno.utils.train_utils.Frequency.VALID_UNIT_NAME_MAPPING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.utils.train_utils.Frequency.assert_units_consistent">
+<code class="descname">assert_units_consistent</code><span class="sig-paren">(</span><em>units=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#Frequency.assert_units_consistent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.Frequency.assert_units_consistent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.utils.train_utils.Frequency.assert_value_consistent">
+<code class="descname">assert_value_consistent</code><span class="sig-paren">(</span><em>value=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#Frequency.assert_value_consistent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.Frequency.assert_value_consistent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="inferno.utils.train_utils.Frequency.build_from">
+<em class="property">classmethod </em><code class="descname">build_from</code><span class="sig-paren">(</span><em>args</em>, <em>priority='iterations'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#Frequency.build_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.Frequency.build_from" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.utils.train_utils.Frequency.by_epoch">
+<code class="descname">by_epoch</code><a class="headerlink" href="#inferno.utils.train_utils.Frequency.by_epoch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.utils.train_utils.Frequency.by_iteration">
+<code class="descname">by_iteration</code><a class="headerlink" href="#inferno.utils.train_utils.Frequency.by_iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.utils.train_utils.Frequency.epoch">
+<code class="descname">epoch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#Frequency.epoch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.Frequency.epoch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.utils.train_utils.Frequency.every">
+<code class="descname">every</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#Frequency.every"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.Frequency.every" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="inferno.utils.train_utils.Frequency.from_string">
+<em class="property">classmethod </em><code class="descname">from_string</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#Frequency.from_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.Frequency.from_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.utils.train_utils.Frequency.is_consistent">
+<code class="descname">is_consistent</code><a class="headerlink" href="#inferno.utils.train_utils.Frequency.is_consistent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.utils.train_utils.Frequency.iteration">
+<code class="descname">iteration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#Frequency.iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.Frequency.iteration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.utils.train_utils.Frequency.match">
+<code class="descname">match</code><span class="sig-paren">(</span><em>iteration_count=None</em>, <em>epoch_count=None</em>, <em>persistent=False</em>, <em>match_zero=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#Frequency.match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.Frequency.match" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.utils.train_utils.Frequency.units">
+<code class="descname">units</code><a class="headerlink" href="#inferno.utils.train_utils.Frequency.units" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.utils.train_utils.Frequency.value">
+<code class="descname">value</code><a class="headerlink" href="#inferno.utils.train_utils.Frequency.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.utils.train_utils.MovingAverage">
+<em class="property">class </em><code class="descclassname">inferno.utils.train_utils.</code><code class="descname">MovingAverage</code><span class="sig-paren">(</span><em>momentum=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#MovingAverage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.MovingAverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<p>Computes the moving average of a given float.</p>
+<dl class="attribute">
+<dt id="inferno.utils.train_utils.MovingAverage.relative_change">
+<code class="descname">relative_change</code><a class="headerlink" href="#inferno.utils.train_utils.MovingAverage.relative_change" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.utils.train_utils.MovingAverage.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#MovingAverage.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.MovingAverage.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.utils.train_utils.MovingAverage.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#MovingAverage.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.MovingAverage.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.utils.train_utils.NoLogger">
+<em class="property">class </em><code class="descclassname">inferno.utils.train_utils.</code><code class="descname">NoLogger</code><span class="sig-paren">(</span><em>logdir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#NoLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.NoLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<dl class="method">
+<dt id="inferno.utils.train_utils.NoLogger.log_value">
+<code class="descname">log_value</code><span class="sig-paren">(</span><em>*kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#NoLogger.log_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.NoLogger.log_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.train_utils.get_state">
+<code class="descclassname">inferno.utils.train_utils.</code><code class="descname">get_state</code><span class="sig-paren">(</span><em>module</em>, <em>key</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#get_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.get_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets key from <cite>module</cite>’s state hooks.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.utils.train_utils.set_state">
+<code class="descclassname">inferno.utils.train_utils.</code><code class="descname">set_state</code><span class="sig-paren">(</span><em>module</em>, <em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/utils/train_utils.html#set_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.utils.train_utils.set_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes <cite>key</cite>-<cite>value</cite> pair to <cite>module</cite>’s state hook.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.utils" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.utils package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.utils.exceptions">inferno.utils.exceptions module</a></li>
+<li><a class="reference internal" href="#module-inferno.utils.io_utils">inferno.utils.io_utils module</a></li>
+<li><a class="reference internal" href="#module-inferno.utils.math_utils">inferno.utils.math_utils module</a></li>
+<li><a class="reference internal" href="#module-inferno.utils.model_utils">inferno.utils.model_utils module</a></li>
+<li><a class="reference internal" href="#module-inferno.utils.python_utils">inferno.utils.python_utils module</a></li>
+<li><a class="reference internal" href="#module-inferno.utils.test_utils">inferno.utils.test_utils module</a></li>
+<li><a class="reference internal" href="#module-inferno.utils.torch_utils">inferno.utils.torch_utils module</a></li>
+<li><a class="reference internal" href="#module-inferno.utils.train_utils">inferno.utils.train_utils module</a></li>
+<li><a class="reference internal" href="#module-inferno.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.trainers.callbacks.logging.html"
+                        title="previous chapter">inferno.trainers.callbacks.logging package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../authors.html"
+                        title="next chapter">Credits</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.utils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../authors.html" title="Credits"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.trainers.callbacks.logging.html" title="inferno.trainers.callbacks.logging package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

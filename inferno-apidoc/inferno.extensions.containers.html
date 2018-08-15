@@ -1,0 +1,566 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.extensions.containers package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inferno.extensions.criteria package" href="inferno.extensions.criteria.html" />
+    <link rel="prev" title="inferno.extensions package" href="inferno.extensions.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.criteria.html" title="inferno.extensions.criteria package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.html" title="inferno.extensions package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.extensions.html" accesskey="U">inferno.extensions package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-extensions-containers-package">
+<h1>inferno.extensions.containers package<a class="headerlink" href="#inferno-extensions-containers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.extensions.containers.graph">
+<span id="inferno-extensions-containers-graph-module"></span><h2>inferno.extensions.containers.graph module<a class="headerlink" href="#module-inferno.extensions.containers.graph" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.containers.graph.NNGraph">
+<em class="property">class </em><code class="descclassname">inferno.extensions.containers.graph.</code><code class="descname">NNGraph</code><span class="sig-paren">(</span><em>incoming_graph_data=None</em>, <em>**attr</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#NNGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.NNGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">networkx.classes.digraph.DiGraph</tt></p>
+<p>A NetworkX DiGraph, except that node and edge ordering matters.</p>
+<dl class="attribute">
+<dt id="inferno.extensions.containers.graph.NNGraph.ATTRIBUTES_TO_NOT_COPY">
+<code class="descname">ATTRIBUTES_TO_NOT_COPY</code><em class="property"> = {'payload'}</em><a class="headerlink" href="#inferno.extensions.containers.graph.NNGraph.ATTRIBUTES_TO_NOT_COPY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.containers.graph.NNGraph.adjlist_dict_factory">
+<code class="descname">adjlist_dict_factory</code><a class="headerlink" href="#inferno.extensions.containers.graph.NNGraph.adjlist_dict_factory" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal">collections.OrderedDict</tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.NNGraph.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><em>**init_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#NNGraph.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.NNGraph.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the graph.</p>
+<p>The copy method by default returns a shallow copy of the graph
+and attributes. That is, if an attribute is a container, that
+container is shared by the original an the copy.
+Use Python’s <cite>copy.deepcopy</cite> for new containers.</p>
+<p>If <cite>as_view</cite> is True then a view is returned instead of a copy.</p>
+<p class="rubric">Notes</p>
+<p>All copies reproduce the graph structure, but data attributes
+may be handled in different ways. There are four types of copies
+of a graph that people might want.</p>
+<p>Deepcopy – The default behavior is a “deepcopy” where the graph
+structure as well as all data attributes and any objects they might
+contain are copied. The entire graph object is new so that changes
+in the copy do not affect the original object. (see Python’s
+copy.deepcopy)</p>
+<p>Data Reference (Shallow) – For a shallow copy the graph structure
+is copied but the edge, node and graph attribute dicts are
+references to those in the original graph. This saves
+time and memory but could cause confusion if you change an attribute
+in one graph and it changes the attribute in the other.
+NetworkX does not provide this level of shallow copy.</p>
+<p>Independent Shallow – This copy creates new independent attribute
+dicts and then does a shallow copy of the attributes. That is, any
+attributes that are containers are shared between the new graph
+and the original. This is exactly what <cite>dict.copy()</cite> provides.
+You can obtain this style copy using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">as_view</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">fresh_copy</span><span class="p">()</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Fresh Data – For fresh data, the graph structure is copied while
+new empty data attribute dicts are created. The resulting graph
+is independent of the original and it has no edge, node or graph
+attributes. Fresh copies are not enabled. Instead use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">fresh_copy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>View – Inspired by dict-views, graph-views act like read-only
+versions of the original graph, providing a copy of the original
+structure without requiring any memory for copying the information.</p>
+<p>See the Python copy module for more information on shallow
+and deep copies, <a class="reference external" href="https://docs.python.org/2/library/copy.html">https://docs.python.org/2/library/copy.html</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>as_view</strong> (<em>bool</em><em>, </em><em>optional</em><em> (</em><em>default=False</em><em>)</em>) – If True, the returned graph-view provides a read-only view
+of the original graph without actually copying any data.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>G</strong> – A copy of the graph.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.extensions.containers.graph.Graph" title="inferno.extensions.containers.graph.Graph">Graph</a></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><tt class="xref py py-meth docutils literal">to_directed()</tt></dt>
+<dd>return a directed copy of the graph.</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># or DiGraph, MultiGraph, MultiDiGraph, etc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.containers.graph.NNGraph.node_dict_factory">
+<code class="descname">node_dict_factory</code><a class="headerlink" href="#inferno.extensions.containers.graph.NNGraph.node_dict_factory" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal">collections.OrderedDict</tt></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.containers.graph.Graph">
+<em class="property">class </em><code class="descclassname">inferno.extensions.containers.graph.</code><code class="descname">Graph</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
+<p>A graph structure to build networks with complex architectures. The resulting graph model
+can be used like any other <cite>torch.nn.Module</cite>. The graph structure used behind the scenes
+is a <cite>networkx.DiGraph</cite>. This internal graph is exposed by the <cite>apply_on_graph</cite> method,
+which can be used with any NetworkX function (e.g. for plotting with matplotlib or GraphViz).</p>
+<p class="rubric">Examples</p>
+<p>The naive inception module (without the max-pooling for simplicity) with ELU-layers of 64 units
+can be built as following, (assuming 64 input channels):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">inferno.extensions.layers.reshape</span> <span class="k">import</span> <span class="n">Concatenate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">inferno.extensions.layers.convolutional</span> <span class="k">import</span> <span class="n">ConvELU2D</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torch.autograd</span> <span class="k">import</span> <span class="n">Variable</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Build the model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inception_module</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inception_module</span><span class="o">.</span><span class="n">add_input_node</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inception_module</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s1">&#39;conv1x1&#39;</span><span class="p">,</span> <span class="n">ConvELU2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">previous</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inception_module</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s1">&#39;conv3x3&#39;</span><span class="p">,</span> <span class="n">ConvELU2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">previous</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inception_module</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s1">&#39;conv5x5&#39;</span><span class="p">,</span> <span class="n">ConvELU2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">previous</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inception_module</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="n">Concatenate</span><span class="p">(),</span>
+<span class="gp">&gt;&gt;&gt; </span>                          <span class="n">previous</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;conv1x1&#39;</span><span class="p">,</span> <span class="s1">&#39;conv3x3&#39;</span><span class="p">,</span> <span class="s1">&#39;conv5x5&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inception_module</span><span class="o">.</span><span class="n">add_output_node</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;cat&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Build dummy variable</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get output</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">inception_module</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.add_edge">
+<code class="descname">add_edge</code><span class="sig-paren">(</span><em>from_node</em>, <em>to_node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.add_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.add_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an edge between two nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>from_node</strong> (<em>str</em>) – Name of the source node.</li>
+<li><strong>to_node</strong> (<em>str</em>) – Name of the target node.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#inferno.extensions.containers.graph.Graph" title="inferno.extensions.containers.graph.Graph">Graph</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><tt class="xref py py-exc docutils literal">AssertionError</tt> – if either of the two nodes is not in the graph,
+or if the edge is not ‘legal’.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.add_input_node">
+<code class="descname">add_input_node</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.add_input_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.add_input_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an input to the graph. The order in which input nodes are added is the
+order in which the forward method accepts its inputs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) – Name of the input node.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.extensions.containers.graph.Graph" title="inferno.extensions.containers.graph.Graph">Graph</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.add_node">
+<code class="descname">add_node</code><span class="sig-paren">(</span><em>name</em>, <em>module</em>, <em>previous=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.add_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.add_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a node to the graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) – Name of the node. Nodes are identified by their names.</li>
+<li><strong>module</strong> (<em>torch.nn.Module</em>) – Torch module for this node.</li>
+<li><strong>previous</strong> (<em>str</em><em> or </em><em>list of str</em>) – (List of) name(s) of the previous node(s).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">self</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferno.extensions.containers.graph.Graph" title="inferno.extensions.containers.graph.Graph">Graph</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.add_output_node">
+<code class="descname">add_output_node</code><span class="sig-paren">(</span><em>name</em>, <em>previous=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.add_output_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.add_output_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an output to the graph. The order in which output nodes are added is the
+order in which the forward method returns its outputs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) – Name of the output node.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">self</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferno.extensions.containers.graph.Graph" title="inferno.extensions.containers.graph.Graph">Graph</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.apply_on_graph">
+<code class="descname">apply_on_graph</code><span class="sig-paren">(</span><em>function</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.apply_on_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.apply_on_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies a <cite>function</cite> on the internal graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.assert_graph_is_valid">
+<code class="descname">assert_graph_is_valid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.assert_graph_is_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.assert_graph_is_valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that the graph is valid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.clear_payloads">
+<code class="descname">clear_payloads</code><span class="sig-paren">(</span><em>graph=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.clear_payloads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.clear_payloads" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*inputs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.forward_through_node">
+<code class="descname">forward_through_node</code><span class="sig-paren">(</span><em>name</em>, <em>input=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.forward_through_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.forward_through_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.get_module_for_nodes">
+<code class="descname">get_module_for_nodes</code><span class="sig-paren">(</span><em>names</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.get_module_for_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.get_module_for_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the <cite>torch.nn.Module</cite> object for nodes corresponding to <cite>names</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>names</strong> (<em>str</em><em> or </em><em>list of str</em>) – Names of the nodes to fetch the modules of.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Module or a list of modules corresponding to <cite>names</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list or torch.nn.Module</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.get_parameters_for_nodes">
+<code class="descname">get_parameters_for_nodes</code><span class="sig-paren">(</span><em>names</em>, <em>named=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.get_parameters_for_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.get_parameters_for_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameters of all nodes listed in <cite>names</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.containers.graph.Graph.graph">
+<code class="descname">graph</code><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.containers.graph.Graph.graph_is_valid">
+<code class="descname">graph_is_valid</code><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.graph_is_valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the graph is valid.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.containers.graph.Graph.input_nodes">
+<code class="descname">input_nodes</code><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.input_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a list of input nodes. The order is relevant and is the same as that
+in which the forward method accepts its inputs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of names (str) of the input nodes.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.is_node_in_graph">
+<code class="descname">is_node_in_graph</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.is_node_in_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.is_node_in_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a node is in the graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) – Name of the node.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.is_sink_node">
+<code class="descname">is_sink_node</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.is_sink_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.is_sink_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a given node (by name) is a sink node.
+A sink node has no outgoing edges.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) – Name of the node.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><tt class="xref py py-exc docutils literal">AssertionError</tt> – if node is not found in the graph.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.is_source_node">
+<code class="descname">is_source_node</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.is_source_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.is_source_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a given node (by name) is a source node.
+A source node has no incoming edges.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) – Name of the node.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><tt class="xref py py-exc docutils literal">AssertionError</tt> – if node is not found in the graph.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.containers.graph.Graph.output_nodes">
+<code class="descname">output_nodes</code><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.output_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a list of output nodes. The order is relevant and is the same as that
+in which the forward method returns its outputs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of names (str) of the output nodes.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.containers.graph.Graph.to_device">
+<code class="descname">to_device</code><span class="sig-paren">(</span><em>names</em>, <em>target_device</em>, <em>device_ordinal=None</em>, <em>async=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/graph.html#Graph.to_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.graph.Graph.to_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transfer nodes in the network to a specified device.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.containers.sequential">
+<span id="inferno-extensions-containers-sequential-module"></span><h2>inferno.extensions.containers.sequential module<a class="headerlink" href="#module-inferno.extensions.containers.sequential" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.containers.sequential.Sequential1">
+<em class="property">class </em><code class="descclassname">inferno.extensions.containers.sequential.</code><code class="descname">Sequential1</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/sequential.html#Sequential1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.sequential.Sequential1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.container.Sequential</tt></p>
+<p>Like torch.nn.Sequential, but with a few extra methods.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.containers.sequential.Sequential2">
+<em class="property">class </em><code class="descclassname">inferno.extensions.containers.sequential.</code><code class="descname">Sequential2</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/sequential.html#Sequential2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.sequential.Sequential2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.containers.sequential.Sequential1" title="inferno.extensions.containers.sequential.Sequential1"><tt class="xref py py-class docutils literal">inferno.extensions.containers.sequential.Sequential1</tt></a></p>
+<p>Another sequential container.
+Identitcal to torch.nn.Sequential, except that modules may return multiple outputs and
+accept multiple inputs.</p>
+<dl class="method">
+<dt id="inferno.extensions.containers.sequential.Sequential2.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/containers/sequential.html#Sequential2.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.containers.sequential.Sequential2.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although the recipe for forward pass needs to be defined within
+this function, one should call the <tt class="xref py py-class docutils literal">Module</tt> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.containers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.extensions.containers" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.extensions.containers package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.containers.graph">inferno.extensions.containers.graph module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.containers.sequential">inferno.extensions.containers.sequential module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.containers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.extensions.html"
+                        title="previous chapter">inferno.extensions package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inferno.extensions.criteria.html"
+                        title="next chapter">inferno.extensions.criteria package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.extensions.containers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.criteria.html" title="inferno.extensions.criteria package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.html" title="inferno.extensions package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.extensions.html" >inferno.extensions package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

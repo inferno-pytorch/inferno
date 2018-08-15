@@ -1,0 +1,492 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.extensions.metrics package &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="inferno.extensions.optimizers package" href="inferno.extensions.optimizers.html" />
+    <link rel="prev" title="inferno.extensions.layers package" href="inferno.extensions.layers.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.optimizers.html" title="inferno.extensions.optimizers package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.layers.html" title="inferno.extensions.layers package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.extensions.html" accesskey="U">inferno.extensions package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferno-extensions-metrics-package">
+<h1>inferno.extensions.metrics package<a class="headerlink" href="#inferno-extensions-metrics-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferno.extensions.metrics.arand">
+<span id="inferno-extensions-metrics-arand-module"></span><h2>inferno.extensions.metrics.arand module<a class="headerlink" href="#module-inferno.extensions.metrics.arand" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.metrics.arand.ArandError">
+<em class="property">class </em><code class="descclassname">inferno.extensions.metrics.arand.</code><code class="descname">ArandError</code><a class="reference internal" href="../_modules/inferno/extensions/metrics/arand.html#ArandError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.arand.ArandError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.metrics.arand.ArandScore" title="inferno.extensions.metrics.arand.ArandScore"><tt class="xref py py-class docutils literal">inferno.extensions.metrics.arand.ArandScore</tt></a></p>
+<p>Arand Error = 1 - &lt;arand score&gt;</p>
+<dl class="method">
+<dt id="inferno.extensions.metrics.arand.ArandError.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>prediction</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/arand.html#ArandError.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.arand.ArandError.forward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.metrics.arand.ArandScore">
+<em class="property">class </em><code class="descclassname">inferno.extensions.metrics.arand.</code><code class="descname">ArandScore</code><a class="reference internal" href="../_modules/inferno/extensions/metrics/arand.html#ArandScore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.arand.ArandScore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.metrics.base.Metric" title="inferno.extensions.metrics.base.Metric"><tt class="xref py py-class docutils literal">inferno.extensions.metrics.base.Metric</tt></a></p>
+<p>Arand Score, as defined in [1].</p>
+<p class="rubric">References</p>
+<p>[1]: <a class="reference external" href="http://journal.frontiersin.org/article/10.3389/fnana.2015.00142/full#h3">http://journal.frontiersin.org/article/10.3389/fnana.2015.00142/full#h3</a></p>
+<dl class="method">
+<dt id="inferno.extensions.metrics.arand.ArandScore.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>prediction</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/arand.html#ArandScore.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.arand.ArandScore.forward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.extensions.metrics.arand.adapted_rand">
+<code class="descclassname">inferno.extensions.metrics.arand.</code><code class="descname">adapted_rand</code><span class="sig-paren">(</span><em>seg</em>, <em>gt</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/arand.html#adapted_rand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.arand.adapted_rand" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Compute Adapted Rand error as defined by the SNEMI3D contest [1]</dt>
+<dd><p class="first">Formula is given as 1 - the maximal F-score of the Rand index
+(excluding the zero component of the original labels). Adapted
+from the SNEMI3D MATLAB script, hence the strange style.</p>
+<dl class="docutils">
+<dt>seg <span class="classifier-delimiter">:</span> <span class="classifier">np.ndarray</span></dt>
+<dd>the segmentation to score, where each value is the label at that point</dd>
+<dt>gt <span class="classifier-delimiter">:</span> <span class="classifier">np.ndarray, same shape as seg</span></dt>
+<dd>the groundtruth to score against, where each value is a label</dd>
+</dl>
+<dl class="last docutils">
+<dt>are <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>The adapted Rand error; equal to $1 -</dd>
+</dl>
+</dd>
+<dt>rac{2pr}{p + r}$,</dt>
+<dd><blockquote class="first">
+<div>where $p$ and $r$ are the precision and recall described below.</div></blockquote>
+<dl class="docutils">
+<dt>prec <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd>The adapted Rand precision.</dd>
+<dt>rec <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd>The adapted Rand recall.</dd>
+</dl>
+<p class="last">[1]: <a class="reference external" href="http://brainiac2.mit.edu/SNEMI3D/evaluation">http://brainiac2.mit.edu/SNEMI3D/evaluation</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.metrics.base">
+<span id="inferno-extensions-metrics-base-module"></span><h2>inferno.extensions.metrics.base module<a class="headerlink" href="#module-inferno.extensions.metrics.base" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.metrics.base.Metric">
+<em class="property">class </em><code class="descclassname">inferno.extensions.metrics.base.</code><code class="descname">Metric</code><a class="reference internal" href="../_modules/inferno/extensions/metrics/base.html#Metric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.base.Metric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal">object</tt></p>
+<dl class="method">
+<dt id="inferno.extensions.metrics.base.Metric.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/base.html#Metric.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.base.Metric.forward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.metrics.categorical">
+<span id="inferno-extensions-metrics-categorical-module"></span><h2>inferno.extensions.metrics.categorical module<a class="headerlink" href="#module-inferno.extensions.metrics.categorical" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.metrics.categorical.CategoricalError">
+<em class="property">class </em><code class="descclassname">inferno.extensions.metrics.categorical.</code><code class="descname">CategoricalError</code><span class="sig-paren">(</span><em>aggregation_mode='mean'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/categorical.html#CategoricalError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.categorical.CategoricalError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.metrics.base.Metric" title="inferno.extensions.metrics.base.Metric"><tt class="xref py py-class docutils literal">inferno.extensions.metrics.base.Metric</tt></a></p>
+<p>Categorical error.</p>
+<dl class="method">
+<dt id="inferno.extensions.metrics.categorical.CategoricalError.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>prediction</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/categorical.html#CategoricalError.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.categorical.CategoricalError.forward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.metrics.categorical.IOU">
+<em class="property">class </em><code class="descclassname">inferno.extensions.metrics.categorical.</code><code class="descname">IOU</code><span class="sig-paren">(</span><em>ignore_class=None</em>, <em>sharpen_prediction=False</em>, <em>eps=1e-06</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/categorical.html#IOU"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.categorical.IOU" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.metrics.base.Metric" title="inferno.extensions.metrics.base.Metric"><tt class="xref py py-class docutils literal">inferno.extensions.metrics.base.Metric</tt></a></p>
+<p>Intersection over Union.</p>
+<dl class="method">
+<dt id="inferno.extensions.metrics.categorical.IOU.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>prediction</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/categorical.html#IOU.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.categorical.IOU.forward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="inferno.extensions.metrics.categorical.NegativeIOU">
+<em class="property">class </em><code class="descclassname">inferno.extensions.metrics.categorical.</code><code class="descname">NegativeIOU</code><span class="sig-paren">(</span><em>ignore_class=None</em>, <em>sharpen_prediction=False</em>, <em>eps=1e-06</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/categorical.html#NegativeIOU"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.categorical.NegativeIOU" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.metrics.categorical.IOU" title="inferno.extensions.metrics.categorical.IOU"><tt class="xref py py-class docutils literal">inferno.extensions.metrics.categorical.IOU</tt></a></p>
+<dl class="method">
+<dt id="inferno.extensions.metrics.categorical.NegativeIOU.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>prediction</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/categorical.html#NegativeIOU.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.categorical.NegativeIOU.forward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.metrics.cremi_score">
+<span id="inferno-extensions-metrics-cremi-score-module"></span><h2>inferno.extensions.metrics.cremi_score module<a class="headerlink" href="#module-inferno.extensions.metrics.cremi_score" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="inferno.extensions.metrics.cremi_score.cremi_metrics">
+<code class="descclassname">inferno.extensions.metrics.cremi_score.</code><code class="descname">cremi_metrics</code><span class="sig-paren">(</span><em>seg</em>, <em>gt</em>, <em>no_seg_ignore=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/cremi_score.html#cremi_metrics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.cremi_score.cremi_metrics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.metrics.voi">
+<span id="inferno-extensions-metrics-voi-module"></span><h2>inferno.extensions.metrics.voi module<a class="headerlink" href="#module-inferno.extensions.metrics.voi" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.metrics.voi.VoiScore">
+<em class="property">class </em><code class="descclassname">inferno.extensions.metrics.voi.</code><code class="descname">VoiScore</code><a class="reference internal" href="../_modules/inferno/extensions/metrics/voi.html#VoiScore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.voi.VoiScore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.metrics.base.Metric" title="inferno.extensions.metrics.base.Metric"><tt class="xref py py-class docutils literal">inferno.extensions.metrics.base.Metric</tt></a></p>
+<p>Computes a score based on the variation of information according to [1].
+.. rubric:: References</p>
+<p>[1] Meila, M. (2007). Comparing clusterings - an information based
+distance. Journal of Multivariate Analysis 98, 873-895.</p>
+<dl class="method">
+<dt id="inferno.extensions.metrics.voi.VoiScore.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>prediction</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/voi.html#VoiScore.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.voi.VoiScore.forward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.extensions.metrics.voi.contingency_table">
+<code class="descclassname">inferno.extensions.metrics.voi.</code><code class="descname">contingency_table</code><span class="sig-paren">(</span><em>seg, gt, ignore_seg=[0], ignore_gt=[0], norm=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/voi.html#contingency_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.voi.contingency_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the contingency table for all regions in matched segmentations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>seg</strong> (<em>np.ndarray</em><em>, </em><em>int type</em><em>, </em><em>arbitrary shape</em>) – A candidate segmentation.</li>
+<li><strong>gt</strong> (np.ndarray, int type, same shape as <cite>seg</cite>) – The ground truth segmentation.</li>
+<li><strong>ignore_seg</strong> (<em>list of int</em><em>, </em><em>optional</em>) – Values to ignore in <cite>seg</cite>. Voxels in <cite>seg</cite> having a value in this list
+will not contribute to the contingency table. (default: [0])</li>
+<li><strong>ignore_gt</strong> (<em>list of int</em><em>, </em><em>optional</em>) – Values to ignore in <cite>gt</cite>. Voxels in <cite>gt</cite> having a value in this list
+will not contribute to the contingency table. (default: [0])</li>
+<li><strong>norm</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to normalize the table so that it sums to 1.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cont</strong> – A contingency table. <cite>cont[i, j]</cite> will equal the number of voxels
+labeled <cite>i</cite> in <cite>seg</cite> and <cite>j</cite> in <cite>gt</cite>. (Or the proportion of such voxels
+if <cite>norm=True</cite>.)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">scipy.sparse.csc_matrix</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.extensions.metrics.voi.divide_columns">
+<code class="descclassname">inferno.extensions.metrics.voi.</code><code class="descname">divide_columns</code><span class="sig-paren">(</span><em>matrix</em>, <em>row</em>, <em>in_place=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/voi.html#divide_columns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.voi.divide_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Divide each column of <cite>matrix</cite> by the corresponding element in <cite>row</cite>.</p>
+<p>The result is as follows: out[i, j] = matrix[i, j] / row[j]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>matrix</strong> (<em>np.ndarray</em><em>, </em><em>scipy.sparse.csc_matrix</em><em> or </em><em>csr_matrix</em><em>, </em><em>shape</em><em> (</em><em>M</em><em>, </em><em>N</em><em>)</em>) – The input matrix.</li>
+<li><strong>column</strong> (<em>a 1D np.ndarray</em><em>, </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em>) – The row dividing <cite>matrix</cite>.</li>
+<li><strong>in_place</strong> (<em>bool</em><em> (</em><em>optional</em><em>, </em><em>default False</em><em>)</em>) – Do the computation in-place.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>out</strong> – The result of the row-wise division.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">same type as <cite>matrix</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.extensions.metrics.voi.divide_rows">
+<code class="descclassname">inferno.extensions.metrics.voi.</code><code class="descname">divide_rows</code><span class="sig-paren">(</span><em>matrix</em>, <em>column</em>, <em>in_place=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/voi.html#divide_rows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.voi.divide_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Divide each row of <cite>matrix</cite> by the corresponding element in <cite>column</cite>.</p>
+<p>The result is as follows: out[i, j] = matrix[i, j] / column[i]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>matrix</strong> (<em>np.ndarray</em><em>, </em><em>scipy.sparse.csc_matrix</em><em> or </em><em>csr_matrix</em><em>, </em><em>shape</em><em> (</em><em>M</em><em>, </em><em>N</em><em>)</em>) – The input matrix.</li>
+<li><strong>column</strong> (<em>a 1D np.ndarray</em><em>, </em><em>shape</em><em> (</em><em>M</em><em>,</em><em>)</em>) – The column dividing <cite>matrix</cite>.</li>
+<li><strong>in_place</strong> (<em>bool</em><em> (</em><em>optional</em><em>, </em><em>default False</em><em>)</em>) – Do the computation in-place.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>out</strong> – The result of the row-wise division.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">same type as <cite>matrix</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.extensions.metrics.voi.split_vi">
+<code class="descclassname">inferno.extensions.metrics.voi.</code><code class="descname">split_vi</code><span class="sig-paren">(</span><em>x, y=None, ignore_x=[0], ignore_y=[0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/voi.html#split_vi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.voi.split_vi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the symmetric conditional entropies associated with the VI.</p>
+<p>The variation of information is defined as VI(X,Y) = H(X|Y) + H(Y|X).
+If Y is the ground-truth segmentation, then H(Y|X) can be interpreted
+as the amount of under-segmentation of Y and H(X|Y) is then the amount
+of over-segmentation.  In other words, a perfect over-segmentation
+will have H(Y|X)=0 and a perfect under-segmentation will have H(X|Y)=0.</p>
+<p>If y is None, x is assumed to be a contingency table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>np.ndarray</em>) – Label field (int type) or contingency table (float). <cite>x</cite> is
+interpreted as a contingency table (summing to 1.0) if and only if <cite>y</cite>
+is not provided.</li>
+<li><strong>y</strong> (<em>np.ndarray of int</em><em>, </em><em>same shape as x</em><em>, </em><em>optional</em>) – A label field to compare to <cite>x</cite>.</li>
+<li><strong>ignore_y</strong> (<em>ignore_x</em><em>,</em>) – Any points having a label in this list are ignored in the evaluation.
+Ignore 0-labeled points by default.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>sv</strong> – The conditional entropies of Y|X and X|Y.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.ndarray of float, shape (2,)</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><tt class="xref py py-func docutils literal">vi()</tt></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.extensions.metrics.voi.vi_tables">
+<code class="descclassname">inferno.extensions.metrics.voi.</code><code class="descname">vi_tables</code><span class="sig-paren">(</span><em>x, y=None, ignore_x=[0], ignore_y=[0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/voi.html#vi_tables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.voi.vi_tables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return probability tables used for calculating VI.</p>
+<p>If y is None, x is assumed to be a contingency table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>y</strong> (<em>x</em><em>,</em>) – Either x and y are provided as equal-shaped np.ndarray label fields
+(int type), or y is not provided and x is a contingency table
+(sparse.csc_matrix) that may or may not sum to 1.</li>
+<li><strong>ignore_y</strong> (<em>ignore_x</em><em>,</em>) – Rows and columns (respectively) to ignore in the contingency table.
+These are labels that are not counted when evaluating VI.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>pxy</strong> (<em>sparse.csc_matrix of float</em>) – The normalized contingency table.</li>
+<li><strong>px, py, hxgy, hygx, lpygx, lpxgy</strong> (<em>np.ndarray of float</em>) – The proportions of each label in <cite>x</cite> and <cite>y</cite> (<cite>px</cite>, <cite>py</cite>), the
+per-segment conditional entropies of <cite>x</cite> given <cite>y</cite> and vice-versa, the
+per-segment conditional probability p log p.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.extensions.metrics.voi.voi">
+<code class="descclassname">inferno.extensions.metrics.voi.</code><code class="descname">voi</code><span class="sig-paren">(</span><em>seg, gt, ignore_reconstruction=[], ignore_groundtruth=[0]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/voi.html#voi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.voi.voi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the conditional entropies of the variation of information metric. [1]</p>
+<p>Let X be a seg, and Y a ground truth labelling. The variation of
+information between the two is the sum of two conditional entropies:</p>
+<blockquote>
+<div>VI(X, Y) = H(X|Y) + H(Y|X).</div></blockquote>
+<p>The first one, H(X|Y), is a measure of oversegmentation, the second one,
+H(Y|X), a measure of undersegmentation. These measures are referred to as
+the variation of information split or merge error, respectively.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>seg</strong> (<em>np.ndarray</em><em>, </em><em>int type</em><em>, </em><em>arbitrary shape</em>) – A candidate segmentation.</li>
+<li><strong>gt</strong> (np.ndarray, int type, same shape as <cite>seg</cite>) – The ground truth segmentation.</li>
+<li><strong>ignore_gt</strong> (<em>ignore_seg</em><em>,</em>) – Any points having a label in this list are ignored in the evaluation.
+By default, only the label 0 in the ground truth will be ignored.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>(split, merge)</strong> – The variation of information split and merge error, i.e., H(X|Y) and H(Y|X)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<p>[1] Meila, M. (2007). Comparing clusterings - an information based
+distance. Journal of Multivariate Analysis 98, 873-895.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferno.extensions.metrics.voi.xlogx">
+<code class="descclassname">inferno.extensions.metrics.voi.</code><code class="descname">xlogx</code><span class="sig-paren">(</span><em>x</em>, <em>out=None</em>, <em>in_place=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/metrics/voi.html#xlogx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.metrics.voi.xlogx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute x * log_2(x).</p>
+<p>We define 0 * log_2(0) = 0</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>np.ndarray</em><em> or </em><em>scipy.sparse.csc_matrix</em><em> or </em><em>csr_matrix</em>) – The input array.</li>
+<li><strong>out</strong> (<em>same type as x</em><em> (</em><em>optional</em><em>)</em>) – If provided, use this array/matrix for the result.</li>
+<li><strong>in_place</strong> (<em>bool</em><em> (</em><em>optional</em><em>, </em><em>default False</em><em>)</em>) – Operate directly on x.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>y</strong> – Result of x * log_2(x).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">same type as x</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.metrics">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferno.extensions.metrics" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferno.extensions.metrics package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.metrics.arand">inferno.extensions.metrics.arand module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.metrics.base">inferno.extensions.metrics.base module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.metrics.categorical">inferno.extensions.metrics.categorical module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.metrics.cremi_score">inferno.extensions.metrics.cremi_score module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.metrics.voi">inferno.extensions.metrics.voi module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.metrics">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inferno.extensions.layers.html"
+                        title="previous chapter">inferno.extensions.layers package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inferno.extensions.optimizers.html"
+                        title="next chapter">inferno.extensions.optimizers package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/inferno-apidoc/inferno.extensions.metrics.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.optimizers.html" title="inferno.extensions.optimizers package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inferno.extensions.layers.html" title="inferno.extensions.layers package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >inferno</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="inferno.html" >inferno package</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="inferno.extensions.html" >inferno.extensions package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

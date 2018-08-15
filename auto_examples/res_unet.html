@@ -1,0 +1,232 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2D Residual Unet Example &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Regularized MNIST Example" href="regularized_mnist.html" />
+    <link rel="prev" title="Train UNet Example" href="train_unet.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="regularized_mnist.html" title="Regularized MNIST Example"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="train_unet.html" title="Train UNet Example"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../examples.html" >Inferno Examples Gallery</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">Gallery of Examples</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-auto-examples-res-unet-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="d-residual-unet-example">
+<span id="sphx-glr-auto-examples-res-unet-py"></span><h1>2D Residual Unet Example<a class="headerlink" href="#d-residual-unet-example" title="Permalink to this headline">¶</a></h1>
+<p>This example should illustrate how to a Residual Unet
+as a layer</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">inferno.extensions.layers.unet</span> <span class="kn">as</span> <span class="nn">unet</span>
+
+<span class="kn">from</span> <span class="nn">inferno.extensions.layers</span> <span class="kn">import</span> <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ConvELU2D" title="View documentation for inferno.extensions.layers.ConvELU2D"><span class="n">ConvELU2D</span></a><span class="p">,</span> <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ConvSigmoid2D" title="View documentation for inferno.extensions.layers.ConvSigmoid2D"><span class="n">ConvSigmoid2D</span></a>
+
+
+
+
+<span class="c1"># a 2D data with 10 input channels</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># a unet with resiudal blocks</span>
+<span class="n">model</span> <span class="o">=</span> <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ResBlockUNet" title="View documentation for inferno.extensions.layers.unet.ResBlockUNet"><span class="n">unet</span><span class="o">.</span><span class="n">ResBlockUNet</span></a><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># pass x trough unet</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Chained 3D Residual Unets</span>
+<span class="sd">================================</span>
+
+<span class="sd">This example should illustrate how chain</span>
+<span class="sd">multiple residual unets</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+
+<span class="c1"># 3D data with 5 input channels</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># a unet with resiudal blocks</span>
+<span class="n">model_a</span> <span class="o">=</span> <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ResBlockUNet" title="View documentation for inferno.extensions.layers.unet.ResBlockUNet"><span class="n">unet</span><span class="o">.</span><span class="n">ResBlockUNet</span></a><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                            <span class="n">unet_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="c1"># if the last layer in the second unet</span>
+<span class="c1"># shall be non-activated  we set</span>
+<span class="c1"># activated to False, this will only affect the</span>
+<span class="c1"># very last convolution of the net</span>
+<span class="n">model_b</span> <span class="o">=</span> <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ResBlockUNet" title="View documentation for inferno.extensions.layers.unet.ResBlockUNet"><span class="n">unet</span><span class="o">.</span><span class="n">ResBlockUNet</span></a><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                            <span class="n">activated</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                            <span class="n">unet_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="c1"># chain models</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">model_a</span><span class="p">,</span> <span class="n">model_b</span><span class="p">)</span>
+
+<span class="c1"># and use the model</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+
+
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A Custom UNet</span>
+<span class="sd">================================</span>
+
+<span class="sd">This example should illustrate how create</span>
+<span class="sd">a custom UNet by deriving from UNetBase</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">MySimple2DUnet</span><span class="p">(</span><a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.UNetBase" title="View documentation for inferno.extensions.layers.unet.UNetBase"><span class="n">unet</span><span class="o">.</span><span class="n">UNetBase</span></a><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MySimple2DUnet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">conv_op_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+
+        <span class="c1"># are we in the very last block?</span>
+        <span class="k">if</span>  <span class="n">part</span><span class="o">==</span><span class="s1">&#39;up&#39;</span> <span class="ow">and</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+                <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ConvELU2D" title="View documentation for inferno.extensions.layers.ConvELU2D"><span class="n">ConvELU2D</span></a><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">in_channels</span><span class="p">,</span>  <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+                <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ConvELU2D" title="View documentation for inferno.extensions.layers.ConvELU2D"><span class="n">ConvELU2D</span></a><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+                <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ConvSigmoid2D" title="View documentation for inferno.extensions.layers.ConvSigmoid2D"><span class="n">ConvSigmoid2D</span></a><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+                <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ConvELU2D" title="View documentation for inferno.extensions.layers.ConvELU2D"><span class="n">ConvELU2D</span></a><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">in_channels</span><span class="p">,</span>  <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+                <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ConvELU2D" title="View documentation for inferno.extensions.layers.ConvELU2D"><span class="n">ConvELU2D</span></a><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+                <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ConvELU2D" title="View documentation for inferno.extensions.layers.ConvELU2D"><span class="n">ConvELU2D</span></a><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+            <span class="p">)</span>
+
+
+
+
+
+<span class="c1"># 2D data with 5 input channels</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">my_custom_unet</span> <span class="o">=</span> <span class="n">MySimple2DUnet</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+
+<span class="c1"># and use the model</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">my_custom_unet</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-res-unet-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/res_unet.py" download=""><tt class="xref download docutils literal">Download Python source code: res_unet.py</tt></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/res_unet.ipynb" download=""><tt class="xref download docutils literal">Download Jupyter notebook: res_unet.ipynb</tt></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="train_unet.html"
+                        title="previous chapter">Train UNet Example</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="regularized_mnist.html"
+                        title="next chapter">Regularized MNIST Example</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/auto_examples/res_unet.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="regularized_mnist.html" title="Regularized MNIST Example"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="train_unet.html" title="Train UNet Example"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../examples.html" >Inferno Examples Gallery</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >Gallery of Examples</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

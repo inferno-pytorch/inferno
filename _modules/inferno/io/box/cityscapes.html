@@ -1,0 +1,459 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.io.box.cityscapes &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.io.box.cityscapes</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">torch.utils.data</span> <span class="k">as</span> <span class="nn">data</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="k">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">relpath</span><span class="p">,</span> <span class="n">abspath</span>
+<span class="kn">from</span> <span class="nn">...utils.exceptions</span> <span class="k">import</span> <span class="n">assert_</span>
+<span class="kn">from</span> <span class="nn">..transform.base</span> <span class="k">import</span> <span class="n">Compose</span>
+<span class="kn">from</span> <span class="nn">..transform.generic</span> <span class="k">import</span> \
+    <span class="n">Normalize</span><span class="p">,</span> <span class="n">NormalizeRange</span><span class="p">,</span> <span class="n">Cast</span><span class="p">,</span> <span class="n">AsTorchBatch</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">Label2OneHot</span>
+<span class="kn">from</span> <span class="nn">..transform.image</span> <span class="k">import</span> \
+    <span class="n">RandomSizedCrop</span><span class="p">,</span> <span class="n">RandomGammaCorrection</span><span class="p">,</span> <span class="n">RandomFlip</span><span class="p">,</span> <span class="n">Scale</span><span class="p">,</span> <span class="n">PILImage2NumPyArray</span>
+<span class="kn">from</span> <span class="nn">..core</span> <span class="k">import</span> <span class="n">Concatenate</span>
+
+
+<span class="n">CITYSCAPES_CLASSES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;unlabeled&#39;</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;ego vehicle&#39;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;rectification border&#39;</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;out of roi&#39;</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;static&#39;</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;dynamic&#39;</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;ground&#39;</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;road&#39;</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;sidewalk&#39;</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;parking&#39;</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;rail track&#39;</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="s1">&#39;building&#39;</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;wall&#39;</span><span class="p">,</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="s1">&#39;fence&#39;</span><span class="p">,</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="s1">&#39;guard rail&#39;</span><span class="p">,</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="s1">&#39;bridge&#39;</span><span class="p">,</span>
+    <span class="mi">16</span><span class="p">:</span> <span class="s1">&#39;tunnel&#39;</span><span class="p">,</span>
+    <span class="mi">17</span><span class="p">:</span> <span class="s1">&#39;pole&#39;</span><span class="p">,</span>
+    <span class="mi">18</span><span class="p">:</span> <span class="s1">&#39;polegroup&#39;</span><span class="p">,</span>
+    <span class="mi">19</span><span class="p">:</span> <span class="s1">&#39;traffic light&#39;</span><span class="p">,</span>
+    <span class="mi">20</span><span class="p">:</span> <span class="s1">&#39;traffic sign&#39;</span><span class="p">,</span>
+    <span class="mi">21</span><span class="p">:</span> <span class="s1">&#39;vegetation&#39;</span><span class="p">,</span>
+    <span class="mi">22</span><span class="p">:</span> <span class="s1">&#39;terrain&#39;</span><span class="p">,</span>
+    <span class="mi">23</span><span class="p">:</span> <span class="s1">&#39;sky&#39;</span><span class="p">,</span>
+    <span class="mi">24</span><span class="p">:</span> <span class="s1">&#39;person&#39;</span><span class="p">,</span>
+    <span class="mi">25</span><span class="p">:</span> <span class="s1">&#39;rider&#39;</span><span class="p">,</span>
+    <span class="mi">26</span><span class="p">:</span> <span class="s1">&#39;car&#39;</span><span class="p">,</span>
+    <span class="mi">27</span><span class="p">:</span> <span class="s1">&#39;truck&#39;</span><span class="p">,</span>
+    <span class="mi">28</span><span class="p">:</span> <span class="s1">&#39;bus&#39;</span><span class="p">,</span>
+    <span class="mi">29</span><span class="p">:</span> <span class="s1">&#39;caravan&#39;</span><span class="p">,</span>
+    <span class="mi">30</span><span class="p">:</span> <span class="s1">&#39;trailer&#39;</span><span class="p">,</span>
+    <span class="mi">31</span><span class="p">:</span> <span class="s1">&#39;train&#39;</span><span class="p">,</span>
+    <span class="mi">32</span><span class="p">:</span> <span class="s1">&#39;motorcycle&#39;</span><span class="p">,</span>
+    <span class="mi">33</span><span class="p">:</span> <span class="s1">&#39;bicycle&#39;</span><span class="p">,</span>
+    <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;license plate&#39;</span>
+<span class="p">}</span>
+
+<span class="n">IGNORE_CLASS_LABEL</span> <span class="o">=</span> <span class="mi">19</span>
+
+<span class="c1"># Class labels to use for training, found here:</span>
+<span class="c1"># https://github.com/mcordts/cityscapesScripts/blob/master/cityscapesscripts/helpers/labels.py#L61</span>
+<span class="n">CITYSCAPES_CLASSES_TO_LABELS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">16</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">17</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="mi">18</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">19</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="mi">20</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="mi">21</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="mi">22</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="mi">23</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="mi">24</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+    <span class="mi">25</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="mi">26</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+    <span class="mi">27</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+    <span class="mi">28</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+    <span class="mi">29</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">30</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span><span class="p">,</span>
+    <span class="mi">31</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+    <span class="mi">32</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
+    <span class="mi">33</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
+    <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="n">IGNORE_CLASS_LABEL</span>
+<span class="p">}</span>
+
+<span class="c1"># Map classes to official cityscapes colors</span>
+<span class="n">CITYSCAPES_CLASS_COLOR_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="mi">74</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="p">(</span><span class="mi">81</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">81</span><span class="p">),</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="p">(</span><span class="mi">244</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">232</span><span class="p">),</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="mi">170</span><span class="p">,</span> <span class="mi">160</span><span class="p">),</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="p">(</span><span class="mi">230</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">140</span><span class="p">),</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="p">(</span><span class="mi">102</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">156</span><span class="p">),</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="p">(</span><span class="mi">190</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span> <span class="mi">153</span><span class="p">),</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">165</span><span class="p">,</span> <span class="mi">180</span><span class="p">),</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="mi">16</span><span class="p">:</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">90</span><span class="p">),</span>
+    <span class="mi">17</span><span class="p">:</span> <span class="p">(</span><span class="mi">153</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span> <span class="mi">153</span><span class="p">),</span>
+    <span class="mi">18</span><span class="p">:</span> <span class="p">(</span><span class="mi">153</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span> <span class="mi">153</span><span class="p">),</span>
+    <span class="mi">19</span><span class="p">:</span> <span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="mi">170</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+    <span class="mi">20</span><span class="p">:</span> <span class="p">(</span><span class="mi">220</span><span class="p">,</span> <span class="mi">220</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="mi">21</span><span class="p">:</span> <span class="p">(</span><span class="mi">107</span><span class="p">,</span> <span class="mi">142</span><span class="p">,</span> <span class="mi">35</span><span class="p">),</span>
+    <span class="mi">22</span><span class="p">:</span> <span class="p">(</span><span class="mi">152</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">152</span><span class="p">),</span>
+    <span class="mi">23</span><span class="p">:</span> <span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">130</span><span class="p">,</span> <span class="mi">180</span><span class="p">),</span>
+    <span class="mi">24</span><span class="p">:</span> <span class="p">(</span><span class="mi">220</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span>
+    <span class="mi">25</span><span class="p">:</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="mi">26</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">142</span><span class="p">),</span>
+    <span class="mi">27</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span>
+    <span class="mi">28</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="mi">29</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">),</span>
+    <span class="mi">30</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">110</span><span class="p">),</span>
+    <span class="mi">31</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="mi">32</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">230</span><span class="p">),</span>
+    <span class="mi">33</span><span class="p">:</span> <span class="p">(</span><span class="mi">119</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">142</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="c1"># Weights corresponding to the outputs</span>
+<span class="n">CITYSCAPES_LABEL_WEIGHTS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">13</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">14</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">15</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">16</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">17</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">18</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>
+    <span class="mi">19</span><span class="p">:</span> <span class="mf">0.</span>
+<span class="p">}</span>
+
+<span class="c1"># 0:void 1:flat  2:construction  3:object  4:nature  5:sky  6:human  7:vehicle</span>
+<span class="n">CITYSCAPES_CATEGORIES</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>
+                         <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+
+<span class="n">CITYSCAPES_IGNORE_IN_EVAL</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span>
+                             <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span>
+                             <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span>
+                             <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span>
+
+<span class="c1"># mean and std</span>
+<span class="n">CITYSCAPES_MEAN</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.28689554</span><span class="p">,</span> <span class="mf">0.32513303</span><span class="p">,</span> <span class="mf">0.28389177</span><span class="p">]</span>
+<span class="n">CITYSCAPES_STD</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.18696375</span><span class="p">,</span> <span class="mf">0.19017339</span><span class="p">,</span> <span class="mf">0.18720214</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="get_matching_labelimage_file"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.cityscapes.get_matching_labelimage_file">[docs]</a><span class="k">def</span> <span class="nf">get_matching_labelimage_file</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">groundtruth</span><span class="p">):</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="n">fs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">groundtruth</span>
+    <span class="n">fs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">fs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;leftImg8bit&#39;</span><span class="p">,</span> <span class="n">groundtruth</span> <span class="o">+</span> <span class="s1">&#39;_labelIds&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_filelist"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.cityscapes.get_filelist">[docs]</a><span class="k">def</span> <span class="nf">get_filelist</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.zip&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">filelist</span>
+    <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">relpath</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="n">abspath</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">)))</span>
+                <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Path must be a zip archive or a directory.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="make_dataset"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.cityscapes.make_dataset">[docs]</a><span class="k">def</span> <span class="nf">make_dataset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">get_filelist</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">fn</span> <span class="o">=</span> <span class="n">f</span>
+            <span class="n">fns</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fn</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">filename</span>
+            <span class="n">fns</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.png&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">fns</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">split</span><span class="p">:</span>
+            <span class="c1"># use first folder name to identify train/val/test images</span>
+            <span class="k">if</span> <span class="n">split</span> <span class="o">==</span> <span class="s1">&#39;train_extra&#39;</span><span class="p">:</span>
+                <span class="n">groundtruth</span> <span class="o">=</span> <span class="s1">&#39;gtCoarse&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">groundtruth</span> <span class="o">=</span> <span class="s1">&#39;gtFine&#39;</span>
+
+            <span class="n">fl</span> <span class="o">=</span> <span class="n">get_matching_labelimage_file</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">groundtruth</span><span class="p">)</span>
+            <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">f</span><span class="p">,</span> <span class="n">fl</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">images</span></div>
+
+
+<div class="viewcode-block" id="extract_image"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.cityscapes.extract_image">[docs]</a><span class="k">def</span> <span class="nf">extract_image</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">image_path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.zip&#39;</span><span class="p">):</span>
+        <span class="c1"># read image directly from zipfile if path is a zip</span>
+        <span class="k">return</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">image_path</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">abspath</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">)),</span> <span class="n">image_path</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Cityscapes"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.cityscapes.Cityscapes">[docs]</a><span class="k">class</span> <span class="nc">Cityscapes</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="n">SPLIT_NAME_MAPPING</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;training&#39;</span><span class="p">:</span> <span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;validate&#39;</span><span class="p">:</span> <span class="s1">&#39;val&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;val&#39;</span><span class="p">:</span> <span class="s1">&#39;val&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;validation&#39;</span><span class="p">:</span> <span class="s1">&#39;val&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;testing&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;training_extra&#39;</span><span class="p">:</span> <span class="s1">&#39;train_extra&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;train_extra&#39;</span><span class="p">:</span> <span class="s1">&#39;train_extra&#39;</span><span class="p">}</span>
+
+    <span class="c1"># Dataset statistics</span>
+    <span class="n">CLASSES</span> <span class="o">=</span> <span class="n">CITYSCAPES_CLASSES</span>
+    <span class="n">MEAN</span> <span class="o">=</span> <span class="n">CITYSCAPES_MEAN</span>
+    <span class="n">STD</span> <span class="o">=</span> <span class="n">CITYSCAPES_STD</span>
+
+    <span class="n">BLACKLIST</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;leftImg8bit/train_extra/troisdorf/troisdorf_000000_000073_leftImg8bit.png&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_folder</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="n">read_from_zip_archive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">image_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">joint_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">        root_folder: folder that contains both leftImg8bit_trainvaltest.zip and</span>
+<span class="sd">               gtFine_trainvaltest.zip archives.</span>
+<span class="sd">        split: name of dataset spilt (i.e. &#39;train_extra&#39;, &#39;train&#39;, &#39;val&#39; or &#39;test&#39;) </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">assert_</span><span class="p">(</span><span class="n">split</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_NAME_MAPPING</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+                <span class="s2">&quot;`split` must be one of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_NAME_MAPPING</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span>
+                <span class="ne">KeyError</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPLIT_NAME_MAPPING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">split</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_from_zip_archive</span> <span class="o">=</span> <span class="n">read_from_zip_archive</span>
+
+        <span class="c1"># Get roots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_root</span> <span class="o">=</span> <span class="p">[</span><span class="n">join</span><span class="p">(</span><span class="n">root_folder</span><span class="p">,</span> <span class="n">groot</span><span class="p">)</span>
+                                            <span class="k">for</span> <span class="n">groot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_image_and_label_roots</span><span class="p">()]</span>
+
+        <span class="c1"># Transforms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_transform</span> <span class="o">=</span> <span class="n">image_transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_transform</span> <span class="o">=</span> <span class="n">label_transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">joint_transform</span> <span class="o">=</span> <span class="n">joint_transform</span>
+        <span class="c1"># Make list with paths to the images</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_paths</span> <span class="o">=</span> <span class="n">make_dataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">pi</span><span class="p">,</span> <span class="n">pl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_paths</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">pi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">BLACKLIST</span><span class="p">:</span>
+            <span class="c1"># Select the next image if the current image is bad</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">extract_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_root</span><span class="p">,</span> <span class="n">pi</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">extract_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_root</span><span class="p">,</span> <span class="n">pl</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Apply transforms</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_transform</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_transform</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">image</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_transform</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[!] An Exception occurred while applying the transforms at &quot;</span>
+                  <span class="s2">&quot;index </span><span class="si">{}</span><span class="s2"> of split &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">))</span>
+            <span class="k">raise</span>
+        <span class="k">return</span> <span class="n">image</span><span class="p">,</span> <span class="n">label</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_paths</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Cityscapes.download"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.cityscapes.Cityscapes.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO: please download the dataset from</span>
+        <span class="c1"># https://www.cityscapes-dataset.com/</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Cityscapes.get_image_and_label_roots"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.cityscapes.Cityscapes.get_image_and_label_roots">[docs]</a>    <span class="k">def</span> <span class="nf">get_image_and_label_roots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">all_roots</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;zipped&#39;</span><span class="p">:</span>
+                <span class="p">{</span>
+                    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;leftImg8bit_trainvaltest.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;gtFine_trainvaltest.zip&#39;</span><span class="p">),</span>
+                    <span class="s1">&#39;val&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;leftImg8bit_trainvaltest.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;gtFine_trainvaltest.zip&#39;</span><span class="p">),</span>
+                    <span class="s1">&#39;train_extra&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;leftImg8bit_trainextra.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;gtCoarse.zip&#39;</span><span class="p">)</span>
+                <span class="p">},</span>
+            <span class="s1">&#39;unzipped&#39;</span><span class="p">:</span>
+                <span class="p">{</span>
+                    <span class="s1">&#39;train&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;leftImg8bit&#39;</span><span class="p">,</span> <span class="s1">&#39;gtFine&#39;</span><span class="p">),</span>
+                    <span class="s1">&#39;val&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;leftImg8bit&#39;</span><span class="p">,</span> <span class="s1">&#39;gtFine&#39;</span><span class="p">),</span>
+                    <span class="s1">&#39;train_extra&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;leftImg8bit&#39;</span><span class="p">,</span> <span class="s1">&#39;gtCoarse&#39;</span><span class="p">)</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">image_and_label_roots</span> <span class="o">=</span> <span class="n">all_roots</span>\
+            <span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;zipped&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_from_zip_archive</span> <span class="k">else</span> <span class="s1">&#39;unzipped&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">image_and_label_roots</span></div></div>
+
+
+<div class="viewcode-block" id="make_transforms"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.cityscapes.make_transforms">[docs]</a><span class="k">def</span> <span class="nf">make_transforms</span><span class="p">(</span><span class="n">image_shape</span><span class="p">,</span> <span class="n">labels_as_onehot</span><span class="p">):</span>
+    <span class="c1"># Make transforms</span>
+    <span class="n">image_transforms</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">(</span><span class="n">PILImage2NumPyArray</span><span class="p">(),</span>
+                               <span class="n">NormalizeRange</span><span class="p">(),</span>
+                               <span class="n">RandomGammaCorrection</span><span class="p">(),</span>
+                               <span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="n">CITYSCAPES_MEAN</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">CITYSCAPES_STD</span><span class="p">))</span>
+    <span class="n">label_transforms</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">(</span><span class="n">PILImage2NumPyArray</span><span class="p">(),</span>
+                               <span class="n">Project</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="n">CITYSCAPES_CLASSES_TO_LABELS</span><span class="p">))</span>
+    <span class="n">joint_transforms</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">(</span><span class="n">RandomSizedCrop</span><span class="p">(</span><span class="n">ratio_between</span><span class="o">=</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+                                               <span class="n">preserve_aspect_ratio</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                               <span class="c1"># Scale raw image back to the original shape</span>
+                               <span class="n">Scale</span><span class="p">(</span><span class="n">output_image_shape</span><span class="o">=</span><span class="n">image_shape</span><span class="p">,</span>
+                                     <span class="n">interpolation_order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">apply_to</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                               <span class="c1"># Scale segmentation back to the original shape</span>
+                               <span class="c1"># (without interpolation)</span>
+                               <span class="n">Scale</span><span class="p">(</span><span class="n">output_image_shape</span><span class="o">=</span><span class="n">image_shape</span><span class="p">,</span>
+                                     <span class="n">interpolation_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">apply_to</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                               <span class="n">RandomFlip</span><span class="p">(</span><span class="n">allow_ud_flips</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                               <span class="c1"># Cast raw image to float</span>
+                               <span class="n">Cast</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">,</span> <span class="n">apply_to</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">labels_as_onehot</span><span class="p">:</span>
+        <span class="c1"># Applying Label2OneHot on the full label image makes it unnecessarily expensive,</span>
+        <span class="c1"># because we&#39;re throwing it away with RandomSizedCrop and Scale. Tests show that it&#39;s</span>
+        <span class="c1"># ~1 sec faster per image.</span>
+        <span class="n">joint_transforms</span> \
+            <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Label2OneHot</span><span class="p">(</span><span class="n">num_classes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">CITYSCAPES_LABEL_WEIGHTS</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">,</span>
+                              <span class="n">apply_to</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> \
+            <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Cast</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">,</span> <span class="n">apply_to</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Cast label image to long</span>
+        <span class="n">joint_transforms</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Cast</span><span class="p">(</span><span class="s1">&#39;long&#39;</span><span class="p">,</span> <span class="n">apply_to</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="c1"># Batchify</span>
+    <span class="n">joint_transforms</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">AsTorchBatch</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">add_channel_axis_if_necessary</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="c1"># Return as kwargs</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;image_transform&#39;</span><span class="p">:</span> <span class="n">image_transforms</span><span class="p">,</span>
+            <span class="s1">&#39;label_transform&#39;</span><span class="p">:</span> <span class="n">label_transforms</span><span class="p">,</span>
+            <span class="s1">&#39;joint_transform&#39;</span><span class="p">:</span> <span class="n">joint_transforms</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="get_cityscapes_loaders"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.io.box.html#inferno.io.box.cityscapes.get_cityscapes_loaders">[docs]</a><span class="k">def</span> <span class="nf">get_cityscapes_loaders</span><span class="p">(</span><span class="n">root_directory</span><span class="p">,</span> <span class="n">image_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">2048</span><span class="p">),</span> <span class="n">labels_as_onehot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                           <span class="n">include_coarse_dataset</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">read_from_zip_archive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                           <span class="n">train_batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">validate_batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="c1"># Build datasets</span>
+    <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">Cityscapes</span><span class="p">(</span><span class="n">root_directory</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train&#39;</span><span class="p">,</span>
+                               <span class="n">read_from_zip_archive</span><span class="o">=</span><span class="n">read_from_zip_archive</span><span class="p">,</span>
+                               <span class="o">**</span><span class="n">make_transforms</span><span class="p">(</span><span class="n">image_shape</span><span class="p">,</span> <span class="n">labels_as_onehot</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">include_coarse_dataset</span><span class="p">:</span>
+        <span class="c1"># Build coarse dataset</span>
+        <span class="n">coarse_dataset</span> <span class="o">=</span> <span class="n">Cityscapes</span><span class="p">(</span><span class="n">root_directory</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;train_extra&#39;</span><span class="p">,</span>
+                                    <span class="n">read_from_zip_archive</span><span class="o">=</span><span class="n">read_from_zip_archive</span><span class="p">,</span>
+                                    <span class="o">**</span><span class="n">make_transforms</span><span class="p">(</span><span class="n">image_shape</span><span class="p">,</span> <span class="n">labels_as_onehot</span><span class="p">))</span>
+        <span class="c1"># ... and concatenate with train_dataset</span>
+        <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">Concatenate</span><span class="p">(</span><span class="n">coarse_dataset</span><span class="p">,</span> <span class="n">train_dataset</span><span class="p">)</span>
+    <span class="n">validate_dataset</span> <span class="o">=</span> <span class="n">Cityscapes</span><span class="p">(</span><span class="n">root_directory</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s1">&#39;validate&#39;</span><span class="p">,</span>
+                                  <span class="n">read_from_zip_archive</span><span class="o">=</span><span class="n">read_from_zip_archive</span><span class="p">,</span>
+                                  <span class="o">**</span><span class="n">make_transforms</span><span class="p">(</span><span class="n">image_shape</span><span class="p">,</span> <span class="n">labels_as_onehot</span><span class="p">))</span>
+
+    <span class="c1"># Build loaders</span>
+    <span class="n">train_loader</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">train_batch_size</span><span class="p">,</span>
+                                   <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">validate_loader</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">validate_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">validate_batch_size</span><span class="p">,</span>
+                                      <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">validate_loader</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

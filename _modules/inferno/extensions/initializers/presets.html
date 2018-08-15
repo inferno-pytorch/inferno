@@ -1,0 +1,173 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.extensions.initializers.presets &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.extensions.initializers.presets</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch.nn.init</span> <span class="k">as</span> <span class="nn">init</span>
+<span class="kn">from</span> <span class="nn">torch.autograd</span> <span class="k">import</span> <span class="n">Variable</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">Initialization</span><span class="p">,</span> <span class="n">Initializer</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Constant&#39;</span><span class="p">,</span> <span class="s1">&#39;NormalWeights&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;SELUWeightsZeroBias&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;ELUWeightsZeroBias&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;OrthogonalWeightsZeroBias&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;KaimingNormalWeightsZeroBias&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Constant"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.presets.Constant">[docs]</a><span class="k">class</span> <span class="nc">Constant</span><span class="p">(</span><span class="n">Initializer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Initialize with a constant.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constant</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constant</span> <span class="o">=</span> <span class="n">constant</span>
+
+<div class="viewcode-block" id="Constant.call_on_tensor"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.presets.Constant.call_on_tensor">[docs]</a>    <span class="k">def</span> <span class="nf">call_on_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">Variable</span><span class="p">):</span>
+            <span class="n">tensor</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">tensor</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constant</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tensor</span></div></div>
+
+
+<div class="viewcode-block" id="NormalWeights"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.presets.NormalWeights">[docs]</a><span class="k">class</span> <span class="nc">NormalWeights</span><span class="p">(</span><span class="n">Initializer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize weights with random numbers drawn from the normal distribution at</span>
+<span class="sd">    `mean` and `stddev`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">stddev</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">sqrt_gain_over_fan_in</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stddev</span> <span class="o">=</span> <span class="n">stddev</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sqrt_gain_over_fan_in</span> <span class="o">=</span> <span class="n">sqrt_gain_over_fan_in</span>
+
+<div class="viewcode-block" id="NormalWeights.compute_fan_in"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.presets.NormalWeights.compute_fan_in">[docs]</a>    <span class="k">def</span> <span class="nf">compute_fan_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tensor</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tensor</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">size</span><span class="p">())[</span><span class="mi">1</span><span class="p">:])</span></div>
+
+<div class="viewcode-block" id="NormalWeights.call_on_weight"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.presets.NormalWeights.call_on_weight">[docs]</a>    <span class="k">def</span> <span class="nf">call_on_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">Variable</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call_on_weight</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tensor</span>
+        <span class="c1"># Compute stddev if required</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sqrt_gain_over_fan_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">stddev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stddev</span> <span class="o">*</span> \
+                     <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sqrt_gain_over_fan_in</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_fan_in</span><span class="p">(</span><span class="n">tensor</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stddev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stddev</span>
+        <span class="c1"># Init</span>
+        <span class="n">tensor</span><span class="o">.</span><span class="n">normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">stddev</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="OrthogonalWeightsZeroBias"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.presets.OrthogonalWeightsZeroBias">[docs]</a><span class="k">class</span> <span class="nc">OrthogonalWeightsZeroBias</span><span class="p">(</span><span class="n">Initialization</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">orthogonal_gain</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+        <span class="c1"># This prevents a deprecated warning in Pytorch 0.4+</span>
+        <span class="n">orthogonal</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="s1">&#39;orthogonal_&#39;</span><span class="p">,</span> <span class="n">init</span><span class="o">.</span><span class="n">orthogonal</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OrthogonalWeightsZeroBias</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>\
+            <span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">weight_initializer</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">orthogonal</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="n">orthogonal_gain</span><span class="p">),</span>
+                      <span class="n">bias_initializer</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="KaimingNormalWeightsZeroBias"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.presets.KaimingNormalWeightsZeroBias">[docs]</a><span class="k">class</span> <span class="nc">KaimingNormalWeightsZeroBias</span><span class="p">(</span><span class="n">Initialization</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relu_leakage</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># This prevents a deprecated warning in Pytorch 0.4+</span>
+        <span class="n">kaiming_normal</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="s1">&#39;kaiming_normal_&#39;</span><span class="p">,</span> <span class="n">init</span><span class="o">.</span><span class="n">kaiming_normal</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">KaimingNormalWeightsZeroBias</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>\
+            <span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">weight_initializer</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">kaiming_normal</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">relu_leakage</span><span class="p">),</span>
+                      <span class="n">bias_initializer</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="SELUWeightsZeroBias"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.presets.SELUWeightsZeroBias">[docs]</a><span class="k">class</span> <span class="nc">SELUWeightsZeroBias</span><span class="p">(</span><span class="n">Initialization</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SELUWeightsZeroBias</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>\
+            <span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">weight_initializer</span><span class="o">=</span><span class="n">NormalWeights</span><span class="p">(</span><span class="n">sqrt_gain_over_fan_in</span><span class="o">=</span><span class="mf">1.</span><span class="p">),</span>
+                      <span class="n">bias_initializer</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="ELUWeightsZeroBias"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.initializers.html#inferno.extensions.initializers.presets.ELUWeightsZeroBias">[docs]</a><span class="k">class</span> <span class="nc">ELUWeightsZeroBias</span><span class="p">(</span><span class="n">Initialization</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ELUWeightsZeroBias</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>\
+            <span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">weight_initializer</span><span class="o">=</span><span class="n">NormalWeights</span><span class="p">(</span><span class="n">sqrt_gain_over_fan_in</span><span class="o">=</span><span class="mf">1.5505188080679277</span><span class="p">),</span>
+                      <span class="n">bias_initializer</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.</span><span class="p">))</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>
