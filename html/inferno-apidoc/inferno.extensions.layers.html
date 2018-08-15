@@ -368,6 +368,9 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-inferno.extensions.layers.identity">
+<span id="inferno-extensions-layers-identity-module"></span><h2>inferno.extensions.layers.identity module<a class="headerlink" href="#module-inferno.extensions.layers.identity" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="module-inferno.extensions.layers.prefab">
 <span id="inferno-extensions-layers-prefab-module"></span><h2>inferno.extensions.layers.prefab module<a class="headerlink" href="#module-inferno.extensions.layers.prefab" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -393,6 +396,53 @@ instead of this since the former takes care of running the
 registered hooks while the latter silently ignores them.</p>
 </div>
 </dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferno.extensions.layers.res_unet">
+<span id="inferno-extensions-layers-res-unet-module"></span><h2>inferno.extensions.layers.res_unet module<a class="headerlink" href="#module-inferno.extensions.layers.res_unet" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferno.extensions.layers.res_unet.ResBlockUNet">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.res_unet.</code><code class="descname">ResBlockUNet</code><span class="sig-paren">(</span><em>in_channels</em>, <em>dim</em>, <em>out_channels</em>, <em>unet_kwargs=None</em>, <em>res_block_kwargs=None</em>, <em>activated=True</em>, <em>side_out_parts=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/res_unet.html#ResBlockUNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.res_unet.ResBlockUNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.unet_base.UNetBase" title="inferno.extensions.layers.unet_base.UNetBase"><tt class="xref py py-class docutils literal">inferno.extensions.layers.unet_base.UNetBase</tt></a></p>
+<p>TODO.</p>
+<blockquote>
+<div>ACCC</div></blockquote>
+<dl class="attribute">
+<dt id="inferno.extensions.layers.res_unet.ResBlockUNet.activated">
+<code class="descname">activated</code><a class="headerlink" href="#inferno.extensions.layers.res_unet.ResBlockUNet.activated" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.res_unet.ResBlockUNet.dim">
+<code class="descname">dim</code><a class="headerlink" href="#inferno.extensions.layers.res_unet.ResBlockUNet.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.res_unet.ResBlockUNet.res_block_kwargs">
+<code class="descname">res_block_kwargs</code><a class="headerlink" href="#inferno.extensions.layers.res_unet.ResBlockUNet.res_block_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.res_unet.ResBlockUNet.side_out_parts">
+<code class="descname">side_out_parts</code><a class="headerlink" href="#inferno.extensions.layers.res_unet.ResBlockUNet.side_out_parts" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferno.extensions.layers.res_unet.ResBlockUNet.unet_kwargs">
+<code class="descname">unet_kwargs</code><a class="headerlink" href="#inferno.extensions.layers.res_unet.ResBlockUNet.unet_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>TYPE</em> – Description</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.res_unet.ResBlockUNet.conv_op_factory">
+<code class="descname">conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/res_unet.html#ResBlockUNet.conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.res_unet.ResBlockUNet.conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -665,11 +715,11 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-inferno.extensions.layers.unet">
-<span id="inferno-extensions-layers-unet-module"></span><h2>inferno.extensions.layers.unet module<a class="headerlink" href="#module-inferno.extensions.layers.unet" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-inferno.extensions.layers.unet_base">
+<span id="inferno-extensions-layers-unet-base-module"></span><h2>inferno.extensions.layers.unet_base module<a class="headerlink" href="#module-inferno.extensions.layers.unet_base" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="inferno.extensions.layers.unet.UNetBase">
-<em class="property">class </em><code class="descclassname">inferno.extensions.layers.unet.</code><code class="descname">UNetBase</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>dim</em>, <em>depth=3</em>, <em>gain=2</em>, <em>residual=False</em>, <em>upsample_mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase" title="Permalink to this definition">¶</a></dt>
+<dt id="inferno.extensions.layers.unet_base.UNetBase">
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.unet_base.</code><code class="descname">UNetBase</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>dim</em>, <em>depth=3</em>, <em>gain=2</em>, <em>residual=False</em>, <em>upsample_mode=None</em>, <em>p_dropout=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
 <dl class="docutils">
 <dt>Base class for implementing UNets.</dt>
@@ -680,59 +730,59 @@ The deriving classes must implement
 <cite>downsample_op_factory</cite>.</dd>
 </dl>
 <dl class="attribute">
-<dt id="inferno.extensions.layers.unet.UNetBase.in_channels">
-<code class="descname">in_channels</code><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.in_channels" title="Permalink to this definition">¶</a></dt>
+<dt id="inferno.extensions.layers.unet_base.UNetBase.in_channels">
+<code class="descname">in_channels</code><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase.in_channels" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>int</em> – Description</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="inferno.extensions.layers.unet.UNetBase.out_channels">
-<code class="descname">out_channels</code><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.out_channels" title="Permalink to this definition">¶</a></dt>
+<dt id="inferno.extensions.layers.unet_base.UNetBase.out_channels">
+<code class="descname">out_channels</code><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase.out_channels" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>int</em> – Description</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="inferno.extensions.layers.unet.UNetBase.dim">
-<code class="descname">dim</code><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.dim" title="Permalink to this definition">¶</a></dt>
+<dt id="inferno.extensions.layers.unet_base.UNetBase.dim">
+<code class="descname">dim</code><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase.dim" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>int</em> – Spatial dimension of data (must be 2 or 3)</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="inferno.extensions.layers.unet.UNetBase.depth">
-<code class="descname">depth</code><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.depth" title="Permalink to this definition">¶</a></dt>
+<dt id="inferno.extensions.layers.unet_base.UNetBase.depth">
+<code class="descname">depth</code><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase.depth" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>int</em> – How many down-sampling / up-sampling steps
 shall be performed</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="inferno.extensions.layers.unet.UNetBase.gain">
-<code class="descname">gain</code><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.gain" title="Permalink to this definition">¶</a></dt>
+<dt id="inferno.extensions.layers.unet_base.UNetBase.gain">
+<code class="descname">gain</code><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase.gain" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>int</em> – Multiplicative increase of channels while going down in the UNet.
 The same factor is used to decrease the number of channels while
 going up in the UNet.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="inferno.extensions.layers.unet.UNetBase.residual">
-<code class="descname">residual</code><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.residual" title="Permalink to this definition">¶</a></dt>
+<dt id="inferno.extensions.layers.unet_base.UNetBase.residual">
+<code class="descname">residual</code><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase.residual" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>bool</em> – If residual is true, the output of the down-streams
 are added to the up-stream results.
 Otherwise the results are concatenated.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="inferno.extensions.layers.unet.UNetBase.conv_op_factory">
-<code class="descname">conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<dt id="inferno.extensions.layers.unet_base.UNetBase.conv_op_factory">
+<code class="descname">conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase.conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase.conv_op_factory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="inferno.extensions.layers.unet.UNetBase.downsample_op_factory">
-<code class="descname">downsample_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.downsample_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.downsample_op_factory" title="Permalink to this definition">¶</a></dt>
+<dt id="inferno.extensions.layers.unet_base.UNetBase.downsample_op_factory">
+<code class="descname">downsample_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase.downsample_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase.downsample_op_factory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="inferno.extensions.layers.unet.UNetBase.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.forward" title="Permalink to this definition">¶</a></dt>
+<dt id="inferno.extensions.layers.unet_base.UNetBase.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -745,52 +795,18 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="inferno.extensions.layers.unet.UNetBase.upsample_op_factory">
-<code class="descname">upsample_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.upsample_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.UNetBase.upsample_op_factory" title="Permalink to this definition">¶</a></dt>
+<dt id="inferno.extensions.layers.unet_base.UNetBase.post_conv_op_regularizer_factory">
+<code class="descname">post_conv_op_regularizer_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase.post_conv_op_regularizer_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase.post_conv_op_regularizer_factory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</dd></dl>
-
-<dl class="class">
-<dt id="inferno.extensions.layers.unet.ResBlockUNet">
-<em class="property">class </em><code class="descclassname">inferno.extensions.layers.unet.</code><code class="descname">ResBlockUNet</code><span class="sig-paren">(</span><em>in_channels</em>, <em>dim</em>, <em>out_channels</em>, <em>unet_kwargs=None</em>, <em>res_block_kwargs=None</em>, <em>activated=True</em>, <em>side_out_parts=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#ResBlockUNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.unet.UNetBase" title="inferno.extensions.layers.unet.UNetBase"><tt class="xref py py-class docutils literal">inferno.extensions.layers.unet.UNetBase</tt></a></p>
-<p>TODO.</p>
-<blockquote>
-<div>ACCC</div></blockquote>
-<dl class="attribute">
-<dt id="inferno.extensions.layers.unet.ResBlockUNet.activated">
-<code class="descname">activated</code><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet.activated" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>TYPE</em> – Description</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="inferno.extensions.layers.unet.ResBlockUNet.dim">
-<code class="descname">dim</code><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet.dim" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>TYPE</em> – Description</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="inferno.extensions.layers.unet.ResBlockUNet.res_block_kwargs">
-<code class="descname">res_block_kwargs</code><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet.res_block_kwargs" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>TYPE</em> – Description</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="inferno.extensions.layers.unet.ResBlockUNet.side_out_parts">
-<code class="descname">side_out_parts</code><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet.side_out_parts" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>TYPE</em> – Description</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="inferno.extensions.layers.unet.ResBlockUNet.unet_kwargs">
-<code class="descname">unet_kwargs</code><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet.unet_kwargs" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>TYPE</em> – Description</p>
-</dd></dl>
+<dl class="method">
+<dt id="inferno.extensions.layers.unet_base.UNetBase.pre_conv_op_regularizer_factory">
+<code class="descname">pre_conv_op_regularizer_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase.pre_conv_op_regularizer_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase.pre_conv_op_regularizer_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
-<dt id="inferno.extensions.layers.unet.ResBlockUNet.conv_op_factory">
-<code class="descname">conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#ResBlockUNet.conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet.ResBlockUNet.conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<dt id="inferno.extensions.layers.unet_base.UNetBase.upsample_op_factory">
+<code class="descname">upsample_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase.upsample_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.unet_base.UNetBase.upsample_op_factory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1276,7 +1292,7 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="class">
 <dt id="inferno.extensions.layers.UNetBase">
-<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">UNetBase</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>dim</em>, <em>depth=3</em>, <em>gain=2</em>, <em>residual=False</em>, <em>upsample_mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">UNetBase</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>dim</em>, <em>depth=3</em>, <em>gain=2</em>, <em>residual=False</em>, <em>upsample_mode=None</em>, <em>p_dropout=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal">torch.nn.modules.module.Module</tt></p>
 <dl class="docutils">
 <dt>Base class for implementing UNets.</dt>
@@ -1329,17 +1345,17 @@ Otherwise the results are concatenated.</p>
 
 <dl class="method">
 <dt id="inferno.extensions.layers.UNetBase.conv_op_factory">
-<code class="descname">conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<code class="descname">conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase.conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.conv_op_factory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="inferno.extensions.layers.UNetBase.downsample_op_factory">
-<code class="descname">downsample_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.downsample_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.downsample_op_factory" title="Permalink to this definition">¶</a></dt>
+<code class="descname">downsample_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase.downsample_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.downsample_op_factory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="inferno.extensions.layers.UNetBase.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.forward" title="Permalink to this definition">¶</a></dt>
+<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">
@@ -1352,16 +1368,26 @@ registered hooks while the latter silently ignores them.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="inferno.extensions.layers.UNetBase.post_conv_op_regularizer_factory">
+<code class="descname">post_conv_op_regularizer_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase.post_conv_op_regularizer_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.post_conv_op_regularizer_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferno.extensions.layers.UNetBase.pre_conv_op_regularizer_factory">
+<code class="descname">pre_conv_op_regularizer_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase.pre_conv_op_regularizer_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.pre_conv_op_regularizer_factory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="inferno.extensions.layers.UNetBase.upsample_op_factory">
-<code class="descname">upsample_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#UNetBase.upsample_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.upsample_op_factory" title="Permalink to this definition">¶</a></dt>
+<code class="descname">upsample_op_factory</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet_base.html#UNetBase.upsample_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.UNetBase.upsample_op_factory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="inferno.extensions.layers.ResBlockUNet">
-<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ResBlockUNet</code><span class="sig-paren">(</span><em>in_channels</em>, <em>dim</em>, <em>out_channels</em>, <em>unet_kwargs=None</em>, <em>res_block_kwargs=None</em>, <em>activated=True</em>, <em>side_out_parts=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#ResBlockUNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlockUNet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.unet.UNetBase" title="inferno.extensions.layers.unet.UNetBase"><tt class="xref py py-class docutils literal">inferno.extensions.layers.unet.UNetBase</tt></a></p>
+<em class="property">class </em><code class="descclassname">inferno.extensions.layers.</code><code class="descname">ResBlockUNet</code><span class="sig-paren">(</span><em>in_channels</em>, <em>dim</em>, <em>out_channels</em>, <em>unet_kwargs=None</em>, <em>res_block_kwargs=None</em>, <em>activated=True</em>, <em>side_out_parts=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/res_unet.html#ResBlockUNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlockUNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferno.extensions.layers.unet_base.UNetBase" title="inferno.extensions.layers.unet_base.UNetBase"><tt class="xref py py-class docutils literal">inferno.extensions.layers.unet_base.UNetBase</tt></a></p>
 <p>TODO.</p>
 <blockquote>
 <div>ACCC</div></blockquote>
@@ -1397,7 +1423,7 @@ registered hooks while the latter silently ignores them.</p>
 
 <dl class="method">
 <dt id="inferno.extensions.layers.ResBlockUNet.conv_op_factory">
-<code class="descname">conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/unet.html#ResBlockUNet.conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlockUNet.conv_op_factory" title="Permalink to this definition">¶</a></dt>
+<code class="descname">conv_op_factory</code><span class="sig-paren">(</span><em>in_channels</em>, <em>out_channels</em>, <em>part</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/inferno/extensions/layers/res_unet.html#ResBlockUNet.conv_op_factory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferno.extensions.layers.ResBlockUNet.conv_op_factory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1480,10 +1506,12 @@ registered hooks while the latter silently ignores them.</p>
 <li><a class="reference internal" href="#module-inferno.extensions.layers.building_blocks">inferno.extensions.layers.building_blocks module</a></li>
 <li><a class="reference internal" href="#module-inferno.extensions.layers.convolutional">inferno.extensions.layers.convolutional module</a></li>
 <li><a class="reference internal" href="#module-inferno.extensions.layers.device">inferno.extensions.layers.device module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.layers.identity">inferno.extensions.layers.identity module</a></li>
 <li><a class="reference internal" href="#module-inferno.extensions.layers.prefab">inferno.extensions.layers.prefab module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.layers.res_unet">inferno.extensions.layers.res_unet module</a></li>
 <li><a class="reference internal" href="#module-inferno.extensions.layers.reshape">inferno.extensions.layers.reshape module</a></li>
 <li><a class="reference internal" href="#module-inferno.extensions.layers.sampling">inferno.extensions.layers.sampling module</a></li>
-<li><a class="reference internal" href="#module-inferno.extensions.layers.unet">inferno.extensions.layers.unet module</a></li>
+<li><a class="reference internal" href="#module-inferno.extensions.layers.unet_base">inferno.extensions.layers.unet_base module</a></li>
 <li><a class="reference internal" href="#module-inferno.extensions.layers">Module contents</a></li>
 </ul>
 </li>

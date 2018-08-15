@@ -1,0 +1,420 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferno.extensions.layers.unet_base &#8212; inferno 0.1.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferno.extensions.layers.unet_base</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span> 
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">identity</span> <span class="kn">import</span> <span class="nn">Identity</span>
+<span class="kn">from</span> <span class="nn">...utils.math_utils</span> <span class="k">import</span> <span class="n">max_allowed_ds_steps</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;UNetBase&#39;</span><span class="p">]</span>
+<span class="n">_all</span> <span class="o">=</span> <span class="n">__all__</span>
+
+
+
+<div class="viewcode-block" id="UNetBase"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.unet_base.UNetBase">[docs]</a><span class="k">class</span> <span class="nc">UNetBase</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Base class for implementing UNets.</span>
+<span class="sd">        The depth and dimension of the UNet is flexible.</span>
+<span class="sd">        The deriving classes must implement</span>
+<span class="sd">        `conv_op_factory` and can implement</span>
+<span class="sd">        `upsample_op_factory` and </span>
+<span class="sd">        `downsample_op_factory`.</span>
+
+<span class="sd">  </span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        in_channels (int): Description</span>
+<span class="sd">        out_channels (int): Description</span>
+<span class="sd">        dim (int): Spatial dimension of data (must be 2 or 3)</span>
+<span class="sd">        depth (int): How many down-sampling / up-sampling steps</span>
+<span class="sd">            shall be performed</span>
+<span class="sd">        gain (int): Multiplicative increase of channels while going down in the UNet.</span>
+<span class="sd">            The same factor is used to decrease the number of channels while </span>
+<span class="sd">            going up in the UNet.</span>
+<span class="sd">        residual (bool): If residual is true, the output of the down-streams</span>
+<span class="sd">            are added to the up-stream results.</span>
+<span class="sd">            Otherwise the results are concatenated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">upsample_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_dropout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">UNetBase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># early sanity check</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;UNetBase is only implemented for 2D and 3D&quot;</span><span class="p">)</span>
+
+        <span class="c1"># settings related members</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span>  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">in_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_channels</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">out_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span>          <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">depth</span>        <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gain</span>         <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gain</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">residual</span>     <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">residual</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_dropout</span> <span class="o">=</span> <span class="n">p_dropout</span>
+
+        <span class="c1"># members to remember what to store as side output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_down</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_bottom</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_up</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># number of channels per side output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_channels_per_output</span> <span class="o">=</span> <span class="p">[]</span>
+        
+
+        <span class="c1"># members to hold actual nn.Modules / nn.ModuleLists</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__pre_conv_down_ops</span>  <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__post_conv_down_ops</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__conv_down_ops</span>  <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__pre_conv_up_ops</span>  <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__post_conv_up_ops</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__conv_up_ops</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__upsample_ops</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__downsample_ops</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__pre_conv_bottom_ops</span>  <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__post_conv_bottom_ops</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__conv_bottom_op</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># upsample kwargs </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__upsample_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_upsample_kwargs</span><span class="p">(</span><span class="n">upsample_mode</span><span class="o">=</span><span class="n">upsample_mode</span><span class="p">)</span>
+
+
+        <span class="c1">########################################</span>
+        <span class="c1"># default dropout</span>
+        <span class="c1">########################################</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_dropout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_dropout</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__channel_dropout_op</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout2d</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_dropout</span><span class="p">),</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__channel_dropout_op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout3d</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_dropout</span><span class="p">),</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_dropout</span> <span class="o">=</span> <span class="kc">False</span>
+
+ 
+        <span class="c1"># down-stream convolution blocks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__init__downstream</span><span class="p">()</span>
+      
+        <span class="c1"># pooling / downsample operators</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__downsample_ops</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">downsample_op_factory</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
+        <span class="p">])</span>
+        
+        <span class="c1"># upsample operators</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__upsample_ops</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">upsample_op_factory</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
+        <span class="p">])</span>
+
+        <span class="c1"># bottom block of the unet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__init__bottom</span><span class="p">()</span>  
+
+        <span class="c1"># up-stream convolution blocks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__init__upstream</span><span class="p">()</span>
+        
+       
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels_per_output</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_down</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_up</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>   <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_bottom</span><span class="p">)</span>
+        
+
+
+    <span class="k">def</span> <span class="nf">__init__downstream</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">conv_down_ops</span> <span class="o">=</span> <span class="p">[]</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_down</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">current_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">):</span>
+            <span class="n">out_channels</span> <span class="o">=</span> <span class="n">current_in_channels</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gain</span>
+            <span class="n">op</span><span class="p">,</span> <span class="n">return_op_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_op_factory</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">current_in_channels</span><span class="p">,</span> 
+                                                     <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span>
+                                                     <span class="n">part</span><span class="o">=</span><span class="s1">&#39;down&#39;</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">conv_down_ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">return_op_res</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_channels_per_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out_channels</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_down</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_down</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+
+            <span class="c1"># increase the number of channels</span>
+            <span class="n">current_in_channels</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gain</span>
+
+        <span class="c1"># store as proper torch ModuleList</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__conv_down_ops</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span><span class="n">conv_down_ops</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">current_in_channels</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__bottom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+   
+        <span class="n">conv_up_ops</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">current_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gain</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span>
+
+
+        <span class="n">factory_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_op_factory</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">current_in_channels</span><span class="p">,</span> 
+            <span class="n">out_channels</span><span class="o">=</span><span class="n">current_in_channels</span><span class="p">,</span> <span class="n">part</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">factory_res</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__conv_bottom_op</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_bottom</span> <span class="o">=</span> <span class="n">factory_res</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_bottom</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_channels_per_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_in_channels</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__conv_bottom_op</span> <span class="o">=</span> <span class="n">factory_res</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_bottom</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__upstream</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">conv_up_ops</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">current_in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gain</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">):</span>
+            <span class="c1"># the number of out channels (are we in the last block?)</span>
+            <span class="n">out_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_channels</span> <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">)</span> <span class="k">else</span> <span class="n">current_in_channels</span><span class="o">//</span><span class="bp">self</span><span class="o">.</span><span class="n">gain</span>
+
+            <span class="c1"># if not residual we concat which needs twice as many channels</span>
+            <span class="n">fac</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">residual</span> <span class="k">else</span> <span class="mi">2</span>
+
+            <span class="n">op</span><span class="p">,</span> <span class="n">return_op_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv_op_factory</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">fac</span><span class="o">*</span><span class="n">current_in_channels</span><span class="p">,</span> 
+                                                     <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> 
+                                                     <span class="n">part</span><span class="o">=</span><span class="s1">&#39;up&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">conv_up_ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">return_op_res</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_channels_per_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out_channels</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_up</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_up</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            
+
+            <span class="c1"># decrease the number of input_channels</span>
+            <span class="n">current_in_channels</span> <span class="o">//=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gain</span>
+
+        <span class="c1"># store as proper torch ModuleLis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__conv_up_ops</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span><span class="n">conv_up_ops</span><span class="p">)</span>
+
+        <span class="c1"># the last block needs to be stored in any case</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_up</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_up</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_channels_per_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_channels</span><span class="p">)</span>
+
+
+    
+    <span class="k">def</span> <span class="nf">_make_upsample_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">upsample_mode</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;To avoid some waring from pytorch, and some missing implementations </span>
+<span class="sd">        for the arguments need to be handle carefully in this helper functions</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            upsample_mode (str): users choice for upsampling  interpolation style.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">upsample_mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">upsample_mode</span> <span class="o">=</span> <span class="s1">&#39;bilinear&#39;</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">upsample_mode</span> <span class="o">=</span> <span class="s1">&#39;nearest&#39;</span>
+
+        <span class="n">upsample_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">upsample_mode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">upsample_mode</span> <span class="o">==</span> <span class="s1">&#39;bilinear&#39;</span><span class="p">:</span>
+            <span class="n">upsample_kwargs</span><span class="p">[</span><span class="s1">&#39;align_corners&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">upsample_kwargs</span>
+
+    <span class="k">def</span> <span class="nf">__forward_sanity_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;tuples of tensors are not supported&quot;</span><span class="p">)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+        <span class="n">mx</span> <span class="o">=</span> <span class="n">max_allowed_ds_steps</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">2</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">],</span> <span class="n">factor</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mx</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;cannot downsample </span><span class="si">%d</span><span class="s2"> times, with shape </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">size</span><span class="p">()))</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">input</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span> <span class="p">:</span> 
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;wrong number of channels: expected </span><span class="si">%d</span><span class="s2">, got </span><span class="si">%d</span><span class="s2">&quot;</span><span class="o">%</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span><span class="p">,</span> <span class="nb">input</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span> 
+
+        <span class="k">if</span> <span class="nb">input</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">+</span> <span class="mi">2</span> <span class="p">:</span> 
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;wrong number of dim: expected </span><span class="si">%d</span><span class="s2">, got </span><span class="si">%d</span><span class="s2">&quot;</span><span class="o">%</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="nb">input</span><span class="o">.</span><span class="n">dim</span><span class="p">()))</span> 
+
+<div class="viewcode-block" id="UNetBase.forward"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.unet_base.UNetBase.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+
+        <span class="c1"># check if input is suitable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__forward_sanity_check</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">)</span>
+
+        <span class="c1"># collect all desired outputs</span>
+        <span class="n">side_out</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># remember all conv-block results of the downward part </span>
+        <span class="c1"># of the UNet</span>
+        <span class="n">down_res</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1">#################################</span>
+        <span class="c1"># downwards part</span>
+        <span class="c1">#################################</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="nb">input</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">):</span>
+
+
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__conv_down_ops</span><span class="p">[</span><span class="n">d</span><span class="p">](</span><span class="n">out</span><span class="p">)</span>
+            <span class="c1">#out = self.dropout</span>
+
+            <span class="n">down_res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_down</span><span class="p">[</span><span class="n">d</span><span class="p">]:</span>
+                <span class="n">side_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__downsample_ops</span><span class="p">[</span><span class="n">d</span><span class="p">](</span><span class="n">out</span><span class="p">)</span>
+
+        
+        <span class="c1">#################################</span>
+        <span class="c1"># bottom part</span>
+        <span class="c1">#################################</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__conv_bottom_op</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_bottom</span><span class="p">:</span>
+            <span class="n">side_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+
+        <span class="c1">#################################</span>
+        <span class="c1"># upward part</span>
+        <span class="c1">#################################</span>
+        <span class="n">down_res</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">down_res</span><span class="p">))</span> <span class="c1"># &lt;- eases indexing</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">):</span>
+
+            <span class="c1"># upsample</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__upsample_ops</span><span class="p">[</span><span class="n">d</span><span class="p">](</span><span class="n">out</span><span class="p">)</span>
+
+            <span class="c1"># the result of the downward part</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">down_res</span><span class="p">[</span><span class="n">d</span><span class="p">]</span>
+
+            <span class="c1"># add or concat?</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">residual</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">out</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">a</span><span class="p">,</span><span class="n">out</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># the convolutional block</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__conv_up_ops</span><span class="p">[</span><span class="n">d</span><span class="p">](</span><span class="n">out</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__store_conv_up</span><span class="p">[</span><span class="n">d</span><span class="p">]:</span>
+                <span class="n">side_out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        
+        <span class="c1"># debug postcondition</span>
+        <span class="k">assert</span> <span class="n">out</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_channels</span><span class="p">,</span> <span class="s2">&quot;internal error&quot;</span>
+        
+        <span class="c1"># if  len(side_out) == 1 we actually have no side output</span>
+        <span class="c1"># just the main output </span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">side_out</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">side_out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">side_out</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UNetBase.downsample_op_factory"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.unet_base.UNetBase.downsample_op_factory">[docs]</a>    <span class="k">def</span> <span class="nf">downsample_op_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool3d</span>
+        <span class="k">return</span> <span class="n">C</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UNetBase.upsample_op_factory"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.unet_base.UNetBase.upsample_op_factory">[docs]</a>    <span class="k">def</span> <span class="nf">upsample_op_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__upsample_kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UNetBase.pre_conv_op_regularizer_factory"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.unet_base.UNetBase.pre_conv_op_regularizer_factory">[docs]</a>    <span class="k">def</span> <span class="nf">pre_conv_op_regularizer_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_dropout</span> <span class="ow">and</span> <span class="n">in_channels</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__channel_dropout_op</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Identity</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="UNetBase.post_conv_op_regularizer_factory"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.unet_base.UNetBase.post_conv_op_regularizer_factory">[docs]</a>    <span class="k">def</span> <span class="nf">post_conv_op_regularizer_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Identity</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="UNetBase.conv_op_factory"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.unet_base.UNetBase.conv_op_factory">[docs]</a>    <span class="k">def</span> <span class="nf">conv_op_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;conv_op_factory need to be implemented by deriving class&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_dropout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_dropout</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__channel_dropout_op</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">inferno 0.1.7 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Nasim Rahaman.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
+    </div>
+  </body>
+</html>

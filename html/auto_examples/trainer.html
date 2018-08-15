@@ -20,7 +20,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Train UNet Example" href="train_unet.html" />
+    <link rel="next" title="Regularized MNIST Example" href="regularized_mnist.html" />
     <link rel="prev" title="Gallery of Examples" href="index.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -33,7 +33,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="train_unet.html" title="Train UNet Example"
+          <a href="regularized_mnist.html" title="Regularized MNIST Example"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Gallery of Examples"
@@ -65,18 +65,21 @@
 <span class="kn">from</span> <span class="nn">inferno.utils.python_utils</span> <span class="kn">import</span> <a href="../inferno-apidoc/inferno.utils.html#inferno.utils.python_utils.ensure_dir" title="View documentation for inferno.utils.python_utils.ensure_dir"><span class="n">ensure_dir</span></a>
 
 <span class="kn">from</span> <span class="nn">inferno.extensions.layers</span> <span class="kn">import</span> <span class="n">SELU</span>
-
-<span class="c1"># change directories to your needs</span>
-<span class="n">LOG_DIRECTORY</span> <span class="o">=</span> <a href="../inferno-apidoc/inferno.utils.html#inferno.utils.python_utils.ensure_dir" title="View documentation for inferno.utils.python_utils.ensure_dir"><span class="n">ensure_dir</span></a><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>change directories to your needs</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LOG_DIRECTORY</span> <span class="o">=</span> <a href="../inferno-apidoc/inferno.utils.html#inferno.utils.python_utils.ensure_dir" title="View documentation for inferno.utils.python_utils.ensure_dir"><span class="n">ensure_dir</span></a><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 <span class="n">SAVE_DIRECTORY</span> <span class="o">=</span> <a href="../inferno-apidoc/inferno.utils.html#inferno.utils.python_utils.ensure_dir" title="View documentation for inferno.utils.python_utils.ensure_dir"><span class="n">ensure_dir</span></a><span class="p">(</span><span class="s1">&#39;save&#39;</span><span class="p">)</span>
 <span class="n">DATASET_DIRECTORY</span> <span class="o">=</span> <a href="../inferno-apidoc/inferno.utils.html#inferno.utils.python_utils.ensure_dir" title="View documentation for inferno.utils.python_utils.ensure_dir"><span class="n">ensure_dir</span></a><span class="p">(</span><span class="s1">&#39;dataset&#39;</span><span class="p">)</span>
-
-
-<span class="n">DOWNLOAD_CIFAR</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>shall models be downloaded</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DOWNLOAD_CIFAR</span> <span class="o">=</span> <span class="bp">True</span>
 <span class="n">USE_CUDA</span> <span class="o">=</span> <span class="bp">True</span>
-
-<span class="c1"># Build torch model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+</pre></div>
+</div>
+<p>Build torch model</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
     <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ConvELU2D" title="View documentation for inferno.extensions.layers.ConvELU2D"><span class="n">ConvELU2D</span></a><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
     <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
     <a href="../inferno-apidoc/inferno.extensions.layers.html#inferno.extensions.layers.ConvELU2D" title="View documentation for inferno.extensions.layers.ConvELU2D"><span class="n">ConvELU2D</span></a><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
@@ -87,13 +90,15 @@
     <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span><span class="p">),</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
     <span class="n">nn</span><span class="o">.</span><span class="n">Softmax</span><span class="p">()</span>
 <span class="p">)</span>
-
-<span class="c1"># Load loaders</span>
-<span class="n">train_loader</span><span class="p">,</span> <span class="n">validate_loader</span> <span class="o">=</span> <a href="../inferno-apidoc/inferno.io.box.html#inferno.io.box.get_cifar10_loaders" title="View documentation for inferno.io.box.cifar.get_cifar10_loaders"><span class="n">get_cifar10_loaders</span></a><span class="p">(</span><span class="n">DATASET_DIRECTORY</span><span class="p">,</span>
+</pre></div>
+</div>
+<p>data loaders</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">train_loader</span><span class="p">,</span> <span class="n">validate_loader</span> <span class="o">=</span> <a href="../inferno-apidoc/inferno.io.box.html#inferno.io.box.get_cifar10_loaders" title="View documentation for inferno.io.box.cifar.get_cifar10_loaders"><span class="n">get_cifar10_loaders</span></a><span class="p">(</span><span class="n">DATASET_DIRECTORY</span><span class="p">,</span>
                                         <span class="n">download</span><span class="o">=</span><span class="n">DOWNLOAD_CIFAR</span><span class="p">)</span>
-
-<span class="c1"># Build trainer</span>
-<span class="n">trainer</span> <span class="o">=</span> <a href="../inferno-apidoc/inferno.trainers.html#inferno.trainers.Trainer" title="View documentation for inferno.trainers.basic.Trainer"><span class="n">Trainer</span></a><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Build trainer</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span> <span class="o">=</span> <a href="../inferno-apidoc/inferno.trainers.html#inferno.trainers.Trainer" title="View documentation for inferno.trainers.basic.Trainer"><span class="n">Trainer</span></a><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 <span class="n">trainer</span><span class="o">.</span><span class="n">build_criterion</span><span class="p">(</span><span class="s1">&#39;CrossEntropyLoss&#39;</span><span class="p">)</span>
 <span class="n">trainer</span><span class="o">.</span><span class="n">build_metric</span><span class="p">(</span><span class="s1">&#39;CategoricalError&#39;</span><span class="p">)</span>
 <span class="n">trainer</span><span class="o">.</span><span class="n">build_optimizer</span><span class="p">(</span><span class="s1">&#39;Adam&#39;</span><span class="p">)</span>
@@ -104,16 +109,20 @@
 <span class="n">trainer</span><span class="o">.</span><span class="n">build_logger</span><span class="p">(</span><a href="../inferno-apidoc/inferno.trainers.callbacks.logging.html#inferno.trainers.callbacks.logging.TensorboardLogger" title="View documentation for inferno.trainers.callbacks.logging.tensorboard.TensorboardLogger"><span class="n">TensorboardLogger</span></a><span class="p">(</span><span class="n">log_scalars_every</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;iteration&#39;</span><span class="p">),</span>
                                 <span class="n">log_images_every</span><span class="o">=</span><span class="s1">&#39;never&#39;</span><span class="p">),</span>
               <span class="n">log_directory</span><span class="o">=</span><span class="n">LOG_DIRECTORY</span><span class="p">)</span>
-
-<span class="c1"># Bind loaders</span>
-<span class="n">trainer</span><span class="o">.</span><span class="n">bind_loader</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Bind loaders</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">bind_loader</span><span class="p">(</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">)</span>
 <span class="n">trainer</span><span class="o">.</span><span class="n">bind_loader</span><span class="p">(</span><span class="s1">&#39;validate&#39;</span><span class="p">,</span> <span class="n">validate_loader</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="n">USE_CUDA</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>activate cuda</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">USE_CUDA</span><span class="p">:</span>
     <span class="n">trainer</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
-
-<span class="c1"># Go!</span>
-<span class="c1">#trainer.fit()</span>
+</pre></div>
+</div>
+<p>fit</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </pre></div>
 </div>
 <p><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
@@ -136,8 +145,8 @@
   <p class="topless"><a href="index.html"
                         title="previous chapter">Gallery of Examples</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="train_unet.html"
-                        title="next chapter">Train UNet Example</a></p>
+  <p class="topless"><a href="regularized_mnist.html"
+                        title="next chapter">Regularized MNIST Example</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -171,7 +180,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="train_unet.html" title="Train UNet Example"
+          <a href="regularized_mnist.html" title="Regularized MNIST Example"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Gallery of Examples"

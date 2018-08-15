@@ -151,13 +151,13 @@ train_loader, test_loader, validate_loader = get_binary_blob_loaders(
 )
 
 # Build trainer
-trainer = Trainer(model) \
-.build_criterion(MySideLoss()) \
-.build_optimizer('Adam') \
-.validate_every((10, 'epochs')) \
-.save_every((10, 'epochs')) \
-.save_to_directory(SAVE_DIRECTORY) \
-.set_max_num_epochs(40) \
+trainer = Trainer(model)
+trainer.build_criterion(MySideLoss())
+trainer.build_optimizer('Adam')
+trainer.validate_every((10, 'epochs'))
+#trainer.save_every((10, 'epochs'))
+#trainer.save_to_directory(SAVE_DIRECTORY)
+trainer.set_max_num_epochs(40)
 
 # Bind loaders
 trainer \
@@ -176,7 +176,7 @@ trainer.fit()
 # and visualize the results
 
 # predict:
-trainer.load(best=True)
+#trainer.load(best=True)
 trainer.bind_loader('train', train_loader)
 trainer.bind_loader('validate', validate_loader)
 trainer.eval_mode()

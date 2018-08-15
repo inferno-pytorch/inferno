@@ -31,46 +31,6 @@ Gallery of Examples
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example should illustrate how to use the trainer class in conjunction with a unet, we use ...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_train_unet_thumb.png
-
-        :ref:`sphx_glr_auto_examples_train_unet.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/train_unet
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="This example should illustrate how to a Residual Unet  as a layer">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_res_unet_thumb.png
-
-        :ref:`sphx_glr_auto_examples_res_unet.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/res_unet
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates adding and logging arbitrary regularization losses, in this case, L2 ...">
 
 .. only:: html
@@ -95,9 +55,9 @@ Gallery of Examples
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_train_side_loss_unet_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_train_side_loss_unet_thumb.png
 
-        :ref:`sphx_glr_auto_examples_train_side_loss_unet.py`
+        :ref:`sphx_glr_auto_examples_plot_train_side_loss_unet.py`
 
 .. raw:: html
 
@@ -107,7 +67,7 @@ Gallery of Examples
 .. toctree::
    :hidden:
 
-   /auto_examples/train_side_loss_unet
+   /auto_examples/plot_train_side_loss_unet
 
 .. raw:: html
 

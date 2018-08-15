@@ -36,10 +36,26 @@ inferno.extensions.layers.device module
     :undoc-members:
     :show-inheritance:
 
+inferno.extensions.layers.identity module
+-----------------------------------------
+
+.. automodule:: inferno.extensions.layers.identity
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 inferno.extensions.layers.prefab module
 ---------------------------------------
 
 .. automodule:: inferno.extensions.layers.prefab
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+inferno.extensions.layers.res\_unet module
+------------------------------------------
+
+.. automodule:: inferno.extensions.layers.res_unet
     :members:
     :undoc-members:
     :show-inheritance:
@@ -60,10 +76,10 @@ inferno.extensions.layers.sampling module
     :undoc-members:
     :show-inheritance:
 
-inferno.extensions.layers.unet module
--------------------------------------
+inferno.extensions.layers.unet\_base module
+-------------------------------------------
 
-.. automodule:: inferno.extensions.layers.unet
+.. automodule:: inferno.extensions.layers.unet_base
     :members:
     :undoc-members:
     :show-inheritance:

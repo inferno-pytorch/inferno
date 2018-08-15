@@ -28,16 +28,34 @@ This example should illustrate how to use the trainer class.
 
     from inferno.extensions.layers import SELU
 
-    # change directories to your needs
+
+change directories to your needs
+
+
+
+.. code-block:: python
+
     LOG_DIRECTORY = ensure_dir('log')
     SAVE_DIRECTORY = ensure_dir('save')
     DATASET_DIRECTORY = ensure_dir('dataset')
 
 
+shall models be downloaded
+
+
+
+.. code-block:: python
+
     DOWNLOAD_CIFAR = True
     USE_CUDA = True
 
-    # Build torch model
+
+Build torch model
+
+
+
+.. code-block:: python
+
     model = nn.Sequential(
         ConvELU2D(in_channels=3, out_channels=256, kernel_size=3),
         nn.MaxPool2d(kernel_size=2, stride=2),
@@ -50,11 +68,23 @@ This example should illustrate how to use the trainer class.
         nn.Softmax()
     )
 
-    # Load loaders
+
+data loaders
+
+
+
+.. code-block:: python
+
     train_loader, validate_loader = get_cifar10_loaders(DATASET_DIRECTORY,
                                             download=DOWNLOAD_CIFAR)
 
-    # Build trainer
+
+Build trainer
+
+
+
+.. code-block:: python
+
     trainer = Trainer(model)
     trainer.build_criterion('CrossEntropyLoss')
     trainer.build_metric('CategoricalError')
@@ -67,15 +97,34 @@ This example should illustrate how to use the trainer class.
                                     log_images_every='never'), 
                   log_directory=LOG_DIRECTORY)
 
-    # Bind loaders
+
+Bind loaders
+
+
+
+.. code-block:: python
+
     trainer.bind_loader('train', train_loader)
     trainer.bind_loader('validate', validate_loader)
+
+
+activate cuda
+
+
+
+.. code-block:: python
 
     if USE_CUDA:
         trainer.cuda()
 
-    # Go!
-    #trainer.fit()
+
+fit
+
+
+
+.. code-block:: python
+
+    trainer.fit()
 
 **Total running time of the script:** ( 0 minutes  0.000 seconds)
 

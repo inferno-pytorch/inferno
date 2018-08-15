@@ -55,7 +55,7 @@
 <span class="kn">from</span> <span class="nn">...utils</span> <span class="k">import</span> <span class="n">python_utils</span> <span class="k">as</span> <span class="n">pyu</span>
 <span class="kn">from</span> <span class="nn">...utils.exceptions</span> <span class="k">import</span> <span class="n">assert_</span>
 <span class="kn">from</span> <span class="nn">..layers.device</span> <span class="k">import</span> <span class="n">OnDevice</span>
-
+<span class="kn">from</span> <span class="nn">..layers.identity</span> <span class="k">import</span> <span class="n">Identity</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NNGraph&#39;</span><span class="p">,</span> <span class="s1">&#39;Graph&#39;</span><span class="p">]</span>
 
@@ -90,11 +90,6 @@
             <span class="n">new</span><span class="p">[</span><span class="n">source</span><span class="p">][</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_edge_attributes</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new</span></div></div>
 
-
-<span class="k">class</span> <span class="nc">Identity</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A torch.nn.Module to do nothing.&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">input</span>
 
 
 <div class="viewcode-block" id="Graph"><a class="viewcode-back" href="../../../../inferno-apidoc/inferno.extensions.containers.html#inferno.extensions.containers.graph.Graph">[docs]</a><span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
