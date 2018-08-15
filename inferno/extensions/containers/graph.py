@@ -12,7 +12,7 @@ from torch import nn as nn
 from ...utils import python_utils as pyu
 from ...utils.exceptions import assert_
 from ..layers.device import OnDevice
-
+from ..identity import Identity
 
 __all__ = ['NNGraph', 'Graph']
 
@@ -47,11 +47,6 @@ class NNGraph(nx.DiGraph):
             new[source][target].update(new_edge_attributes)
         return new
 
-
-class Identity(nn.Module):
-    """A torch.nn.Module to do nothing."""
-    def forward(self, input):
-        return input
 
 
 class Graph(nn.Module):
