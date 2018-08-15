@@ -14,8 +14,8 @@ Subpackages
 Submodules
 ----------
 
-inferno\.inferno module
------------------------
+inferno.inferno module
+----------------------
 
 .. automodule:: inferno.inferno
     :members:

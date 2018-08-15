@@ -3,7 +3,50 @@ import signal
 import warnings
 import functools
 import inspect
+import os
 
+
+def ensure_dir(directory):
+    """ensure the existence of e directory at a given path
+
+        If the directory does not exist it is created
+    
+    Args:
+        directory (str): path of the directory
+    
+    Returns:
+        str: path of the directory
+    """
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    return directory
+
+def require_dict_kwagrs(kwargs, msg=None):
+    """ Ensure arguments passed kwargs are either None or a dict.
+        If arguments are neither a dict nor None a RuntimeError
+        is thrown   
+    Args:
+        kwargs (object): possible dict or None
+        msg (None, optional): Error msg
+    
+    Returns:
+        dict: kwargs dict
+    
+    Raises:
+        RuntimeError: if the passed value is neither a dict nor None  
+            this error is raised
+    """
+    if kwargs is None:
+        return dict()
+    elif isinstance(kwargs, dict):
+        return kwargs
+    else:
+        if msg is None:
+            raise RuntimeError("value passed as keyword argument dict is neither None nor a dict")
+        else:
+            raise RuntimeError("%s"%str(msg))
+
+            
 
 def is_listlike(x):
     return isinstance(x, (list, tuple))

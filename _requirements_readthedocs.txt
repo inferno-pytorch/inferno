@@ -1,9 +1,0 @@
-dill
-pyyaml
-scipy>=0.13.0
-h5py
-numpy>=1.13
-scikit-image
-sphinx-gallery
-sphinxcontrib-napoleon
-sphinxcontrib-bibtex

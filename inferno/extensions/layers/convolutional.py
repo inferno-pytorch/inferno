@@ -15,8 +15,9 @@ __all__ = ['ConvActivation',
            'Conv2D', 'Conv3D',
            'BNReLUConv2D', 'BNReLUConv3D',
            'BNReLUDepthwiseConv2D',
-           'ConvSELU2D', 'ConvSELU3D']
-
+           'ConvSELU2D', 'ConvSELU3D',
+           'ConvReLU2D', 'ConvReLU3D']
+_all = __all__
 
 class ConvActivation(nn.Module):
     """Convolutional layer with 'SAME' padding followed by an activation."""
