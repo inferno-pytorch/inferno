@@ -15,11 +15,6 @@ Inferno
         :target: http://inferno-pytorch.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://pyup.io/repos/github/inferno-pytorch/inferno/shield.svg
-     :target: https://pyup.io/repos/github/inferno-pytorch/inferno/
-     :alt: Updates
-
-
 
 .. image:: http://svgshare.com/i/2j7.svg
 
