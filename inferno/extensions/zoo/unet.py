@@ -1,4 +1,4 @@
-import torch 
+import torch
 import torch.nn as nn
 from . identity import Identity
 from ...utils.math_utils import max_allowed_ds_steps
@@ -8,25 +8,23 @@ __all__ = ['UNetBase']
 _all = __all__
 
 
-
 class UNetBase(nn.Module):
 
     """ Base class for implementing UNets.
         The depth and dimension of the UNet is flexible.
         The deriving classes must implement
         `conv_op_factory` and can implement
-        `upsample_op_factory` and 
+        `upsample_op_factory` and
         `downsample_op_factory`.
 
-  
     Attributes:
-        in_channels (int): Description
+        in_channels (int):
         out_channels (int): Description
         dim (int): Spatial dimension of data (must be 2 or 3)
         depth (int): How many down-sampling / up-sampling steps
             shall be performed
         gain (int): Multiplicative increase of channels while going down in the UNet.
-            The same factor is used to decrease the number of channels while 
+            The same factor is used to decrease the number of channels while
             going up in the UNet.
         residual (bool): If residual is true, the output of the down-streams
             are added to the up-stream results.
@@ -44,7 +42,7 @@ class UNetBase(nn.Module):
         # settings related members
         self.in_channels  = int(in_channels)
         self.out_channels = int(out_channels)
-        self.dim          = int(dim)    
+        self.dim          = int(dim)
         self.depth        = int(depth)
         self.gain         = int(gain)
         self.residual     = bool(residual)
@@ -57,7 +55,6 @@ class UNetBase(nn.Module):
 
         # number of channels per side output
         self.n_channels_per_output = []
-        
 
         # members to hold actual nn.Modules / nn.ModuleLists
         self.__pre_conv_down_ops  = None
@@ -75,9 +72,8 @@ class UNetBase(nn.Module):
         self.__post_conv_bottom_ops = None
         self.__conv_bottom_op = None
 
-        # upsample kwargs 
+        # upsample kwargs
         self.__upsample_kwargs = self._make_upsample_kwargs(upsample_mode=upsample_mode)
-
 
         ########################################
         # default dropout
@@ -85,47 +81,47 @@ class UNetBase(nn.Module):
         if self.p_dropout is not None:
             self.use_dropout = True
             if self.dim == 2 :
-                self.__channel_dropout_op =  self.torch.nn.Dropout2d(p=float(self.p_dropout), inplace=False)
+                self.__channel_dropout_op = self.torch.nn.Dropout2d(p=float(self.p_dropout), inplace=False)
             else:
                 self.__channel_dropout_op = self.torch.nn.Dropout3d(p=float(self.p_dropout), inplace=False)
         else:
             self.use_dropout = False
 
- 
+
         # down-stream convolution blocks
         self.__init__downstream()
-      
+
         # pooling / downsample operators
         self.__downsample_ops = nn.ModuleList([
             self.downsample_op_factory(i) for i in range(depth)
         ])
-        
+
         # upsample operators
         self.__upsample_ops = nn.ModuleList([
             self.upsample_op_factory(i) for i in range(depth)
         ])
 
         # bottom block of the unet
-        self.__init__bottom()  
+        self.__init__bottom()
 
         # up-stream convolution blocks
         self.__init__upstream()
-        
-       
+
+
         assert len(self.n_channels_per_output) == self.__store_conv_down.count(True) + \
             self.__store_conv_up.count(True)   + int(self.__store_conv_bottom)
-        
+
 
 
     def __init__downstream(self):
-        conv_down_ops = [] 
+        conv_down_ops = []
         self.__store_conv_down = []
 
         current_in_channels = self.in_channels
-        
+
         for i in range(self.depth):
             out_channels = current_in_channels * self.gain
-            op, return_op_res = self.conv_op_factory(in_channels=current_in_channels, 
+            op, return_op_res = self.conv_op_factory(in_channels=current_in_channels,
                                                      out_channels=out_channels,
                                                      part='down',index=i)
             conv_down_ops.append(op)
@@ -146,13 +142,13 @@ class UNetBase(nn.Module):
 
 
     def __init__bottom(self):
-   
+
         conv_up_ops = []
 
         current_in_channels = self.in_channels * self.gain**self.depth
 
 
-        factory_res = self.conv_op_factory(in_channels=current_in_channels, 
+        factory_res = self.conv_op_factory(in_channels=current_in_channels,
             out_channels=current_in_channels, part='bottom', index=0)
         if isinstance(factory_res, tuple):
             self.__conv_bottom_op, self.__store_conv_bottom = factory_res
@@ -174,8 +170,8 @@ class UNetBase(nn.Module):
             # if not residual we concat which needs twice as many channels
             fac = 1 if self.residual else 2
 
-            op, return_op_res = self.conv_op_factory(in_channels=fac*current_in_channels, 
-                                                     out_channels=out_channels, 
+            op, return_op_res = self.conv_op_factory(in_channels=fac*current_in_channels,
+                                                     out_channels=out_channels,
                                                      part='up', index=i)
             conv_up_ops.append(op)
             if return_op_res:
@@ -183,7 +179,7 @@ class UNetBase(nn.Module):
                 self.__store_conv_up.append(True)
             else:
                 self.__store_conv_up.append(False)
-            
+
 
             # decrease the number of input_channels
             current_in_channels //= self.gain
@@ -197,11 +193,11 @@ class UNetBase(nn.Module):
             self.n_channels_per_output.append(self.out_channels)
 
 
-    
+
     def _make_upsample_kwargs(self, upsample_mode):
-        """To avoid some waring from pytorch, and some missing implementations 
+        """To avoid some waring from pytorch, and some missing implementations
         for the arguments need to be handle carefully in this helper functions
-        
+
         Args:
             upsample_mode (str): users choice for upsampling  interpolation style.
         """
@@ -225,13 +221,13 @@ class UNetBase(nn.Module):
             raise RuntimeError("cannot downsample %d times, with shape %s"%
                 (self.depth, str(input.size())) )
 
-        if input.size(1) != self.in_channels : 
+        if input.size(1) != self.in_channels :
             raise RuntimeError("wrong number of channels: expected %d, got %d"%
-                (self.in_channels, input.size(1))) 
+                (self.in_channels, input.size(1)))
 
-        if input.dim() != self.dim + 2 : 
+        if input.dim() != self.dim + 2 :
             raise RuntimeError("wrong number of dim: expected %d, got %d"%
-                (self.dim+2, input.dim())) 
+                (self.dim+2, input.dim()))
 
     def forward(self, input):
 
@@ -241,7 +237,7 @@ class UNetBase(nn.Module):
         # collect all desired outputs
         side_out = []
 
-        # remember all conv-block results of the downward part 
+        # remember all conv-block results of the downward part
         # of the UNet
         down_res = []
 
@@ -262,7 +258,7 @@ class UNetBase(nn.Module):
 
             out = self.__downsample_ops[d](out)
 
-        
+
         #################################
         # bottom part
         #################################
@@ -294,12 +290,12 @@ class UNetBase(nn.Module):
 
             if self.__store_conv_up[d]:
                 side_out.append(out)
-        
+
         # debug postcondition
         assert out.size(1) == self.out_channels, "internal error"
-        
+
         # if  len(side_out) == 1 we actually have no side output
-        # just the main output 
+        # just the main output
         if len(side_out) == 1:
             return side_out[0]
         else:

@@ -1,6 +1,6 @@
 from torch.nn import Module,ModuleList,ELU
-from inferno.extensions.layers.convolutional import ConvELU2D, Conv2D,ConvELU3D, Conv3D,ConvActivation
-import torch 
+from inferno.extensions.layers.convolutional import ConvELU2D, Conv2D,ConvELU3D, Conv3D, ConvActivation
+import torch
 import copy
 import sys
 
@@ -51,13 +51,13 @@ class ResBlockBase(Module):
 
     def forward(self, input):
 
-        if input.size(1) != self.in_channels : 
+        if input.size(1) != self.in_channels :
             raise RuntimeError("wrong number of channels: expected %d, got %d"%
-                (self.in_channels, input.size(1))) 
+                (self.in_channels, input.size(1)))
 
-        if input.dim() != self.dim + 2 : 
+        if input.dim() != self.dim + 2 :
             raise RuntimeError("wrong number of dim: expected %d, got %d"%
-                (self.dim+2, input.dim())) 
+                (self.dim+2, input.dim()))
 
 
 
@@ -75,7 +75,7 @@ class ResBlockBase(Module):
             if i + 1 < self.size:
                 res = self.activation_ops[i](res)
 
-        
+
         non_activated =  skip_res + res
         if self.activated:
             return self.activation_ops[-1](non_activated)
@@ -85,7 +85,7 @@ class ResBlockBase(Module):
 
 class ResBlock(ResBlockBase):
     def __init__(self, in_channels, out_channels, dim, size=2, activated=True, activation='ReLU', batchnorm=True, force_skip_op=False, conv_kwargs=None):
-    
+
         # trick to store  nn-module before call of super
         # => we put it in a list
         if isinstance(activation, str):
@@ -109,7 +109,7 @@ class ResBlock(ResBlockBase):
         self.conv_kwargs = conv_kwargs
 
         self.dim = dim
-        self.batchnorm = batchnorm 
+        self.batchnorm = batchnorm
 
 
         self.conv_1x1_kwargs = dict(
@@ -119,13 +119,13 @@ class ResBlock(ResBlockBase):
         )
 
         super(ResBlock, self).__init__(
-            in_channels=in_channels, 
-            out_channels=out_channels, 
+            in_channels=in_channels,
+            out_channels=out_channels,
             dim=dim,
-            size=size, 
+            size=size,
             force_skip_op=force_skip_op,
             activated=activated,
-        ) 
+        )
 
 
     def activated_skip_op_factory(self, in_channels, out_channels):
