@@ -16,16 +16,35 @@ class ArandScore(Metric):
 
     # compute the arand score for a prediction target pair
     def _arand_for_tensor(self, prediction, target):
-        ndim = prediction.ndim
-        average_slices = self.average_slices and ndim == 3
+        # check if we need to average over slices
+        average_slices = self.average_slices and prediction.ndim == 3
+        score_is_invalid = False
 
+        # average the rand score over 3d slices
         if average_slices:
             # average the arand values over the 3d slices
-            evaluation_values = [adapted_rand(pred, targ)
-                                 for pred, targ in zip(prediction, target)]
-            return np.mean([eval_val[0] for eval_val in evaluation_values if eval_val is not None])
+            evaluation_values = [adapted_rand(pred, targ) for pred, targ in zip(prediction, target)]
+            # check if the score is invalid
+            if all(ev_val is None for ev_val in evaluation_values):
+                score_is_invalid = True
+                score = 0
+            else:
+                score = np.mean([eval_val[0] for eval_val in evaluation_values if eval_val is not None])
+
+        # compute rand score on whole image / volume
         else:
-            return adapted_rand(prediction, target)[0]
+            score = adapted_rand(prediction, target)
+            # check if the score is invalid
+            if score is None:
+                score_is_invalid = True
+                score = 0
+            else:
+                score = score[0]
+
+        if score_is_invalid:
+            logger = logging.getLogger(__name__)
+            logger.warning("All slices were invalid, returning worst possible score")
+        return score
 
     def forward(self, prediction, target):
         assert(prediction.shape == target.shape), "%s, %s" % (str(prediction.shape),
@@ -80,9 +99,8 @@ def adapted_rand(seg, gt):
     ----------
     [1]: http://brainiac2.mit.edu/SNEMI3D/evaluation
     """
-    logger = logging.getLogger(__name__)
-
     assert seg.shape == gt.shape, "%s, %s" % (str(seg.shape), str(gt.shape))
+    logger = logging.getLogger(__name__)
 
     if np.any(seg == 0):
         logger.debug("Zeros in segmentation, treating as background.")
@@ -91,15 +109,10 @@ def adapted_rand(seg, gt):
 
     seg_zeros = np.all(seg == 0)
     gt_zeros = np.all(gt == 0)
+    # return None if either gt or segmentation are all zeros
+    logger.debug("Either segmentation or groundtruth are all zeros, returning None.")
     if  seg_zeros or gt_zeros:
-        if seg_zeros:
-            logger.warning("Segmentation is all zeros, ignoring for eval.")
-            return None
-        else:
-            print(gt.shape)
-            print(np.unique(gt))
-            logger.warning("Groundtruth is all zeros, ignoring for eval.")
-            return None
+        return None
 
     # segA is truth, segB is query
     segA = np.ravel(gt)
