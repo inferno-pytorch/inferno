@@ -4,6 +4,7 @@ from ...utils import python_utils as pyu
 from ...utils.exceptions import assert_
 
 
+# TODO merge with convolutional blocks
 class ResidualBlock(nn.Module):
     def __init__(self, layers, resample=None):
         super(ResidualBlock, self).__init__()
