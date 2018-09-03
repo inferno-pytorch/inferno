@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from ..layers.identity import Identity
 from ..layers.convolutional_blocks import ResBlock
+from ..layers.convolutional import ConvELU2D, ConvELU3D, Conv2D, Conv3D
 from ...utils.math_utils import max_allowed_ds_steps
 from ...utils.python_utils import require_dict_kwagrs
 
@@ -21,12 +22,9 @@ class UNetBase(nn.Module):
 
     Attributes:
         in_channels (int): Number of input channels.
-        out_channels (int): Number of output channels.
         dim (int): Spatial dimension of data (must be 2 or 3)
         depth (int): How many down-sampling / up-sampling steps
             shall be performed
-        initial_fmaps (int): Initial number of feature maps.
-            If `None`, set to `gain` * in_channels.
         gain (int): Multiplicative increase of channels while going down in the UNet.
             The same factor is used to decrease the number of channels while
             going up in the UNet.
@@ -35,7 +33,7 @@ class UNetBase(nn.Module):
             Otherwise the results are concatenated.
     """
 
-    def __init__(self, in_channels, out_channels, dim, depth=3, initial_fmaps=None,
+    def __init__(self, in_channels, dim, depth=3,
                  gain=2, residual=False, upsample_mode=None, p_dropout=None):
 
         super(UNetBase, self).__init__()
@@ -46,12 +44,9 @@ class UNetBase(nn.Module):
 
         # settings related members
         self.in_channels  = int(in_channels)
-        self.out_channels = int(out_channels)
         self.dim          = int(dim)
         self.depth        = int(depth)
         self.gain         = int(gain)
-        self.initial_fmaps = self.gain * self.in_channels\
-            if initial_fmaps is None else initial_fmaps
         self.residual     = bool(residual)
         self.p_dropout = p_dropout
 
@@ -123,12 +118,12 @@ class UNetBase(nn.Module):
         self._store_conv_down = []
 
         current_in_channels = self.in_channels
-        current_out_channels = self.initial_fmaps
 
         for i in range(self.depth):
+            out_channels = current_in_channels * self.gain
             op, return_op_res = self.conv_op_factory(in_channels=current_in_channels,
-                                                     out_channels=current_out_channels,
-                                                     part='down',index=i)
+                                                     out_channels=out_channels,
+                                                     part='down', index=i)
             conv_down_ops.append(op)
             if return_op_res:
                 self.n_channels_per_output.append(out_channels)
@@ -137,8 +132,7 @@ class UNetBase(nn.Module):
                 self._store_conv_down.append(False)
 
             # increase the number of channels
-            current_in_channels = current_out_channels
-            current_out_channels *= self.gain
+            current_in_channels *= self.gain
 
         # store as proper torch ModuleList
         self._conv_down_ops = nn.ModuleList(conv_down_ops)
@@ -149,7 +143,7 @@ class UNetBase(nn.Module):
 
         conv_up_ops = []
 
-        current_in_channels = self.initial_fmaps * self.gain**self.depth
+        current_in_channels = self.in_channels* self.gain**self.depth
 
         factory_res = self.conv_op_factory(in_channels=current_in_channels,
             out_channels=current_in_channels, part='bottom', index=0)
@@ -163,12 +157,11 @@ class UNetBase(nn.Module):
 
     def _init__upstream(self):
         conv_up_ops = []
-        current_in_channels = self.initial_fmaps * self.gain**self.depth
+        current_in_channels = self.in_channels * self.gain**self.depth
 
         for i in range(self.depth):
             # the number of out channels (are we in the last block?)
-            out_channels = self.out_channels if (i+1 == self.depth) else\
-                current_in_channels//self.gain
+            out_channels = current_in_channels // self.gain
 
             # if not residual we concat which needs twice as many channels
             fac = 1 if self.residual else 2
@@ -192,7 +185,7 @@ class UNetBase(nn.Module):
         # the last block needs to be stored in any case
         if not self._store_conv_up[-1]:
             self._store_conv_up[-1] = True
-            self.n_channels_per_output.append(self.out_channels)
+            self.n_channels_per_output.append(out_channels)
 
     def _make_upsample_kwargs(self, upsample_mode):
         """To avoid some waring from pytorch, and some missing implementations
@@ -205,10 +198,11 @@ class UNetBase(nn.Module):
             if self.dim == 2:
                 upsample_mode = 'bilinear'
             elif self.dim == 3:
-                upsample_mode = 'nearest'
+                # upsample_mode = 'nearest'
+                upsample_mode = 'trilinear'
 
         upsample_kwargs = dict(scale_factor=2, mode=upsample_mode)
-        if upsample_mode == 'bilinear':
+        if upsample_mode in ('bilinear', 'trilinear'):
             upsample_kwargs['align_corners'] = False
         return upsample_kwargs
 
@@ -288,9 +282,6 @@ class UNetBase(nn.Module):
             if self._store_conv_up[d]:
                 side_out.append(out)
 
-        # debug postcondition
-        assert out.size(1) == self.out_channels, "internal error"
-
         # if  len(side_out) == 1 we actually have no side output
         # just the main output
         if len(side_out) == 1:
@@ -324,7 +315,65 @@ class UNetBase(nn.Module):
             return x
 
 
+class UNet(UNetBase):
+    """
+    Default 2d / 3d U-Net implementation following
+    TODO cite Ronneberger U-Net papers.
+    """
+    def __init__(self, in_channels, out_channels, dim,
+                 depth=4, initial_features=64, gain=2,
+                 final_activation=None, p_dropout=None):
+        # convolutional types for inner convolutions and output convolutions
+        self.default_conv = ConvELU2D if dim == 2 else ConvELU3D
+        last_conv = Conv2D if dim == 2 else Conv3D
+        self.out_channels = int(out_channels)
+
+        # init the base class
+        super(UNet, self).__init__(in_channels=initial_features, dim=dim,
+                                   depth=depth, gain=gain, p_dropout=p_dropout)
+        # initial conv layer to go from the number of input channels, which are defined by the data
+        # (usually 1 or 3) to the initial number of feature maps
+        self._initial_conv = self.default_conv(in_channels, initial_features, 3)
+
+        # get the final output and activation activation
+        if isinstance(final_activation, str):
+            activation = getattr(nn, final_activation)()
+        elif isinstance(final_activation, nn.Module):
+            activation = final_activation
+        elif final_activation is None:
+            activation = None
+        else:
+            raise NotImplementedError("Activation of type %s is not supported" % type(final_activation))
+
+        if activation is None:
+            self._output = last_conv(initial_features, self.out_channels, 1)
+        else:
+            self._output = nn.Sequential(last_conv(initial_features, self.out_channels, 1),
+                                         activation)
+
+    def forward(self, input):
+        # TODO implement 2d from 3d input (see neurofire)
+        x = self._initial_conv(input)
+        x = super(UNet, self).forward(x)
+        return self._output(x)
+
+    def conv_op_factory(self, in_channels, out_channels, part, index):
+
+        # is this the first convolutional block?
+        first = (part == 'down' and index == 0)
+
+        # if this is the first conv block, we just need
+        # a single convolution, because we have the `_initial_conv` already
+        if first:
+            conv = self.default_conv(in_channels, out_channels, 3)
+        else:
+            conv = nn.Sequential(self.default_conv(in_channels, out_channels, 3),
+                                 self.default_conv(out_channels, out_channels, 3))
+        return conv, False
+
+
 # TODO rename ResidualBlockUNet
+# TODO test
 # or ResidualUNet
 class ResBlockUNet(UNetBase):
     """TODO.
