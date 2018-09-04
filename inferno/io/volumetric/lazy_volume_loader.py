@@ -239,7 +239,7 @@ class LazyHDF5VolumeLoader(LazyVolumeLoader):
         self.file_.close()
 
 
-class N5VolumeLoader(LazyVolumeLoader):
+class LazyN5VolumeLoader(LazyVolumeLoader):
     def __init__(self, path, path_in_file=None, data_slice=None, transforms=None,
                  name=None, **slicing_config):
         assert WITH_Z5PY, "Need z5py to load volume from N5 file."
@@ -251,7 +251,7 @@ class N5VolumeLoader(LazyVolumeLoader):
                                              name=name, **slicing_config)
 
 
-class ZarrVolumeLoader(LazyVolumeLoader):
+class LazyZarrVolumeLoader(LazyVolumeLoader):
     def __init__(self, path, path_in_file=None, data_slice=None, transforms=None,
                  name=None, **slicing_config):
         assert WITH_Z5PY, "Need z5py to load volume from zarr file."
