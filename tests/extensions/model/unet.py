@@ -9,7 +9,7 @@ class UNetTest(unittest.TestCase):
         tester = ModelTester((1, 1, 256, 256), (1, 1, 256, 256))
         if cuda.is_available():
             tester.cuda()
-        tester(UNet(1, 1, dim=2))
+        tester(UNet(1, 1, dim=2, initial_features=32))
 
     def test_unet_3d(self):
         from inferno.extensions.model import UNet
@@ -17,7 +17,7 @@ class UNetTest(unittest.TestCase):
         if cuda.is_available():
             tester.cuda()
         # test default unet 3d
-        tester(UNet(1, 1, dim=3))
+        tester(UNet(1, 1, dim=3, initial_features=8))
 
 
 if __name__ == '__main__':

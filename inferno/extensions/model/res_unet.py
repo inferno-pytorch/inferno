@@ -184,9 +184,8 @@ class ResBlockUNet(UNetBase):
         else:
             self.side_out_parts = set()
 
-        self.out_channels = out_channels
-
         super(ResBlockUNet, self).__init__(in_channels=in_channels,
+                                           out_channels=out_channels,
                                            dim=dim,
                                            **self.unet_kwargs)
 
@@ -201,12 +200,6 @@ class ResBlockUNet(UNetBase):
         # should the output be part of the overall
         # return-list in the forward pass of the UNet
         use_as_output = part in self.side_out_parts
-
-        # if we are in the last decoder layer, force the correct number
-        # of out channels. previously, this was done directly in the u-net
-        last = part == 'up' and index == self.depth - 1
-        if last:
-            out_channels = self.out_channels
 
         # residual block used within the UNet
         return _ResBlock(in_channels=in_channels, out_channels=out_channels,

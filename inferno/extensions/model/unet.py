@@ -20,18 +20,21 @@ class UNetBase(nn.Module):
 
     Attributes:
         in_channels (int): Number of input channels.
-        dim (int): Spatial dimension of data (must be 2 or 3)
+        dim (int): Spatial dimension of data (must be 2 or 3).
+        out_channels (int): Number of output channels. Set to None by default,
+            which sets the number of out channels to the number of input channels
+            to preserve symmetry of feature channels (default: None).
         depth (int): How many down-sampling / up-sampling steps
-            shall be performed
+            shall be performed (default: 3).
         gain (int): Multiplicative increase of channels while going down in the UNet.
             The same factor is used to decrease the number of channels while
-            going up in the UNet.
+            going up in the UNet (default: 2).
         residual (bool): If residual is true, the output of the down-streams
             are added to the up-stream results.
-            Otherwise the results are concatenated.
+            Otherwise the results are concatenated (default: False).
     """
 
-    def __init__(self, in_channels, dim, depth=3,
+    def __init__(self, in_channels, dim, out_channels=None, depth=3,
                  gain=2, residual=False, upsample_mode=None, p_dropout=None):
 
         super(UNetBase, self).__init__()
@@ -43,6 +46,8 @@ class UNetBase(nn.Module):
         # settings related members
         self.in_channels  = int(in_channels)
         self.dim          = int(dim)
+        self.out_channels = self.in_channels if out_channels is\
+            None else int(out_channels)
         self.depth        = int(depth)
         self.gain         = int(gain)
         self.residual     = bool(residual)
@@ -158,8 +163,9 @@ class UNetBase(nn.Module):
         current_in_channels = self.in_channels * self.gain**self.depth
 
         for i in range(self.depth):
-            # the number of out channels
-            out_channels = current_in_channels // self.gain
+            # the number of out channels (set to self.out_channels for last decoder)
+            out_channels = self.out_channels if i +1 == self.depth else\
+                current_in_channels // self.gain
 
             # if not residual we concat which needs twice as many channels
             fac = 1 if self.residual else 2
@@ -325,7 +331,6 @@ class UNet(UNetBase):
         # convolutional types for inner convolutions and output convolutions
         self.default_conv = ConvELU2D if dim == 2 else ConvELU3D
         last_conv = Conv2D if dim == 2 else Conv3D
-        self.out_channels = int(out_channels)
 
         # init the base class
         super(UNet, self).__init__(in_channels=initial_features, dim=dim,
@@ -344,6 +349,8 @@ class UNet(UNetBase):
         else:
             raise NotImplementedError("Activation of type %s is not supported" % type(final_activation))
 
+        # override the unet base attributes for out_channels
+        self.out_channels = int(out_channels)
         if activation is None:
             self._output = last_conv(initial_features, self.out_channels, 1)
         else:
