@@ -103,8 +103,10 @@ class UNetBase(nn.Module):
         ])
 
         # upsample operators
+        # we flip the index that is given as argument to index consistently in up and
+        # downstream sampling factories
         self._upsample_ops = nn.ModuleList([
-            self.upsample_op_factory(i) for i in range(depth)
+            self.upsample_op_factory(depth - i - 1) for i in range(depth)
         ])
 
         # bottom block of the unet
@@ -170,9 +172,11 @@ class UNetBase(nn.Module):
             # if not residual we concat which needs twice as many channels
             fac = 1 if self.residual else 2
 
+            # we flip the index that is given as argument to index consistently in up and
+            # downstream conv factories
             op, return_op_res = self.conv_op_factory(in_channels=fac*current_in_channels,
                                                      out_channels=out_channels,
-                                                     part='up', index=i)
+                                                     part='up', index=self.depth - i - 1)
             conv_up_ops.append(op)
             if return_op_res:
                 self.n_channels_per_output.append(out_channels)

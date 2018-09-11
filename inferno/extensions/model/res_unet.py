@@ -192,7 +192,7 @@ class ResBlockUNet(UNetBase):
     def conv_op_factory(self, in_channels, out_channels, part, index):
 
         # is this the very last convolutional block?
-        very_last = (part == 'up' and index + 1 == self.depth)
+        very_last = (part == 'up' and index == 0)
 
         # should the residual block be activated?
         activated = not very_last or self.activated
