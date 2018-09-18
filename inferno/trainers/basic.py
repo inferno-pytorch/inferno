@@ -1622,7 +1622,7 @@ class Trainer(object):
                    pickle_module=dill)
         return self
 
-    def load(self, from_directory=None, best=False, filename=None):
+    def load(self, from_directory=None, best=False, filename=None, map_location=None):
         """
         Load the trainer from checkpoint.
 
@@ -1636,6 +1636,8 @@ class Trainer(object):
             'best_checkpoint.pytorch'.
         filename : str
             Overrides the default filename.
+        device : function, torch.device, string or a dict
+            Specify how to remap storage locations.
 
         Returns
         -------
@@ -1649,7 +1651,8 @@ class Trainer(object):
             filename = self._best_checkpoint_filename if best else self._checkpoint_filename
         # Load the dictionary
         config_dict = torch.load(os.path.join(from_directory, filename),
-                                 pickle_module=dill)
+                                pickle_module=dill, map_location=map_location)
+
         # This is required to prevent an infinite save loop?
         self._is_iteration_with_best_validation_score = False
         # Set config
