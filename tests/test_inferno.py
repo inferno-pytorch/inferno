@@ -107,7 +107,7 @@ class TestInferno(unittest.TestCase):
             .add_node('pool3', nn.AdaptiveAvgPool2d(output_size=(1, 1)), 'conv4')\
             .add_node('matrix', AsMatrix(), 'pool3')\
             .add_node('linear', nn.Linear(32, self.NUM_CLASSES), 'matrix')\
-            .add_node('softmax', nn.Softmax(), 'linear')\
+            .add_node('softmax', nn.Softmax(dim=1), 'linear')\
             .add_output_node('output', 'softmax')
         return model
 

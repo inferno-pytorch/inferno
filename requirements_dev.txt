@@ -15,3 +15,5 @@ h5py
 scikit-image
 sphinx-gallery
 sphinxcontrib-napoleon
+sphinxcontrib-inlinesyntaxhighlight
+sphinx_rtd_theme

@@ -1,3 +1,4 @@
+import numpy as np
 from .voi import voi
 from .arand import adapted_rand
 
@@ -11,5 +12,5 @@ def cremi_metrics(seg, gt, no_seg_ignore=True):
             seg += 1
     vi_s, vi_m = voi(seg, gt)
     rand = 1. - adapted_rand(seg, gt)[0]
-    cs = (vi_s + vi_m + rand) / 3
+    cs = np.sqrt((vi_s + vi_m) * rand)
     return cs, vi_s, vi_m, rand

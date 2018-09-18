@@ -27,10 +27,13 @@ requirements:
         - pyyaml
         - scipy
         - scikit-image
+        - scikit-learn
         - h5py
         - dill
         - networkx 1.11
         - tensorboardx
+        - sphinx_rtd_theme
+
 
 test:
     imports:
