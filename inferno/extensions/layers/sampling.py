@@ -1,6 +1,38 @@
 import torch.nn as nn
 
-__all__ = ['AnisotropicUpsample', 'AnisotropicPool']
+__all__ = ['AnisotropicUpsample', 'AnisotropicPool', 'Upsample']
+
+
+# torch is deprecating nn.Upsample in favor of nn.functional.interpolate
+# we wrap interpolate here to still use Upsample as class
+class Upsample(nn.Module):
+    def __init__(self, size=None, scale_factor=None,
+                 mode='nearest', align_corners=None):
+        self.size = size
+        self.scale_factor = scale_factor
+        self.mode = mode
+        self.align_corners = align_corners
+        super(Upsample, self).__init__()
+        # interpolate was only introduced in torch 0.4.1 for backward compatibility
+        # we check if we have the attribute here and fall back to Upsample otherwise
+        if hasattr(nn.functional, 'interpolate'):
+            self.have_interpolate = True
+        else:
+            self.have_interpolate = False
+            self.sampler = nn.Upsample(size=size, scale_factor=scale_factor,
+                                       mode=mode, align_corners=align_corners)
+
+    def forward(self, input):
+        if getattr(self, 'have_interpolate', False):
+            return nn.functional.interpolate(input, self.size, self.scale_factor,
+                                             self.mode, self.align_corners)
+        else:
+            if not hasattr(self, 'sampler'):
+                self.sampler = nn.Upsample(size=self.size,
+                                           scale_factor=self.scale_factor,
+                                           mode=self.mode,
+                                           align_corners=self.align_corners)
+            return self.sampler(input)
 
 
 class AnisotropicUpsample(nn.Module):
