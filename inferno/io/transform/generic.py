@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from .base import Transform, DTypeMapping
+from ...utils.exceptions import assert_, DTypeError
 
 
 class Normalize(Transform):
@@ -151,6 +152,9 @@ class AsTorchBatch(Transform):
         self.add_channel_axis_if_necessary = bool(add_channel_axis_if_necessary)
 
     def _to_batch(self, tensor):
+        assert_(isinstance(tensor, np.ndarray),
+                "Expected numpy array, got %s" % type(tensor),
+                DTypeError)
         if self.dimensionality == 3:
             # We're dealing with a volume. tensor can either be 3D or 4D
             assert tensor.ndim in [3, 4]
@@ -177,7 +181,9 @@ class AsTorchBatch(Transform):
             raise NotImplementedError
 
     def tensor_function(self, tensor):
-        assert isinstance(tensor, (list, np.ndarray)), "Expected numpy array or list, got %s" % type(tensor)
+        assert_(isinstance(tensor, (list, np.ndarray)),
+                "Expected numpy array or list, got %s" % type(tensor),
+                DTypeError)
         if isinstance(tensor, np.ndarray):
             return self._to_batch(tensor)
         else:

@@ -68,7 +68,7 @@ plt.show()
 # With :code:`activated=False` we make sure that the last layer
 # is not activated since we chain the UNet with a sigmoid
 # activation function.
-from inferno.extensions.layers.unet import ResBlockUNet
+from inferno.extensions.layers import ResBlockUNet
 from inferno.extensions.layers import RemoveSingletonDimension
 
 model = torch.nn.Sequential(
@@ -211,24 +211,24 @@ class MySimple2DUnet(UNetBase):
             return torch.nn.Sequential(
                 ConvELU2D(in_channels=in_channels,  out_channels=out_channels, kernel_size=3),
                 ConvELU2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3)
-            )
+            ), False
         elif part == 'bottom':
             return torch.nn.Sequential(
                 ConvReLU2D(in_channels=in_channels,  out_channels=out_channels, kernel_size=3),
                 ConvReLU2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3),
-            )
+            ), False
         elif part == 'up':
             # are we in the very last block?
             if index + 1 == self.depth:
                 return torch.nn.Sequential(
                     ConvELU2D(in_channels=in_channels,  out_channels=out_channels, kernel_size=3),
                     Conv2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3)
-                )
+                ), False
             else:
                 return torch.nn.Sequential(
                     ConvELU2D(in_channels=in_channels,   out_channels=out_channels, kernel_size=3),
                     ConvReLU2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3)
-                )
+                ), False
         else:
             raise RuntimeError("something is wrong")
 

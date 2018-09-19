@@ -38,7 +38,7 @@ class Upsample(nn.Module):
 class AnisotropicUpsample(nn.Module):
     def __init__(self, scale_factor):
         super(AnisotropicUpsample, self).__init__()
-        self.upsampler = nn.Upsample(scale_factor=scale_factor)
+        self.upsampler = Upsample(scale_factor=scale_factor)
 
     def forward(self, input):
         # input is 3D of shape NCDHW

@@ -10,10 +10,10 @@ def ensure_dir(directory):
     """ensure the existence of e directory at a given path
 
         If the directory does not exist it is created
-    
+
     Args:
         directory (str): path of the directory
-    
+
     Returns:
         str: path of the directory
     """
@@ -21,19 +21,20 @@ def ensure_dir(directory):
         os.makedirs(directory)
     return directory
 
-def require_dict_kwagrs(kwargs, msg=None):
+
+def require_dict_kwargs(kwargs, msg=None):
     """ Ensure arguments passed kwargs are either None or a dict.
         If arguments are neither a dict nor None a RuntimeError
-        is thrown   
+        is thrown
     Args:
         kwargs (object): possible dict or None
         msg (None, optional): Error msg
-    
+
     Returns:
         dict: kwargs dict
-    
+
     Raises:
-        RuntimeError: if the passed value is neither a dict nor None  
+        RuntimeError: if the passed value is neither a dict nor None
             this error is raised
     """
     if kwargs is None:
@@ -46,7 +47,6 @@ def require_dict_kwagrs(kwargs, msg=None):
         else:
             raise RuntimeError("%s"%str(msg))
 
-            
 
 def is_listlike(x):
     return isinstance(x, (list, tuple))
@@ -128,7 +128,7 @@ def deprecated(reason):
     as deprecated. It will result in a warning being emitted
     when the function is used.
 
-    Borrowed from 
+    Borrowed from
     https://stackoverflow.com/questions/2536307/
     decorators-in-the-python-standard-lib-deprecated-specifically
     by Laurent LAPORTE
