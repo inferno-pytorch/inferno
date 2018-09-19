@@ -2,8 +2,8 @@ from torch.utils.data.dataset import Dataset
 
 
 class SyncableDataset(Dataset):
-    def __init__(self):
-        self.base_sequence = None
+    def __init__(self, base_sequence=None):
+        self.base_sequence = base_sequence
 
     def sync_with(self, dataset):
         if hasattr(dataset, 'base_sequence'):
