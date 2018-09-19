@@ -69,7 +69,14 @@ class VolumeLoader(SyncableDataset):
         padding = self.padding if padding is None else padding
         if padding is None:
             return self.volume
-        else:
+        else:            
+			#sorry, too lazy to deal with nested lists in yaml
+            #this is for the case when only one int is passed for each axis
+            if len(self.padding)==(self.volume.ndim):
+                new_padding = ((self.padding[0],)*2,)
+                for i in range (1, len(self.padding)):
+                    new_padding+=((self.padding[i],)*2,)
+                self.padding = new_padding
             self.volume = np.pad(self.volume,
                                  pad_width=self.padding,
                                  mode=self.padding_mode)

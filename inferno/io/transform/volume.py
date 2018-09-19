@@ -129,3 +129,27 @@ class VolumeAsymmetricCrop(Transform):
         x1, y1, z1 = self.crop_left
         x2, y2, z2 = (np.array(volume.shape) - np.array(self.crop_right)).astype('uint32')
         return volume[x1:x2, y1:y2, z1:z2]
+
+class Slices2Channels(Transform):
+    """ Needed for training 2D network with slices above/below as additional channels
+        For the input data transforms one dimension (x, y or z) into channels 
+        For the target data just takes the central slice and discards all the rest"""
+    def __init__(self, num_channels, downsampling = 1, **super_kwargs):
+        super(Slices2Channels, self).__init__(**super_kwargs)
+        self.channels=num_channels
+        self.downsampling=downsampling
+    def batch_function(self, batch):
+        try: self.axis=batch[0].shape.index(self.channels)
+        except ValueError:
+            print ("The axis has the shape of the desired channels number!")
+        half=int(self.channels/2)
+        new_input=np.moveaxis(batch[0], self.axis, 0)
+        #take every nth slice to the both directions of the central slice
+        indices = []
+        for i in range (self.channels):
+            if i%self.downsampling == half%self.downsampling:
+                indices.append(i)
+        new_input=new_input[indices]   #num_chan after - int (num_chan/(2*downsample)) * 2 + 1
+        new_target=np.moveaxis(batch[1], self.axis, 0)
+        new_target=new_target[half]
+        return (new_input, new_target)
