@@ -111,3 +111,29 @@ Tips
 To run a subset of tests::
 
     $ python -m unittest tests.test_inferno
+
+
+
+Sphinx Apidoc
+--------------
+before building the documentation
+one needs to generate the auto-generated
+sphinxs api documentation.
+These files need to be in the github repository.
+
+.. code:: bash
+  
+    cd docs
+    sphinx-apidoc -o inferno-apidoc ../inferno
+
+.. warning::
+
+    Do not make changes to `inferno/docs/inferno-apidoc` This folder is auto-generated
+    by the above mentioned command.
+
+The following combines all the commands necessary to build the html documentation:
+
+.. code:: bash
+  
+    ./build_docs.sh
+

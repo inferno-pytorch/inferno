@@ -10,26 +10,24 @@ import torch.nn as nn
 from inferno.io.box.cifar import get_cifar10_loaders
 from inferno.trainers.basic import Trainer
 from inferno.trainers.callbacks.logging.tensorboard import TensorboardLogger
-from inferno.extensions.layers.convolutional import ConvELU2D
-from inferno.extensions.layers.reshape import Flatten
+from inferno.extensions.layers import ConvELU2D
+from inferno.extensions.layers import Flatten
+from inferno.utils.python_utils import ensure_dir
 
-# lil helper to make sure dirs exits
-import os
-def ensure_dir(file_path):
-    directory = os.path.dirname(file_path)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    return directory
+from inferno.extensions.layers import SELU
 
+##################################################
 # change directories to your needs
 LOG_DIRECTORY = ensure_dir('log')
 SAVE_DIRECTORY = ensure_dir('save')
 DATASET_DIRECTORY = ensure_dir('dataset')
 
-
+##################################################
+# shall models be downloaded
 DOWNLOAD_CIFAR = True
 USE_CUDA = True
 
+##################################################
 # Build torch model
 model = nn.Sequential(
     ConvELU2D(in_channels=3, out_channels=256, kernel_size=3),
@@ -43,30 +41,35 @@ model = nn.Sequential(
     nn.Softmax()
 )
 
-# Load loaders
+##################################################
+# data loaders
 train_loader, validate_loader = get_cifar10_loaders(DATASET_DIRECTORY,
                                         download=DOWNLOAD_CIFAR)
 
+##################################################
 # Build trainer
-trainer = Trainer(model) \
-.build_criterion('CrossEntropyLoss') \
-.build_metric('CategoricalError') \
-.build_optimizer('Adam') \
-.validate_every((2, 'epochs')) \
-.save_every((5, 'epochs')) \
-.save_to_directory(SAVE_DIRECTORY) \
-.set_max_num_epochs(10) \
-.build_logger(TensorboardLogger(log_scalars_every=(1, 'iteration'),
+trainer = Trainer(model)
+trainer.build_criterion('CrossEntropyLoss')
+trainer.build_metric('CategoricalError')
+trainer.build_optimizer('Adam')
+trainer.validate_every((2, 'epochs'))
+trainer.save_every((5, 'epochs'))
+trainer.save_to_directory(SAVE_DIRECTORY)
+trainer.set_max_num_epochs(10)
+trainer.build_logger(TensorboardLogger(log_scalars_every=(1, 'iteration'),
                                 log_images_every='never'), 
               log_directory=LOG_DIRECTORY)
 
+##################################################
 # Bind loaders
-trainer \
-    .bind_loader('train', train_loader) \
-    .bind_loader('validate', validate_loader)
+trainer.bind_loader('train', train_loader)
+trainer.bind_loader('validate', validate_loader)
 
+##################################################
+# activate cuda
 if USE_CUDA:
     trainer.cuda()
 
-# Go!
+##################################################
+# fit
 trainer.fit()

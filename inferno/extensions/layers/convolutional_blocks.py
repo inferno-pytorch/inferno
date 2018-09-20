@@ -1,7 +1,10 @@
-from .convolutional import BNReLUConv2D, BNReLUDeconv2D, Conv2D, Deconv2D
 import torch.nn as nn
+from .convolutional import BNReLUConv2D, BNReLUDeconv2D, Conv2D, Deconv2D
 from ...utils import python_utils as pyu
 from ...utils.exceptions import assert_
+
+__all__ = ['ResidualBlock', 'PreActSimpleResidualBlock']
+_all = __all__
 
 
 class ResidualBlock(nn.Module):

@@ -48,7 +48,7 @@ Current features include:
   *   `various utility layers <https://github.com/nasimrahaman/inferno/tree/master/inferno/extensions/layers>`_ with more underway,
   *   `a submodule <https://github.com/nasimrahaman/inferno/blob/master/inferno/io/volumetric>`_ for volumetric datasets, and more!
 
-
+  
 
 
 
@@ -147,10 +147,9 @@ Planned features include:
 Credits
 ---------
 All contributors are listed here_. 
+.. _here: https://inferno-pytorch.github.io/inferno/html/authors.html
 
-.. _here: https://pytorch-inferno.readthedocs.io/en/latest/authors.html
-
-This packag was partially generated with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template + lots of work by Thorsten. 
+This package was partially generated with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template + lots of work by Thorsten. 
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
