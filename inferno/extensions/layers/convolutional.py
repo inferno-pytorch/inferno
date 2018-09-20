@@ -480,8 +480,8 @@ class GlobalConv2D(nn.Module):
         self.out_channels = out_channels
         self.kernel_size = kernel_size
         assert isinstance(kernel_size, (int, list, tuple))
-        if isinstance(kernel_size, int): 
-			kernel_size = (kernel_size,)*2
+        if isinstance(kernel_size, int):
+	        kernel_size = (kernel_size,)*2
         self.kwargs=kwargs
         self.conv1a = local_conv_type(in_channels=self.in_channels, out_channels=self.out_channels,
                                kernel_size=(kernel_size[0], 1), **kwargs)

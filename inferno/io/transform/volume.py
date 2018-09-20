@@ -143,7 +143,7 @@ class Slices2Channels(Transform):
         self.channels = num_channels
         self.downsampling = downsampling
     def batch_function(self, batch):
-        try: 
+        try:
             self.axis = batch[0].shape.index(self.channels)
         except ValueError:
             print ("The axis has the shape of the desired channels number!")
