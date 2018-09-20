@@ -666,6 +666,7 @@ class RandomScaleSegmentation(Transform):
         scale = self.get_random_variable('seg_scale')
         input_image, segmentation = image
         image_shape = np.array(input_image.shape[1:])
+        
         if input_image.ndim == segmentation.ndim + 1:
             segmentation = segmentation[None]
         with catch_warnings():
@@ -673,6 +674,7 @@ class RandomScaleSegmentation(Transform):
             img = np.stack([zoom(x, scale, order=3) for x in input_image])
             seg = np.stack([zoom(x, scale, order=0) for x in segmentation])
         new_shape = np.array(img.shape[1:])
+        
         if self.resize:
             if scale > 1.:
                 # pad image to original size
@@ -688,6 +690,6 @@ class RandomScaleSegmentation(Transform):
                 pad_r = image_shape - new_shape - pad_l
                 padding = [(0,0)] + list(zip(pad_l, pad_r))
                 img = np.pad(img, padding, 'constant', constant_values=self.pad_const)
-                
                 seg = np.pad(seg, padding, 'constant', constant_values=self.pad_const)
+                
         return img, seg

@@ -70,13 +70,9 @@ class VolumeLoader(SyncableDataset):
         if padding is None:
             return self.volume
         else:            
-			#sorry, too lazy to deal with nested lists in yaml
-            #this is for the case when only one int is passed for each axis
-            if len(self.padding)==(self.volume.ndim):
-                new_padding = ((self.padding[0],)*2,)
-                for i in range (1, len(self.padding)):
-                    new_padding+=((self.padding[i],)*2,)
-                self.padding = new_padding
+            #for symmertic padding only one int can be passed for each axis
+			assert_(all(isinstance(pad, (int, tuple, list)) for pad in self.padding), "Expect int or iterable", TypeError)
+			self.padding = [[pad, pad] if isinstance(int, pad) else pad for pad in self.padding]
             self.volume = np.pad(self.volume,
                                  pad_width=self.padding,
                                  mode=self.padding_mode)

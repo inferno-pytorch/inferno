@@ -480,21 +480,22 @@ class GlobalConv2D(nn.Module):
         self.out_channels = out_channels
         self.kernel_size = kernel_size
         assert isinstance(kernel_size, (int, list, tuple))
-        if isinstance(kernel_size, int): kernel_size=(kernel_size,)*2
+        if isinstance(kernel_size, int): 
+			kernel_size = (kernel_size,)*2
         self.kwargs=kwargs
         self.conv1a = local_conv_type(in_channels=self.in_channels, out_channels=self.out_channels,
-                               kernel_size=(kernel_size[0],1), **kwargs)
+                               kernel_size=(kernel_size[0], 1), **kwargs)
         self.conv1b = local_conv_type(in_channels=self.out_channels, out_channels=self.out_channels,
-                               kernel_size=(1,kernel_size[1]), **kwargs)
+                               kernel_size=(1, kernel_size[1]), **kwargs)
         self.conv2a = local_conv_type(in_channels=self.in_channels, out_channels=self.out_channels,
-                               kernel_size=(1,kernel_size[1]), **kwargs)
+                               kernel_size=(1, kernel_size[1]), **kwargs)
         self.conv2b = local_conv_type(in_channels=self.out_channels, out_channels=self.out_channels,
-                               kernel_size=(kernel_size[0],1), **kwargs)
+                               kernel_size=(kernel_size[0], 1), **kwargs)
         if use_BN: 
             self.batchnorm = nn.BatchNorm2d(self.out_channels)
         else:
             self.batchnorm = None
-        self.activation=activation
+        self.activation = activation
     def forward(self, input_):
         out1 = self.conv1a(input_)
         out1 = self.conv1b(out1)
