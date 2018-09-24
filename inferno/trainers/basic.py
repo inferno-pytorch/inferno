@@ -1686,7 +1686,7 @@ class Trainer(object):
             filename = self._best_checkpoint_filename if best else self._checkpoint_filename
         # Load the dictionary
         config_dict = torch.load(os.path.join(from_directory, filename),
-                                 pickle_module=self.pickle_modul, map_location=map_location)
+                                 pickle_module=self.pickle_module, map_location=map_location)
 
         # This is required to prevent an infinite save loop?
         self._is_iteration_with_best_validation_score = False
