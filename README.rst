@@ -8,17 +8,12 @@ Inferno
 .. image:: https://img.shields.io/pypi/v/inferno.svg
         :target: https://pypi.python.org/pypi/inferno-pytorch
 
-.. image:: https://img.shields.io/travis/infern-pytorch/inferno.svg
+.. image:: https://travis-ci.org/inferno-pytorch/inferno.svg?branch=master
         :target: https://travis-ci.org/inferno-pytorch/inferno
 
 .. image:: https://readthedocs.org/projects/inferno-pytorch/badge/?version=latest
         :target: http://inferno-pytorch.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
-
-.. image:: https://pyup.io/repos/github/inferno-pytorch/inferno/shield.svg
-     :target: https://pyup.io/repos/github/inferno-pytorch/inferno/
-     :alt: Updates
-
 
 
 .. image:: http://svgshare.com/i/2j7.svg
@@ -34,7 +29,7 @@ It's a work-in-progress, but the first stable release (0.2) is underway!
 
 
 * Free software: Apache Software License 2.0
-* Documentation: https://pytorch-inferno.readthedocs.io (Work in progress).
+* Documentation: http://inferno-pytorch.readthedocs.io (Work in Progress).
 
 
 Features
@@ -131,11 +126,11 @@ and navigate to `localhost:6007` with your browser.
 Installation
 ------------------------
 
-Conda packages for linux and mac (only python 3) are available via
+Conda packages for linux (only python 3) are available via
 
 .. code:: bash
 
-  $ conda install -c inferno-pytorch inferno
+  $ conda install -c pytorch -c conda-forge inferno
 
 
 
