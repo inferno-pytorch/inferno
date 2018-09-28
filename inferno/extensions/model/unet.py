@@ -217,19 +217,23 @@ class UNetBase(nn.Module):
     def _forward_sanity_check(self, input):
         if isinstance(input, tuple):
             raise RuntimeError("tuples of tensors are not supported")
-        shape = list(input.size())
+        shape = input.shape
+
+        if shape[1] != self.in_channels:
+            raise RuntimeError("wrong number of channels: expected %d, got %d"%
+                (self.in_channels, input.size(1)))
+
+        if input.dim() != self.dim + 2:
+            raise RuntimeError("wrong number of dim: expected %d, got %d"%
+                (self.dim+2, input.dim()))
+        self._check_scaling(input)
+
+    # override if model has different scaling
+    def _check_scaling(self, input):
         mx = max_allowed_ds_steps(shape=shape[2:2+self.dim], factor=2)
         if mx < self.depth:
             raise RuntimeError("cannot downsample %d times, with shape %s"%
                 (self.depth, str(input.size())) )
-
-        if input.size(1) != self.in_channels :
-            raise RuntimeError("wrong number of channels: expected %d, got %d"%
-                (self.in_channels, input.size(1)))
-
-        if input.dim() != self.dim + 2 :
-            raise RuntimeError("wrong number of dim: expected %d, got %d"%
-                (self.dim+2, input.dim()))
 
     def forward(self, input):
 
@@ -282,7 +286,7 @@ class UNetBase(nn.Module):
             if self.residual:
                 out = a + out
             else:
-                out = torch.cat([a,out], 1)
+                out = torch.cat([a, out], 1)
 
             # the convolutional block
             out = self._conv_up_ops[d](out)

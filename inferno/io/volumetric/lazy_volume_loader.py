@@ -245,10 +245,11 @@ class LazyN5VolumeLoader(LazyVolumeLoader):
         assert WITH_Z5PY, "Need z5py to load volume from N5 file."
         assert slicing_config.get('downsampling_ratio', None) is None,\
             "Downsampling is not supported by z5py based loaderes"
-        super(N5VolumeLoader, self).__init__(file_impl=z5py.N5File, path=path,
-                                             path_in_file=path_in_file,
-                                             data_slice=data_slice, transforms=transforms,
-                                             name=name, **slicing_config)
+        super(LazyN5VolumeLoader, self).__init__(file_impl=z5py.N5File, path=path,
+                                                 path_in_file=path_in_file,
+                                                 data_slice=data_slice,
+                                                 transforms=transforms,
+                                                 name=name, **slicing_config)
 
 
 class LazyZarrVolumeLoader(LazyVolumeLoader):
@@ -257,7 +258,8 @@ class LazyZarrVolumeLoader(LazyVolumeLoader):
         assert WITH_Z5PY, "Need z5py to load volume from zarr file."
         assert slicing_config.get('downsampling_ratio', None) is None,\
             "Downsampling is not supported by z5py based loaderes"
-        super(ZarrVolumeLoader, self).__init__(file_impl=z5py.ZarrFile, path=path,
-                                               path_in_file=path_in_file,
-                                               data_slice=data_slice, transforms=transforms,
-                                               name=name, **slicing_config)
+        super(LazyZarrVolumeLoader, self).__init__(file_impl=z5py.ZarrFile, path=path,
+                                                   path_in_file=path_in_file,
+                                                   data_slice=data_slice,
+                                                   transforms=transforms,
+                                                   name=name, **slicing_config)
