@@ -14,18 +14,14 @@ def fromh5(path, datapath=None, dataslice=None, asnumpy=True, preptrain=None):
     # Check if path exists (thanks Lukas!)
     assert os.path.exists(path), "Path {} does not exist.".format(path)
     # Init file
-    h5file = h5.File(path)
-    # Init dataset
-    h5dataset = h5file[datapath] if datapath is not None else h5file.values()[0]
-    # Slice dataset
-    h5dataset = h5dataset[dataslice] if dataslice is not None else h5dataset
-    # Convert to numpy if required
-    h5dataset = np.asarray(h5dataset) if asnumpy else h5dataset
-    # Apply preptrain
-    h5dataset = preptrain(h5dataset) if preptrain is not None else h5dataset
-    # Close file
-    h5file.close()
-    # Return
+    with h5.File(path, 'r') as f:
+        h5dataset = f[datapath] if datapath is not None else f.values()[0]
+        # Slice dataset
+        h5dataset = h5dataset[dataslice] if dataslice is not None else h5dataset
+        # Convert to numpy if required
+        h5dataset = np.asarray(h5dataset) if asnumpy else h5dataset
+        # Apply preptrain
+        h5dataset = preptrain(h5dataset) if preptrain is not None else h5dataset
     return h5dataset
 
 

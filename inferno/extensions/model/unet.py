@@ -226,14 +226,14 @@ class UNetBase(nn.Module):
         if input.dim() != self.dim + 2:
             raise RuntimeError("wrong number of dim: expected %d, got %d"%
                 (self.dim+2, input.dim()))
-        self._check_scaling(input)
+        self._check_scaling(shape)
 
     # override if model has different scaling
-    def _check_scaling(self, input):
+    def _check_scaling(self, shape):
         mx = max_allowed_ds_steps(shape=shape[2:2+self.dim], factor=2)
         if mx < self.depth:
-            raise RuntimeError("cannot downsample %d times, with shape %s"%
-                (self.depth, str(input.size())) )
+            raise RuntimeError("cannot downsample %d times, with shape %s" %
+                               (self.depth, str(shape)))
 
     def forward(self, input):
 

@@ -1,5 +1,7 @@
-from ...utils import python_utils as pyu
 import numpy as np
+import torch
+from ...utils import python_utils as pyu
+from ...utils.exceptions import assert_
 
 
 class Transform(object):
@@ -80,6 +82,13 @@ class Transform(object):
     # noinspection PyUnresolvedReferences
     def _apply_image_function(self, tensor, **transform_function_kwargs):
         assert pyu.has_callable_attr(self, 'image_function')
+        # list
+        if isinstance(tensor, list):
+            assert_(all(torch.is_tensor(tnsr) or isinstance(tnsr, np.ndarray)
+                        for tnsr in tensor),
+                    "all list elements must be tensors or arrays, got %s" % '_'.join(str(type(tnsr)) for tnsr in tensor),
+                    TypeError)
+            return [self._apply_image_function(tnsr) for tnsr in tensor]
         # 2D case
         if tensor.ndim == 4:
             return np.array([np.array([self.image_function(image, **transform_function_kwargs)
@@ -101,11 +110,17 @@ class Transform(object):
             # Assume we really do have an image.
             return self.image_function(tensor, **transform_function_kwargs)
         else:
-            raise NotImplementedError
+            raise NotImplementedError("Image function not implemented for dim %i" % tensor.ndim)
 
     # noinspection PyUnresolvedReferences
     def _apply_volume_function(self, tensor, **transform_function_kwargs):
         assert pyu.has_callable_attr(self, 'volume_function')
+        if isinstance(tensor, list):
+            assert_(all(torch.is_tensor(tnsr) or isinstance(tnsr, np.ndarray)
+                        for tnsr in tensor),
+                    "all list elements must be tensors or arrays, got %s" % '_'.join(str(type(tnsr)) for tnsr in tensor),
+                    TypeError)
+            return [self._apply_volume_function(tnsr) for tnsr in tensor]
         # 3D case
         if tensor.ndim == 5:
             # tensor is bczyx
