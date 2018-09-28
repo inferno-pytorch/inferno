@@ -368,7 +368,7 @@ class BNReLUDilatedConv2D(_BNReLUSomeConv,ConvActivation):
                                                dim=2,
                                                activation=nn.ReLU(inplace=True),
                                                initialization=KaimingNormalWeightsZeroBias(0))
-        self.batchnorm = nn.BatchNorm2d(in_channels)  
+        self.batchnorm = nn.BatchNorm2d(in_channels)
 
 
 class BNReLUConv3D(_BNReLUSomeConv, ConvActivation):
@@ -481,7 +481,7 @@ class GlobalConv2D(nn.Module):
         self.kernel_size = kernel_size
         assert isinstance(kernel_size, (int, list, tuple))
         if isinstance(kernel_size, int):
-	        kernel_size = (kernel_size,)*2
+            kernel_size = (kernel_size,)*2
         self.kwargs=kwargs
         self.conv1a = local_conv_type(in_channels=self.in_channels, out_channels=self.out_channels,
                                kernel_size=(kernel_size[0], 1), **kwargs)
@@ -491,7 +491,7 @@ class GlobalConv2D(nn.Module):
                                kernel_size=(1, kernel_size[1]), **kwargs)
         self.conv2b = local_conv_type(in_channels=self.out_channels, out_channels=self.out_channels,
                                kernel_size=(kernel_size[0], 1), **kwargs)
-        if use_BN: 
+        if use_BN:
             self.batchnorm = nn.BatchNorm2d(self.out_channels)
         else:
             self.batchnorm = None
@@ -501,9 +501,35 @@ class GlobalConv2D(nn.Module):
         out1 = self.conv1b(out1)
         out2 = self.conv2a(input_)
         out2 = self.conv2b(out2)
-        out = out1.add(1,out2)        
+        out = out1.add(1,out2)
         if self.activation is not None:
             out = self.activation(out)
         if self.batchnorm is not None:
-            out = self.batchnorm(out) 
+            out = self.batchnorm(out)
         return out
+
+
+# implementation from
+# https://github.com/kuangliu/pytorch-groupnorm/blob/master/groupnorm.py
+class GroupNorm(nn.Module):
+    """ Group norm described in https://arxiv.org/abs/1803.08494
+    """
+    def __init__(self, num_features, num_groups=32, eps=1e-5):
+        super(GroupNorm, self).__init__()
+        self.weight = nn.Parameter(torch.ones(1, num_features, 1, 1))
+        self.bias = nn.Parameter(torch.zeros(1, num_features, 1, 1))
+        self.num_groups = num_groups
+        self.eps = eps
+
+    def forward(self, x):
+        N, C, H, W = x.size()
+        G = self.num_groups
+        assert C % G == 0
+
+        x = x.view(N,G,-1)
+        mean = x.mean(-1, keepdim=True)
+        var = x.var(-1, keepdim=True)
+
+        x = (x - mean) / (var + self.eps).sqrt()
+        x = x.view(N, C, H, W)
+        return x * self.weight + self.bias
