@@ -83,105 +83,6 @@ class Scale(Transform):
                 ShapeError)
         return rescaled_image
 
-class RandomScaleSegmentation(Transform):
-
-    """ Random Scale input and label image
-
-
-
-        Parameters
-
-        ----------
-
-        scale_range : tuple of floats defining (min, max) scales
-
-                      maximum angle of rotation
-
-        resize  : if True, image is cropped or padded to the original size
-
-    """
-
-    def __init__(self, scale_range, resize=True, pad_const=0, **super_kwargs):
-
-        super(RandomScaleSegmentation, self).__init__(**super_kwargs)
-
-        self.scale_range = scale_range
-
-        self.resize = resize
-
-        self.pad_const = pad_const
-
-
-
-    def build_random_variables(self):
-
-        np.random.seed()
-
-        self.set_random_variable('seg_scale',
-
-                 np.random.uniform(low=self.scale_range[0],
-
-                                   high=self.scale_range[1]))
-
-
-
-    def batch_function(self, image):
-
-        scale = self.get_random_variable('seg_scale')
-
-        image_shape = np.array(image[0].shape[1:])
-
-
-
-        with catch_warnings():
-
-            simplefilter('ignore')
-
-            img = np.stack([zoom(x, scale, order=3) for x in image[0]])
-
-            seg = np.stack([zoom(x, scale, order=0) for x in image[1]])
-
-        new_shape = np.array(img.shape[1:])
-
-
-
-        if self.resize:
-
-            if scale > 1.:
-
-                # pad image to original size
-
-                crop_l = (new_shape - image_shape) // 2
-
-                crop_r = new_shape - image_shape - crop_l
-
-                cropping = [slice(None)] + [slice(c[0] if c[0] > 0 else None,
-
-                                                 -c[1] if c[1] > 0 else None) for c in zip(crop_l, crop_r)]
-
-                img = img[cropping]
-
-                seg = seg[cropping]
-
-            else:
-
-                # crop image to original size
-
-                pad_l = (image_shape - new_shape) // 2
-
-                pad_r = image_shape - new_shape - pad_l
-
-                padding = [(0,0)] + list(zip(pad_l, pad_r))
-
-                img = np.pad(img, padding, 'mirror', constant_values=self.pad_const)
-
-                
-
-                seg = np.pad(seg, padding, 'mirror', constant_values=self.pad_const)
-
-
-
-        return img, seg
 
 class RandomCrop(Transform):
     """Crop input to a given size.
@@ -649,6 +550,7 @@ class RandomScaleSegmentation(Transform):
         scale_range : tuple of floats defining (min, max) scales
                       maximum angle of rotation
         resize  : if True, image is cropped or padded to the original size
+        pad_const: value used for constant padding
     """
     def __init__(self, scale_range, resize=True, pad_const=0, **super_kwargs):
         super(RandomScaleSegmentation, self).__init__(**super_kwargs)
@@ -687,7 +589,7 @@ class RandomScaleSegmentation(Transform):
                 pad_r = image_shape - new_shape - pad_l
                 padding = [(0,0)] + list(zip(pad_l, pad_r))
                 img = np.pad(img, padding, 'constant', constant_values=self.pad_const)
-                
+
                 seg = np.pad(seg, padding, 'constant', constant_values=self.pad_const)
 
         return img, seg
