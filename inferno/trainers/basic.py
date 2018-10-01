@@ -891,6 +891,22 @@ class Trainer(object):
                          for _learning_rate in learning_rate]
         return pyu.from_iterable(learning_rate)
 
+    def to(self, device):
+        """
+        Send trainer to device
+        ----------
+        device : string or torch.device
+            Target device where trainer/model should be send to
+        """
+        if device == 'cuda':
+            return self.cuda()
+        elif device == 'cpu':
+            return self.cpu()
+        elif isinstance(device, torch.torch.device):
+            self.to(device.type)
+        else:
+            raise NotImplementedError("Can not send trainer to device", device)
+
     def cuda(self, devices=None, base_device=None):
         """
         Train on the GPU.
