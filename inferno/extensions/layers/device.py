@@ -7,7 +7,7 @@ __all__ = ['DeviceTransfer', 'OnDevice']
 
 class DeviceTransfer(nn.Module):
     """Layer to transfer variables to a specified device."""
-    def __init__(self, target_device, device_ordinal=None, async=False):
+    def __init__(self, target_device, device_ordinal=None, asynchronous=False):
         """
         Parameters
         ----------
@@ -15,8 +15,8 @@ class DeviceTransfer(nn.Module):
             Device to transfer to.
         device_ordinal : int
             Device ordinal if target_device == 'cuda'.
-        async : bool
-            Whether to use async transfers.
+        asynchronous : bool
+            Whether to use asynchronous transfers.
         """
         super(DeviceTransfer, self).__init__()
         # Validate arguments
@@ -29,11 +29,11 @@ class DeviceTransfer(nn.Module):
                     DeviceError)
         self.target_device = target_device
         self.device_ordinal = device_ordinal
-        self.async = async
+        self.asynchronous = asynchronous
 
     def forward(self, *inputs):
         if self.target_device == 'cuda':
-            transferred = tuple(input_.cuda(device_id=self.device_ordinal, async=self.async)
+            transferred = tuple(input_.cuda(device_id=self.device_ordinal, async=self.asynchronous)
                                 for input_ in inputs)
         elif self.target_device == 'cpu':
             transferred = tuple(input_.cpu() for input_ in inputs)
@@ -48,7 +48,7 @@ class OnDevice(nn.Module):
     that the inputs are transferred to the same device as the module, enabling easy model
     parallelism.
     """
-    def __init__(self, module, target_device, device_ordinal=None, async=False):
+    def __init__(self, module, target_device, device_ordinal=None, asynchronous=False):
         """
         Parameters
         ----------
@@ -58,8 +58,8 @@ class OnDevice(nn.Module):
             The device to move `module` to. Must be either 'cuda' or 'cpu'.
         device_ordinal : int
             Ordinal of the GPU device if `target_device = 'cuda'`.
-        async : bool
-            Whether to use async transfers.
+        asynchronous : bool
+            Whether to use asynchronous transfers.
         """
         super(OnDevice, self).__init__()
         # Validate arguments
@@ -72,11 +72,11 @@ class OnDevice(nn.Module):
                     DeviceError)
         self.target_device = target_device
         self.device_ordinal = device_ordinal
-        self.async = async
+        self.asynchronous = asynchronous
         # This is a no-op if module is already in the right device
         self.device_transfer = DeviceTransfer(self.target_device,
                                               device_ordinal=self.device_ordinal,
-                                              async=self.async)
+                                              asynchronous=self.asynchronous)
 
         self.module = self.transfer_module(module)
 
