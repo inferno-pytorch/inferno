@@ -1,10 +1,16 @@
-import dill
 from datetime import datetime
 from inspect import signature
 import os
 import shutil
 import contextlib
 import warnings
+
+# These are fetched from globals, they're not unused
+# noinspection PyUnresolvedReferences
+import dill
+# noinspection PyUnresolvedReferences
+import pickle
+
 
 import torch
 from numpy import inf
@@ -54,6 +60,7 @@ class Trainer(object):
         self._model = None
         self._optimizer = None
         self._criterion = None
+        self._retain_graph = False
 
         # Metric evaluation
         self._metric = None
@@ -101,6 +108,7 @@ class Trainer(object):
         # Checkpointing
         self._save_every = None
         self._save_to_directory = None
+        self._pickle_module = 'pickle'
         # Defaults for file names
         self._checkpoint_filename = 'checkpoint.pytorch'
         self._best_checkpoint_filename = 'best_checkpoint.pytorch'
@@ -205,6 +213,15 @@ class Trainer(object):
     @property
     def model_is_defined(self):
         return self._model is not None
+
+    @property
+    def retain_graph(self):
+        return self._retain_graph
+
+    @retain_graph.setter
+    def retain_graph(self, value):
+        assert isinstance(value, bool)
+        self._retain_graph = value
 
     @property
     def optimizer(self):
@@ -516,7 +533,7 @@ class Trainer(object):
         elif isinstance(method, str):
             assert hasattr(metrics, method), \
                 "Could not find the metric '{}'.".format(method)
-            self._metric = getattr(metrics, method)()
+            self._metric = getattr(metrics, method)(**kwargs)
         else:
             raise NotImplementedError
         return self
@@ -588,6 +605,22 @@ class Trainer(object):
         """Sets the log directory,"""
         if value is not None:
             self.set_log_directory(value)
+
+    @property
+    def pickle_module(self):
+        module_ = globals().get(self._pickle_module, None)
+        assert_(module_ is not None, "Pickle module not found!", ModuleNotFoundError)
+        return module_
+
+    _ALLOWED_PICKLE_MODULES = {'pickle', 'dill'}
+
+    @pickle_module.setter
+    def pickle_module(self, value):
+        assert_(isinstance(value, str), "`pickle_module` must be set to a string.", TypeError)
+        assert_(value in self._ALLOWED_PICKLE_MODULES,
+                f"Pickle module must be one of {self._ALLOWED_PICKLE_MODULES}, "
+                f"got {value} instead.", ValueError)
+        self._pickle_module = value
 
     @property
     def saving_every(self):
@@ -857,6 +890,22 @@ class Trainer(object):
         learning_rate = [_learning_rate[0] if thu.is_tensor(_learning_rate) else _learning_rate
                          for _learning_rate in learning_rate]
         return pyu.from_iterable(learning_rate)
+
+    def to(self, device):
+        """
+        Send trainer to device
+        ----------
+        device : string or torch.device
+            Target device where trainer/model should be send to
+        """
+        if device == 'cuda':
+            return self.cuda()
+        elif device == 'cpu':
+            return self.cpu()
+        elif isinstance(device, torch.torch.device):
+            self.to(device.type)
+        else:
+            raise NotImplementedError("Can not send trainer to device", device)
 
     def cuda(self, devices=None, base_device=None):
         """
@@ -1335,7 +1384,9 @@ class Trainer(object):
             raise ValueError
         if backward:
             # Backprop if required
-            loss.backward()
+            # retain_graph option is needed for some custom
+            # loss functions like malis, False per default
+            loss.backward(retain_graph=self.retain_graph)
         return prediction, loss
 
     def train_for(self, num_iterations=None, break_callback=None):
@@ -1594,7 +1645,7 @@ class Trainer(object):
         # Save the state dictionary
         torch.save(self.get_config(exclude_loader=exclude_loader),
                    checkpoint_path,
-                   pickle_module=dill)
+                   pickle_module=self.pickle_module)
 
         self.callbacks.call(self.callbacks.END_OF_SAVE,
                             save_to_directory=self._save_to_directory,
@@ -1619,10 +1670,10 @@ class Trainer(object):
         # Save the state dictionary
         torch.save(self.model,
                    os.path.join(to_directory, 'model.pytorch'),
-                   pickle_module=dill)
+                   pickle_module=self.pickle_module)
         return self
 
-    def load(self, from_directory=None, best=False, filename=None):
+    def load(self, from_directory=None, best=False, filename=None, map_location=None):
         """
         Load the trainer from checkpoint.
 
@@ -1636,6 +1687,8 @@ class Trainer(object):
             'best_checkpoint.pytorch'.
         filename : str
             Overrides the default filename.
+        device : function, torch.device, string or a dict
+            Specify how to remap storage locations.
 
         Returns
         -------
@@ -1649,7 +1702,8 @@ class Trainer(object):
             filename = self._best_checkpoint_filename if best else self._checkpoint_filename
         # Load the dictionary
         config_dict = torch.load(os.path.join(from_directory, filename),
-                                 pickle_module=dill)
+                                 pickle_module=self.pickle_module, map_location=map_location)
+
         # This is required to prevent an infinite save loop?
         self._is_iteration_with_best_validation_score = False
         # Set config
@@ -1660,7 +1714,8 @@ class Trainer(object):
         from_directory = self._save_to_directory if from_directory is None else from_directory
         filename = 'model.pytorch' if filename is None else filename
         # Load the model
-        model = torch.load(os.path.join(from_directory, filename), pickle_module=dill)
+        model = torch.load(os.path.join(from_directory, filename),
+                           pickle_module=self.pickle_module)
         # Set model
         self.model = model
         return self

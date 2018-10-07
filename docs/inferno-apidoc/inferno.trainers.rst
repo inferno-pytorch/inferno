@@ -1,5 +1,5 @@
-inferno\.trainers package
-=========================
+inferno.trainers package
+========================
 
 Subpackages
 -----------
@@ -11,8 +11,8 @@ Subpackages
 Submodules
 ----------
 
-inferno\.trainers\.basic module
--------------------------------
+inferno.trainers.basic module
+-----------------------------
 
 .. automodule:: inferno.trainers.basic
     :members:

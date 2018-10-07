@@ -22,12 +22,11 @@ class ModelTester(object):
         return self
 
     def get_input(self):
-        if not self._is_cuda:
-            return Variable(torch.rand(*self.input_shape),
-                            requires_grad=False, volatile=True)
-        else:
-            return Variable(torch.rand(*self.input_shape).cuda(),
-                            requires_grad=False, volatile=True)
+        with torch.no_grad():
+            if self._is_cuda:
+                return torch.rand(*self.input_shape, requires_grad=False).cuda(),
+            else:
+                return torch.rand(*self.input_shape, requires_grad=False)
 
     def __call__(self, model):
         # Make sure model is a model
