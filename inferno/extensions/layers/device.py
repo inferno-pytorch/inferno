@@ -33,7 +33,8 @@ class DeviceTransfer(nn.Module):
 
     def forward(self, *inputs):
         if self.target_device == 'cuda':
-            transferred = tuple(input_.cuda(device_id=self.device_ordinal, async=self.asynchronous)
+            # FIXME Removed async support for compatibility with python 3.7.
+            transferred = tuple(input_.cuda(device_id=self.device_ordinal)
                                 for input_ in inputs)
         elif self.target_device == 'cpu':
             transferred = tuple(input_.cpu() for input_ in inputs)
