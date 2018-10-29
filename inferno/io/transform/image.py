@@ -124,10 +124,12 @@ class RandomCrop(Transform):
         super(RandomCrop, self).clear_random_variables()
 
     def build_random_variables(self, height_leeway, width_leeway):
-        self.set_random_variable('height_location',
-                                 np.random.randint(low=0, high=height_leeway + 1))
-        self.set_random_variable('width_location',
-                                 np.random.randint(low=0, high=width_leeway + 1))
+        if height_leeway > 0:
+            self.set_random_variable('height_location',
+                                     np.random.randint(low=0, high=height_leeway + 1))
+        if width_leeway > 0:
+            self.set_random_variable('width_location',
+                                     np.random.randint(low=0, high=width_leeway + 1))
 
     def image_function(self, image):
         # Validate image shape
@@ -150,6 +152,7 @@ class RandomCrop(Transform):
                                                        height_leeway=height_leeway,
                                                        width_leeway=width_leeway)
             cropped = image[height_location:(height_location + crop_height), :]
+            assert cropped.shape[0] == self.output_image_shape[0], "Well, shit."
         else:
             cropped = image
         if width_leeway > 0:
@@ -158,7 +161,7 @@ class RandomCrop(Transform):
                                                       height_leeway=height_leeway,
                                                       width_leeway=width_leeway)
             cropped = cropped[:, width_location:(width_location + crop_width)]
-        assert cropped.shape == self.output_image_shape, "Well, shit."
+            assert cropped.shape[1] == self.output_image_shape[1], "Well, shit."
         return cropped
 
 
@@ -448,11 +451,14 @@ class CenterCrop(Transform):
     def image_function(self, image):
         h, w = image.shape
         th, tw = self.size
-        x1 = int(round((w - tw) / 2.))
-        y1 = int(round((h - th) / 2.))
-        return image[x1:x1 + tw, y1:y1 + th]
+        if h > th:
+            y1 = int(round((h - th) / 2.))
+            image = image[:, y1:y1 + th]
+        if w > tw:
+            x1 = int(round((w - tw) / 2.))
+            image = image[x1:x1 + tw, :]
+        return image
 
-        trafo.image.RandomRotate(),
 
 class BinaryMorphology(Transform):
     """
