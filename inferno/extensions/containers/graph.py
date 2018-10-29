@@ -357,7 +357,7 @@ class Graph(nn.Module):
             modules.append(module)
         return pyu.from_iterable(modules)
 
-    def to_device(self, names, target_device, device_ordinal=None, async=False):
+    def to_device(self, names, target_device, device_ordinal=None, asynchron=False):
         """Transfer nodes in the network to a specified device."""
         names = pyu.to_iterable(names)
         for name in names:
@@ -368,7 +368,7 @@ class Graph(nn.Module):
             # Transfer
             module_on_device = OnDevice(module, target_device,
                                         device_ordinal=device_ordinal,
-                                        async=async)
+                                        asynchron=asynchron)
             setattr(self, name, module_on_device)
         return self
 
