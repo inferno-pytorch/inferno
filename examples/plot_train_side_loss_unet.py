@@ -15,8 +15,8 @@ from inferno.io.box.binary_blobs import get_binary_blob_loaders
 from inferno.trainers.basic import Trainer
 
 from inferno.extensions.layers.convolutional import  Conv2D
-from inferno.extensions.layers.building_blocks import ResBlock
-from inferno.extensions.layers.unet import ResBlockUNet
+from inferno.extensions.model.res_unet import _ResBlock as ResBlock
+from inferno.extensions.model import ResBlockUNet
 from inferno.utils.torch_utils import unwrap
 from inferno.utils.python_utils import ensure_dir
 import pylab
@@ -25,7 +25,7 @@ import pylab
 ##############################################################################
 # To create a UNet with side loss we create a new nn.Module class
 # which has a ResBlockUNet as member.
-# The ResBlockUNet is configured such that the results of the 
+# The ResBlockUNet is configured such that the results of the
 # bottom convolution and all the results of the up-stream
 # convolutions are returned as (side)-output.
 # a 1x1 convolutions is used to give the side outputs
@@ -48,8 +48,8 @@ class MySideLossUNet(nn.Module):
         # number of out channels
         self.n_channels_per_output = self.unet.n_channels_per_output
 
-        # 1x1 conv to give the side outs of the unet 
-        # the right number of channels 
+        # 1x1 conv to give the side outs of the unet
+        # the right number of channels
         # and a Upsampling to give the right shape
         upscale_factor = 2**self.depth
         conv_and_scale = []
@@ -67,17 +67,16 @@ class MySideLossUNet(nn.Module):
 
         self.conv_and_scale = nn.ModuleList(conv_and_scale)
 
-
         # combined number of channels after concat
         # concat side output predictions with main output of unet
         self.n_channels_combined = (self.depth + 1)* out_channels + in_channels*2
 
         self.final_block = nn.Sequential(
             ResBlock(dim=2,in_channels=self.n_channels_combined, out_channels=self.n_channels_combined),
-            ResBlock(in_channels=self.n_channels_combined, out_channels=out_channels, 
+            ResBlock(in_channels=self.n_channels_combined, out_channels=out_channels,
                     dim=2, activated=False),
         )
-   
+
     def forward(self, input):
         outs = self.unet(input)
         assert len(outs) == len(self.n_channels_per_output)
@@ -126,7 +125,7 @@ class MySideLoss(nn.Module):
             w *= 2
         return l
 
-            
+
 
 ##############################################################################
 # Training boilerplate (see :ref:`sphx_glr_auto_examples_trainer.py`)
@@ -135,7 +134,7 @@ SAVE_DIRECTORY = ensure_dir('save')
 DATASET_DIRECTORY = ensure_dir('dataset')
 
 
-USE_CUDA = True
+USE_CUDA = torch.cuda.is_available()
 
 # Build a residual unet where the last layer is not activated
 sl_unet = MySideLossUNet(in_channels=5, out_channels=2)
@@ -151,13 +150,13 @@ train_loader, test_loader, validate_loader = get_binary_blob_loaders(
 )
 
 # Build trainer
-trainer = Trainer(model) \
-.build_criterion(MySideLoss()) \
-.build_optimizer('Adam') \
-.validate_every((10, 'epochs')) \
-.save_every((10, 'epochs')) \
-.save_to_directory(SAVE_DIRECTORY) \
-.set_max_num_epochs(40) \
+trainer = Trainer(model)
+trainer.build_criterion(MySideLoss())
+trainer.build_optimizer('Adam')
+trainer.validate_every((10, 'epochs'))
+#trainer.save_every((10, 'epochs'))
+#trainer.save_to_directory(SAVE_DIRECTORY)
+trainer.set_max_num_epochs(40)
 
 # Bind loaders
 trainer \
@@ -176,7 +175,7 @@ trainer.fit()
 # and visualize the results
 
 # predict:
-trainer.load(best=True)
+#trainer.load(best=True)
 trainer.bind_loader('train', train_loader)
 trainer.bind_loader('validate', validate_loader)
 trainer.eval_mode()
@@ -210,7 +209,7 @@ for img,target in test_loader:
         ax2 = fig.add_subplot(2,4,2)
         ax2.set_title('ground truth')
         ax2.imshow(target[b,...])
-    
+
         for i,pred in enumerate(preds):
             axn = fig.add_subplot(2,4, 3+i)
             axn.imshow(pred[b,1,...])

@@ -9,13 +9,15 @@ of the unet framework in inferno
 # Preface
 # --------------
 # We start with some unspectacular multi purpose imports needed for this example
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 import torch
 import numpy
 
 ##############################################################################
-# should CUDA be used
-USE_CUDA = True
+
+# determine whether we have a gpu
+# and should use cuda
+USE_CUDA = torch.cuda.is_available()
 
 
 ##############################################################################
@@ -64,11 +66,11 @@ plt.show()
 # Simple UNet
 # ----------------------------
 # We start with a very simple predefined
-# res block UNet. By default, this UNet uses  ReLUs (in conjunction with batchnorm) as nonlinearities  
+# res block UNet. By default, this UNet uses  ReLUs (in conjunction with batchnorm) as nonlinearities
 # With :code:`activated=False` we make sure that the last layer
 # is not activated since we chain the UNet with a sigmoid
 # activation function.
-from inferno.extensions.layers.unet import ResBlockUNet
+from inferno.extensions.model import ResBlockUNet
 from inferno.extensions.layers import RemoveSingletonDimension
 
 model = torch.nn.Sequential(
@@ -79,10 +81,10 @@ model = torch.nn.Sequential(
 
 ##############################################################################
 # while the model above will work in principal, it has some drawbacks.
-# Within the UNet, the number of features is increased by a multiplicative 
+# Within the UNet, the number of features is increased by a multiplicative
 # factor while going down, the so-called gain. The default value for the gain is 2.
 # Since we start with only a single channel we could either increase the gain,
-# or use a some convolutions to increase the number of channels 
+# or use a some convolutions to increase the number of channels
 # before the the UNet.
 from inferno.extensions.layers import ConvReLU2D
 model_a = torch.nn.Sequential(
@@ -103,7 +105,7 @@ model_a = torch.nn.Sequential(
 # To train the unet, we use the infernos Trainer class of inferno.
 # Since we train many models later on in this example we encapsulate
 # the training in a function (see :ref:`sphx_glr_auto_examples_trainer.py` for
-# an example dedicated to the trainer itself). 
+# an example dedicated to the trainer itself).
 from inferno.trainers import Trainer
 from inferno.utils.python_utils import ensure_dir
 
@@ -118,7 +120,7 @@ def train_model(model, loaders, **kwargs):
     trainer.set_max_num_epochs(kwargs.get('max_num_epochs', 200))
 
     # bind the loaders
-    trainer.bind_loader('train', loaders[0]) 
+    trainer.bind_loader('train', loaders[0])
     trainer.bind_loader('validate', loaders[1])
 
     if USE_CUDA:
@@ -139,7 +141,7 @@ trainer = train_model(model=model_a, loaders=[train_loader, validate_loader], sa
 # ----------------------------
 # The trainer contains the trained model and we can do predictions.
 # We use :code:`unwrap` to convert the results to numpy arrays.
-# Since we want to do many prediction we encapsulate the 
+# Since we want to do many prediction we encapsulate the
 # the prediction in a function
 from inferno.utils.torch_utils import unwrap
 
@@ -154,7 +156,7 @@ def predict(trainer, test_loader,  save_dir=None):
 
         # get batch size from image
         batch_size = image.size()[0]
-        
+
         for b in range(batch_size):
             prediction = trainer.apply_model(image)
             prediction = torch.nn.functional.sigmoid(prediction)
@@ -193,11 +195,11 @@ predict(trainer=trainer, test_loader=test_loader)
 # Often one needs to have a UNet with custom layers.
 # Here we show how to implement such a customized UNet.
 # To this end we derive from :code:`UNetBase`.
-# For the sake of this example we will create 
+# For the sake of this example we will create
 # a rather exotic UNet which uses different types
 # of convolutions/non-linearities in the different branches
 # of the unet
-from inferno.extensions.layers import UNetBase
+from inferno.extensions.model import UNetBase
 from inferno.extensions.layers import ConvSELU2D, ConvReLU2D, ConvELU2D, ConvSigmoid2D,Conv2D
 
 class MySimple2DUnet(UNetBase):
@@ -211,24 +213,24 @@ class MySimple2DUnet(UNetBase):
             return torch.nn.Sequential(
                 ConvELU2D(in_channels=in_channels,  out_channels=out_channels, kernel_size=3),
                 ConvELU2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3)
-            )
+            ), False
         elif part == 'bottom':
             return torch.nn.Sequential(
                 ConvReLU2D(in_channels=in_channels,  out_channels=out_channels, kernel_size=3),
                 ConvReLU2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3),
-            )
+            ), False
         elif part == 'up':
             # are we in the very last block?
             if index + 1 == self.depth:
                 return torch.nn.Sequential(
                     ConvELU2D(in_channels=in_channels,  out_channels=out_channels, kernel_size=3),
                     Conv2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3)
-                )
+                ), False
             else:
                 return torch.nn.Sequential(
                     ConvELU2D(in_channels=in_channels,   out_channels=out_channels, kernel_size=3),
                     ConvReLU2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3)
-                )
+                ), False
         else:
             raise RuntimeError("something is wrong")
 

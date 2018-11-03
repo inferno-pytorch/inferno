@@ -8,17 +8,12 @@ Inferno
 .. image:: https://img.shields.io/pypi/v/inferno.svg
         :target: https://pypi.python.org/pypi/inferno-pytorch
 
-.. image:: https://img.shields.io/travis/infern-pytorch/inferno.svg
+.. image:: https://travis-ci.org/inferno-pytorch/inferno.svg?branch=master
         :target: https://travis-ci.org/inferno-pytorch/inferno
 
 .. image:: https://readthedocs.org/projects/inferno-pytorch/badge/?version=latest
         :target: http://inferno-pytorch.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
-
-.. image:: https://pyup.io/repos/github/inferno-pytorch/inferno/shield.svg
-     :target: https://pyup.io/repos/github/inferno-pytorch/inferno/
-     :alt: Updates
-
 
 
 .. image:: http://svgshare.com/i/2j7.svg
@@ -34,7 +29,7 @@ It's a work-in-progress, but the first stable release (0.2) is underway!
 
 
 * Free software: Apache Software License 2.0
-* Documentation: https://pytorch-inferno.readthedocs.io (Work in progress).
+* Documentation: http://inferno-pytorch.readthedocs.io (Work in Progress).
 
 
 Features
@@ -53,7 +48,7 @@ Current features include:
   *   `various utility layers <https://github.com/nasimrahaman/inferno/tree/master/inferno/extensions/layers>`_ with more underway,
   *   `a submodule <https://github.com/nasimrahaman/inferno/blob/master/inferno/io/volumetric>`_ for volumetric datasets, and more!
 
-
+  
 
 
 
@@ -83,7 +78,7 @@ Current features include:
       nn.MaxPool2d(kernel_size=2, stride=2),
       Flatten(),
       nn.Linear(in_features=(256 * 4 * 4), out_features=10),
-      nn.Softmax()
+      nn.LogSoftmax(dim=1)
   )
 
   # Load loaders
@@ -92,7 +87,7 @@ Current features include:
 
   # Build trainer
   trainer = Trainer(model) \
-    .build_criterion('CrossEntropyLoss') \
+    .build_criterion('NLLLoss') \
     .build_metric('CategoricalError') \
     .build_optimizer('Adam') \
     .validate_every((2, 'epochs')) \
@@ -100,7 +95,7 @@ Current features include:
     .save_to_directory(SAVE_DIRECTORY) \
     .set_max_num_epochs(10) \
     .build_logger(TensorboardLogger(log_scalars_every=(1, 'iteration'),
-                                    log_images_every='never'), 
+                                    log_images_every='never'),
                   log_directory=LOG_DIRECTORY)
 
   # Bind loaders
@@ -131,11 +126,11 @@ and navigate to `localhost:6007` with your browser.
 Installation
 ------------------------
 
-Conda packages for linux and mac (only python 3) are available via
+Conda packages for linux (only python 3) are available via
 
 .. code:: bash
 
-  $ conda install -c inferno-pytorch inferno
+  $ conda install -c pytorch -c conda-forge inferno
 
 
 
@@ -152,10 +147,9 @@ Planned features include:
 Credits
 ---------
 All contributors are listed here_. 
+.. _here: https://inferno-pytorch.github.io/inferno/html/authors.html
 
-.. _here: https://pytorch-inferno.readthedocs.io/en/latest/authors.html
-
-This packag was partially generated with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template + lots of work by Thorsten. 
+This package was partially generated with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template + lots of work by Thorsten. 
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage

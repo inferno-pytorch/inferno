@@ -533,7 +533,7 @@ class Trainer(object):
         elif isinstance(method, str):
             assert hasattr(metrics, method), \
                 "Could not find the metric '{}'.".format(method)
-            self._metric = getattr(metrics, method)()
+            self._metric = getattr(metrics, method)(**kwargs)
         else:
             raise NotImplementedError
         return self
@@ -890,6 +890,22 @@ class Trainer(object):
         learning_rate = [_learning_rate[0] if thu.is_tensor(_learning_rate) else _learning_rate
                          for _learning_rate in learning_rate]
         return pyu.from_iterable(learning_rate)
+
+    def to(self, device):
+        """
+        Send trainer to device
+        ----------
+        device : string or torch.device
+            Target device where trainer/model should be send to
+        """
+        if device == 'cuda':
+            return self.cuda()
+        elif device == 'cpu':
+            return self.cpu()
+        elif isinstance(device, torch.torch.device):
+            self.to(device.type)
+        else:
+            raise NotImplementedError("Can not send trainer to device", device)
 
     def cuda(self, devices=None, base_device=None):
         """
@@ -1657,7 +1673,7 @@ class Trainer(object):
                    pickle_module=self.pickle_module)
         return self
 
-    def load(self, from_directory=None, best=False, filename=None):
+    def load(self, from_directory=None, best=False, filename=None, map_location=None):
         """
         Load the trainer from checkpoint.
 
@@ -1671,6 +1687,8 @@ class Trainer(object):
             'best_checkpoint.pytorch'.
         filename : str
             Overrides the default filename.
+        device : function, torch.device, string or a dict
+            Specify how to remap storage locations.
 
         Returns
         -------
@@ -1684,7 +1702,8 @@ class Trainer(object):
             filename = self._best_checkpoint_filename if best else self._checkpoint_filename
         # Load the dictionary
         config_dict = torch.load(os.path.join(from_directory, filename),
-                                 pickle_module=self.pickle_module)
+                                 pickle_module=self.pickle_module, map_location=map_location)
+
         # This is required to prevent an infinite save loop?
         self._is_iteration_with_best_validation_score = False
         # Set config

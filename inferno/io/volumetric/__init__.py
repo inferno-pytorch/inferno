@@ -1,1 +1,1 @@
-from .volume import VolumeLoader, HDF5VolumeLoader, TIFVolumeLoader
+from .volume import VolumeLoader, HDF5VolumeLoader, TIFVolumeLoaderfrom .lazy_volume_loader import LazyHDF5VolumeLoader, LazyZarrVolumeLoader, LazyN5VolumeLoader

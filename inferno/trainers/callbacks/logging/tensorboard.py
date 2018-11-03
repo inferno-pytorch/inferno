@@ -199,6 +199,8 @@ class TensorboardLogger(Logger):
                                 allow_image_logging,
                                 allow_histogram_logging)
             return
+
+        # FIXME this can throw ugly warnings
         # Check whether object is a scalar
         if tu.is_scalar_tensor(object_) and allow_scalar_logging:
             # Log scalar
@@ -211,9 +213,10 @@ class TensorboardLogger(Logger):
             # Add a channel axis and log as images
             self.log_image_or_volume_batch(tag, object_[:, None, ...],
                                            self.trainer.iteration_count)
-        elif tu.is_image_or_volume_tensor(object_) and allow_image_logging:
-            # Log images
-            self.log_image_or_volume_batch(tag, object_, self.trainer.iteration_count)
+        elif tu.is_image_or_volume_tensor(object_):
+            if allow_image_logging:
+                # Log images
+                self.log_image_or_volume_batch(tag, object_, self.trainer.iteration_count)
         elif tu.is_vector_tensor(object_) and allow_histogram_logging:
             # Log histograms
             values = tu.unwrap(object_, as_numpy=True)
@@ -384,16 +387,25 @@ class TensorboardLogger(Logger):
                 pass
             else:
                 raise RuntimeError
+
+            # FIXME in tensorboardX > 1.12 this will lead to some error.
+            # unfortunately tensorboardX does not have a __version__ attribute
+            # so I don't see how to check for the version and provide backwards
+            # compatability here
             # tensorboardX borks if the number of image channels is not 3
-            if image.shape[-1] == 1:
-                image = image[..., [0, 0, 0]]
+            # if image.shape[-1] == 1:
+            #     image = image[..., [0, 0, 0]]
+
             image = self._normalize_image(image)
+            # print(image.dtype, image.shape)
             self.writer.add_image(tag, img_tensor=image, global_step=step)
 
     @staticmethod
     def _normalize_image(image):
         normalized_image = image - image.min()
-        normalized_image = normalized_image / normalized_image.max()
+        maxval = normalized_image.max()
+        if maxval > 0:
+            normalized_image = normalized_image / maxval
         return normalized_image
 
     def log_histogram(self, tag, values, step, bins=1000):

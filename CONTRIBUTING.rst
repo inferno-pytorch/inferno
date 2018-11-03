@@ -130,3 +130,10 @@ These files need to be in the github repository.
 
     Do not make changes to `inferno/docs/inferno-apidoc` This folder is auto-generated
     by the above mentioned command.
+
+The following combines all the commands necessary to build the html documentation:
+
+.. code:: bash
+  
+    ./build_docs.sh
+
