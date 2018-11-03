@@ -1426,6 +1426,8 @@ class Trainer(object):
                 # Apply model, compute loss and backprop
                 prediction, loss = self.apply_model_and_loss(inputs, target, backward=True,
                                                              mode='train')
+            self.callbacks.call(self.callbacks.AFTER_MODEL_AND_LOSS_IS_APPLIED,
+                                prediction=prediction, loss=loss, iteration_num=iteration_num)
             # Compute metric
             if self.metric_is_defined and self.evaluate_metric_now:
                 self._last_metric_evaluated_at_epoch = self._epoch_count
