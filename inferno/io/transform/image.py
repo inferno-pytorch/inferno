@@ -453,10 +453,10 @@ class CenterCrop(Transform):
         th, tw = self.size
         if h > th:
             y1 = int(round((h - th) / 2.))
-            image = image[:, y1:y1 + th]
+            image = image[y1:y1 + th, :]
         if w > tw:
             x1 = int(round((w - tw) / 2.))
-            image = image[x1:x1 + tw, :]
+            image = image[:, x1:x1 + tw]
         return image
 
 
