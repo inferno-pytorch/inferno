@@ -13,7 +13,7 @@ class NaNDetector(Callback):
         training_loss = self.trainer.get_state('training_loss')
         # Extract scalar
         if tu.is_tensor(training_loss):
-            training_loss = training_loss.float()[0]
+            training_loss = tu.unwrap(training_loss, extract_item=True)
         if not np.isfinite(training_loss):
             raise RuntimeError("Loss is not finite (loss={})!".format(training_loss))
 
@@ -250,3 +250,28 @@ class ParameterEMA(Callback):
 
     def end_of_training_iteration(self, **_):
         self.maintain()
+
+
+class GradientClip(Callback):
+    def __init__(self, clip_value=None, clip_norm=None):
+        super(GradientClip, self).__init__()
+        assert_(not (clip_value is None and clip_norm is None),
+                "Must provide either clip_value or clip_norm.",
+                ValueError)
+        assert_(clip_value is None or clip_norm is None,
+                f"Must provide only one, but not both: "
+                f"clip_value ({clip_value}) or clip_norm ({clip_norm}).",
+                RuntimeError)
+        self._clip_value = clip_value
+        self._clip_norm = clip_norm
+
+    @property
+    def mode(self):
+        return 'value' if self._clip_value is not None else 'norm'
+
+    @property
+    def norm_or_value(self):
+        return self._clip_value if self._clip_value is not None else self._clip_norm
+
+    def after_model_and_loss_is_applied(self, **_):
+        tu.clip_gradients_(self.trainer.model.parameters(), self.mode, self.norm_or_value)

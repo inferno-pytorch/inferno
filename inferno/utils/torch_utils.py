@@ -153,3 +153,15 @@ def flatten_samples(tensor_or_variable):
     # Now flatten out all but the first axis and return
     flattened = permuted.view(num_channels, -1)
     return flattened
+
+
+def clip_gradients_(parameters, mode, norm_or_value):
+    assert_(mode in ['norm', 'value'],
+            f"Mode must be 'norm' or 'value', got '{mode}' instead.",
+            ValueError)
+    if mode == 'norm':
+        torch.nn.utils.clip_grad_norm_(parameters, norm_or_value)
+    elif mode == 'value':
+        torch.nn.utils.clip_grad_value_(parameters, norm_or_value)
+    else:
+        raise NotImplementedError

@@ -78,7 +78,7 @@ Current features include:
       nn.MaxPool2d(kernel_size=2, stride=2),
       Flatten(),
       nn.Linear(in_features=(256 * 4 * 4), out_features=10),
-      nn.Softmax()
+      nn.LogSoftmax(dim=1)
   )
 
   # Load loaders
@@ -87,7 +87,7 @@ Current features include:
 
   # Build trainer
   trainer = Trainer(model) \
-    .build_criterion('CrossEntropyLoss') \
+    .build_criterion('NLLLoss') \
     .build_metric('CategoricalError') \
     .build_optimizer('Adam') \
     .validate_every((2, 'epochs')) \
@@ -95,7 +95,7 @@ Current features include:
     .save_to_directory(SAVE_DIRECTORY) \
     .set_max_num_epochs(10) \
     .build_logger(TensorboardLogger(log_scalars_every=(1, 'iteration'),
-                                    log_images_every='never'), 
+                                    log_images_every='never'),
                   log_directory=LOG_DIRECTORY)
 
   # Bind loaders

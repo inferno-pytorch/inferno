@@ -387,9 +387,15 @@ class TensorboardLogger(Logger):
                 pass
             else:
                 raise RuntimeError
+
+            # FIXME in tensorboardX > 1.12 this will lead to some error.
+            # unfortunately tensorboardX does not have a __version__ attribute
+            # so I don't see how to check for the version and provide backwards
+            # compatability here
             # tensorboardX borks if the number of image channels is not 3
-            if image.shape[-1] == 1:
-                image = image[..., [0, 0, 0]]
+            # if image.shape[-1] == 1:
+            #     image = image[..., [0, 0, 0]]
+
             image = self._normalize_image(image)
             # print(image.dtype, image.shape)
             self.writer.add_image(tag, img_tensor=image, global_step=step)
