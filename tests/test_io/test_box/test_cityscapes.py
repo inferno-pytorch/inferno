@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import time
 
-_CITYSCAPES_ROOT = False
+_CITYSCAPES_ROOT = None
 
 
 def _cityscapes_available():
@@ -52,8 +52,7 @@ class TestCityscapes(unittest.TestCase):
         from inferno.utils.io_utils import print_tensor
 
         train_loader, validate_loader = get_cityscapes_loaders(self.get_cityscapes_root(),
-                                                               include_coarse_dataset=
-                                                               self.INCLUDE_COARSE)
+                                                               include_coarse_dataset=self.INCLUDE_COARSE)
         train_dataset = train_loader.dataset
         tic = time.time()
         image, label = train_dataset[0]
@@ -86,8 +85,7 @@ class TestCityscapes(unittest.TestCase):
 
         train_loader, validate_loader = get_cityscapes_loaders(join(self.get_cityscapes_root(),
                                                                     'extracted'),
-                                                               include_coarse_dataset=
-                                                               self.INCLUDE_COARSE,
+                                                               include_coarse_dataset=self.INCLUDE_COARSE,
                                                                read_from_zip_archive=False)
         train_dataset = train_loader.dataset
         tic = time.time()

@@ -1,4 +1,5 @@
-from unittest import TestCase, skipIf
+from unittest import TestCase, skipUnless
+import torch
 from unittest import main
 import time
 from os.path import join, dirname
