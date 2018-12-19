@@ -5,6 +5,7 @@ from ...utils.exceptions import assert_, DeviceError
 __all__ = ['DeviceTransfer', 'OnDevice']
 _all = __all__
 
+
 class DeviceTransfer(nn.Module):
     """Layer to transfer variables to a specified device."""
     def __init__(self, target_device, device_ordinal=None, asynchronous=False):
@@ -29,12 +30,11 @@ class DeviceTransfer(nn.Module):
                     DeviceError)
         self.target_device = target_device
         self.device_ordinal = device_ordinal
-        self.asynchronous = asynchronous
 
     def forward(self, *inputs):
         if self.target_device == 'cuda':
-            # FIXME Removed async support for compatibility with python 3.7.
-            transferred = tuple(input_.cuda(device_id=self.device_ordinal)
+            transferred = tuple(input_.cuda(device=self.device_ordinal,
+                                            non_blocking=self.asynchronous)
                                 for input_ in inputs)
         elif self.target_device == 'cpu':
             transferred = tuple(input_.cpu() for input_ in inputs)
