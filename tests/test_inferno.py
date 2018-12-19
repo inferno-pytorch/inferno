@@ -24,8 +24,8 @@ from torch import nn
 class TestInferno(unittest.TestCase):
     """Tests for `inferno` package."""
 
-    NUM_SAMPLES = 1000
-    NUM_TRAINING_SAMPLES = 700
+    NUM_SAMPLES = 100
+    NUM_TRAINING_SAMPLES = 70
     NUM_CLASSES = 10
     WORKING_DIRECTORY = dirname(__file__)
 
@@ -98,17 +98,16 @@ class TestInferno(unittest.TestCase):
         model = Graph()
         model\
             .add_input_node('input')\
-            .add_node('conv1', Conv2D(3, 32, 3), 'input')\
-            .add_node('conv2', BNReLUConv2D(32, 32, 3), 'conv1')\
+            .add_node('conv1', Conv2D(3, 8, 3), 'input')\
+            .add_node('conv2', BNReLUConv2D(8, 8, 3), 'conv1')\
             .add_node('pool1', nn.MaxPool2d(kernel_size=2, stride=2), 'conv2')\
-            .add_node('conv3', BNReLUConv2D(32, 32, 3), 'pool1')\
+            .add_node('conv3', BNReLUConv2D(8, 8, 3), 'pool1')\
             .add_node('pool2', nn.MaxPool2d(kernel_size=2, stride=2), 'conv3')\
-            .add_node('conv4', BNReLUConv2D(32, 32, 3), 'pool2')\
+            .add_node('conv4', BNReLUConv2D(8, 8, 3), 'pool2')\
             .add_node('pool3', nn.AdaptiveAvgPool2d(output_size=(1, 1)), 'conv4')\
             .add_node('matrix', AsMatrix(), 'pool3')\
-            .add_node('linear', nn.Linear(32, self.NUM_CLASSES), 'matrix')\
-            .add_node('softmax', nn.Softmax(dim=1), 'linear')\
-            .add_output_node('output', 'softmax')
+            .add_node('linear', nn.Linear(8, self.NUM_CLASSES), 'matrix')\
+            .add_output_node('output', 'linear')
         return model
 
     def test_training_cpu(self):
@@ -122,7 +121,7 @@ class TestInferno(unittest.TestCase):
         trainer = Trainer(model)\
             .save_every((2, 'epochs'), to_directory=join(self.WORKING_DIRECTORY, 'Weights'))\
             .validate_every((100, 'iterations'), for_num_iterations=10)\
-            .set_max_num_epochs(10)\
+            .set_max_num_epochs(4)\
             .save_at_best_validation_score()\
             .build_optimizer('RMSprop')\
             .build_criterion('CrossEntropyLoss')\
