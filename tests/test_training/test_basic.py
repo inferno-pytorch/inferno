@@ -12,7 +12,7 @@ class TestTrainer(TestCase):
     ROOT_DIR = dirname(__file__)
     CUDA = False
     HALF_PRECISION = False
-    DOWNLOAD_CIFAR = False
+    DOWNLOAD_CIFAR = True
 
     @staticmethod
     def _make_test_model():
