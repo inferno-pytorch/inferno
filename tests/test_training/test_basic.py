@@ -4,9 +4,6 @@ import time
 from os.path import join, dirname
 
 
-SKIP_INTEGRATION_TESTS = False
-
-
 class TestTrainer(TestCase):
     # Parameters
     ROOT_DIR = dirname(__file__)
@@ -32,7 +29,6 @@ class TestTrainer(TestCase):
                                 nn.Linear(16, 10))
         return toy_net
 
-    @skipIf(SKIP_INTEGRATION_TESTS, "Slow integration test.")
     def test_cifar(self):
         from inferno.trainers.basic import Trainer
         from inferno.io.box.cifar import get_cifar10_loaders
@@ -134,7 +130,7 @@ class TestTrainer(TestCase):
         # Make sure everything survived (especially the logger)
         self.assertEqual(trainer._logger.__class__.__name__, 'BasicTensorboardLogger')
 
-    @skipIf(SKIP_INTEGRATION_TESTS, "Slow integration test.")
+    @skipUnless(torch.cuda.device_count() >= 4, "Not enough cuda devices for test_multi_gpu.")
     def test_multi_gpu(self):
         import torch
         if not torch.cuda.is_available():
