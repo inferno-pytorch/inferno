@@ -19,18 +19,17 @@ class TestTrainer(TestCase):
         import torch.nn as nn
         from inferno.extensions.layers.reshape import AsMatrix
 
-        toy_net = nn.Sequential(nn.Conv2d(3, 128, 3, 1, 1),
+        toy_net = nn.Sequential(nn.Conv2d(3, 8, 3, 1, 1),
                                 nn.ELU(),
                                 nn.MaxPool2d(2),
-                                nn.Conv2d(128, 128, 3, 1, 1),
+                                nn.Conv2d(8, 8, 3, 1, 1),
                                 nn.ELU(),
                                 nn.MaxPool2d(2),
-                                nn.Conv2d(128, 256, 3, 1, 1),
+                                nn.Conv2d(8, 16, 3, 1, 1),
                                 nn.ELU(),
                                 nn.AdaptiveAvgPool2d((1, 1)),
                                 AsMatrix(),
-                                nn.Linear(256, 10),
-                                nn.Softmax())
+                                nn.Linear(16, 10))
         return toy_net
 
     @skipIf(SKIP_INTEGRATION_TESTS, "Slow integration test.")
