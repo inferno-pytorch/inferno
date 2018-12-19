@@ -4,9 +4,15 @@ import unittest
 import numpy as np
 import time
 
+_CITYSCAPES_ROOT = None
+
+
+def _cityscapes_available():
+    return _CITYSCAPES_ROOT is not None or os.environ.get('CITYSCAPES_ROOT') is not None
+
 
 class TestCityscapes(unittest.TestCase):
-    CITYSCAPES_ROOT = None
+    CITYSCAPES_ROOT = _CITYSCAPES_ROOT
     PLOT_DIRECTORY = join(dirname(__file__), 'plots')
     INCLUDE_COARSE = False
 
@@ -17,6 +23,7 @@ class TestCityscapes(unittest.TestCase):
         else:
             return self.CITYSCAPES_ROOT
 
+    @unittest.skipUnless(_cityscapes_available(), "No cityscapes available.")
     def test_cityscapes_dataset_without_transforms(self):
         from inferno.io.box.cityscapes import Cityscapes
         cityscapes = Cityscapes(self.get_cityscapes_root())
@@ -27,6 +34,7 @@ class TestCityscapes(unittest.TestCase):
         self.assertSequenceEqual(label.shape, (1024, 2048))
         self.assertLessEqual(label.max(), 33)
 
+    @unittest.skipUnless(_cityscapes_available(), "No cityscapes available.")
     def test_cityscapes_dataset_without_transforms_unzipped(self):
         from inferno.io.box.cityscapes import Cityscapes
         cityscapes = Cityscapes(join(self.get_cityscapes_root(), 'extracted'),
@@ -38,13 +46,13 @@ class TestCityscapes(unittest.TestCase):
         self.assertSequenceEqual(label.shape, (1024, 2048))
         self.assertLessEqual(label.max(), 33)
 
+    @unittest.skipUnless(_cityscapes_available(), "No cityscapes available.")
     def test_cityscapes_dataset_with_transforms(self):
         from inferno.io.box.cityscapes import get_cityscapes_loaders
         from inferno.utils.io_utils import print_tensor
 
         train_loader, validate_loader = get_cityscapes_loaders(self.get_cityscapes_root(),
-                                                               include_coarse_dataset=
-                                                               self.INCLUDE_COARSE)
+                                                               include_coarse_dataset=self.INCLUDE_COARSE)
         train_dataset = train_loader.dataset
         tic = time.time()
         image, label = train_dataset[0]
@@ -70,14 +78,14 @@ class TestCityscapes(unittest.TestCase):
                      directory=self.PLOT_DIRECTORY)
         print("[+] Inspect images at {}".format(self.PLOT_DIRECTORY))
 
+    @unittest.skipUnless(_cityscapes_available(), "No cityscapes available.")
     def test_cityscapes_dataset_with_transforms_unzipped(self):
         from inferno.io.box.cityscapes import get_cityscapes_loaders
         from inferno.utils.io_utils import print_tensor
 
         train_loader, validate_loader = get_cityscapes_loaders(join(self.get_cityscapes_root(),
                                                                     'extracted'),
-                                                               include_coarse_dataset=
-                                                               self.INCLUDE_COARSE,
+                                                               include_coarse_dataset=self.INCLUDE_COARSE,
                                                                read_from_zip_archive=False)
         train_dataset = train_loader.dataset
         tic = time.time()
@@ -106,6 +114,4 @@ class TestCityscapes(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    TestCityscapes.CITYSCAPES_ROOT = '/home/nrahaman/BigHeronHDD2/CityScapes'
-    TestCityscapes.INCLUDE_COARSE = True
     unittest.main()

@@ -24,7 +24,7 @@ class ModelTester(object):
     def get_input(self):
         with torch.no_grad():
             if self._is_cuda:
-                return torch.rand(*self.input_shape, requires_grad=False).cuda(),
+                return torch.rand(*self.input_shape, requires_grad=False).cuda()
             else:
                 return torch.rand(*self.input_shape, requires_grad=False)
 

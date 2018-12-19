@@ -1,10 +1,8 @@
-from unittest import TestCase, skipIf
+from unittest import TestCase, skipUnless
+import torch
 from unittest import main
 import time
 from os.path import join, dirname
-
-
-SKIP_INTEGRATION_TESTS = False
 
 
 class TestTrainer(TestCase):
@@ -12,28 +10,26 @@ class TestTrainer(TestCase):
     ROOT_DIR = dirname(__file__)
     CUDA = False
     HALF_PRECISION = False
-    DOWNLOAD_CIFAR = False
+    DOWNLOAD_CIFAR = True
 
     @staticmethod
     def _make_test_model():
         import torch.nn as nn
         from inferno.extensions.layers.reshape import AsMatrix
 
-        toy_net = nn.Sequential(nn.Conv2d(3, 128, 3, 1, 1),
+        toy_net = nn.Sequential(nn.Conv2d(3, 8, 3, 1, 1),
                                 nn.ELU(),
                                 nn.MaxPool2d(2),
-                                nn.Conv2d(128, 128, 3, 1, 1),
+                                nn.Conv2d(8, 8, 3, 1, 1),
                                 nn.ELU(),
                                 nn.MaxPool2d(2),
-                                nn.Conv2d(128, 256, 3, 1, 1),
+                                nn.Conv2d(8, 16, 3, 1, 1),
                                 nn.ELU(),
                                 nn.AdaptiveAvgPool2d((1, 1)),
                                 AsMatrix(),
-                                nn.Linear(256, 10),
-                                nn.Softmax())
+                                nn.Linear(16, 10))
         return toy_net
 
-    @skipIf(SKIP_INTEGRATION_TESTS, "Slow integration test.")
     def test_cifar(self):
         from inferno.trainers.basic import Trainer
         from inferno.io.box.cifar import get_cifar10_loaders
@@ -69,7 +65,6 @@ class TestTrainer(TestCase):
         from torch.utils.data.dataset import Dataset
         from torch.utils.data.dataloader import DataLoader
         from inferno.trainers.basic import Trainer
-        import torch
 
         class DummyDataset(Dataset):
             def __len__(self):
@@ -132,12 +127,9 @@ class TestTrainer(TestCase):
 
         # Try to unserialize
         trainer = Trainer(net).save_to_directory(os.path.join(self.ROOT_DIR, 'saves')).load()
-        # Make sure everything survived (especially the logger)
-        self.assertEqual(trainer._logger.__class__.__name__, 'BasicTensorboardLogger')
 
-    @skipIf(SKIP_INTEGRATION_TESTS, "Slow integration test.")
+    @skipUnless(torch.cuda.device_count() >= 4, "Not enough cuda devices for test_multi_gpu.")
     def test_multi_gpu(self):
-        import torch
         if not torch.cuda.is_available():
             return
 
@@ -173,9 +165,9 @@ class TestTrainer(TestCase):
         # Instantiate new trainer and load
         trainer = Trainer().load(from_directory=self.ROOT_DIR, filename='dummy.pytorch')
 
+    @skipUnless(torch.cuda.device_count() >= 2, "Not enough cuda devices for test_multi_gpu_setup.")
     def test_multi_gpu_setup(self):
         from torch.nn import CrossEntropyLoss
-        import torch
         from inferno.trainers.basic import Trainer
         # Test base_device = 'cpu'
         # Build model
@@ -195,6 +187,4 @@ class TestTrainer(TestCase):
 
 
 if __name__ == '__main__':
-    TestTrainer.CUDA = True
-    TestTrainer.DOWNLOAD_CIFAR = False
     main()

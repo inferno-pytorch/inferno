@@ -4,8 +4,15 @@ import unittest
 import numpy as np
 
 
+_CAMVID_ROOT = None
+
+
+def _camvid_available():
+    return _CAMVID_ROOT is not None or os.environ.get('CAMVID_ROOT') is not None
+
+
 class TestCamvid(unittest.TestCase):
-    CAMVID_ROOT = None
+    CAMVID_ROOT = _CAMVID_ROOT
     PLOT_DIRECTORY = join(dirname(__file__), 'plots')
 
     def get_camvid_root(self):
@@ -15,7 +22,7 @@ class TestCamvid(unittest.TestCase):
         else:
             return self.CAMVID_ROOT
 
-    # @unittest.skip
+    @unittest.skipUnless(_camvid_available(), "No root available.")
     def test_camvid_dataset_without_transforms(self):
         from inferno.io.box.camvid import CamVid
         camvid = CamVid(self.get_camvid_root())
@@ -26,7 +33,7 @@ class TestCamvid(unittest.TestCase):
         self.assertSequenceEqual(label.shape, (360, 480))
         self.assertLessEqual(label.max(), 11)
 
-    # @unittest.skip
+    @unittest.skipUnless(_camvid_available(), "No root available.")
     def _test_camvid_dataset_with_transforms(self):
         from inferno.io.box.camvid import CamVid
         from inferno.io.transform.base import Compose
@@ -63,7 +70,7 @@ class TestCamvid(unittest.TestCase):
         print_tensor(label[None, None, ...], prefix='LAB--', directory=self.PLOT_DIRECTORY)
         print("[+] Inspect images at {}".format(self.PLOT_DIRECTORY))
 
-    # @unittest.skip
+    @unittest.skipUnless(_camvid_available(), "No root available.")
     def test_camvid_dataset_with_transforms(self):
         from inferno.io.box.camvid import get_camvid_loaders
         from inferno.utils.io_utils import print_tensor
@@ -85,7 +92,7 @@ class TestCamvid(unittest.TestCase):
         print_tensor(label.numpy()[None, None, ...], prefix='LAB--', directory=self.PLOT_DIRECTORY)
         print("[+] Inspect images at {}".format(self.PLOT_DIRECTORY))
 
-    # @unittest.skip
+    @unittest.skipUnless(_camvid_available(), "No root available.")
     def test_camvid_dataset_with_transforms_onehot(self):
         from inferno.io.box.camvid import get_camvid_loaders
         from inferno.utils.io_utils import print_tensor
@@ -108,6 +115,6 @@ class TestCamvid(unittest.TestCase):
         print_tensor(label.numpy()[None, ...], prefix='LAB--', directory=self.PLOT_DIRECTORY)
         print("[+] Inspect images at {}".format(self.PLOT_DIRECTORY))
 
+
 if __name__ == '__main__':
-    TestCamvid.CAMVID_ROOT = '/export/home/nrahaman/Python/Repositories/SegNet-Tutorial/CamVid'
     unittest.main()

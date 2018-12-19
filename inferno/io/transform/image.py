@@ -124,10 +124,12 @@ class RandomCrop(Transform):
         super(RandomCrop, self).clear_random_variables()
 
     def build_random_variables(self, height_leeway, width_leeway):
-        self.set_random_variable('height_location',
-                                 np.random.randint(low=0, high=height_leeway + 1))
-        self.set_random_variable('width_location',
-                                 np.random.randint(low=0, high=width_leeway + 1))
+        if height_leeway > 0:
+            self.set_random_variable('height_location',
+                                     np.random.randint(low=0, high=height_leeway + 1))
+        if width_leeway > 0:
+            self.set_random_variable('width_location',
+                                     np.random.randint(low=0, high=width_leeway + 1))
 
     def image_function(self, image):
         # Validate image shape
@@ -150,6 +152,7 @@ class RandomCrop(Transform):
                                                        height_leeway=height_leeway,
                                                        width_leeway=width_leeway)
             cropped = image[height_location:(height_location + crop_height), :]
+            assert cropped.shape[0] == self.output_image_shape[0], "Well, shit."
         else:
             cropped = image
         if width_leeway > 0:
@@ -158,7 +161,7 @@ class RandomCrop(Transform):
                                                       height_leeway=height_leeway,
                                                       width_leeway=width_leeway)
             cropped = cropped[:, width_location:(width_location + crop_width)]
-        assert cropped.shape == self.output_image_shape, "Well, shit."
+            assert cropped.shape[1] == self.output_image_shape[1], "Well, shit."
         return cropped
 
 
@@ -448,11 +451,14 @@ class CenterCrop(Transform):
     def image_function(self, image):
         h, w = image.shape
         th, tw = self.size
-        x1 = int(round((w - tw) / 2.))
-        y1 = int(round((h - th) / 2.))
-        return image[x1:x1 + tw, y1:y1 + th]
+        if h > th:
+            y1 = int(round((h - th) / 2.))
+            image = image[y1:y1 + th, :]
+        if w > tw:
+            x1 = int(round((w - tw) / 2.))
+            image = image[:, x1:x1 + tw]
+        return image
 
-        trafo.image.RandomRotate(),
 
 class BinaryMorphology(Transform):
     """
@@ -566,14 +572,15 @@ class RandomScaleSegmentation(Transform):
 
     def batch_function(self, image):
         scale = self.get_random_variable('seg_scale')
-        image_shape = np.array(image[0].shape[1:])
-
+        input_image, segmentation = image
+        image_shape = np.array(input_image.shape[1:])
+        if input_image.ndim == segmentation.ndim + 1:
+            segmentation = segmentation[None]
         with catch_warnings():
             simplefilter('ignore')
-            img = np.stack([zoom(x, scale, order=3) for x in image[0]])
-            seg = np.stack([zoom(x, scale, order=0) for x in image[1]])
+            img = np.stack([zoom(x, scale, order=3) for x in input_image])
+            seg = np.stack([zoom(x, scale, order=0) for x in segmentation])
         new_shape = np.array(img.shape[1:])
-
         if self.resize:
             if scale > 1.:
                 # pad image to original size
@@ -589,7 +596,5 @@ class RandomScaleSegmentation(Transform):
                 pad_r = image_shape - new_shape - pad_l
                 padding = [(0,0)] + list(zip(pad_l, pad_r))
                 img = np.pad(img, padding, 'constant', constant_values=self.pad_const)
-
-                seg = np.pad(seg, padding, 'constant', constant_values=self.pad_const)
-
+                seg = np.pad(seg, padding, 'constant', constant_values=self.pad_const)     
         return img, seg

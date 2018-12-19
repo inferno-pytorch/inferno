@@ -2,7 +2,9 @@ import unittest
 import torch
 from inferno.trainers.callbacks.base import Callback, CallbackEngine
 from inferno.trainers.basic import Trainer
-from os.path import join, dirname
+from os.path import join, dirname, exists
+from os import makedirs
+from shutil import rmtree
 
 
 class DummyCallback(Callback):
@@ -17,6 +19,13 @@ class WrongDummyCallback(Callback):
 
 class CallbackMechTest(unittest.TestCase):
     ROOT_DIR = join(dirname(__file__), 'root')
+
+    def setUp(self):
+        makedirs(self.ROOT_DIR, exist_ok=True)
+
+    def tearDown(self):
+        if exists(self.ROOT_DIR):
+            rmtree(self.ROOT_DIR)
 
     def test_serialization(self):
         # Build engine and trainer

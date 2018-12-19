@@ -89,6 +89,8 @@ class IOU(Metric):
             raise ShapeError("Target must have the same number of dimensions as the "
                              "prediction, or one less. Got target.dim() = {} but "
                              "prediction.dim() = {}.".format(target.dim(), prediction.dim()))
+        # Cast onehot_targets to float if required (this is a no-op if it's already float)
+        onehot_targets = onehot_targets.float()
         # Sharpen prediction if required to. Sharpening in this sense means to replace
         # the max predicted probability with 1.
         if self.sharpen_prediction:

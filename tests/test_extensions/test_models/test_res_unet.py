@@ -6,14 +6,14 @@ from inferno.utils.model_utils import ModelTester
 
 class ResUNetTest(unittest.TestCase):
     def test_res_unet_2d(self):
-        from inferno.extensions.model import ResBlockUNet
+        from inferno.extensions.models import ResBlockUNet
         tester = ModelTester((1, 1, 256, 256), (1, 1, 256, 256))
         if cuda.is_available():
             tester.cuda()
         tester(ResBlockUNet(in_channels=1, out_channels=1, dim=2))
 
     def test_res_unet_3d(self):
-        from inferno.extensions.model import ResBlockUNet
+        from inferno.extensions.models import ResBlockUNet
         tester = ModelTester((1, 1, 16, 64, 64), (1, 1, 16, 64, 64))
         if cuda.is_available():
             tester.cuda()
@@ -21,7 +21,7 @@ class ResUNetTest(unittest.TestCase):
         tester(ResBlockUNet(in_channels=1, out_channels=1, dim=3))
 
     def test_2d_side_out_bot_up(self):
-        from inferno.extensions.model import ResBlockUNet
+        from inferno.extensions.models import ResBlockUNet
         depth = 3
         in_channels = 3
 
@@ -40,7 +40,7 @@ class ResUNetTest(unittest.TestCase):
         self.assertEqual(list(out_list[3].size()), [1, 8, 64, 32])
 
     def test_2d_side_out_up(self):
-        from inferno.extensions.model import ResBlockUNet
+        from inferno.extensions.models import ResBlockUNet
         depth = 3
         in_channels = 3
 
@@ -58,7 +58,7 @@ class ResUNetTest(unittest.TestCase):
         self.assertEqual(list(out_list[2].size()), [1, 8, 64, 32])
 
     def test_2d_side_out_down(self):
-        from inferno.extensions.model import ResBlockUNet
+        from inferno.extensions.models import ResBlockUNet
         depth = 3
         in_channels = 3
 

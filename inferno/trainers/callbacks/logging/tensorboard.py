@@ -20,6 +20,10 @@ class TensorboardLogger(Logger):
 
     Currently supports logging scalars and images.
     """
+    # This is hard coded because tensorboardX doesn't have a __version__
+    _TENSORBOARDX_IMAGE_FORMAT = 'CHW'
+    _DEBUG = False
+
     def __init__(self, log_directory=None,
                  log_scalars_every=None, log_images_every=None, log_histograms_every=None,
                  send_image_at_batch_indices='all', send_image_at_channel_indices='all',
@@ -200,7 +204,6 @@ class TensorboardLogger(Logger):
                                 allow_histogram_logging)
             return
 
-        # FIXME this can throw ugly warnings
         # Check whether object is a scalar
         if tu.is_scalar_tensor(object_) and allow_scalar_logging:
             # Log scalar
@@ -223,7 +226,8 @@ class TensorboardLogger(Logger):
             self.log_histogram(tag, values, self.trainer.iteration_count)
         else:
             # Object is neither a scalar nor an image nor a vector, there's nothing we can do
-            if tu.is_tensor(object_):
+            if tu.is_tensor(object_) and self._DEBUG:
+                # Throw a warning when in debug mode.
                 warnings.warn("Unsupported attempt to log tensor `{}` of shape `{}`".format(tag, object_.size()))
 
     def end_of_training_iteration(self, **_):
@@ -376,23 +380,52 @@ class TensorboardLogger(Logger):
                 image = image.array
             else:
                 tag = "{}/{}".format(tag, image_num)
-            # image axis gymnastics
-            if image.ndim == 2:
-                # image is 2D - tensorboardX needs a channel axis in the end
-                image = image[..., None]
-            elif image.ndim == 3 and image_format.upper() == 'CHW':
-                # We have a CHW image, but need HWC.
-                image = np.moveaxis(image, 0, 2)
-            elif image.ndim == 3 and image_format.upper() == 'HWC':
-                pass
-            else:
-                raise RuntimeError
+            # This will fail for the wrong tensorboard version.
+            image = self._order_image_axes(image, image_format, self._TENSORBOARDX_IMAGE_FORMAT)
+            # unfortunately tensorboardX does not have a __version__ attribute
+            # so I don't see how to check for the version and provide backwards
+            # compatability here
             # tensorboardX borks if the number of image channels is not 3
-            if image.shape[-1] == 1:
-                image = image[..., [0, 0, 0]]
+            # if image.shape[-1] == 1:
+            #     image = image[..., [0, 0, 0]]
             image = self._normalize_image(image)
             # print(image.dtype, image.shape)
             self.writer.add_image(tag, img_tensor=image, global_step=step)
+
+    @staticmethod
+    def _order_image_axes(image, image_format='CHW', target_format='CHW'):
+        # image axis gymnastics
+        _not_implemented_message = "target_format must be 'CHW' or 'HCW'."
+        if image.ndim == 2:
+            if target_format == 'CHW':
+                # image is 2D - tensorboardX 1.4+ needs a channel axis in the front
+                image = image[None, ...]
+            elif target_format == 'HWC':
+                # image is 2D - tensorboardX 1.3- needs a channel axis in the end
+                image = image[..., None]
+            else:
+                raise NotImplementedError(_not_implemented_message)
+        elif image.ndim == 3 and image_format.upper() == 'CHW':
+            if target_format == 'CHW':
+                # Nothing to do here
+                pass
+            elif target_format == 'HCW':
+                # We have a CHW image, but need HWC.
+                image = np.moveaxis(image, 0, 2)
+            else:
+                raise NotImplementedError(_not_implemented_message)
+        elif image.ndim == 3 and image_format.upper() == 'HWC':
+            if target_format == 'CHW':
+                # We have a HWC image, but need CHW
+                image = np.moveaxis(image, 2, 0)
+            elif target_format == 'HWC':
+                # Nothing to do here
+                pass
+            else:
+                raise NotImplementedError(_not_implemented_message)
+        else:
+            raise RuntimeError
+        return image
 
     @staticmethod
     def _normalize_image(image):

@@ -18,6 +18,7 @@ class CallbackEngine(object):
     BEGIN_OF_EPOCH = 'begin_of_epoch'
     END_OF_EPOCH = 'end_of_epoch'
     BEGIN_OF_TRAINING_ITERATION = 'begin_of_training_iteration'
+    AFTER_MODEL_AND_LOSS_IS_APPLIED = 'after_model_and_loss_is_applied'
     END_OF_TRAINING_ITERATION = 'end_of_training_iteration'
     BEGIN_OF_VALIDATION_RUN = 'begin_of_validation_run'
     END_OF_VALIDATION_RUN = 'end_of_validation_run'
@@ -33,6 +34,7 @@ class CallbackEngine(object):
                 BEGIN_OF_EPOCH,
                 END_OF_EPOCH,
                 BEGIN_OF_TRAINING_ITERATION,
+                AFTER_MODEL_AND_LOSS_IS_APPLIED,
                 END_OF_TRAINING_ITERATION,
                 BEGIN_OF_VALIDATION_RUN,
                 END_OF_VALIDATION_RUN,
