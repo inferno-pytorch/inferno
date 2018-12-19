@@ -167,6 +167,7 @@ class TestTrainer(TestCase):
         # Instantiate new trainer and load
         trainer = Trainer().load(from_directory=self.ROOT_DIR, filename='dummy.pytorch')
 
+    @skipUnless(torch.cuda.device_count() >= 2, "Not enough cuda devices for test_multi_gpu_setup.")
     def test_multi_gpu_setup(self):
         from torch.nn import CrossEntropyLoss
         import torch
