@@ -17,18 +17,17 @@ class TestTensorboard(unittest.TestCase):
 
     @staticmethod
     def _make_test_model(input_channels):
-        toy_net = nn.Sequential(nn.Conv2d(input_channels, 128, 3, 1, 1),
+        toy_net = nn.Sequential(nn.Conv2d(input_channels, 8, 3, 1, 1),
                                 nn.ELU(),
                                 nn.MaxPool2d(2),
-                                nn.Conv2d(128, 128, 3, 1, 1),
+                                nn.Conv2d(8, 8, 3, 1, 1),
                                 nn.ELU(),
                                 nn.MaxPool2d(2),
-                                nn.Conv2d(128, 256, 3, 1, 1),
+                                nn.Conv2d(8, 16, 3, 1, 1),
                                 nn.ELU(),
                                 nn.AdaptiveMaxPool2d((1, 1)),
                                 AsMatrix(),
-                                nn.Linear(256, 10),
-                                nn.Softmax())
+                                nn.Linear(16, 10))
         return toy_net
 
     def setUp(self, input_channels=3):
