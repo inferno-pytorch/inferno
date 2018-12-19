@@ -65,7 +65,6 @@ class TestTrainer(TestCase):
         from torch.utils.data.dataset import Dataset
         from torch.utils.data.dataloader import DataLoader
         from inferno.trainers.basic import Trainer
-        import torch
 
         class DummyDataset(Dataset):
             def __len__(self):
@@ -131,7 +130,6 @@ class TestTrainer(TestCase):
 
     @skipUnless(torch.cuda.device_count() >= 4, "Not enough cuda devices for test_multi_gpu.")
     def test_multi_gpu(self):
-        import torch
         if not torch.cuda.is_available():
             return
 
@@ -170,7 +168,6 @@ class TestTrainer(TestCase):
     @skipUnless(torch.cuda.device_count() >= 2, "Not enough cuda devices for test_multi_gpu_setup.")
     def test_multi_gpu_setup(self):
         from torch.nn import CrossEntropyLoss
-        import torch
         from inferno.trainers.basic import Trainer
         # Test base_device = 'cpu'
         # Build model
