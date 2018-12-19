@@ -30,7 +30,7 @@ class TestSorensenDice(SetSimilarityTest):
         # Compute channelwise
         channelwise_loss = channelwise(x, y)
         # Compare
-        self.assertAlmostEqual(expected_channelwise_loss.data[0], channelwise_loss.data[0])
+        self.assertAlmostEqual(expected_channelwise_loss.item(), channelwise_loss.item())
 
 
 class TestGeneralizedSorensenDice(SetSimilarityTest):
@@ -45,7 +45,7 @@ class TestGeneralizedSorensenDice(SetSimilarityTest):
             not_channelwise(x[:, 0, ...], y[:, 0, ...]) + \
             not_channelwise(x[:, 1, ...], y[:, 1, ...])
         # Compare
-        self.assertAlmostEqual(expected_channelwise_loss.data[0], channelwise_loss.data[0])
+        self.assertAlmostEqual(expected_channelwise_loss.item(), channelwise_loss.item())
 
 
 if __name__ == '__main__':
