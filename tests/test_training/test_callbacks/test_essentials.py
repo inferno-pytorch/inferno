@@ -15,17 +15,17 @@ class TestEssentials(unittest.TestCase):
 
     def setUp(self):
         # Build a simple ass model
-        model = Sequential(Conv2D(3, 32, 3, 'ReLU'),
+        model = Sequential(Conv2D(3, 8, 3, activation='ReLU'),
                            MaxPool2d(2, 2),
-                           Conv2D(32, 32, 3, 'ReLU'),
+                           Conv2D(8, 8, 3, activation='ReLU'),
                            MaxPool2d(2, 2),
-                           Conv2D(32, 32, 3, 'ReLU'),
+                           Conv2D(8, 8, 3, activation='ReLU'),
                            MaxPool2d(2, 2),
-                           Conv2D(32, 32, 3, 'ReLU'),
+                           Conv2D(8, 8, 3, activation='ReLU'),
                            AdaptiveAvgPool2d((1, 1)),
                            AsMatrix(),
-                           Linear(32, 10),
-                           Softmax())
+                           Linear(8, 10))
+
         train_dataloader = generate_random_dataloader(512, (3, 32, 32), 10, batch_size=16,
                                                       dtype='float32')
         validate_dataloader = generate_random_dataloader(32, (3, 32, 32), 10, batch_size=16,
