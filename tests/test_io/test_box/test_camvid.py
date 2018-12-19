@@ -8,7 +8,7 @@ _CAMVID_ROOT = None
 
 
 def _camvid_available():
-    return _CAMVID_ROOT is None or os.environ.get('CAMVID_ROOT') is None
+    return _CAMVID_ROOT is not None or os.environ.get('CAMVID_ROOT') is not None
 
 
 class TestCamvid(unittest.TestCase):

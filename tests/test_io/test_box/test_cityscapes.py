@@ -8,7 +8,7 @@ _CITYSCAPES_ROOT = False
 
 
 def _cityscapes_available():
-    return _CITYSCAPES_ROOT is None or os.environ.get('CITYSCAPES_ROOT') is None
+    return _CITYSCAPES_ROOT is not None or os.environ.get('CITYSCAPES_ROOT') is not None
 
 
 class TestCityscapes(unittest.TestCase):
