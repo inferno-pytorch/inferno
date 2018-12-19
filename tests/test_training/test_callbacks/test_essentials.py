@@ -26,8 +26,10 @@ class TestEssentials(unittest.TestCase):
                            AsMatrix(),
                            Linear(32, 10),
                            Softmax())
-        train_dataloader = generate_random_dataloader(512, (3, 32, 32), 10, batch_size=16)
-        validate_dataloader = generate_random_dataloader(32, (3, 32, 32), 10, batch_size=16)
+        train_dataloader = generate_random_dataloader(512, (3, 32, 32), 10, batch_size=16,
+                                                      dtype='float32')
+        validate_dataloader = generate_random_dataloader(32, (3, 32, 32), 10, batch_size=16,
+                                                         dtype='float32')
         # Build trainer
         trainer = Trainer(model)\
             .bind_loader('train', train_dataloader)\
