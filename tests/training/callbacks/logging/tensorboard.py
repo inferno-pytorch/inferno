@@ -1,21 +1,23 @@
 import unittest
 
 import os
+import numpy as np
+import torch
 import torch.nn as nn
 from inferno.trainers.basic import Trainer
-from inferno.io.box.cifar import get_cifar10_loaders
+from torch.utils.data.dataset import TensorDataset
+from torch.utils.data.dataloader import DataLoader
 from inferno.trainers.callbacks.logging.tensorboard import TensorboardLogger
 from inferno.extensions.layers.reshape import AsMatrix
 
 
 class TestTensorboard(unittest.TestCase):
     ROOT_DIR = os.path.dirname(__file__)
-    PRECISION = 'half'
-    DOWNLOAD_CIFAR = True
+    PRECISION = 'float'
 
     @staticmethod
-    def _make_test_model():
-        toy_net = nn.Sequential(nn.Conv2d(3, 128, 3, 1, 1),
+    def _make_test_model(input_channels):
+        toy_net = nn.Sequential(nn.Conv2d(input_channels, 128, 3, 1, 1),
                                 nn.ELU(),
                                 nn.MaxPool2d(2),
                                 nn.Conv2d(128, 128, 3, 1, 1),
@@ -29,9 +31,9 @@ class TestTensorboard(unittest.TestCase):
                                 nn.Softmax())
         return toy_net
 
-    def setUp(self):
+    def setUp(self, input_channels=3):
         # Build model
-        net = self._make_test_model()
+        net = self._make_test_model(input_channels)
 
         # Build trainer
         self.trainer = Trainer(net)\
@@ -46,20 +48,42 @@ class TestTensorboard(unittest.TestCase):
             .save_every((2, 'epochs'), to_directory=os.path.join(self.ROOT_DIR, 'saves'))\
             .save_at_best_validation_score()\
             .set_max_num_epochs(2)\
-            .cuda().set_precision(self.PRECISION)
+            .set_precision(self.PRECISION)
 
-        # Load CIFAR10 data
-        train_loader, test_loader = \
-            get_cifar10_loaders(root_directory=os.path.join(self.ROOT_DIR, 'data'),
-                                download=self.DOWNLOAD_CIFAR)
+        train_loader, test_loader = self.getRandomDataloaders(input_channels=input_channels)
 
         # Bind loaders
         self.trainer.bind_loader('train', train_loader).bind_loader('validate', test_loader)
 
+    def getRandomDataloaders(self, input_channels=3):
+        # Convert build random tensor dataset
+        data_shape = (1, input_channels, 64, 64)
+        target_shape = (1)
+        random_array = torch.from_numpy(np.random.rand(*data_shape)).float()
+        target_array = torch.from_numpy(np.random.randint(0, 9, size=target_shape))
+        train_dataset = TensorDataset(random_array, target_array)
+        test_dataset = TensorDataset(random_array, target_array)
+
+        # Build dataloaders from dataset
+        train_loader = DataLoader(train_dataset, batch_size=1,
+                                  shuffle=True, num_workers=1, pin_memory=False)
+        test_loader = DataLoader(test_dataset, batch_size=1,
+                                 shuffle=True, num_workers=1, pin_memory=False)
+        return train_loader, test_loader
+
     def test_tensorboard(self):
         # Set up if required
         if not hasattr(self, 'trainer'):
-            self.setUp()
+            self.setUp(input_channels=3)
+        # Train
+        self.trainer.fit()
+        # Print info for check
+        self.trainer.print("Inspect logs at: {}".format(self.trainer.log_directory))
+
+    def test_tensorboard_grayscale(self):
+        # Set up if required
+        if not hasattr(self, 'trainer'):
+            self.setUp(input_channels=1)
         # Train
         self.trainer.fit()
         # Print info for check
@@ -72,14 +96,11 @@ class TestTensorboard(unittest.TestCase):
         self.trainer.save()
         # Unserialize
         trainer = Trainer().load(os.path.join(self.ROOT_DIR, 'saves'))
-        train_loader, test_loader = \
-            get_cifar10_loaders(root_directory=os.path.join(self.ROOT_DIR, 'data'),
-                                download=self.DOWNLOAD_CIFAR)
+        train_loader, test_loader = self.getRandomDataloaders(input_channels=3)
         trainer.bind_loader('train', train_loader).bind_loader('validate', test_loader)
         trainer.fit()
         trainer.print("Inspect logs at: {}".format(self.trainer.log_directory))
 
 
 if __name__ == '__main__':
-    TestTensorboard().test_tensorboard()
-    # unittest.main()
+    unittest.main()
