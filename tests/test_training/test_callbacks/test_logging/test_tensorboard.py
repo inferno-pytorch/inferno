@@ -1,6 +1,7 @@
 import unittest
 
 import os
+from shutil import rmtree
 import numpy as np
 import torch
 import torch.nn as nn
@@ -33,18 +34,20 @@ class TestTensorboard(unittest.TestCase):
     def setUp(self, input_channels=3):
         # Build model
         net = self._make_test_model(input_channels)
+        self.save_directory = os.path.join(self.ROOT_DIR, 'saves')
+        self.log_directory = os.path.join(self.ROOT_DIR, 'logs')
 
         # Build trainer
         self.trainer = Trainer(net)\
             .build_logger(TensorboardLogger(send_image_at_batch_indices=0,
                                             send_image_at_channel_indices='all',
                                             log_images_every=(20, 'iterations')),
-                          log_directory=os.path.join(self.ROOT_DIR, 'logs'))\
+                          log_directory=self.log_directory)\
             .build_criterion('CrossEntropyLoss')\
             .build_metric('CategoricalError')\
             .build_optimizer('Adam')\
             .validate_every((1, 'epochs'))\
-            .save_every((2, 'epochs'), to_directory=os.path.join(self.ROOT_DIR, 'saves'))\
+            .save_every((2, 'epochs'), to_directory=self.save_directory)\
             .save_at_best_validation_score()\
             .set_max_num_epochs(2)\
             .set_precision(self.PRECISION)
@@ -53,6 +56,14 @@ class TestTensorboard(unittest.TestCase):
 
         # Bind loaders
         self.trainer.bind_loader('train', train_loader).bind_loader('validate', test_loader)
+
+    def tearDown(self):
+        for d in [self.save_directory, self.log_directory]:
+            if os.path.exists(d):
+                try:
+                    rmtree(d)
+                except OSError:
+                    pass
 
     def getRandomDataloaders(self, input_channels=3):
         # Convert build random tensor dataset
