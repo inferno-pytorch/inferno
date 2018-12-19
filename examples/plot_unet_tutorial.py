@@ -70,7 +70,7 @@ plt.show()
 # With :code:`activated=False` we make sure that the last layer
 # is not activated since we chain the UNet with a sigmoid
 # activation function.
-from inferno.extensions.model import ResBlockUNet
+from inferno.extensions.models import ResBlockUNet
 from inferno.extensions.layers import RemoveSingletonDimension
 
 model = torch.nn.Sequential(
@@ -199,7 +199,7 @@ predict(trainer=trainer, test_loader=test_loader)
 # a rather exotic UNet which uses different types
 # of convolutions/non-linearities in the different branches
 # of the unet
-from inferno.extensions.model import UNetBase
+from inferno.extensions.models import UNetBase
 from inferno.extensions.layers import ConvSELU2D, ConvReLU2D, ConvELU2D, ConvSigmoid2D,Conv2D
 
 class MySimple2DUnet(UNetBase):

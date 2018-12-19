@@ -15,8 +15,8 @@ from inferno.io.box.binary_blobs import get_binary_blob_loaders
 from inferno.trainers.basic import Trainer
 
 from inferno.extensions.layers.convolutional import  Conv2D
-from inferno.extensions.model.res_unet import _ResBlock as ResBlock
-from inferno.extensions.model import ResBlockUNet
+from inferno.extensions.models.res_unet import _ResBlock as ResBlock
+from inferno.extensions.models import ResBlockUNet
 from inferno.utils.torch_utils import unwrap
 from inferno.utils.python_utils import ensure_dir
 import pylab

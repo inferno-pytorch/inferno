@@ -1,5 +1,6 @@
 import unittest
 from functools import reduce
+import torch
 
 
 class TestGraph(unittest.TestCase):
@@ -99,6 +100,7 @@ class TestGraph(unittest.TestCase):
         model.add_output_node('output_0', previous='conv1')
         ModelTester((1, 1, 100, 100), (1, 1, 100, 100))(model)
 
+    @unittest.skipUnless(torch.cuda.is_available(), "No cuda.")
     def test_graph_device_transfers(self):
         from inferno.extensions.containers.graph import Graph
         from inferno.extensions.layers.convolutional import ConvELU2D
