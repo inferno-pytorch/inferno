@@ -21,7 +21,8 @@ class TensorboardLogger(Logger):
     Currently supports logging scalars and images.
     """
     # This is hard coded because tensorboardX doesn't have a __version__
-    TENSORBOARDX_IMAGE_FORMAT = 'CHW'
+    _TENSORBOARDX_IMAGE_FORMAT = 'CHW'
+    _DEBUG = False
 
     def __init__(self, log_directory=None,
                  log_scalars_every=None, log_images_every=None, log_histograms_every=None,
@@ -203,7 +204,6 @@ class TensorboardLogger(Logger):
                                 allow_histogram_logging)
             return
 
-        # FIXME this can throw ugly warnings
         # Check whether object is a scalar
         if tu.is_scalar_tensor(object_) and allow_scalar_logging:
             # Log scalar
@@ -226,7 +226,8 @@ class TensorboardLogger(Logger):
             self.log_histogram(tag, values, self.trainer.iteration_count)
         else:
             # Object is neither a scalar nor an image nor a vector, there's nothing we can do
-            if tu.is_tensor(object_):
+            if tu.is_tensor(object_) and self._DEBUG:
+                # Throw a warning when in debug mode.
                 warnings.warn("Unsupported attempt to log tensor `{}` of shape `{}`".format(tag, object_.size()))
 
     def end_of_training_iteration(self, **_):
@@ -380,7 +381,7 @@ class TensorboardLogger(Logger):
             else:
                 tag = "{}/{}".format(tag, image_num)
             # This will fail for the wrong tensorboard version.
-            image = self._order_image_axes(image, image_format, self.TENSORBOARDX_IMAGE_FORMAT)
+            image = self._order_image_axes(image, image_format, self._TENSORBOARDX_IMAGE_FORMAT)
             # unfortunately tensorboardX does not have a __version__ attribute
             # so I don't see how to check for the version and provide backwards
             # compatability here
