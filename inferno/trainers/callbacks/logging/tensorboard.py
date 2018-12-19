@@ -380,7 +380,7 @@ class TensorboardLogger(Logger):
             else:
                 tag = "{}/{}".format(tag, image_num)
             # This will fail for the wrong tensorboard version.
-            self._order_image_axes(image, image_format, self.TENSORBOARDX_IMAGE_FORMAT)
+            image = self._order_image_axes(image, image_format, self.TENSORBOARDX_IMAGE_FORMAT)
             # unfortunately tensorboardX does not have a __version__ attribute
             # so I don't see how to check for the version and provide backwards
             # compatability here
