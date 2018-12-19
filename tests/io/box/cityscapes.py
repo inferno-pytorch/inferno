@@ -4,6 +4,9 @@ import unittest
 import numpy as np
 import time
 
+def _cityscapes_available():
+    return TestCityscapes.CITYSCAPES_ROOT is None or os.environ.get('CITYSCAPES_ROOT') is None
+
 
 class TestCityscapes(unittest.TestCase):
     CITYSCAPES_ROOT = None
@@ -17,6 +20,7 @@ class TestCityscapes(unittest.TestCase):
         else:
             return self.CITYSCAPES_ROOT
 
+    @unittest.skipUnless(_cityscapes_available(), "No cityscapes available.")
     def test_cityscapes_dataset_without_transforms(self):
         from inferno.io.box.cityscapes import Cityscapes
         cityscapes = Cityscapes(self.get_cityscapes_root())
@@ -27,6 +31,7 @@ class TestCityscapes(unittest.TestCase):
         self.assertSequenceEqual(label.shape, (1024, 2048))
         self.assertLessEqual(label.max(), 33)
 
+    @unittest.skipUnless(_cityscapes_available(), "No cityscapes available.")
     def test_cityscapes_dataset_without_transforms_unzipped(self):
         from inferno.io.box.cityscapes import Cityscapes
         cityscapes = Cityscapes(join(self.get_cityscapes_root(), 'extracted'),
@@ -38,6 +43,7 @@ class TestCityscapes(unittest.TestCase):
         self.assertSequenceEqual(label.shape, (1024, 2048))
         self.assertLessEqual(label.max(), 33)
 
+    @unittest.skipUnless(_cityscapes_available(), "No cityscapes available.")
     def test_cityscapes_dataset_with_transforms(self):
         from inferno.io.box.cityscapes import get_cityscapes_loaders
         from inferno.utils.io_utils import print_tensor
@@ -70,6 +76,7 @@ class TestCityscapes(unittest.TestCase):
                      directory=self.PLOT_DIRECTORY)
         print("[+] Inspect images at {}".format(self.PLOT_DIRECTORY))
 
+    @unittest.skipUnless(_cityscapes_available(), "No cityscapes available.")
     def test_cityscapes_dataset_with_transforms_unzipped(self):
         from inferno.io.box.cityscapes import get_cityscapes_loaders
         from inferno.utils.io_utils import print_tensor
@@ -106,6 +113,4 @@ class TestCityscapes(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    TestCityscapes.CITYSCAPES_ROOT = '/home/nrahaman/BigHeronHDD2/CityScapes'
-    TestCityscapes.INCLUDE_COARSE = True
     unittest.main()
