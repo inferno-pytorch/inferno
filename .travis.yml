@@ -2,9 +2,11 @@ language: python
 
 python:
   - 3.6
+  - 3.7
 
 env:
-  - PYTORCH_CONDA="pytorch" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
+  # FIXME pytorch 1.0 multi-processing is broken ...
+  # - PYTORCH_CONDA="pytorch" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
   - PYTORCH_CONDA="pytorch=0.4.1" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
 
 install:
@@ -44,8 +46,3 @@ script:
   - source activate test-environment
   - python setup.py install
   - python -m unittest discover -s tests -v
-  # FIXME for some reason tests in test_callbacks.test_tensorboard hang if 
-  # called with unittest discover from 'tests', but they work properly
-  # if discovery starts at 'tests/test_training/test_callbacks'
-  # also this is only an issue in torch 1.0, not in 0.4
-  - python -m unittest discover -s tests/test_training/test_callbacks -v
