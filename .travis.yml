@@ -43,4 +43,4 @@ deploy:
 script: 
   - source activate test-environment
   - python setup.py install
-  - python -m unittest discover -s tests
+  - python -m unittest discover -s tests -v
