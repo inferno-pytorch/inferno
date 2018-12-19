@@ -195,6 +195,4 @@ class TestTrainer(TestCase):
 
 
 if __name__ == '__main__':
-    TestTrainer.CUDA = True
-    TestTrainer.DOWNLOAD_CIFAR = False
     main()
