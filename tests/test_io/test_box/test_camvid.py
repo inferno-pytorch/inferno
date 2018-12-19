@@ -4,12 +4,15 @@ import unittest
 import numpy as np
 
 
+_CAMVID_ROOT = None
+
+
 def _camvid_available():
-    return TestCamvid.CAMVID_ROOT is None or os.environ.get('CAMVID_ROOT') is None
+    return _CAMVID_ROOT is None or os.environ.get('CAMVID_ROOT') is None
 
 
 class TestCamvid(unittest.TestCase):
-    CAMVID_ROOT = None
+    CAMVID_ROOT = _CAMVID_ROOT
     PLOT_DIRECTORY = join(dirname(__file__), 'plots')
 
     def get_camvid_root(self):

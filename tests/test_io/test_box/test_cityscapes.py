@@ -4,12 +4,15 @@ import unittest
 import numpy as np
 import time
 
+_CITYSCAPES_ROOT = False
+
+
 def _cityscapes_available():
-    return TestCityscapes.CITYSCAPES_ROOT is None or os.environ.get('CITYSCAPES_ROOT') is None
+    return _CITYSCAPES_ROOT is None or os.environ.get('CITYSCAPES_ROOT') is None
 
 
 class TestCityscapes(unittest.TestCase):
-    CITYSCAPES_ROOT = None
+    CITYSCAPES_ROOT = _CITYSCAPES_ROOT
     PLOT_DIRECTORY = join(dirname(__file__), 'plots')
     INCLUDE_COARSE = False
 
