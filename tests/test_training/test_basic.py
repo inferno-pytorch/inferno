@@ -127,8 +127,6 @@ class TestTrainer(TestCase):
 
         # Try to unserialize
         trainer = Trainer(net).save_to_directory(os.path.join(self.ROOT_DIR, 'saves')).load()
-        # Make sure everything survived (especially the logger)
-        self.assertEqual(trainer._logger.__class__.__name__, 'BasicTensorboardLogger')
 
     @skipUnless(torch.cuda.device_count() >= 4, "Not enough cuda devices for test_multi_gpu.")
     def test_multi_gpu(self):
