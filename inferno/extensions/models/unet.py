@@ -230,6 +230,7 @@ class UNetBase(nn.Module):
 
     # override if model has different scaling
     def _check_scaling(self, input):
+        shape = input.shape
         mx = max_allowed_ds_steps(shape=shape[2:2+self.dim], factor=2)
         if mx < self.depth:
             raise RuntimeError("cannot downsample %d times, with shape %s"%
