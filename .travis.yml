@@ -7,7 +7,8 @@ python:
   - 3.7
 
 env:
-  - PYTORCH_CONDA="pytorch" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
+  # FIXME multi-processing hangs with pytorch 1.0 and uinttest test discovery
+  # - PYTORCH_CONDA="pytorch" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
   - PYTORCH_CONDA="pytorch=0.4.1" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
 
 install:
