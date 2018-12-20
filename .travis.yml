@@ -7,8 +7,7 @@ python:
   - 3.7
 
 env:
-  # FIXME pytorch 1.0 multi-processing is broken ...
-  # - PYTORCH_CONDA="pytorch" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
+  - PYTORCH_CONDA="pytorch" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
   - PYTORCH_CONDA="pytorch=0.4.1" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
 
 install:
