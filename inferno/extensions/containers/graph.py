@@ -386,7 +386,8 @@ class Graph(nn.Module):
 
     def clear_payloads(self, graph=None):
         graph = self.graph if graph is None else graph
-        for source, target in graph.edges_iter():
+        for edge in list(graph.edges(data=True)):
+            source, target, _ = edge
             if 'payload' in graph[source][target]:
                 del graph[source][target]['payload']
 
