@@ -19,7 +19,7 @@ install:
   - conda update -q conda
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
-  - conda install -c conda-forge networkx=1.11 h5py scikit-image pyyaml dill tensorboardx
+  - conda install -c conda-forge networkx h5py scikit-image pyyaml dill tensorboardx
   - conda install -c pytorch $PYTORCH_CONDA
   - conda install -c $TORCHVISION_CHANNEL $TORCHVISION_CONDA
 
