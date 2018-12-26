@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from ..layers.identity import Identity
 from ..layers.convolutional import ConvELU2D, ConvELU3D, Conv2D, Conv3D
+from ..layers.sampling import Upsample as InfernoUpsample
 from ...utils.math_utils import max_allowed_ds_steps
 
 
@@ -306,8 +307,9 @@ class UNetBase(nn.Module):
         C = nn.MaxPool2d if self.dim == 2 else nn.MaxPool3d
         return C(kernel_size=2, stride=2)
 
-    def upsample_op_factory(self, index):
-        return nn.Upsample(**self._upsample_kwargs)
+    def upsample_op_factory(self, index):\
+        return InfernoUpsample(**self._upsample_kwargs)
+        #return nn.Upsample(**self._upsample_kwargs)
 
     def pre_conv_op_regularizer_factory(self, in_channels, out_channels, part, index):
             if self.use_dropout and in_channels > 2:

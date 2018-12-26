@@ -221,7 +221,7 @@ class MySimple2DUnet(UNetBase):
             ), False
         elif part == 'up':
             # are we in the very last block?
-            if index + 1 == self.depth:
+            if index  == 0:
                 return torch.nn.Sequential(
                     ConvELU2D(in_channels=in_channels,  out_channels=out_channels, kernel_size=3),
                     Conv2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3)
