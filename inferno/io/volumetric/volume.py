@@ -11,6 +11,32 @@ from ...utils.exceptions import assert_, ShapeError
 
 
 class VolumeLoader(SyncableDataset):
+    """ Loader for in-memory volumetric data.
+
+    Parameters
+    ----------
+    volume: np.ndarray
+        the volumetric data
+    window_size: list or tuple
+        size of the (3d) sliding window used for iteration
+    stride: list or tuple
+        stride of the (3d) sliding window used for iteration
+    downsampling_ratio: list or tuple (default: None)
+        factor by which the data is downsampled (no downsapling by default)
+    padding: list (default: None)
+        padding for data, follows np.pad syntax
+    padding_mode: str (default: 'reflect')
+        padding mode as in np.pad
+    transforms: callable (default: None)
+       transforms applied on each batch loaded from volume
+    return_index_spec: bool (default: False)
+        whether to return the index spec for each batch
+    name: str (default: None)
+        name of this volume
+    is_multichannel: bool (default: False)
+        is this a multichannel volume? sliding window is NOT applied to channel dimension
+    """
+
     def __init__(self, volume, window_size, stride, downsampling_ratio=None, padding=None,
                  padding_mode='reflect', transforms=None, return_index_spec=False, name=None,
                  is_multichannel=False):
@@ -125,6 +151,32 @@ class VolumeLoader(SyncableDataset):
 
 
 class HDF5VolumeLoader(VolumeLoader):
+    """ Loader for volumes stored in hdf5, zarr or n5.
+
+    Zarr and n5 are file formats very similar to hdf5, but use
+    the regular filesystem to store data instead of a filesystem
+    in a file as hdf5.
+    The file type will be infered from the extension:
+    .hdf5, .h5 and .hdf map to hdf5
+    .n5 maps to n5
+    .zr and .zarr map to zarr
+    It will fail for other extensions.
+
+    Parameters
+    ----------
+    path: str
+        path to file
+    path_in_h5_dataset: str (default: None)
+        path in file
+    data_slice: slice (default: None)
+        slice loaded from dataset
+    transforms: callable (default: None)
+       transforms applied on each batch loaded from volume
+    name: str (default: None)
+        name of this volume
+    slicing_config: kwargs
+        keyword arguments for base class `VolumeLoader`
+    """
 
     @staticmethod
     def is_h5(file_path):
