@@ -355,6 +355,7 @@ class BNReLUConv2D(_BNReLUSomeConv, ConvActivation):
                                            initialization=KaimingNormalWeightsZeroBias(0))
         self.batchnorm = nn.BatchNorm2d(in_channels)
 
+
 class BNReLUDilatedConv2D(_BNReLUSomeConv,ConvActivation):
     """
     2D dilated convolutional layer with 'SAME' padding, Batch norm,  Relu and He
@@ -368,7 +369,7 @@ class BNReLUDilatedConv2D(_BNReLUSomeConv,ConvActivation):
                                                dim=2,
                                                activation=nn.ReLU(inplace=True),
                                                initialization=KaimingNormalWeightsZeroBias(0))
-        self.batchnorm = nn.BatchNorm2d(in_channels)  
+        self.batchnorm = nn.BatchNorm2d(in_channels)
 
 
 class BNReLUConv3D(_BNReLUSomeConv, ConvActivation):
@@ -470,40 +471,47 @@ class ConvSELU3D(ConvActivation):
                                          activation=activation,
                                          initialization=SELUWeightsZeroBias())
 
+
 class GlobalConv2D(nn.Module):
     """From https://arxiv.org/pdf/1703.02719.pdf
     Main idea: we can have a bigger kernel size computationally acceptable
     if we separate 2D-conv in 2 1D-convs """
-    def __init__(self, in_channels, out_channels, kernel_size, local_conv_type, activation=None, use_BN=False, **kwargs):
+    def __init__(self, in_channels, out_channels, kernel_size, local_conv_type,
+                 activation=None, use_BN=False, **kwargs):
         super(GlobalConv2D, self).__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.kernel_size = kernel_size
         assert isinstance(kernel_size, (int, list, tuple))
         if isinstance(kernel_size, int):
-	        kernel_size = (kernel_size,)*2
+           kernel_size = (kernel_size,)*2
         self.kwargs=kwargs
-        self.conv1a = local_conv_type(in_channels=self.in_channels, out_channels=self.out_channels,
-                               kernel_size=(kernel_size[0], 1), **kwargs)
-        self.conv1b = local_conv_type(in_channels=self.out_channels, out_channels=self.out_channels,
-                               kernel_size=(1, kernel_size[1]), **kwargs)
-        self.conv2a = local_conv_type(in_channels=self.in_channels, out_channels=self.out_channels,
-                               kernel_size=(1, kernel_size[1]), **kwargs)
-        self.conv2b = local_conv_type(in_channels=self.out_channels, out_channels=self.out_channels,
-                               kernel_size=(kernel_size[0], 1), **kwargs)
-        if use_BN: 
+        self.conv1a = local_conv_type(in_channels=self.in_channels,
+                                      out_channels=self.out_channels,
+                                      kernel_size=(kernel_size[0], 1), **kwargs)
+        self.conv1b = local_conv_type(in_channels=self.out_channels,
+                                      out_channels=self.out_channels,
+                                      kernel_size=(1, kernel_size[1]), **kwargs)
+        self.conv2a = local_conv_type(in_channels=self.in_channels,
+                                      out_channels=self.out_channels,
+                                      kernel_size=(1, kernel_size[1]), **kwargs)
+        self.conv2b = local_conv_type(in_channels=self.out_channels,
+                                      out_channels=self.out_channels,
+                                      kernel_size=(kernel_size[0], 1), **kwargs)
+        if use_BN:
             self.batchnorm = nn.BatchNorm2d(self.out_channels)
         else:
             self.batchnorm = None
         self.activation = activation
+
     def forward(self, input_):
         out1 = self.conv1a(input_)
         out1 = self.conv1b(out1)
         out2 = self.conv2a(input_)
         out2 = self.conv2b(out2)
-        out = out1.add(1,out2)        
+        out = out1.add(1,out2)
         if self.activation is not None:
             out = self.activation(out)
         if self.batchnorm is not None:
-            out = self.batchnorm(out) 
+            out = self.batchnorm(out)
         return out

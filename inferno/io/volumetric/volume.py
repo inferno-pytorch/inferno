@@ -69,9 +69,10 @@ class VolumeLoader(SyncableDataset):
         padding = self.padding if padding is None else padding
         if padding is None:
             return self.volume
-        else:            
+        else:
             #for symmertic padding only one int can be passed for each axis
-            assert_(all(isinstance(pad, (int, tuple, list)) for pad in self.padding), "Expect int or iterable", TypeError)
+            assert_(all(isinstance(pad, (int, tuple, list)) for pad in self.padding),\
+                "Expect int or iterable", TypeError)
             self.padding = [[pad, pad] if isinstance(pad, int) else pad for pad in self.padding]
             self.volume = np.pad(self.volume,
                                  pad_width=self.padding,
