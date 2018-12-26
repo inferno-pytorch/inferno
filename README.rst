@@ -126,7 +126,7 @@ and navigate to `localhost:6007` with your browser.
 Installation
 ------------------------
 
-Conda packages for linux (only python 3) are available via
+Conda packages for python >= 3.6 for all distributions are availaible on conda-forge:
 
 .. code:: bash
 
