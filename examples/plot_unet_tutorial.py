@@ -201,6 +201,7 @@ predict(trainer=trainer, test_loader=test_loader)
 # of the unet
 from inferno.extensions.models import UNetBase
 from inferno.extensions.layers import ConvSELU2D, ConvReLU2D, ConvELU2D, ConvSigmoid2D,Conv2D
+from inferno.extensions.layers.sampling import Upsample
 
 class MySimple2DUnet(UNetBase):
     def __init__(self, in_channels, out_channels, depth=3, **kwargs):
@@ -243,7 +244,7 @@ class MySimple2DUnet(UNetBase):
 
     # this function CAN be implemented, if not, Upsampling is used by default
     def upsample_op_factory(self, index):
-        return torch.nn.Upsample(mode='bilinear', align_corners=False,scale_factor=2)
+        return Upsample(mode='bilinear', align_corners=False,scale_factor=2)
 
 model_b = torch.nn.Sequential(
     ConvReLU2D(in_channels=image_channels, out_channels=5, kernel_size=3),
