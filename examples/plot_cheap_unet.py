@@ -1,8 +1,7 @@
 """
 UNet Tutorial
 ================================
-A tentative tutorial on the usage
-of the unet framework in inferno
+A unet example which can be run without a gpu
 """
 
 ##############################################################################
@@ -11,7 +10,9 @@ of the unet framework in inferno
 # We start with some unspectacular multi purpose imports needed for this example
 import matplotlib.pyplot as plt
 import torch
+from torch import nn
 import numpy
+
 
 ##############################################################################
 
@@ -45,56 +46,22 @@ train_loader, test_loader, validate_loader = get_binary_blob_loaders(
 image_channels = 1   # <-- number of channels of the image
 pred_channels = 1  # <-- number of channels needed for the prediction
 
-##############################################################################
-# Visualize Dataset
-# ~~~~~~~~~~~~~~~~~~~~~~
-fig = plt.figure()
+if False:
+    ##############################################################################
+    # Visualize Dataset
+    # ~~~~~~~~~~~~~~~~~~~~~~
+    fig = plt.figure()
 
-for i,(image, target) in enumerate(train_loader):
-    ax = fig.add_subplot(1, 2, 1)
-    ax.imshow(image[0,0,...])
-    ax.set_title('raw data')
-    ax = fig.add_subplot(1, 2, 2)
-    ax.imshow(target[0,...])
-    ax.set_title('ground truth')
-    break
-fig.tight_layout()
-plt.show()
-
-
-##############################################################################
-# Simple UNet
-# ----------------------------
-# We start with a very simple predefined
-# res block UNet. By default, this UNet uses  ReLUs (in conjunction with batchnorm) as nonlinearities
-# With :code:`activated=False` we make sure that the last layer
-# is not activated since we chain the UNet with a sigmoid
-# activation function.
-from inferno.extensions.models import ResBlockUNet
-from inferno.extensions.layers import RemoveSingletonDimension
-
-model = torch.nn.Sequential(
-    ResBlockUNet(dim=2, in_channels=image_channels, out_channels=pred_channels,  activated=False),
-    RemoveSingletonDimension(dim=1),
-    torch.nn.Sigmoid()
-)
-
-##############################################################################
-# while the model above will work in principal, it has some drawbacks.
-# Within the UNet, the number of features is increased by a multiplicative
-# factor while going down, the so-called gain. The default value for the gain is 2.
-# Since we start with only a single channel we could either increase the gain,
-# or use a some convolutions to increase the number of channels
-# before the the UNet.
-from inferno.extensions.layers import ConvReLU2D
-model_a = torch.nn.Sequential(
-    ConvReLU2D(in_channels=image_channels, out_channels=5, kernel_size=3),
-    ResBlockUNet(dim=2, in_channels=5, out_channels=pred_channels,  activated=False,
-        res_block_kwargs=dict(batchnorm=True,size=2)) ,
-    RemoveSingletonDimension(dim=1)
-    # torch.nn.Sigmoid()
-)
-
+    for i,(image, target) in enumerate(train_loader):
+        ax = fig.add_subplot(1, 2, 1)
+        ax.imshow(image[0,0,...])
+        ax.set_title('raw data')
+        ax = fig.add_subplot(1, 2, 2)
+        ax.imshow(target[0,...])
+        ax.set_title('ground truth')
+        break
+    fig.tight_layout()
+    plt.show()
 
 
 
@@ -117,7 +84,7 @@ def train_model(model, loaders, **kwargs):
     #trainer.validate_every((kwargs.get('validate_every', 10), 'epochs'))
     #trainer.save_every((kwargs.get('save_every', 10), 'epochs'))
     #trainer.save_to_directory(ensure_dir(kwargs.get('save_dir', 'save_dor')))
-    trainer.set_max_num_epochs(kwargs.get('max_num_epochs', 200))
+    trainer.set_max_num_epochs(kwargs.get('max_num_epochs', 20))
 
     # bind the loaders
     trainer.bind_loader('train', loaders[0])
@@ -131,8 +98,6 @@ def train_model(model, loaders, **kwargs):
 
     return trainer
 
-
-trainer = train_model(model=model_a, loaders=[train_loader, validate_loader], save_dir='model_a', lr=0.01)
 
 
 
@@ -182,11 +147,6 @@ def predict(trainer, test_loader,  save_dir=None):
             fig.tight_layout()
             plt.show()
 
-###################################################
-# do the prediction
-predict(trainer=trainer, test_loader=test_loader)
-
-
 
 
 ##############################################################################
@@ -196,59 +156,77 @@ predict(trainer=trainer, test_loader=test_loader)
 # Here we show how to implement such a customized UNet.
 # To this end we derive from :code:`UNetBase`.
 # For the sake of this example we will create
-# a rather exotic UNet which uses different types
-# of convolutions/non-linearities in the different branches
-# of the unet
+# a Unet which uses depthwise convolutions and might be trained on a CPU
 from inferno.extensions.models import UNetBase
-from inferno.extensions.layers import ConvSELU2D, ConvReLU2D, ConvELU2D, ConvSigmoid2D,Conv2D
-from inferno.extensions.layers.sampling import Upsample
+from inferno.extensions.layers import ConvSELU2D, ConvReLU2D, ConvELU2D, ConvSigmoid2D,Conv2D,ConvActivation
 
-class MySimple2DUnet(UNetBase):
-    def __init__(self, in_channels, out_channels, depth=3, **kwargs):
-        super(MySimple2DUnet, self).__init__(in_channels=in_channels, out_channels=out_channels,
+
+class CheapConv(nn.Module):
+    def __init__(self, in_channels, out_channels, activated):
+        super(CheapConv, self).__init__()
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        if activated:
+            self.convs = torch.nn.Sequential(
+                ConvActivation(in_channels=in_channels, out_channels=in_channels, depthwise=True, kernel_size=(3, 3), activation='ReLU', dim=2),
+                ConvReLU2D(in_channels=in_channels, out_channels=out_channels, kernel_size=(1,1))
+            )
+        else:
+            self.convs = torch.nn.Sequential(
+                ConvActivation(in_channels=in_channels, out_channels=in_channels, depthwise=True, kernel_size=(3, 3), activation='ReLU', dim=2),
+                Conv2D(in_channels=in_channels, out_channels=out_channels, kernel_size=(1,1))
+            )
+    def forward(self, x):
+        assert x.shape[1] == self.in_channels,"input has wrong number of channels"
+        x =  self.convs(x)
+        assert x.shape[1] == self.out_channels,"output has wrong number of channels"
+        return x 
+
+
+class CheapConvBlock(nn.Module):
+    def __init__(self, in_channels, out_channels, activated):
+        super(CheapConvBlock, self).__init__()
+        self.activated = activated
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        if(in_channels != out_channels):
+            self.start = ConvReLU2D(in_channels=in_channels, out_channels=out_channels, kernel_size=(1,1))
+        else:
+            self.start = None
+        self.conv_a = CheapConv(in_channels=out_channels, out_channels=out_channels, activated=True)
+        self.conv_b = CheapConv(in_channels=out_channels, out_channels=out_channels, activated=False)
+        self.activation = torch.nn.ReLU()
+    def forward(self, x):
+        x_input = x
+        if self.start is not None:
+            x_input = self.start(x_input)
+
+        x = self.conv_a(x_input)
+        x = self.conv_b(x)
+
+        x = x + x_input
+
+        if self.activated:
+            x = self.activation(x)
+        return x
+
+class MySimple2DCpUnet(UNetBase):
+    def __init__(self, in_channels, out_channels, depth=3, residual=False, **kwargs):
+        super(MySimple2DCpUnet, self).__init__(in_channels=in_channels, out_channels=out_channels,
                                              dim=2, depth=depth, **kwargs)
 
     def conv_op_factory(self, in_channels, out_channels, part, index):
 
-        if part == 'down':
-            return torch.nn.Sequential(
-                ConvELU2D(in_channels=in_channels,  out_channels=out_channels, kernel_size=3),
-                ConvELU2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3)
-            ), False
-        elif part == 'bottom':
-            return torch.nn.Sequential(
-                ConvReLU2D(in_channels=in_channels,  out_channels=out_channels, kernel_size=3),
-                ConvReLU2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3),
-            ), False
-        elif part == 'up':
-            # are we in the very last block?
-            if index  == 0:
-                return torch.nn.Sequential(
-                    ConvELU2D(in_channels=in_channels,  out_channels=out_channels, kernel_size=3),
-                    Conv2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3)
-                ), False
-            else:
-                return torch.nn.Sequential(
-                    ConvELU2D(in_channels=in_channels,   out_channels=out_channels, kernel_size=3),
-                    ConvReLU2D(in_channels=out_channels,  out_channels=out_channels, kernel_size=3)
-                ), False
-        else:
-            raise RuntimeError("something is wrong")
+        # last? 
+        last = part == 'up' and index==0
+        return CheapConvBlock(in_channels=in_channels, out_channels=out_channels, activated=not last),False
 
 
 
-
-    # this function CAN be implemented, if not, MaxPooling is used by default
-    def downsample_op_factory(self, index):
-        return torch.nn.MaxPool2d(kernel_size=2, stride=2)
-
-    # this function CAN be implemented, if not, Upsampling is used by default
-    def upsample_op_factory(self, index):
-        return Upsample(mode='bilinear', align_corners=False,scale_factor=2)
-
+from inferno.extensions.layers import RemoveSingletonDimension
 model_b = torch.nn.Sequential(
-    ConvReLU2D(in_channels=image_channels, out_channels=5, kernel_size=3),
-    MySimple2DUnet(in_channels=5, out_channels=pred_channels) ,
+    CheapConv(in_channels=image_channels, out_channels=4, activated=True),
+    MySimple2DCpUnet(in_channels=4, out_channels=pred_channels) ,
     RemoveSingletonDimension(dim=1)
 )
 
@@ -258,6 +236,6 @@ model_b = torch.nn.Sequential(
 trainer = train_model(model=model_b, loaders=[train_loader, validate_loader], save_dir='model_b', lr=0.001)
 
 ###################################################
-# do the training (with the same functions as before)
+# do the training (with the same functions as before)1
 predict(trainer=trainer, test_loader=test_loader)
 
