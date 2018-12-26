@@ -125,6 +125,17 @@ class VolumeLoader(SyncableDataset):
 
 
 class HDF5VolumeLoader(VolumeLoader):
+
+    @staticmethod
+    def is_h5(file_path):
+        ext = os.path.splitext(file_path)[1].lower()
+        if ext in ('.h5', '.hdf', '.hdf5'):
+            return True
+        elif ext in ('.zarr', '.zr', '.n5'):
+            return False
+        else:
+            raise RuntimeError("Could not infer volume type for file extension %s" % ext)
+
     def __init__(self, path, path_in_h5_dataset=None, data_slice=None, transforms=None,
                  name=None, **slicing_config):
 
@@ -163,11 +174,14 @@ class HDF5VolumeLoader(VolumeLoader):
         assert 'window_size' in slicing_config_for_name
         assert 'stride' in slicing_config_for_name
 
-        # Read in volume from file
-        volume = iou.fromh5(self.path, self.path_in_h5_dataset,
-                            dataslice=(tuple(self.data_slice)
-                                       if self.data_slice is not None
-                                       else None))
+        # Read in volume from file (can be hdf5, n5 or zarr)
+        dataslice_ = None if self.data_slice is None else tuple(self.data_slice)
+        if self.is_h5(self.path):
+            volume = iou.fromh5(self.path, self.path_in_h5_dataset,
+                                dataslice=dataslice_)
+        else:
+            volume = iou.fromz5(self.path, self.path_in_h5_dataset,
+                                dataslice=dataslice_)
         # Initialize superclass with the volume
         super(HDF5VolumeLoader, self).__init__(volume=volume, name=name, transforms=transforms,
                                                **slicing_config_for_name)
