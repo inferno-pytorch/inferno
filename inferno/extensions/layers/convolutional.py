@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 from ..initializers import OrthogonalWeightsZeroBias, KaimingNormalWeightsZeroBias, \
     SELUWeightsZeroBias
@@ -496,6 +497,7 @@ class GlobalConv2D(nn.Module):
         else:
             self.batchnorm = None
         self.activation = activation
+
     def forward(self, input_):
         out1 = self.conv1a(input_)
         out1 = self.conv1b(out1)
@@ -507,29 +509,3 @@ class GlobalConv2D(nn.Module):
         if self.batchnorm is not None:
             out = self.batchnorm(out)
         return out
-
-
-# implementation from
-# https://github.com/kuangliu/pytorch-groupnorm/blob/master/groupnorm.py
-class GroupNorm(nn.Module):
-    """ Group norm described in https://arxiv.org/abs/1803.08494
-    """
-    def __init__(self, num_features, num_groups=32, eps=1e-5):
-        super(GroupNorm, self).__init__()
-        self.weight = nn.Parameter(torch.ones(1, num_features, 1, 1))
-        self.bias = nn.Parameter(torch.zeros(1, num_features, 1, 1))
-        self.num_groups = num_groups
-        self.eps = eps
-
-    def forward(self, x):
-        N, C, H, W = x.size()
-        G = self.num_groups
-        assert C % G == 0
-
-        x = x.view(N,G,-1)
-        mean = x.mean(-1, keepdim=True)
-        var = x.var(-1, keepdim=True)
-
-        x = (x - mean) / (var + self.eps).sqrt()
-        x = x.view(N, C, H, W)
-        return x * self.weight + self.bias

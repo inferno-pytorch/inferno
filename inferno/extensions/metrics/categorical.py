@@ -99,6 +99,8 @@ class IOU(Metric):
             # Scatter
             flattened_prediction = flattened_prediction\
                 .new(num_classes, num_samples).zero_().scatter_(0, predicted_classes, 1)
+        # Need to cast the targets to float
+        onehot_targets = onehot_targets.float()
         # Now to compute the IOU = (a * b).sum()/(a**2 + b**2 - a * b).sum()
         # We sum over all samples to obtain a classwise iou
         numerator = (flattened_prediction * onehot_targets).sum(-1)

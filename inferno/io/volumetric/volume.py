@@ -69,7 +69,7 @@ class VolumeLoader(SyncableDataset):
         padding = self.padding if padding is None else padding
         if padding is None:
             return self.volume
-        else:            
+        else:
             #for symmertic padding only one int can be passed for each axis
             assert_(all(isinstance(pad, (int, tuple, list)) for pad in self.padding), "Expect int or iterable", TypeError)
             self.padding = [[pad, pad] if isinstance(pad, int) else pad for pad in self.padding]
@@ -124,11 +124,22 @@ class VolumeLoader(SyncableDataset):
 
 
 class HDF5VolumeLoader(VolumeLoader):
+
+    @staticmethod
+    def check_ext(file_path):
+        ext = os.path.splitext(file_path)[1]
+        if ext in ('.h5', '.hdf', '.hdf5'):
+            return True
+        elif ext in ('.zarr', '.zr', '.n5'):
+            return False
+        else:
+            raise RuntimeError("Could not infer volume type for file extension %s" % ext)
+
     def __init__(self, path, path_in_h5_dataset=None, data_slice=None, transforms=None,
                  name=None, **slicing_config):
 
         if isinstance(path, dict):
-            assert name is not None
+            assert name is not None, name
             assert name in path
             self.path = path.get(name)
         elif isinstance(path, str):
@@ -139,7 +150,7 @@ class HDF5VolumeLoader(VolumeLoader):
 
         if isinstance(path_in_h5_dataset, dict):
             assert name is not None
-            assert name in path_in_h5_dataset
+            assert name in path_in_h5_dataset, name
             self.path_in_h5_dataset = path_in_h5_dataset.get(name)
         elif isinstance(path_in_h5_dataset, str):
             self.path_in_h5_dataset = path_in_h5_dataset
@@ -163,10 +174,13 @@ class HDF5VolumeLoader(VolumeLoader):
         assert 'stride' in slicing_config_for_name
 
         # Read in volume from file
-        volume = iou.fromh5(self.path, self.path_in_h5_dataset,
-                            dataslice=(tuple(self.data_slice)
-                                       if self.data_slice is not None
-                                       else None))
+        dataslice_ = tuple(self.data_slice) if self.data_slice is not None else None
+        if self.check_ext(self.path):
+            volume = iou.fromh5(self.path, self.path_in_h5_dataset,
+                                dataslice=dataslice_)
+        else:
+            volume = iou.fromz5(self.path, self.path_in_h5_dataset,
+                                dataslice=dataslice_)
         # Initialize superclass with the volume
         super(HDF5VolumeLoader, self).__init__(volume=volume, name=name, transforms=transforms,
                                                **slicing_config_for_name)

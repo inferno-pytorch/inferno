@@ -376,13 +376,14 @@ class TensorboardLogger(Logger):
                 image = image.array
             else:
                 tag = "{}/{}".format(tag, image_num)
+
             # image axis gymnastics
             if image.ndim == 2:
                 # image is 2D - tensorboardX needs a channel axis in the end
-                image = image[..., None]
-            elif image.ndim == 3 and image_format.upper() == 'CHW':
-                # We have a CHW image, but need HWC.
-                image = np.moveaxis(image, 0, 2)
+                image = image[None]
+            # elif image.ndim == 3 and image_format.upper() == 'CHW':
+            #     # We have a CHW image, but need HWC.
+            #     image = np.moveaxis(image, 0, 2)
             elif image.ndim == 3 and image_format.upper() == 'HWC':
                 pass
             else:

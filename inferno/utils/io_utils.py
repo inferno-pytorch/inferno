@@ -25,6 +25,18 @@ def fromh5(path, datapath=None, dataslice=None, asnumpy=True, preptrain=None):
     return h5dataset
 
 
+# Function to load from n5 or zarr dataset
+def fromz5(path, datapath, dataslice=None, n_threads=8):
+    # we import z5py only here because we don't want to assume that it's in the env
+    import z5py
+    assert os.path.exists(path), "Path {} does not exist.".format(path)
+    with z5py.File(path) as f:
+        ds = f[datapath]
+        ds.n_threads = n_threads
+        data = ds[:] if dataslice is None else ds[dataslice]
+    return data
+
+
 # TODO we could also do **h5_kwargs instead
 def toh5(data, path, datapath='data', compression=None, chunks=None):
     """Write `data` to a HDF5 volume."""

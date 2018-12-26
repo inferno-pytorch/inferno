@@ -53,7 +53,7 @@ class RandomRot3D(Transform):
         angle_z = self.get_random_variable('angle_z')
         angle_y = self.get_random_variable('angle_y')
         angle_x = self.get_random_variable('angle_x')
-        
+
 
         # rotate along z-axis
         if self.get_random_variable('do_z'):
@@ -136,7 +136,7 @@ class VolumeAsymmetricCrop(Transform):
 
 class Slices2Channels(Transform):
     """ Needed for training 2D network with slices above/below as additional channels
-        For the input data transforms one dimension (x, y or z) into channels 
+        For the input data transforms one dimension (x, y or z) into channels
         For the target data just takes the central slice and discards all the rest"""
     def __init__(self, num_channels, downsampling = 1, **super_kwargs):
         super(Slices2Channels, self).__init__(**super_kwargs)
@@ -158,3 +158,16 @@ class Slices2Channels(Transform):
         new_target = np.moveaxis(batch[1], self.axis, 0)
         new_target = new_target[half]
         return (new_input, new_target)
+
+
+# TODO different options than gaussian
+class AdditiveNoise(Transform):
+    def __init__(self, sigma, mode='gaussian', **super_kwargs):
+        assert mode == 'gaussian'
+        super(AdditiveNoise, self).__init__(**super_kwargs)
+        self.sigma = sigma
+
+    # TODO check if volume is tensor and use torch functions in that case
+    def volume_function(self, volume):
+        volume += np.random.normal(loc=0, scale=self.sigma, size=volume.shape)
+        return volume
