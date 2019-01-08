@@ -139,7 +139,7 @@ def parse_data_slice(data_slice):
         return data_slice
     elif isinstance(data_slice, (list, tuple)) and \
             all([isinstance(_slice, slice) for _slice in data_slice]):
-        return list(data_slice)
+        return tuple(data_slice)
     else:
         assert isinstance(data_slice, str)
     # Get rid of whitespace
@@ -162,5 +162,4 @@ def parse_data_slice(data_slice):
         step = int(step) if step is not None and step != '' else None
         # Build slices
         slices.append(slice(start, stop, step))
-    # Done.
-    return slices
+    return tuple(slices)

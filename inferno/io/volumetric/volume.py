@@ -212,6 +212,7 @@ class HDF5VolumeLoader(VolumeLoader):
         else:
             raise NotImplementedError
 
+        # get the dataslice
         if data_slice is None or isinstance(data_slice, (str, list)):
             self.data_slice = vu.parse_data_slice(data_slice)
         elif isinstance(data_slice, dict):
@@ -223,17 +224,20 @@ class HDF5VolumeLoader(VolumeLoader):
 
         slicing_config_for_name = pyu.get_config_for_name(slicing_config, name)
 
+        # adapt data-slice if this is a multi-channel volume (slice is not applied to channel dimension)
+        if self.data_slice is not None and slicing_config_for_name.get('is_multichannel', False):
+            self.data_slice = (slice(None),) + self.data_slice
+
         assert 'window_size' in slicing_config_for_name
         assert 'stride' in slicing_config_for_name
 
         # Read in volume from file (can be hdf5, n5 or zarr)
-        dataslice_ = None if self.data_slice is None else tuple(self.data_slice)
         if self.is_h5(self.path):
             volume = iou.fromh5(self.path, self.path_in_h5_dataset,
-                                dataslice=dataslice_)
+                                dataslice=self.data_slice)
         else:
             volume = iou.fromz5(self.path, self.path_in_h5_dataset,
-                                dataslice=dataslice_)
+                                dataslice=self.data_slice)
         # Initialize superclass with the volume
         super(HDF5VolumeLoader, self).__init__(volume=volume, name=name, transforms=transforms,
                                                **slicing_config_for_name)
