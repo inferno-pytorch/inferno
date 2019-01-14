@@ -186,7 +186,7 @@ class GlobalMaxPooling(ResizeAndConcatenate):
 class Sum(nn.Module):
     """Sum all inputs."""
     def forward(self, *inputs):
-        return torch.stack(inputs, dim=0).sum(0).squeeze(0)
+        return torch.stack(inputs, dim=0).sum(0)
 
 
 class SplitChannels(nn.Module):
