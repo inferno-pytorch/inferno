@@ -3,10 +3,8 @@
 Inferno
 =======
 
-
-
-.. image:: https://img.shields.io/pypi/v/inferno.svg
-        :target: https://pypi.python.org/pypi/inferno-pytorch
+.. image:: https://anaconda.org/conda-forge/inferno/badges/version.svg   
+        :target: https://anaconda.org/conda-forge/inferno
 
 .. image:: https://travis-ci.org/inferno-pytorch/inferno.svg?branch=master
         :target: https://travis-ci.org/inferno-pytorch/inferno
