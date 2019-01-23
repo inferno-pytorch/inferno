@@ -11,4 +11,4 @@ __all__ = ['extensions', 'io', 'trainers', 'utils']
 
 __author__ = """Nasim Rahaman"""
 __email__ = 'nasim.rahaman@iwr.uni-heidelberg.de'
-__version__ = '0.3.0'
+__version__ = '0.3.1'
