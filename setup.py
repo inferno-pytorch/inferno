@@ -4,6 +4,7 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
+from inferno import __version__
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -38,7 +39,7 @@ dependency_links  = [
 
 setup(
     name='inferno-pytorch',
-    version='0.3.1',
+    version=__version__,
     description="Inferno is a little library providing utilities and convenience functions/classes around PyTorch.",
     long_description=readme + '\n\n' + history,
     author="Nasim Rahaman",
