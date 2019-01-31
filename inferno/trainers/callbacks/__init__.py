@@ -5,6 +5,7 @@ from .console import Console
 from . import essentials
 from . import scheduling
 from . import gradients
+from . import performance
 
 try:
     from .tqdm import TQDMProgressBar
