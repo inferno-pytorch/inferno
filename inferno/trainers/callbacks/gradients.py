@@ -28,7 +28,7 @@ class LogOutputGradients(Callback):
             if self.log_every.match(iteration_count=self.trainer.iteration_count,
                                     epoch_count=self.trainer.epoch_count,
                                     persistent=True, match_zero=True):
-                self.trainer.update_state('output_gradient', grad_input[0].detach().cpu())
+                self.trainer.update_state('output_gradient', grad_output[0].detach().cpu())
             
         self.hook_handle = self.trainer.model.register_backward_hook(hook)
 
