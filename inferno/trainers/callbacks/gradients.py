@@ -23,14 +23,14 @@ class LogOutputGradients(Callback):
                 "Log frequency is not consistent.",
                 FrequencyValueError)
 
+    def hook(self, module, grad_input, grad_output):
+        if self.log_every.match(iteration_count=self.trainer.iteration_count,
+                                epoch_count=self.trainer.epoch_count,
+                                persistent=True, match_zero=True):
+            self.trainer.update_state('output_gradient', grad_output[0].detach().float().clone().cpu())
+
     def add_hook(self):
-        def hook(module, grad_input, grad_output):
-            if self.log_every.match(iteration_count=self.trainer.iteration_count,
-                                    epoch_count=self.trainer.epoch_count,
-                                    persistent=True, match_zero=True):
-                self.trainer.update_state('output_gradient', grad_output[0].detach().cpu())
-            
-        self.hook_handle = self.trainer.model.register_backward_hook(hook)
+        self.hook_handle = self.trainer.model.register_backward_hook(self.hook)
 
     def begin_of_fit(self, **kwargs):
         self._trainer.logger.observe_state("output_gradient",
@@ -43,7 +43,7 @@ class LogOutputGradients(Callback):
             self.hook_handle.remove()
             self.hook_handle = None
 
-
     def end_of_save(self, **_):
         # add hook after model save
         self.add_hook()
+
