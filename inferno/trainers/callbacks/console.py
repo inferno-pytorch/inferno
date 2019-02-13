@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from .base import Callback
 
 class StdoutPrinter(object):
     def print(self, message):
@@ -55,3 +55,30 @@ class Console(object):
 
     def toggle_warning(self, state):
         self._toggle(self.LEVEL_WARNING, state)
+
+
+
+class ShowMinimalConsoleInfo(Callback):
+    """
+    Callback to show only minimum training info on console 
+    viz. current epoch number, current learning rate,
+    training loss and training error if exists.
+    """
+    def __init__(self, *args, **kwargs):
+        super(ShowMinimalConsoleInfo, self).__init__(*args, **kwargs)
+
+    def begin_of_fit(self,**_):
+        self.trainer.quiet()
+
+    def end_of_epoch(self, **_):
+        training_loss = self.trainer.get_state('training_loss')
+        training_error = self.trainer.get_state('training_error')
+        learning_rate = self.trainer.get_state('learning_rate')
+
+        self.trainer.console.info("--------------------------------")
+        self.trainer.console.info("Epoch "+str(self.trainer.epoch_count))
+        if training_loss is not None:
+            self.trainer.console.info("Train Loss "+str(training_loss.item()))
+        if training_error is not None:
+            self.trainer.console.info("Train Error "+str(training_error.item()))
+        self.trainer.console.info("Current LR "+str(learning_rate))
