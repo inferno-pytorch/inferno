@@ -110,7 +110,9 @@ class ZipReject(Zip):
         assert_(callable(rejection_criterion),
                 "Rejection criterion is not callable as it should be.",
                 TypeError)
-        self.rejection_criterion = rejection_criterion  # return true if fetched should be rejected
+        # return true if fetched should be rejected
+        self.rejection_criterion = rejection_criterion
+        self.rejected_indices = []
 
     def fetch_from_rejection_datasets(self, index):
         rejection_fetched = [self.datasets[rejection_dataset_index][index]
@@ -124,16 +126,32 @@ class ZipReject(Zip):
         # if we have a rejection dataset, check if the rejection criterion is fulfilled
         # and update the index
         if self.rejection_dataset_indices is not None:
-            # we only fetch the dataset which has the rejection criterion
-            # and only fetch all datasets when a valid index is found
-            rejection_fetched = self.fetch_from_rejection_datasets(index_)
+
+            reject = True
             num_fetch_attempts = 0
-            while self.rejection_criterion(*rejection_fetched):
-                index_ = (index_ + 1) % len(self)
+            while reject:
+                # check if this index was marked as rejected before
+                if index_ in self.rejected_indices:
+                    index_ = (index_ + 1) % len(self)
+                    num_fetch_attempts += 1
+                    if num_fetch_attempts >= len(self):
+                        raise RuntimeError("ZipReject: No valid batch was found!")
+                    continue
+
+                # we only fetch the dataset which has the rejection criterion
+                # and only fetch all datasets when a valid index is found
                 rejection_fetched = self.fetch_from_rejection_datasets(index_)
-                num_fetch_attempts += 1
-                if num_fetch_attempts >= len(self):
-                    raise RuntimeError("ZipReject: No valid batch was found!")
+                # check if this batch is to be rejected
+                reject = self.rejection_criterion(*rejection_fetched)
+
+                # if so, increase the index and add it
+                if reject:
+                    self.rejected_indices.append(index_)
+                    index_ = (index_ + 1) % len(self)
+                    num_fetch_attempts += 1
+                    if num_fetch_attempts >= len(self):
+                        raise RuntimeError("ZipReject: No valid batch was found!")
+
             # fetch all other datasets and concatenate them with the valid rejection_fetch
             fetched = []
             for dataset_index, dataset in enumerate(self.datasets):
