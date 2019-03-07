@@ -3,6 +3,7 @@ from . import data_utils as du
 from .base import SyncableDataset
 from ...utils.exceptions import assert_
 from ...utils import python_utils as pyu
+import random
 
 
 class Zip(SyncableDataset):
@@ -10,6 +11,7 @@ class Zip(SyncableDataset):
     Zip two or more datasets to one dataset. If the datasets implement synchronization primitives,
     they are all synchronized with the first dataset.
     """
+
     def __init__(self, *datasets, sync=False, transforms=None):
         super(Zip, self).__init__()
         assert_(len(datasets) >= 1, "Expecting one or more datasets, got none.", ValueError)
@@ -77,8 +79,10 @@ class ZipReject(Zip):
     Extends `Zip` by the functionality of rejecting samples that don't fulfill
     a specified rejection criterion.
     """
+
     def __init__(self, *datasets, sync=False, transforms=None,
-                 rejection_dataset_indices, rejection_criterion):
+                 rejection_dataset_indices, rejection_criterion,
+                 random_jump_after_reject=True):
         """
         Parameters
         ----------
@@ -113,6 +117,7 @@ class ZipReject(Zip):
         # return true if fetched should be rejected
         self.rejection_criterion = rejection_criterion
         self.rejected_indices = []
+        self.random_jump_after_reject = random_jump_after_reject
 
     def fetch_from_rejection_datasets(self, index):
         rejection_fetched = [self.datasets[rejection_dataset_index][index]
@@ -147,28 +152,32 @@ class ZipReject(Zip):
                 # if so, increase the index and add it
                 if reject:
                     self.rejected_indices.append(index_)
-                    index_ = (index_ + 1) % len(self)
+                    jump_distance = 1
+
+                    if self.random_jump_after_reject:
+                        jump_distance = random.randint(1, len(self))
+
+                    index_ = (index_ + jump_distance) % len(self)
+
                     num_fetch_attempts += 1
                     if num_fetch_attempts >= len(self):
                         raise RuntimeError("ZipReject: No valid batch was found!")
 
             # fetch all other datasets and concatenate them with the valid rejection_fetch
-            fetched = []
+            fetched=[]
             for dataset_index, dataset in enumerate(self.datasets):
                 if dataset_index in self.rejection_dataset_indices:
                     # Find the index in `rejection_fetched` corresponding to this dataset_index
-                    index_in_rejection_fetched = \
-                        self.rejection_dataset_indices.index(dataset_index)
+                    index_in_rejection_fetched=self.rejection_dataset_indices.index(dataset_index)
                     # ... and append to fetched
                     fetched.append(rejection_fetched[index_in_rejection_fetched])
                 else:
                     # Fetch and append to fetched
                     fetched.append(dataset[index_])
         else:
-            fetched = [dataset[index_] for dataset in self.datasets]
+            fetched=[dataset[index_] for dataset in self.datasets]
         # apply transforms if present
         if self.transforms is not None:
             assert_(callable(self.transforms), "`self.transforms` is not callable.", TypeError)
-            fetched = self.transforms(*fetched)
+            fetched=self.transforms(*fetched)
         return fetched
-
