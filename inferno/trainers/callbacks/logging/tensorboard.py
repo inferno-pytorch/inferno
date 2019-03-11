@@ -108,7 +108,7 @@ class TensorboardLogger(Logger):
     @property
     def log_images_every(self):
         if self._log_images_every is None:
-            self._log_images_every = tru.Frequency(1, 'iterations')
+            self._log_images_every = tru.Frequency('never')
         return self._log_images_every
 
     @log_images_every.setter
@@ -126,7 +126,7 @@ class TensorboardLogger(Logger):
     @property
     def log_histograms_every(self):
         if self._log_histograms_every is None:
-            self._log_histograms_every = tru.Frequency(1, 'iterations')
+            self._log_histograms_every = tru.Frequency('never')
         return self._log_histograms_every
 
     @log_histograms_every.setter
