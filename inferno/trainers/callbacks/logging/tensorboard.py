@@ -36,9 +36,9 @@ class TensorboardLogger(Logger):
         log_scalars_every : str or tuple or inferno.utils.train_utils.Frequency
             How often scalars should be logged to Tensorboard. By default, once every iteration.
         log_images_every : str or tuple or inferno.utils.train_utils.Frequency
-            How often images should be logged to Tensorboard. By default, once every iteration.
+            How often images should be logged to Tensorboard. By default, once every epoch.
         log_histograms_every : str or tuple or inferno.utils.train_utils.Frequency
-            How often histograms should be logged to Tensorboard. By default, once every iteration.
+            How often histograms should be logged to Tensorboard. By default, never.
         send_image_at_batch_indices : list or str
             The indices of the batches to be logged. An `image_batch` usually has the shape
             (num_samples, num_channels, num_rows, num_cols). By setting this argument to say
@@ -108,7 +108,7 @@ class TensorboardLogger(Logger):
     @property
     def log_images_every(self):
         if self._log_images_every is None:
-            self._log_images_every = tru.Frequency('never')
+            self._log_images_every = tru.Frequency(1, 'epochs')
         return self._log_images_every
 
     @log_images_every.setter
