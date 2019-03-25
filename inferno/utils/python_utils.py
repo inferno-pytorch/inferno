@@ -5,6 +5,8 @@ import functools
 import inspect
 import os
 
+from threading import current_thread, main_thread
+
 
 def ensure_dir(directory):
     """ensure the existence of e directory at a given path
@@ -96,17 +98,19 @@ class delayed_keyboard_interrupt(object):
     """
     # PEP8: Context manager class in lowercase
     def __enter__(self):
-        self.signal_received = False
-        self.old_handler = signal.getsignal(signal.SIGINT)
-        signal.signal(signal.SIGINT, self.handler)
+        if current_thread() is main_thread():
+            self.signal_received = False
+            self.old_handler = signal.getsignal(signal.SIGINT)
+            signal.signal(signal.SIGINT, self.handler)
 
     def handler(self, sig, frame):
         self.signal_received = (sig, frame)
 
     def __exit__(self, type, value, traceback):
-        signal.signal(signal.SIGINT, self.old_handler)
-        if self.signal_received:
-            self.old_handler(*self.signal_received)
+        if current_thread() is main_thread():
+            signal.signal(signal.SIGINT, self.old_handler)
+            if self.signal_received:
+                self.old_handler(*self.signal_received)
 
 
 def get_config_for_name(config, name):
