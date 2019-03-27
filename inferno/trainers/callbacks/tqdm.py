@@ -29,6 +29,13 @@ class TQDMProgressBar(Callback):
         self.is_training = False
         self.is_validation = False
 
+    def get_config(self):
+        config_dict = dict(self.__dict__)
+        config_dict.update({'_trainer': None})
+        config_dict.update({'epoch_bar': None})
+        config_dict.update({'outer_bar': None})
+        return config_dict
+
     def bind_trainer(self, *args, **kwargs):
         super(TQDMProgressBar, self).bind_trainer(*args, **kwargs)
         self.trainer.console.toggle_progress(False)
