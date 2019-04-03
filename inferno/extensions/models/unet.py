@@ -36,13 +36,13 @@ class UNetBase(nn.Module):
     """
 
     def __init__(self, in_channels, dim, out_channels=None, depth=3,
-                 gain=2, residual=False, upsample_mode=None, p_dropout=None):
+                 gain=2, residual=False, upsample_mode=None):
 
         super(UNetBase, self).__init__()
 
         # early sanity check
-        if dim not in [2, 3]:
-            raise RuntimeError("UNetBase is only implemented for 2D and 3D")
+        if dim not in [1, 2, 3]:
+            raise RuntimeError("UNetBase is only implemented for 1D, 2D and 3D")
 
         # settings related members
         self.in_channels  = int(in_channels)
@@ -52,7 +52,7 @@ class UNetBase(nn.Module):
         self.depth        = int(depth)
         self.gain         = int(gain)
         self.residual     = bool(residual)
-        self.p_dropout = p_dropout
+        
 
         # members to remember what to store as side output
         self._store_conv_down = []
@@ -67,33 +67,15 @@ class UNetBase(nn.Module):
         self._post_conv_down_ops = None
         self._conv_down_ops  = None
 
-        self._pre_conv_up_ops  = None
-        self._post_conv_up_ops = None
         self._conv_up_ops = None
 
         self._upsample_ops = None
         self._downsample_ops = None
 
-        self._pre_conv_bottom_ops  = None
-        self._post_conv_bottom_ops = None
         self._conv_bottom_op = None
 
         # upsample kwargs
         self._upsample_kwargs = self._make_upsample_kwargs(upsample_mode=upsample_mode)
-
-        ########################################
-        # default dropout
-        ########################################
-        if self.p_dropout is not None:
-            self.use_dropout = True
-            if self.dim == 2 :
-                self._channel_dropout_op = self.torch.nn.Dropout2d(p=float(self.p_dropout),
-                                                                   inplace=False)
-            else:
-                self._channel_dropout_op = self.torch.nn.Dropout3d(p=float(self.p_dropout),
-                                                                   inplace=False)
-        else:
-            self.use_dropout = False
 
         # down-stream convolution blocks
         self._init__downstream()
@@ -206,6 +188,8 @@ class UNetBase(nn.Module):
             upsample_mode (str): users choice for upsampling  interpolation style.
         """
         if upsample_mode is None:
+            if self.dim == 1:
+                upsample_mode = 'linear'
             if self.dim == 2:
                 upsample_mode = 'bilinear'
             elif self.dim == 3:
@@ -213,7 +197,7 @@ class UNetBase(nn.Module):
                 upsample_mode = 'trilinear'
 
         upsample_kwargs = dict(scale_factor=2, mode=upsample_mode)
-        if upsample_mode in ('bilinear', 'trilinear'):
+        if upsample_mode in ('linear','bilinear', 'trilinear'):
             upsample_kwargs['align_corners'] = False
         return upsample_kwargs
 
@@ -306,8 +290,15 @@ class UNetBase(nn.Module):
             return tuple(side_out)
 
     def downsample_op_factory(self, index):
-        C = nn.MaxPool2d if self.dim == 2 else nn.MaxPool3d
-        return C(kernel_size=2, stride=2)
+        if self.dim == 1:
+            return nn.MaxPool1d(kernel_size=2, stride=2)
+        elif self.dim == 2:
+            return nn.MaxPool2d(kernel_size=2, stride=2)
+        elif self.dim == 3:
+            return nn.MaxPool3d(kernel_size=2, stride=2)
+        else:
+            # should be nonreachable
+            assert False
 
     def upsample_op_factory(self, index):\
         return InfernoUpsample(**self._upsample_kwargs)

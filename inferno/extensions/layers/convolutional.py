@@ -7,17 +7,17 @@ from ...utils.exceptions import assert_, ShapeError
 
 
 __all__ = ['ConvActivation',
-           'ConvELU2D', 'ConvELU3D',
-           'ConvSigmoid2D', 'ConvSigmoid3D',
-           'DeconvELU2D', 'DeconvELU3D',
-           'StridedConvELU2D', 'StridedConvELU3D',
-           'DilatedConvELU2D', 'DilatedConvELU3D',
-           'Conv2D', 'Conv3D',
-           'BNReLUConv2D', 'BNReLUConv3D',
-           'BNReLUDepthwiseConv2D',
-           'ConvSELU2D', 'ConvSELU3D',
-           'ConvReLU2D', 'ConvReLU3D',
-           'BNReLUDilatedConv2D', 'DilatedConv2D',
+           'ConvELU1D', 'ConvELU2D', 'ConvELU3D',
+           'ConvSELU1D', 'ConvSELU2D', 'ConvSELU3D',
+           'ConvReLU1D', 'ConvReLU2D', 'ConvReLU3D',
+           'ConvSigmoid1D','ConvSigmoid2D', 'ConvSigmoid3D',
+           'DeconvELU1D','DeconvELU2D', 'DeconvELU3D',
+           'StridedConvELU1D', 'StridedConvELU2D', 'StridedConvELU3D',
+           'DilatedConvELU1D','DilatedConvELU2D', 'DilatedConvELU3D',
+           'Conv1D', 'Conv2D', 'Conv3D',
+           'BNReLUConv1D','BNReLUConv2D', 'BNReLUConv3D',
+           'BNReLUDepthwiseConv1D', 'BNReLUDepthwiseConv2D',
+           'BNReLUDilatedConv1D', 'BNReLUDilatedConv2D', 'DilatedConv2D','DilatedConv2D',
            'GlobalConv2D']
 _all = __all__
 
@@ -146,7 +146,7 @@ class ConvReLU3D(ConvActivation):
 class ConvELU1D(ConvActivation):
     """1D Convolutional layer with 'SAME' padding, ELU and orthogonal weight initialization."""
     def __init__(self, in_channels, out_channels, kernel_size):
-        super(ConvELU2D, self).__init__(in_channels=in_channels,
+        super(ConvELU1D, self).__init__(in_channels=in_channels,
                                         out_channels=out_channels,
                                         kernel_size=kernel_size,
                                         dim=1,
@@ -389,7 +389,7 @@ class DilatedConvELU3D(ConvActivation):
 
 class DilatedConv1D(ConvActivation):
     """1D dilated convolutional layer with 'SAME' padding, no activation and orthogonal weight initialization."""
-    def __init__(self, in_channels, out_channels, kernel_size, dilation=2)
+    def __init__(self, in_channels, out_channels, kernel_size, dilation=2):
         super(DilatedConv1D, self).__init__(in_channels=in_channels,
                                                out_channels=out_channels,
                                                kernel_size=kernel_size,

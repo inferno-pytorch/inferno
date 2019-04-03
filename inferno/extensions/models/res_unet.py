@@ -155,7 +155,7 @@ class _ResBlock(_ResBlockBase):
 
 
 # TODO not sure how to handle out-channels properly.
-# For now, we just force the corrcect number in the last decoder layer
+# For now, we just force the correct number in the last decoder layer
 class ResBlockUNet(UNetBase):
     """TODO.
 
