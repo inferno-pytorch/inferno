@@ -56,10 +56,10 @@ if True:
     # # Visualize Dataset
     # # ~~~~~~~~~~~~~~~~~~~~~~
     fig = plt.figure()
-    for i,(noisy_signal, signal) in enumerate(train_loader):
+    for i,(noisy_signal, gt) in enumerate(train_loader):
         ax = fig.add_subplot(2, 2, i+1)
         ax.plot(numpy.arange(noisy_signal.size()[2]), noisy_signal.numpy()[0,0,...])#, 'ro')
-        ax.plot(numpy.arange(signal.size()[2]), signal.numpy()[0,0,...], 'r')
+        ax.plot(numpy.arange(gt.size()[2]), gt.numpy()[0,0,...], 'r')
         if i>=3 :
             break
     fig.tight_layout()
@@ -117,7 +117,7 @@ def predict(trainer, test_loader,  save_dir=None):
 
     trainer.eval_mode()
     c = 0
-    for noisy_signal, signal in test_loader:
+    for noisy_signal, gt in test_loader:
         if c > 2:
             break
         # transfer noisy_signal to gpu
@@ -131,7 +131,7 @@ def predict(trainer, test_loader,  save_dir=None):
 
         noisy_signal = unwrap(noisy_signal,      as_numpy=True, to_cpu=True)
         prediction = unwrap(prediction, as_numpy=True, to_cpu=True)
-        signal = unwrap(signal, as_numpy=True, to_cpu=True)
+        gt = unwrap(gt, as_numpy=True, to_cpu=True)
 
         for b in range(batch_size):
             fig = plt.figure()
