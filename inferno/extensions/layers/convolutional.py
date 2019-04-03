@@ -29,7 +29,7 @@ class ConvActivation(nn.Module):
                  deconv=False, initialization=None):
         super(ConvActivation, self).__init__()
         # Validate dim
-        assert_(dim in [2, 3], "`dim` must be one of [2, 3], got {}.".format(dim), ShapeError)
+        assert_(dim in [1, 2, 3], "`dim` must be one of [1, 2, 3], got {}.".format(dim), ShapeError)
         self.dim = dim
         # Check if depthwise
         if depthwise:
@@ -111,6 +111,48 @@ class ConvActivation(nn.Module):
         return tuple(padding)
 
 
+class ConvReLU1D(ConvActivation):
+    """1D Convolutional layer with 'SAME' padding, ReLU and Kaiming normal weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        super(ConvReLU1D, self).__init__(in_channels=in_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size,
+                                         dim=1,
+                                         activation='ReLU',
+                                         initialization=KaimingNormalWeightsZeroBias())
+
+class ConvReLU2D(ConvActivation):
+    """2D Convolutional layer with 'SAME' padding, ReLU and Kaiming normal weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        super(ConvReLU2D, self).__init__(in_channels=in_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size,
+                                         dim=2,
+                                         activation='ReLU',
+                                         initialization=KaimingNormalWeightsZeroBias())
+
+
+class ConvReLU3D(ConvActivation):
+    """3D Convolutional layer with 'SAME' padding, ReLU and Kaiming normal weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        super(ConvReLU3D, self).__init__(in_channels=in_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size,
+                                         dim=3,
+                                         activation='ReLU',
+                                         initialization=KaimingNormalWeightsZeroBias())
+
+
+class ConvELU1D(ConvActivation):
+    """1D Convolutional layer with 'SAME' padding, ELU and orthogonal weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        super(ConvELU2D, self).__init__(in_channels=in_channels,
+                                        out_channels=out_channels,
+                                        kernel_size=kernel_size,
+                                        dim=1,
+                                        activation='ELU',
+                                        initialization=OrthogonalWeightsZeroBias())
+
 class ConvELU2D(ConvActivation):
     """2D Convolutional layer with 'SAME' padding, ELU and orthogonal weight initialization."""
     def __init__(self, in_channels, out_channels, kernel_size):
@@ -131,6 +173,68 @@ class ConvELU3D(ConvActivation):
                                         dim=3,
                                         activation='ELU',
                                         initialization=OrthogonalWeightsZeroBias())
+
+
+
+class ConvSELU1D(ConvActivation):
+    """1D Convolutional layer with SELU activation and the appropriate weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        if hasattr(nn, 'SELU'):
+            # Pytorch 0.2: Use built in SELU
+            activation = nn.SELU(inplace=True)
+        else:
+            # Pytorch < 0.1.12: Use handmade SELU
+            activation = SELU()
+        super(ConvSELU1D, self).__init__(in_channels=in_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size,
+                                         dim=1,
+                                         activation=activation,
+                                         initialization=SELUWeightsZeroBias())
+
+class ConvSELU2D(ConvActivation):
+    """2D Convolutional layer with SELU activation and the appropriate weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        if hasattr(nn, 'SELU'):
+            # Pytorch 0.2: Use built in SELU
+            activation = nn.SELU(inplace=True)
+        else:
+            # Pytorch < 0.1.12: Use handmade SELU
+            activation = SELU()
+        super(ConvSELU2D, self).__init__(in_channels=in_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size,
+                                         dim=2,
+                                         activation=activation,
+                                         initialization=SELUWeightsZeroBias())
+
+
+class ConvSELU3D(ConvActivation):
+    """3D Convolutional layer with SELU activation and the appropriate weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        if hasattr(nn, 'SELU'):
+            # Pytorch 0.2: Use built in SELU
+            activation = nn.SELU(inplace=True)
+        else:
+            # Pytorch < 0.1.12: Use handmade SELU
+            activation = SELU()
+        super(ConvSELU3D, self).__init__(in_channels=in_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size,
+                                         dim=3,
+                                         activation=activation,
+                                         initialization=SELUWeightsZeroBias())
+
+
+class ConvSigmoid1D(ConvActivation):
+    """1D Convolutional layer with 'SAME' padding, Sigmoid and orthogonal weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        super(ConvSigmoid1D, self).__init__(in_channels=in_channels,
+                                            out_channels=out_channels,
+                                            kernel_size=kernel_size,
+                                            dim=1,
+                                            activation='Sigmoid',
+                                            initialization=OrthogonalWeightsZeroBias())
 
 
 class ConvSigmoid2D(ConvActivation):
@@ -155,6 +259,18 @@ class ConvSigmoid3D(ConvActivation):
                                             initialization=OrthogonalWeightsZeroBias())
 
 
+class DeconvELU1D(ConvActivation):
+    """1D deconvolutional layer with ELU and orthogonal weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size=2):
+        super(DeconvELU1D, self).__init__(in_channels=in_channels,
+                                          out_channels=out_channels,
+                                          kernel_size=kernel_size,
+                                          dim=1,
+                                          activation='ELU',
+                                          deconv=True,
+                                          initialization=OrthogonalWeightsZeroBias())
+
+
 class DeconvELU2D(ConvActivation):
     """2D deconvolutional layer with ELU and orthogonal weight initialization."""
     def __init__(self, in_channels, out_channels, kernel_size=2):
@@ -177,6 +293,22 @@ class DeconvELU3D(ConvActivation):
                                           activation='ELU',
                                           deconv=True,
                                           initialization=OrthogonalWeightsZeroBias())
+
+
+
+class StridedConvELU1D(ConvActivation):
+    """
+    1D strided convolutional layer with 'SAME' padding, ELU and orthogonal
+    weight initialization.
+    """
+    def __init__(self , in_channels, out_channels, kernel_size, stride=2):
+        super(StridedConvELU1D, self).__init__(in_channels=in_channels,
+                                               out_channels=out_channels,
+                                               kernel_size=kernel_size,
+                                               stride=stride,
+                                               dim=1,
+                                               activation='ELU',
+                                               initialization=OrthogonalWeightsZeroBias())
 
 
 class StridedConvELU2D(ConvActivation):
@@ -209,6 +341,22 @@ class StridedConvELU3D(ConvActivation):
                                                initialization=OrthogonalWeightsZeroBias())
 
 
+
+
+class DilatedConvELU1D(ConvActivation):
+    """
+    1D dilated convolutional layer with 'SAME' padding, ELU and orthogonal
+    weight initialization.
+    """
+    def __init__(self, in_channels, out_channels, kernel_size, dilation=2):
+        super(DilatedConvELU1D, self).__init__(in_channels=in_channels,
+                                               out_channels=out_channels,
+                                               kernel_size=kernel_size,
+                                               dilation=dilation,
+                                               dim=1,
+                                               activation='ELU',
+                                               initialization=OrthogonalWeightsZeroBias())
+
 class DilatedConvELU2D(ConvActivation):
     """
     2D dilated convolutional layer with 'SAME' padding, ELU and orthogonal
@@ -238,6 +386,18 @@ class DilatedConvELU3D(ConvActivation):
                                                activation='ELU',
                                                initialization=OrthogonalWeightsZeroBias())
 
+
+class DilatedConv1D(ConvActivation):
+    """1D dilated convolutional layer with 'SAME' padding, no activation and orthogonal weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size, dilation=2)
+        super(DilatedConv1D, self).__init__(in_channels=in_channels,
+                                               out_channels=out_channels,
+                                               kernel_size=kernel_size,
+                                               dilation=dilation,
+                                               dim=1,
+                                               activation=None,
+                                               initialization=OrthogonalWeightsZeroBias())
+
 class DilatedConv2D(ConvActivation):
     """2D dilated convolutional layer with 'SAME' padding, no activation and orthogonal weight initialization."""
     def __init__(self, in_channels, out_channels, kernel_size, dilation=2):
@@ -249,27 +409,34 @@ class DilatedConv2D(ConvActivation):
                                                activation=None,
                                                initialization=OrthogonalWeightsZeroBias())
 
+class DilatedConv3D(ConvActivation):
+    """3D dilated convolutional layer with 'SAME' padding, no activation and orthogonal weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size, dilation=2):
+        super(DilatedConv3D, self).__init__(in_channels=in_channels,
+                                               out_channels=out_channels,
+                                               kernel_size=kernel_size,
+                                               dilation=dilation,
+                                               dim=3,
+                                               activation=None,
+                                               initialization=OrthogonalWeightsZeroBias())
 
-class ConvReLU2D(ConvActivation):
-    """2D Convolutional layer with 'SAME' padding, ReLU and Kaiming normal weight initialization."""
-    def __init__(self, in_channels, out_channels, kernel_size):
-        super(ConvReLU2D, self).__init__(in_channels=in_channels,
-                                         out_channels=out_channels,
-                                         kernel_size=kernel_size,
-                                         dim=2,
-                                         activation='ReLU',
-                                         initialization=KaimingNormalWeightsZeroBias())
 
 
-class ConvReLU3D(ConvActivation):
-    """3D Convolutional layer with 'SAME' padding, ReLU and Kaiming normal weight initialization."""
-    def __init__(self, in_channels, out_channels, kernel_size):
-        super(ConvReLU3D, self).__init__(in_channels=in_channels,
-                                         out_channels=out_channels,
-                                         kernel_size=kernel_size,
-                                         dim=3,
-                                         activation='ReLU',
-                                         initialization=KaimingNormalWeightsZeroBias())
+class Conv1D(ConvActivation):
+    """
+    1D convolutional layer with same padding and orthogonal weight initialization.
+    By default, this layer does not apply an activation function.
+    """
+    def __init__(self, in_channels, out_channels, kernel_size, dilation=1, stride=1,
+                 activation=None):
+        super(Conv1D, self).__init__(in_channels=in_channels,
+                                     out_channels=out_channels,
+                                     kernel_size=kernel_size,
+                                     dilation=dilation,
+                                     stride=stride,
+                                     dim=1,
+                                     activation=activation,
+                                     initialization=OrthogonalWeightsZeroBias())
 
 
 class Conv2D(ConvActivation):
@@ -304,6 +471,18 @@ class Conv3D(ConvActivation):
                                      dim=3,
                                      activation=activation,
                                      initialization=OrthogonalWeightsZeroBias())
+
+class Deconv1D(ConvActivation):
+    """1D deconvolutional layer with orthogonal weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size=2, stride=2):
+        super(Deconv1D, self).__init__(in_channels=in_channels,
+                                       out_channels=out_channels,
+                                       kernel_size=kernel_size,
+                                       dim=1,
+                                       stride=stride,
+                                       activation=None,
+                                       deconv=True,
+                                       initialization=OrthogonalWeightsZeroBias())
 
 
 class Deconv2D(ConvActivation):
@@ -341,6 +520,21 @@ class _BNReLUSomeConv(object):
         return conved
 
 
+
+class BNReLUConv1D(_BNReLUSomeConv, ConvActivation):
+    """
+    1D BN-ReLU-Conv layer with 'SAME' padding and He weight initialization.
+    """
+    def __init__(self, in_channels, out_channels, kernel_size, stride=1):
+        super(BNReLUConv1D, self).__init__(in_channels=in_channels,
+                                           out_channels=out_channels,
+                                           kernel_size=kernel_size,
+                                           dim=1,
+                                           stride=stride,
+                                           activation=nn.ReLU(inplace=True),
+                                           initialization=KaimingNormalWeightsZeroBias(0))
+        self.batchnorm = nn.BatchNorm1d(in_channels)
+
 class BNReLUConv2D(_BNReLUSomeConv, ConvActivation):
     """
     2D BN-ReLU-Conv layer with 'SAME' padding and He weight initialization.
@@ -355,6 +549,22 @@ class BNReLUConv2D(_BNReLUSomeConv, ConvActivation):
                                            initialization=KaimingNormalWeightsZeroBias(0))
         self.batchnorm = nn.BatchNorm2d(in_channels)
 
+
+
+class BNReLUDilatedConv1D(_BNReLUSomeConv,ConvActivation):
+    """
+    1D dilated convolutional layer with 'SAME' padding, Batch norm,  Relu and He
+    weight initialization.
+    """
+    def __init__(self, in_channels, out_channels, kernel_size, dilation=1):
+        super(BNReLUDilatedConv1D, self).__init__(in_channels=in_channels,
+                                               out_channels=out_channels,
+                                               kernel_size=kernel_size,
+                                               dilation=dilation,
+                                               dim=1,
+                                               activation=nn.ReLU(inplace=True),
+                                               initialization=KaimingNormalWeightsZeroBias(0))
+        self.batchnorm = nn.BatchNorm2d(in_channels)
 
 class BNReLUDilatedConv2D(_BNReLUSomeConv,ConvActivation):
     """
@@ -385,6 +595,22 @@ class BNReLUConv3D(_BNReLUSomeConv, ConvActivation):
                                            activation=nn.ReLU(inplace=True),
                                            initialization=KaimingNormalWeightsZeroBias(0))
         self.batchnorm = nn.BatchNorm3d(in_channels)
+
+
+class BNReLUDeconv1D(_BNReLUSomeConv, ConvActivation):
+    """
+    1D BN-ReLU-Deconv layer with He weight initialization and (default) stride 1.
+    """
+    def __init__(self, in_channels, out_channels, kernel_size, stride=2):
+        super(BNReLUDeconv1D, self).__init__(in_channels=in_channels,
+                                             out_channels=out_channels,
+                                             kernel_size=kernel_size,
+                                             dim=1,
+                                             stride=stride,
+                                             deconv=True,
+                                             activation=nn.ReLU(inplace=True),
+                                             initialization=KaimingNormalWeightsZeroBias(0))
+        self.batchnorm = nn.BatchNorm1d(in_channels)
 
 
 class BNReLUDeconv2D(_BNReLUSomeConv, ConvActivation):
@@ -419,6 +645,25 @@ class BNReLUDeconv3D(_BNReLUSomeConv, ConvActivation):
         self.batchnorm = nn.BatchNorm2d(in_channels)
 
 
+
+class BNReLUDepthwiseConv1D(_BNReLUSomeConv, ConvActivation):
+    """
+    1D BN-ReLU-Conv layer with 'SAME' padding, He weight initialization and depthwise convolution.
+    Note that depthwise convolutions require `in_channels == out_channels`.
+    """
+    def __init__(self, in_channels, out_channels, kernel_size):
+        # We know that in_channels == out_channels, but we also want a consistent API.
+        # As a compromise, we allow that out_channels be None or 'auto'.
+        out_channels = in_channels if out_channels in [None, 'auto'] else out_channels
+        super(BNReLUDepthwiseConv1D, self).__init__(in_channels=in_channels,
+                                                    out_channels=out_channels,
+                                                    kernel_size=kernel_size,
+                                                    dim=1,
+                                                    depthwise=True,
+                                                    activation=nn.ReLU(inplace=True),
+                                                    initialization=KaimingNormalWeightsZeroBias(0))
+        self.batchnorm = nn.BatchNorm1d(in_channels)
+
 class BNReLUDepthwiseConv2D(_BNReLUSomeConv, ConvActivation):
     """
     2D BN-ReLU-Conv layer with 'SAME' padding, He weight initialization and depthwise convolution.
@@ -436,40 +681,6 @@ class BNReLUDepthwiseConv2D(_BNReLUSomeConv, ConvActivation):
                                                     activation=nn.ReLU(inplace=True),
                                                     initialization=KaimingNormalWeightsZeroBias(0))
         self.batchnorm = nn.BatchNorm2d(in_channels)
-
-
-class ConvSELU2D(ConvActivation):
-    """2D Convolutional layer with SELU activation and the appropriate weight initialization."""
-    def __init__(self, in_channels, out_channels, kernel_size):
-        if hasattr(nn, 'SELU'):
-            # Pytorch 0.2: Use built in SELU
-            activation = nn.SELU(inplace=True)
-        else:
-            # Pytorch < 0.1.12: Use handmade SELU
-            activation = SELU()
-        super(ConvSELU2D, self).__init__(in_channels=in_channels,
-                                         out_channels=out_channels,
-                                         kernel_size=kernel_size,
-                                         dim=2,
-                                         activation=activation,
-                                         initialization=SELUWeightsZeroBias())
-
-
-class ConvSELU3D(ConvActivation):
-    """3D Convolutional layer with SELU activation and the appropriate weight initialization."""
-    def __init__(self, in_channels, out_channels, kernel_size):
-        if hasattr(nn, 'SELU'):
-            # Pytorch 0.2: Use built in SELU
-            activation = nn.SELU(inplace=True)
-        else:
-            # Pytorch < 0.1.12: Use handmade SELU
-            activation = SELU()
-        super(ConvSELU3D, self).__init__(in_channels=in_channels,
-                                         out_channels=out_channels,
-                                         kernel_size=kernel_size,
-                                         dim=3,
-                                         activation=activation,
-                                         initialization=SELUWeightsZeroBias())
 
 
 class GlobalConv2D(nn.Module):
