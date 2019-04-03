@@ -159,15 +159,11 @@ from inferno.extensions.models import *
 from inferno.extensions.layers import *
 
 
-
-
-model_b = UNet( in_channels=1, out_channels=1, dim=1, depth=2)
-
-
+unet = UNet( in_channels=1, out_channels=1, dim=1, depth=2)
 
 ##################################################
 # do the training 
-trainer = train_model(model=model_b, loaders=[train_loader, validate_loader], save_dir='model_b', lr=0.001)
+trainer = train_model(model=unet, loaders=[train_loader, validate_loader], save_dir='unet', lr=0.001)
 
 ###################################################
 # visualizer predictions
