@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from ..layers.identity import Identity
-from ..layers.convolutional import ConvELU2D, ConvELU3D, Conv2D, Conv3D
+from ..layers.convolutional import *#ConvELU2D, ConvELU3D, Conv2D, Conv3D
 from ..layers.sampling import Upsample as InfernoUpsample
 from ...utils.math_utils import max_allowed_ds_steps
 
@@ -190,7 +190,7 @@ class UNetBase(nn.Module):
         if upsample_mode is None:
             if self.dim == 1:
                 upsample_mode = 'linear'
-            if self.dim == 2:
+            elif self.dim == 2:
                 upsample_mode = 'bilinear'
             elif self.dim == 3:
                 # upsample_mode = 'nearest'
@@ -300,7 +300,7 @@ class UNetBase(nn.Module):
             # should be nonreachable
             assert False
 
-    def upsample_op_factory(self, index):\
+    def upsample_op_factory(self, index):
         return InfernoUpsample(**self._upsample_kwargs)
         #return nn.Upsample(**self._upsample_kwargs)
 
@@ -322,14 +322,21 @@ class UNet(UNetBase):
     """
     def __init__(self, in_channels, out_channels, dim,
                  depth=4, initial_features=64, gain=2,
-                 final_activation=None, p_dropout=None):
+                 final_activation=None):
         # convolutional types for inner convolutions and output convolutions
-        self.default_conv = ConvELU2D if dim == 2 else ConvELU3D
-        last_conv = Conv2D if dim == 2 else Conv3D
+        if dim == 1:
+            self.default_conv = ConvELU1D
+            last_conv = Conv1D
+        elif dim == 2:
+            self.default_conv = ConvELU2D
+            last_conv = Conv2D
+        elif dim == 3:
+            self.default_conv = ConvELU3D
+            last_conv = Conv3D
 
         # init the base class
         super(UNet, self).__init__(in_channels=initial_features, dim=dim,
-                                   depth=depth, gain=gain, p_dropout=p_dropout)
+                                   depth=depth, gain=gain)
         # initial conv layer to go from the number of input channels, which are defined by the data
         # (usually 1 or 3) to the initial number of feature maps
         self._initial_conv = self.default_conv(in_channels, initial_features, 3)
