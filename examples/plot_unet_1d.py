@@ -24,7 +24,7 @@ USE_CUDA = torch.cuda.is_available()
 ##############################################################################
 # Dataset
 # --------------
-# For simplicity we will use a toy dataset where we denoise a noisy signal
+# For simplicity we will use a toy dataset based on a noisy sine
 from inferno.io.box.noisy_func_1d import get_noisy_func_loader
 
 import math
