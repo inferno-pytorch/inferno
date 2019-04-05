@@ -50,7 +50,7 @@ train_loader, test_loader, validate_loader = get_noisy_func_loader(
 image_channels = 1   # <-- number of channels of the image
 pred_channels = 1  # <-- number of channels needed for the prediction
 
-if True:
+if False:
 
     # ##############################################################################
     # # Visualize Dataset
@@ -86,7 +86,7 @@ def train_model(model, loaders, **kwargs):
     trainer.validate_every((kwargs.get('validate_every', 1), 'epochs'))
     #trainer.save_every((kwargs.get('save_every', 10), 'epochs'))
     #trainer.save_to_directory(ensure_dir(kwargs.get('save_dir', 'save_dor')))
-    trainer.set_max_num_epochs(kwargs.get('max_num_epochs', 40))
+    trainer.set_max_num_epochs(kwargs.get('max_num_epochs', 4))
 
     # bind the loaders
     trainer.bind_loader('train', loaders[0])
@@ -138,7 +138,7 @@ def predict(trainer, test_loader,  save_dir=None):
             rng = numpy.arange(prediction[b,...].size)
 
             ax = fig.add_subplot(1, 1, 1)
-            ax.plot(rng,noisy_signal[b,0,...],'r' , rng,signal[b,0,...],'g', rng, prediction[b,0,...],'b')
+            ax.plot(rng,noisy_signal[b,0,...],'r' , rng, gt[b,0,...],'g', rng, prediction[b,0,...],'b')
             fig.tight_layout()
             plt.show()
 
@@ -159,7 +159,7 @@ from inferno.extensions.models import *
 from inferno.extensions.layers import *
 
 
-unet = UNet( in_channels=1, out_channels=1, dim=1, depth=2)
+unet = UNet(in_channels=1, initial_features=64, out_channels=1, dim=1, depth=2)
 
 ##################################################
 # do the training 
