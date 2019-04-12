@@ -19,12 +19,13 @@ import numpy
 # determine whether we have a gpu
 # and should use cuda
 USE_CUDA = torch.cuda.is_available()
-
+print("USE_CUDA",USE_CUDA)
 
 ##############################################################################
 # Dataset
 # --------------
 # For simplicity we will use a toy dataset based on a noisy sine
+
 from inferno.io.box.noisy_func_1d import get_noisy_func_loader
 
 import math
@@ -159,7 +160,7 @@ from inferno.extensions.models import *
 from inferno.extensions.layers import *
 
 
-unet = UNet(in_channels=1, initial_features=64, out_channels=1, dim=1, depth=2)
+unet = UNet(in_channels=1, initial_features=64, out_channels=1, dim=1, depth=1)
 
 ##################################################
 # do the training 
