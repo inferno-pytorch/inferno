@@ -10,7 +10,8 @@ class TripletLoss(nn.Module):
         self.margin = margin
         self.p = p
         self.swap = swap
-    def forward(self, triplet):
+    def forward(self, triplet, target=None):
+        #inferno trainer assumes every loss has a target; target not used here
         # we might or might not have the batch dim here
         assert len(triplet) == 3 or len(triplet[0]) == 3
         if len(triplet) == 3:
