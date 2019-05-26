@@ -1140,7 +1140,8 @@ class Trainer(object):
             "Can not split batch if both the number of inputs and targets is not known."
         if num_inputs is None:
             # Unknown number of inputs
-            inputs, targets = batch[:-num_targets], batch[-num_targets:]
+            num_inputs = len(batch) - num_targets    #to allow for num_targets == 0
+            inputs, targets = batch[:num_inputs], batch[num_inputs:]
         elif num_targets is None:
             # Unknown number of targets
             inputs, targets = batch[:num_inputs], batch[num_inputs:]
@@ -1180,39 +1181,19 @@ class Trainer(object):
                     "No `loader_spec` found for loader key '{}'.".format(from_loader),
                     RuntimeError)
             # Get number of targets
-            num_targets = loader_spec['num_targets']
+            num_inputs = loader_spec['num_inputs']
+            if num_inputs is None:
+                num_inputs = len(batch) - loader_spec['num_targets']
             # Fetch input batches and send'em to device (leave the targets alone)
-            inputs = batch[:-num_targets]
+            inputs = batch[:num_inputs]
             inputs = self.to_device(inputs)
             # Finally, build the batch
-            batch = inputs + batch[-num_targets:]
+            batch = inputs + batch[num_inputs:]
         else:
             raise ValueError("Internal Error: Invalid base_device_ordinal: {}."
                              .format(base_device_ordinal))
         # Cast to the right dtype
         batch = self.cast(batch)
-        # Second, wrap as variable
-        variable_batch = []
-        for batch_num, _batch in enumerate(batch):
-            if thu.is_tensor(_batch):
-                # This supresses the volatile deprecated warning
-                # TODO remove after Pytorch 1.0
-                with warnings.catch_warnings():
-                    warnings.simplefilter('ignore')
-                    variable_batch.append(Variable(_batch, requires_grad=requires_grad,
-                                                   volatile=volatile))
-            elif pyu.is_listlike(_batch):
-                # This supresses the volatile deprecated warning
-                # TODO remove after Pytorch 1.0
-                with warnings.catch_warnings():
-                    warnings.simplefilter('ignore')
-                    variable_batch.append([Variable(__batch, requires_grad=requires_grad,
-                                                    volatile=volatile)
-                                           for __batch in _batch])
-            else:
-                raise RuntimeError(f"Was Expecting batch at index {batch_num} to be either a "
-                                   f"tensor or a list of tensors. Got {type(_batch)} instead.")
-        batch = type(batch)(variable_batch)
         return batch
 
     def next_iteration(self):
@@ -1377,9 +1358,11 @@ class Trainer(object):
                 'trainer' in signature(self.criterion.forward).parameters):
             kwargs['trainer'] = self
         if mode == 'train':
-            loss = self.criterion(prediction, target, **kwargs)
+            loss = self.criterion(prediction, target, **kwargs) \
+                    if target else self.criterion(prediction, **kwargs) 
         elif mode == 'eval':
-            loss = self.validation_criterion(prediction, target, **kwargs)
+            loss = self.validation_criterion(prediction, target, **kwargs) \
+                    if target else self.validation_criterion(prediction, **kwargs)
         else:
             raise ValueError
         if backward:
