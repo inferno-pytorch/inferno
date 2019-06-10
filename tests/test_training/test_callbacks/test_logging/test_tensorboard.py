@@ -1,6 +1,7 @@
 import unittest
 
 import os
+import sys
 from shutil import rmtree
 import numpy as np
 import torch
@@ -78,14 +79,19 @@ class TestTensorboard(unittest.TestCase):
         trainer.bind_loader('train', train_loader).bind_loader('validate', test_loader)
         return trainer
 
+    # unittest discovery hangs for these tests in python 3.6.
+    # See https://github.com/inferno-pytorch/inferno/issues/157.
+    @unittest.skipIf(sys.version_info.minor == 6, "Test does not terminate in 3.6")
     def test_tensorboard(self):
         trainer = self.get_trainer(3)
         trainer.fit()
 
+    @unittest.skipIf(sys.version_info.minor == 6, "Test does not terminate in 3.6")
     def test_tensorboard_grayscale(self):
         trainer = self.get_trainer(1)
         trainer.fit()
 
+    @unittest.skipIf(sys.version_info.minor == 6, "Test does not terminate in 3.6")
     def test_serialization(self):
         trainer = self.get_trainer(3)
         # Serialize
