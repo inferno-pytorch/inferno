@@ -3,7 +3,6 @@ from inspect import signature
 import os
 import shutil
 import contextlib
-import warnings
 
 # These are fetched from globals, they're not unused
 # noinspection PyUnresolvedReferences
@@ -14,7 +13,6 @@ import pickle
 
 import torch
 from numpy import inf
-from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torch.nn.parallel.data_parallel import data_parallel
 from .callbacks.logging.base import Logger
@@ -1189,30 +1187,9 @@ class Trainer(object):
         else:
             raise ValueError("Internal Error: Invalid base_device_ordinal: {}."
                              .format(base_device_ordinal))
-        # Cast to the right dtype
+
+        # Cast to the right dtype and return
         batch = self.cast(batch)
-        # Second, wrap as variable
-        variable_batch = []
-        for batch_num, _batch in enumerate(batch):
-            if thu.is_tensor(_batch):
-                # This supresses the volatile deprecated warning
-                # TODO remove after Pytorch 1.0
-                with warnings.catch_warnings():
-                    warnings.simplefilter('ignore')
-                    variable_batch.append(Variable(_batch, requires_grad=requires_grad,
-                                                   volatile=volatile))
-            elif pyu.is_listlike(_batch):
-                # This supresses the volatile deprecated warning
-                # TODO remove after Pytorch 1.0
-                with warnings.catch_warnings():
-                    warnings.simplefilter('ignore')
-                    variable_batch.append([Variable(__batch, requires_grad=requires_grad,
-                                                    volatile=volatile)
-                                           for __batch in _batch])
-            else:
-                raise RuntimeError(f"Was Expecting batch at index {batch_num} to be either a "
-                                   f"tensor or a list of tensors. Got {type(_batch)} instead.")
-        batch = type(batch)(variable_batch)
         return batch
 
     def next_iteration(self):
