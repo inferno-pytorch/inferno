@@ -43,9 +43,9 @@ With our model built, it's time to worry about the data generators. Or is it?
 .. code:: python
 
     from inferno.io.box.cifar import get_cifar10_loaders
-    train_loader, validate_loader = get_cifar10_loaders('path/to/cifar10', 
-                                                        download=True, 
-                                                        train_batch_size=128, 
+    train_loader, validate_loader = get_cifar10_loaders('path/to/cifar10',
+                                                        download=True,
+                                                        train_batch_size=128,
                                                         test_batch_size=100)
 
 CIFAR-10 works out-of-the-`box` (pun very much intended) with all the fancy data-augmentation and normalization. Of course, it's perfectly fine if you have your own [`DataLoader`](http://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader).
@@ -117,7 +117,7 @@ or
     trainer.build_metric(MyMetric, **my_metric_kwargs)
 
 
-Note that the metric applies to `torch.Tensor`s, and not on `torch.autograd.Variable`s. Also, a metric might be way too expensive to evaluate every training iteration without slowing down the training. If this is the case and you'd like to evaluate the metric every (say) 10 *training* iterations:
+A metric might be way too expensive to evaluate every training iteration without slowing down the training. If this is the case and you'd like to evaluate the metric every (say) 10 *training* iterations:
 
 .. code:: python
 
@@ -254,7 +254,7 @@ Inferno supports logging scalars and images to Tensorboard out-of-the-box, thoug
 
     from inferno.trainers.callbacks.logging.tensorboard import TensorboardLogger
 
-    trainer.build_logger(TensorboardLogger(log_scalars_every=(1, 'iteration'), 
+    trainer.build_logger(TensorboardLogger(log_scalars_every=(1, 'iteration'),
                                            log_images_every=(20, 'iterations')),
                          log_directory='/path/to/log/directory')
 

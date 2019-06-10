@@ -48,7 +48,6 @@ class NNGraph(nx.DiGraph):
         return new
 
 
-
 class Graph(nn.Module):
     """
     A graph structure to build networks with complex architectures. The resulting graph model
@@ -64,7 +63,6 @@ class Graph(nn.Module):
         >>> from inferno.extensions.layers.reshape import Concatenate
         >>> from inferno.extensions.layers.convolutional import ConvELU2D
         >>> import torch
-        >>> from torch.autograd import Variable
         >>> # Build the model
         >>> inception_module = Graph()
         >>> inception_module.add_input_node('input')
@@ -75,7 +73,7 @@ class Graph(nn.Module):
         >>>                           previous=['conv1x1', 'conv3x3', 'conv5x5'])
         >>> inception_module.add_output_node('output', 'cat')
         >>> # Build dummy variable
-        >>> input = Variable(torch.rand(1, 64, 100, 100))
+        >>> input = torch.rand(1, 64, 100, 100)
         >>> # Get output
         >>> output = inception_module(input)
 

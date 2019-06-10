@@ -1,6 +1,5 @@
 import numpy as np
 import torch.nn.init as init
-from torch.autograd import Variable
 from functools import partial
 
 from .base import Initialization, Initializer
@@ -19,8 +18,6 @@ class Constant(Initializer):
         self.constant = constant
 
     def call_on_tensor(self, tensor):
-        if isinstance(tensor, Variable):
-            tensor = tensor.data
         tensor.fill_(self.constant)
         return tensor
 
@@ -42,9 +39,6 @@ class NormalWeights(Initializer):
             return np.prod(list(tensor.size())[1:])
 
     def call_on_weight(self, tensor):
-        if isinstance(tensor, Variable):
-            self.call_on_weight(tensor.data)
-            return tensor
         # Compute stddev if required
         if self.sqrt_gain_over_fan_in is not None:
             stddev = self.stddev * \
@@ -85,4 +79,3 @@ class ELUWeightsZeroBias(Initialization):
         super(ELUWeightsZeroBias, self)\
             .__init__(weight_initializer=NormalWeights(sqrt_gain_over_fan_in=1.5505188080679277),
                       bias_initializer=Constant(0.))
-

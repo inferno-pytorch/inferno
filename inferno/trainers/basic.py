@@ -3,7 +3,6 @@ from inspect import signature
 import os
 import shutil
 import contextlib
-import warnings
 
 # These are fetched from globals, they're not unused
 # noinspection PyUnresolvedReferences
@@ -14,7 +13,6 @@ import pickle
 
 import torch
 from numpy import inf
-from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torch.nn.parallel.data_parallel import data_parallel
 from .callbacks.logging.base import Logger
@@ -1189,30 +1187,9 @@ class Trainer(object):
         else:
             raise ValueError("Internal Error: Invalid base_device_ordinal: {}."
                              .format(base_device_ordinal))
-        # Cast to the right dtype
+
+        # Cast to the right dtype and return
         batch = self.cast(batch)
-        # Second, wrap as variable
-        variable_batch = []
-        for batch_num, _batch in enumerate(batch):
-            if thu.is_tensor(_batch):
-                # This supresses the volatile deprecated warning
-                # TODO remove after Pytorch 1.0
-                with warnings.catch_warnings():
-                    warnings.simplefilter('ignore')
-                    variable_batch.append(Variable(_batch, requires_grad=requires_grad,
-                                                   volatile=volatile))
-            elif pyu.is_listlike(_batch):
-                # This supresses the volatile deprecated warning
-                # TODO remove after Pytorch 1.0
-                with warnings.catch_warnings():
-                    warnings.simplefilter('ignore')
-                    variable_batch.append([Variable(__batch, requires_grad=requires_grad,
-                                                    volatile=volatile)
-                                           for __batch in _batch])
-            else:
-                raise RuntimeError(f"Was Expecting batch at index {batch_num} to be either a "
-                                   f"tensor or a list of tensors. Got {type(_batch)} instead.")
-        batch = type(batch)(variable_batch)
         return batch
 
     def next_iteration(self):
@@ -1408,7 +1385,7 @@ class Trainer(object):
                 self.console.info("Breaking on request from callback.")
                 break
             self.console.progress("Training iteration {} (batch {} of epoch {})."
-                       .format(iteration_num, self._batch_count, self._epoch_count))
+                                  .format(iteration_num, self._batch_count, self._epoch_count))
             # Call callback
             self.callbacks.call(self.callbacks.BEGIN_OF_TRAINING_ITERATION,
                                 iteration_num=iteration_num)
@@ -1512,8 +1489,6 @@ class Trainer(object):
                             num_iterations_in_generator=len(self._loader_iters[loader_name]),
                             last_validated_at_epoch=self._last_validated_at_epoch)
 
-
-
         while True:
             if num_iterations is not None and iteration_num >= num_iterations:
                 break
@@ -1523,8 +1498,7 @@ class Trainer(object):
 
             try:
                 batch = self.fetch_next_batch(loader_name,
-                                              restart_exhausted_generators=
-                                              num_iterations is not None,
+                                              restart_exhausted_generators=num_iterations is not None,
                                               update_batch_count=False,
                                               update_epoch_count_if_generator_exhausted=False)
             except StopIteration:
@@ -1545,7 +1519,7 @@ class Trainer(object):
                 # Apply model, compute loss
                 output, loss = self.apply_model_and_loss(inputs, target, backward=False,
                                                          mode='eval')
-            if isinstance(target, (list,tuple)):
+            if isinstance(target, (list, tuple)):
                 batch_size = target[0].size(self._target_batch_dim)
             else:
                 batch_size = target.size(self._target_batch_dim)
@@ -1589,8 +1563,8 @@ class Trainer(object):
 
         self.callbacks.call(self.callbacks.END_OF_VALIDATION_RUN,
                             validation_loss_meter=validation_loss_meter,
-                            validation_error_meter=
-                            validation_error_meter if self.metric_is_defined else None)
+                            validation_error_meter=validation_error_meter if
+                            self.metric_is_defined else None)
         return self
 
     def record_validation_results(self, validation_loss, validation_error):
