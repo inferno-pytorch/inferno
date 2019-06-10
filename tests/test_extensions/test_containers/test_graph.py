@@ -30,7 +30,6 @@ class TestGraph(unittest.TestCase):
     # @unittest.skip
     def test_graph_dummy_basic(self):
         import torch
-        from torch.autograd import Variable
         from inferno.extensions.containers.graph import Graph
 
         if not hasattr(self, 'DummyNamedModule'):
@@ -55,16 +54,15 @@ class TestGraph(unittest.TestCase):
             .add_edge('conv1', 'conv2')\
             .add_edge('conv2', 'output_0')
 
-        input_0 = Variable(torch.rand(10, 10))
-        input_1 = Variable(torch.rand(10, 10))
-        output = model(input_0, input_1)
+        input_0 = torch.rand(10, 10)
+        input_1 = torch.rand(10, 10)
+        model(input_0, input_1)
         self.assertTrue(history == ['conv0_0', 'conv0_1', 'conv1', 'conv2'] or
                         history == ['conv0_1', 'conv0_0', 'conv1', 'conv2'])
 
     # @unittest.skip
     def test_graph_dummy_inception(self):
         import torch
-        from torch.autograd import Variable
         from inferno.extensions.containers.graph import Graph
 
         if not hasattr(self, 'DummyNamedModule'):
@@ -82,8 +80,8 @@ class TestGraph(unittest.TestCase):
         model.add_node('conv2', DummyNamedModule('conv2', history, 2),
                        ['conv1_0', 'conv1_1'])
         model.add_output_node('output_0', 'conv2')
-        input_0 = Variable(torch.rand(10, 10))
-        output = model(input_0)
+        input_0 = torch.rand(10, 10)
+        model(input_0)
         self.assertTrue(history == ['conv0', 'conv1_0', 'conv1_1', 'conv2'] or
                         history == ['conv0', 'conv1_1', 'conv1_2', 'conv2'])
 
@@ -105,7 +103,6 @@ class TestGraph(unittest.TestCase):
         from inferno.extensions.containers.graph import Graph
         from inferno.extensions.layers.convolutional import ConvELU2D
         import torch
-        from torch.autograd import Variable
         # Build graph
         model = Graph()
         model.add_input_node('input_0')
@@ -114,14 +111,13 @@ class TestGraph(unittest.TestCase):
         model.add_output_node('output_0', previous='conv1')
         # Transfer
         model.to_device('conv0', 'cpu').to_device('conv1', 'cuda', 0)
-        x = Variable(torch.rand(1, 1, 100, 100))
+        x = torch.rand(1, 1, 100, 100)
         y = model(x)
         self.assertIsInstance(y.data, torch.cuda.FloatTensor)
 
     @unittest.skip("Needs machine with 4 GPUs")
     def test_multi_gpu(self):
         import torch
-        from torch.autograd import Variable
         import torch.nn as nn
         from torch.nn.parallel.data_parallel import data_parallel
         from inferno.extensions.containers.graph import Graph
@@ -134,8 +130,8 @@ class TestGraph(unittest.TestCase):
             .add_output_node('output', previous='conv1')
 
         model.cuda()
-        input = Variable(torch.rand(*input_shape).cuda())
-        output = data_parallel(model, input, device_ids=[0, 1, 2, 3])
+        input = torch.rand(*input_shape).cuda()
+        data_parallel(model, input, device_ids=[0, 1, 2, 3])
 
 
 if __name__ == '__main__':

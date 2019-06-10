@@ -1,10 +1,10 @@
 import unittest
+import torch
 
 
 class TestReshape(unittest.TestCase):
     def _get_input_variable(self, *shape):
-        import torch
-        return torch.autograd.Variable(torch.rand(*shape))
+        return torch.rand(*shape)
 
     def test_as_matrix(self):
         from inferno.extensions.layers.reshape import AsMatrix
@@ -62,6 +62,7 @@ class TestReshape(unittest.TestCase):
         with self.assertRaises(ShapeError):
             output_shape = as_3d(self._get_input_variable(10, 41, 30, 30)).size()
             self.assertEqual(list(output_shape), [10, 2, 20, 30, 30])
+
 
 if __name__ == '__main__':
     unittest.main()
