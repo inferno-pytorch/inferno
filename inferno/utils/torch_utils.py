@@ -24,7 +24,7 @@ def unwrap(input_, to_cpu=True, as_numpy=False, extract_item=False):
             tensor = tensor.cpu()
     # Convert to numpy if required
     if as_numpy:
-        return tensor.cpu().numpy()
+        return tensor.cpu().detach().numpy()
     elif extract_item:
         try:
             return tensor.item()
