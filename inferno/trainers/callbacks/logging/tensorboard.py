@@ -1,7 +1,6 @@
 import tensorboardX as tX
 import numpy as np
 import warnings
-from scipy.misc import toimage
 from .base import Logger
 from ....utils import torch_utils as tu
 from ....utils import python_utils as pyu
