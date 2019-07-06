@@ -192,7 +192,9 @@ class TensorboardLogger(Logger):
         return self
 
     def log_object(self, tag, object_,
-                   allow_scalar_logging=True, allow_image_logging=True, allow_histogram_logging=True):
+                   allow_scalar_logging=True,
+                   allow_image_logging=True,
+                   allow_histogram_logging=True):
         assert isinstance(tag, str)
         if isinstance(object_, (list, tuple)):
             for object_num, _object in enumerate(object_):
@@ -232,6 +234,7 @@ class TensorboardLogger(Logger):
     def end_of_training_iteration(self, **_):
         log_scalars_now = self.log_scalars_now
         log_images_now = self.log_images_now
+        log_histograms_now = self.log_histograms_now
         if not log_scalars_now and not log_images_now:
             # Nothing to log, so we won't bother
             return
@@ -243,7 +246,8 @@ class TensorboardLogger(Logger):
                 continue
             self.log_object(state_key, state,
                             allow_scalar_logging=log_scalars_now,
-                            allow_image_logging=log_images_now)
+                            allow_image_logging=log_images_now,
+                            allow_histogram_logging=log_histograms_now)
 
     def end_of_validation_run(self, **_):
         # Log everything
@@ -255,7 +259,8 @@ class TensorboardLogger(Logger):
                 continue
             self.log_object(state_key, state,
                             allow_scalar_logging=True,
-                            allow_image_logging=True)
+                            allow_image_logging=True,
+                            allow_histogram_logging=False)
 
     def _tag_image(self, image, base_tag, prefix=None, instance_num=None, channel_num=None,
                    slice_num=None):
