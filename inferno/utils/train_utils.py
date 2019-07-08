@@ -109,7 +109,7 @@ class Frequency(object):
     @value.setter
     def value(self, value):
         # If value is not being set, make sure the frequency never matches muhahaha
-        if value is None:
+        if value is None or value == 'never':
             value = np.inf
         self.assert_value_consistent(value)
         self._value = value
