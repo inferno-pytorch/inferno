@@ -2,7 +2,7 @@ import os
 import h5py as h5
 import numpy as np
 import yaml
-from scipy.misc import imsave
+from skimage.io import imsave
 
 
 # Function to load in a dataset from a h5file
@@ -61,7 +61,7 @@ def print_tensor(tensor, prefix, directory):
         else:
             file_name = "{}--B-{}--CH-{}--Z-{}.png".format(prefix, batch, channel, z)
         full_file_name = os.path.join(directory, file_name)
-        imsave(arr=image, name=full_file_name)
+        imsave(arr=image, fname=full_file_name)
 
     for batch in range(tensor.shape[0]):
         for channel in range(tensor.shape[1]):
