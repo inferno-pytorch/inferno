@@ -1367,10 +1367,10 @@ class Trainer(object):
             kwargs['trainer'] = self
         if mode == 'train':
             loss = self.criterion(prediction, target, **kwargs) \
-                    if target else self.criterion(prediction, **kwargs) 
+                   if len(target) != 0  else self.criterion(prediction, **kwargs) 
         elif mode == 'eval':
             loss = self.validation_criterion(prediction, target, **kwargs) \
-                    if target else self.validation_criterion(prediction, **kwargs)
+                   if len(target) != 0  else self.validation_criterion(prediction, **kwargs)
         else:
             raise ValueError
         if backward:
