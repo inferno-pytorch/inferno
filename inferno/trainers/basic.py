@@ -1137,7 +1137,8 @@ class Trainer(object):
             "Can not split batch if both the number of inputs and targets is not known."
         if num_inputs is None:
             # Unknown number of inputs
-            inputs, targets = batch[:-num_targets], batch[-num_targets:]
+            num_inputs = len(batch) - num_targets    #to allow for num_targets == 0
+            inputs, targets = batch[:num_inputs], batch[num_inputs:]
         elif num_targets is None:
             # Unknown number of targets
             inputs, targets = batch[:num_inputs], batch[num_inputs:]
@@ -1176,14 +1177,14 @@ class Trainer(object):
             assert_(loader_spec is not None,
                     "No `loader_spec` found for loader key '{}'.".format(from_loader),
                     RuntimeError)
-            # Get number of targets
-            num_targets = loader_spec['num_targets']
-            assert_(num_targets > 0, "Number of targets must be larger than zero.", RuntimeError)
+            num_inputs = loader_spec['num_inputs']
+            if num_inputs is None:
+                num_inputs = len(batch) - loader_spec['num_targets']
             # Fetch input batches and send'em to device (leave the targets alone)
-            inputs = batch[:-num_targets]
+            inputs = batch[:num_inputs]
             inputs = self.to_device(inputs)
             # Finally, build the batch
-            batch = inputs + batch[-num_targets:]
+            batch = inputs + batch[num_inputs:]
         else:
             raise ValueError("Internal Error: Invalid base_device_ordinal: {}."
                              .format(base_device_ordinal))
@@ -1366,9 +1367,11 @@ class Trainer(object):
                 'trainer' in signature(self.criterion.forward).parameters):
             kwargs['trainer'] = self
         if mode == 'train':
-            loss = self.criterion(prediction, target, **kwargs)
+            loss = self.criterion(prediction, target, **kwargs) \
+                   if len(target) != 0  else self.criterion(prediction, **kwargs) 
         elif mode == 'eval':
-            loss = self.validation_criterion(prediction, target, **kwargs)
+            loss = self.validation_criterion(prediction, target, **kwargs) \
+                   if len(target) != 0  else self.validation_criterion(prediction, **kwargs)
         else:
             raise ValueError
         if backward:
