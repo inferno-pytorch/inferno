@@ -1,18 +1,17 @@
 import unittest
 import torch
-from torch.autograd import Variable
 
 
 class SetSimilarityTest(unittest.TestCase):
     def get_dummy_variables(self):
-        x = Variable(torch.zeros(3, 2, 100, 100).uniform_())
-        y = Variable(torch.zeros(3, 2, 100, 100).uniform_())
+        x = torch.zeros(3, 2, 100, 100).uniform_()
+        y = torch.zeros(3, 2, 100, 100).uniform_()
         return x, y
 
     def get_dummy_variables_with_channels_and_classes(self):
         # (batch_size, channels, classes, ...)
-        x = Variable(torch.zeros(3, 2, 5, 100, 100).uniform_())
-        y = Variable(torch.zeros(3, 2, 5, 100, 100).uniform_())
+        x = torch.zeros(3, 2, 5, 100, 100).uniform_()
+        y = torch.zeros(3, 2, 5, 100, 100).uniform_()
         return x, y
 
 
