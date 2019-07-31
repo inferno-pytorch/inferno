@@ -23,10 +23,10 @@ _all = __all__
 
 
 class ConvActivation(nn.Module):
-    """Convolutional layer with 'SAME' padding followed by an activation."""
+    """Convolutional layer with 'SAME' padding by default followed by an activation."""
     def __init__(self, in_channels, out_channels, kernel_size, dim, activation,
                  stride=1, dilation=1, groups=None, depthwise=False, bias=True,
-                 deconv=False, initialization=None):
+                 deconv=False, initialization=None, valid_conv=False):
         super(ConvActivation, self).__init__()
         # Validate dim
         assert_(dim in [2, 3], "`dim` must be one of [2, 3], got {}.".format(dim), ShapeError)
@@ -45,7 +45,15 @@ class ConvActivation(nn.Module):
         else:
             groups = 1 if groups is None else groups
         self.depthwise = depthwise
-        if not deconv:
+        if valid_conv:
+            self.conv = getattr(nn, 'Conv{}d'.format(self.dim))(in_channels=in_channels,
+                                                                out_channels=out_channels,
+                                                                kernel_size=kernel_size,
+                                                                stride=stride,
+                                                                dilation=dilation,
+                                                                groups=groups,
+                                                                bias=bias)
+        elif not deconv:
             # Get padding
             padding = self.get_padding(kernel_size, dilation)
             self.conv = getattr(nn, 'Conv{}d'.format(self.dim))(in_channels=in_channels,
@@ -132,6 +140,27 @@ class ConvELU3D(ConvActivation):
                                         activation='ELU',
                                         initialization=OrthogonalWeightsZeroBias())
 
+class ValidConvELU2D(ConvActivation):
+    """2D Convolutional layer with 'VALID' padding, ELU and orthogonal weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        super(ValidConvELU2D, self).__init__(in_channels=in_channels,
+                                        out_channels=out_channels,
+                                        kernel_size=kernel_size,
+                                        dim=2,
+                                        activation='ELU',
+                                        valid_conv=True,
+                                        initialization=OrthogonalWeightsZeroBias())
+
+class ValidConvELU3D(ConvActivation):
+    """3D Convolutional layer with 'VALID' padding, ELU and orthogonal weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        super(ValidConvELU3D, self).__init__(in_channels=in_channels,
+                                        out_channels=out_channels,
+                                        kernel_size=kernel_size,
+                                        dim=3,
+                                        activation='ELU',
+                                        valid_conv=True,
+                                        initialization=OrthogonalWeightsZeroBias())
 
 class ConvSigmoid2D(ConvActivation):
     """2D Convolutional layer with 'SAME' padding, Sigmoid and orthogonal weight initialization."""
