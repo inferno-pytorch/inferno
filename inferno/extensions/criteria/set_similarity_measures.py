@@ -1,6 +1,5 @@
 import torch.nn as nn
 from ...utils.torch_utils import flatten_samples
-from torch.autograd import Variable
 
 __all__ = ['SorensenDiceLoss', 'GeneralizedDiceLoss']
 
@@ -53,11 +52,9 @@ class SorensenDiceLoss(nn.Module):
                 # With pytorch < 0.2, channelwise_loss.size = (C, 1).
                 if channelwise_loss.dim() == 2:
                     channelwise_loss = channelwise_loss.squeeze(1)
-                # Wrap weights in a variable
-                weight = Variable(self.weight, requires_grad=False)
-                assert weight.size() == channelwise_loss.size()
+                assert self.weight.size() == channelwise_loss.size()
                 # Apply weight
-                channelwise_loss = weight * channelwise_loss
+                channelwise_loss = self.weight * channelwise_loss
             # Sum over the channels to compute the total loss
             loss = channelwise_loss.sum()
         return loss
@@ -104,7 +101,7 @@ class GeneralizedDiceLoss(nn.Module):
         else:
             def flatten_and_preserve_channels(tensor):
                 tensor_dim = tensor.dim()
-                assert  tensor_dim >= 3
+                assert tensor_dim >= 3
                 num_channels = tensor.size(1)
                 num_classes = tensor.size(2)
                 # Permute the channel axis to first
@@ -131,10 +128,11 @@ class GeneralizedDiceLoss(nn.Module):
             if self.weight is not None:
                 if channelwise_loss.dim() == 2:
                     channelwise_loss = channelwise_loss.squeeze(1)
-                channel_weights = Variable(self.weight, requires_grad=False)
-                assert channel_weights.size() == channelwise_loss.size(), "`weight` should have shape (nb_channels, ), `target` should have shape (batch_size, nb_channels, nb_classes, ...)"
+                assert self.weight.size() == channelwise_loss.size(),\
+                    """`weight` should have shape (nb_channels, ),
+                       `target` should have shape (batch_size, nb_channels, nb_classes, ...)"""
                 # Apply channel weights:
-                channelwise_loss = channel_weights * channelwise_loss
+                channelwise_loss = self.weight * channelwise_loss
 
             loss = channelwise_loss.sum()
 

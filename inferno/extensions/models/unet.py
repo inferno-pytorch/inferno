@@ -119,6 +119,10 @@ class UNetBase(nn.Module):
         assert len(self.n_channels_per_output) == self._store_conv_down.count(True) + \
             self._store_conv_up.count(True) + int(self._store_conv_bottom)
 
+    def _get_num_channels(self, depth):
+        assert depth > 0
+        return self.in_channels * self.gain**depth
+
     def _init__downstream(self):
         conv_down_ops = []
         self._store_conv_down = []
@@ -126,7 +130,7 @@ class UNetBase(nn.Module):
         current_in_channels = self.in_channels
 
         for i in range(self.depth):
-            out_channels = current_in_channels * self.gain
+            out_channels = self._get_num_channels(i + 1)
             op, return_op_res = self.conv_op_factory(in_channels=current_in_channels,
                                                      out_channels=out_channels,
                                                      part='down', index=i)
@@ -138,7 +142,7 @@ class UNetBase(nn.Module):
                 self._store_conv_down.append(False)
 
             # increase the number of channels
-            current_in_channels *= self.gain
+            current_in_channels = out_channels
 
         # store as proper torch ModuleList
         self._conv_down_ops = nn.ModuleList(conv_down_ops)
@@ -147,9 +151,7 @@ class UNetBase(nn.Module):
 
     def _init__bottom(self):
 
-        conv_up_ops = []
-
-        current_in_channels = self.in_channels* self.gain**self.depth
+        current_in_channels = self._get_num_channels(self.depth)
 
         factory_res = self.conv_op_factory(in_channels=current_in_channels,
             out_channels=current_in_channels, part='bottom', index=0)
@@ -163,12 +165,12 @@ class UNetBase(nn.Module):
 
     def _init__upstream(self):
         conv_up_ops = []
-        current_in_channels = self.in_channels * self.gain**self.depth
+        current_in_channels = self._get_num_channels(self.depth)
 
         for i in range(self.depth):
             # the number of out channels (set to self.out_channels for last decoder)
-            out_channels = self.out_channels if i +1 == self.depth else\
-                current_in_channels // self.gain
+            out_channels = self.out_channels if i + 1 == self.depth else \
+                self._get_num_channels(self.depth - i - 1)
 
             # if not residual we concat which needs twice as many channels
             fac = 1 if self.residual else 2
@@ -186,7 +188,7 @@ class UNetBase(nn.Module):
                 self._store_conv_up.append(False)
 
             # decrease the number of input_channels
-            current_in_channels //= self.gain
+            current_in_channels = out_channels
 
         # store as proper torch ModuleLis
         self._conv_up_ops = nn.ModuleList(conv_up_ops)
@@ -310,15 +312,6 @@ class UNetBase(nn.Module):
     def upsample_op_factory(self, index):\
         return InfernoUpsample(**self._upsample_kwargs)
         #return nn.Upsample(**self._upsample_kwargs)
-
-    def pre_conv_op_regularizer_factory(self, in_channels, out_channels, part, index):
-            if self.use_dropout and in_channels > 2:
-                return self._channel_dropout_op(x)
-            else:
-                return Identity()
-
-    def post_conv_op_regularizer_factory(self, in_channels, out_channels, part, index):
-            return Identity()
 
     def conv_op_factory(self, in_channels, out_channels, part, index):
         raise NotImplementedError("conv_op_factory need to be implemented by deriving class")

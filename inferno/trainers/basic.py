@@ -2,8 +2,6 @@ from datetime import datetime
 from inspect import signature
 import os
 import shutil
-import contextlib
-import warnings
 
 # These are fetched from globals, they're not unused
 # noinspection PyUnresolvedReferences
@@ -14,7 +12,6 @@ import pickle
 
 import torch
 from numpy import inf
-from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torch.nn.parallel.data_parallel import data_parallel
 from .callbacks.logging.base import Logger
@@ -1140,7 +1137,8 @@ class Trainer(object):
             "Can not split batch if both the number of inputs and targets is not known."
         if num_inputs is None:
             # Unknown number of inputs
-            inputs, targets = batch[:-num_targets], batch[-num_targets:]
+            num_inputs = len(batch) - num_targets    #to allow for num_targets == 0
+            inputs, targets = batch[:num_inputs], batch[num_inputs:]
         elif num_targets is None:
             # Unknown number of targets
             inputs, targets = batch[:num_inputs], batch[num_inputs:]
@@ -1161,7 +1159,7 @@ class Trainer(object):
                                    for from_loader in of_loader})
         return self
 
-    def wrap_batch(self, batch, from_loader=None, requires_grad=False, volatile=False):
+    def wrap_batch(self, batch, from_loader=None, requires_grad=False):
         base_device_ordinal = \
             self._base_device_ordinal if hasattr(self, '_base_device_ordinal') else None
         # First, send to the right device
@@ -1179,36 +1177,28 @@ class Trainer(object):
             assert_(loader_spec is not None,
                     "No `loader_spec` found for loader key '{}'.".format(from_loader),
                     RuntimeError)
-            # Get number of targets
-            num_targets = loader_spec['num_targets']
+            num_inputs = loader_spec['num_inputs']
+            if num_inputs is None:
+                num_inputs = len(batch) - loader_spec['num_targets']
             # Fetch input batches and send'em to device (leave the targets alone)
-            inputs = batch[:-num_targets]
+            inputs = batch[:num_inputs]
             inputs = self.to_device(inputs)
             # Finally, build the batch
-            batch = inputs + batch[-num_targets:]
+            batch = inputs + batch[num_inputs:]
         else:
             raise ValueError("Internal Error: Invalid base_device_ordinal: {}."
                              .format(base_device_ordinal))
-        # Cast to the right dtype
+
+        # Cast to the right dtype and return
         batch = self.cast(batch)
-        # Second, wrap as variable
+        # Set gradients if required
         variable_batch = []
         for batch_num, _batch in enumerate(batch):
             if thu.is_tensor(_batch):
-                # This supresses the volatile deprecated warning
-                # TODO remove after Pytorch 1.0
-                with warnings.catch_warnings():
-                    warnings.simplefilter('ignore')
-                    variable_batch.append(Variable(_batch, requires_grad=requires_grad,
-                                                   volatile=volatile))
+                variable_batch.append(_batch.requires_grad_() if requires_grad else _batch)
             elif pyu.is_listlike(_batch):
-                # This supresses the volatile deprecated warning
-                # TODO remove after Pytorch 1.0
-                with warnings.catch_warnings():
-                    warnings.simplefilter('ignore')
-                    variable_batch.append([Variable(__batch, requires_grad=requires_grad,
-                                                    volatile=volatile)
-                                           for __batch in _batch])
+                variable_batch.append([__batch.requires_grad_() if requires_grad else __batch
+                                       for __batch in _batch])
             else:
                 raise RuntimeError(f"Was Expecting batch at index {batch_num} to be either a "
                                    f"tensor or a list of tensors. Got {type(_batch)} instead.")
@@ -1377,9 +1367,11 @@ class Trainer(object):
                 'trainer' in signature(self.criterion.forward).parameters):
             kwargs['trainer'] = self
         if mode == 'train':
-            loss = self.criterion(prediction, target, **kwargs)
+            loss = self.criterion(prediction, target, **kwargs) \
+                   if len(target) != 0  else self.criterion(prediction, **kwargs) 
         elif mode == 'eval':
-            loss = self.validation_criterion(prediction, target, **kwargs)
+            loss = self.validation_criterion(prediction, target, **kwargs) \
+                   if len(target) != 0  else self.validation_criterion(prediction, **kwargs)
         else:
             raise ValueError
         if backward:
@@ -1408,7 +1400,7 @@ class Trainer(object):
                 self.console.info("Breaking on request from callback.")
                 break
             self.console.progress("Training iteration {} (batch {} of epoch {})."
-                       .format(iteration_num, self._batch_count, self._epoch_count))
+                                  .format(iteration_num, self._batch_count, self._epoch_count))
             # Call callback
             self.callbacks.call(self.callbacks.BEGIN_OF_TRAINING_ITERATION,
                                 iteration_num=iteration_num)
@@ -1431,6 +1423,7 @@ class Trainer(object):
             # Compute metric
             if self.metric_is_defined and self.evaluate_metric_now:
                 self._last_metric_evaluated_at_epoch = self._epoch_count
+                # TODO Make unwrap a method for folks to overload
                 error = self.metric(thu.unwrap(prediction, to_cpu=False),
                                     thu.unwrap(target, to_cpu=False))
                 self.update_state('training_error', thu.unwrap(error))
@@ -1512,8 +1505,6 @@ class Trainer(object):
                             num_iterations_in_generator=len(self._loader_iters[loader_name]),
                             last_validated_at_epoch=self._last_validated_at_epoch)
 
-
-
         while True:
             if num_iterations is not None and iteration_num >= num_iterations:
                 break
@@ -1523,8 +1514,7 @@ class Trainer(object):
 
             try:
                 batch = self.fetch_next_batch(loader_name,
-                                              restart_exhausted_generators=
-                                              num_iterations is not None,
+                                              restart_exhausted_generators=num_iterations is not None,
                                               update_batch_count=False,
                                               update_epoch_count_if_generator_exhausted=False)
             except StopIteration:
@@ -1533,19 +1523,16 @@ class Trainer(object):
 
             self.console.progress("Validating iteration {}.".format(iteration_num))
 
-            no_grad = torch.no_grad if hasattr(torch, 'no_grad') else contextlib.suppress
             # Delay SIGINTs till after computation
-            with pyu.delayed_keyboard_interrupt(), no_grad():
+            with pyu.delayed_keyboard_interrupt(), torch.no_grad():
                 # Wrap
-                # FIXME The volatile=True is required for compatibility with older 0.3 code.
-                # FIXME Remove when support is deprecated.
-                batch = self.wrap_batch(batch, from_loader=loader_name, volatile=True)
+                batch = self.wrap_batch(batch, from_loader=loader_name)
                 # Separate
                 inputs, target = self.split_batch(batch, from_loader=loader_name)
                 # Apply model, compute loss
                 output, loss = self.apply_model_and_loss(inputs, target, backward=False,
                                                          mode='eval')
-            if isinstance(target, (list,tuple)):
+            if isinstance(target, (list, tuple)):
                 batch_size = target[0].size(self._target_batch_dim)
             else:
                 batch_size = target.size(self._target_batch_dim)
@@ -1589,8 +1576,8 @@ class Trainer(object):
 
         self.callbacks.call(self.callbacks.END_OF_VALIDATION_RUN,
                             validation_loss_meter=validation_loss_meter,
-                            validation_error_meter=
-                            validation_error_meter if self.metric_is_defined else None)
+                            validation_error_meter=validation_error_meter if
+                            self.metric_is_defined else None)
         return self
 
     def record_validation_results(self, validation_loss, validation_error):
