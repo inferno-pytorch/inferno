@@ -21,7 +21,7 @@ def unwrap(input_, to_cpu=True, as_numpy=False, extract_item=False):
     # Transfer to CPU if required
     if to_cpu:
         with delayed_keyboard_interrupt():
-            tensor = tensor.cpu()
+            tensor = tensor.cpu().detach()
     # Convert to numpy if required
     if as_numpy:
         return tensor.cpu().detach().numpy()
