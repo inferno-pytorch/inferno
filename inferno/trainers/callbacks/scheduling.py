@@ -393,3 +393,19 @@ class ManualLR(Callback):
             self.decay(global_factor)
 
 
+class SaveModelRegularly(Callback):
+    """saves the network weights in regular intervals"""
+
+    def __init__(self, frequency):
+        super().__init__()
+        self._save_every = Frequency.build_from(frequency)
+
+    @property
+    def save_now(self):
+        return self._save_every.match(iteration_count=self.trainer.iteration_count,
+                                      epoch_count=self.trainer.epoch_count,
+                                      persistent=True, match_zero=True)
+
+    def end_of_training_iteration(self, **_):
+        if self.save_now:
+            self.trainer.save_model()
