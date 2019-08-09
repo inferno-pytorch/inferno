@@ -186,25 +186,27 @@ class ConvSigmoid3D(ConvActivation):
 
 class DeconvELU2D(ConvActivation):
     """2D deconvolutional layer with ELU and orthogonal weight initialization."""
-    def __init__(self, in_channels, out_channels, kernel_size=2):
+    def __init__(self, in_channels, out_channels, kernel_size=2, stride=2):
         super(DeconvELU2D, self).__init__(in_channels=in_channels,
                                           out_channels=out_channels,
                                           kernel_size=kernel_size,
                                           dim=2,
                                           activation='ELU',
                                           deconv=True,
+                                          stride=stride,
                                           initialization=OrthogonalWeightsZeroBias())
 
 
 class DeconvELU3D(ConvActivation):
     """3D deconvolutional layer with ELU and orthogonal weight initialization."""
-    def __init__(self, in_channels, out_channels, kernel_size=2):
+    def __init__(self, in_channels, out_channels, kernel_size=2, stride=2):
         super(DeconvELU3D, self).__init__(in_channels=in_channels,
                                           out_channels=out_channels,
                                           kernel_size=kernel_size,
                                           dim=3,
                                           activation='ELU',
                                           deconv=True,
+                                          stride=2,
                                           initialization=OrthogonalWeightsZeroBias())
 
 
