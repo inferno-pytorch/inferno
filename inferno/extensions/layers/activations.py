@@ -20,7 +20,7 @@ class SELU(nn.Module):
 def get_activation(activation):
     # get the final output and activation activation
     if isinstance(activation, str):
-        activation_mod = getattr(nn, final_activation)()
+        activation_mod = getattr(nn, activation)()
     elif isinstance(activation, nn.Module):
         activation_mod = activation
     elif activation is None:
