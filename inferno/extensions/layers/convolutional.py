@@ -811,6 +811,78 @@ class BNReLUDepthwiseConv2D(_BNReLUSomeConv, ConvActivation):
                                                     initialization=KaimingNormalWeightsZeroBias(0))
         self.batchnorm = nn.BatchNorm2d(in_channels)
 
+
+
+class ConvSELU(ConvActivation):
+    """ND Convolutional layer with SELU activation and the appropriate weight initialization."""
+    def __init__(self, dim, in_channels, out_channels, kernel_size):
+        if hasattr(nn, 'SELU'):
+            # Pytorch 0.2: Use built in SELU
+            activation = nn.SELU(inplace=True)
+        else:
+            # Pytorch < 0.1.12: Use handmade SELU
+            activation = SELU()
+        super(ConvSELU, self).__init__(in_channels=in_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size,
+                                         dim=dim,
+                                         activation=activation,
+                                         initialization=SELUWeightsZeroBias())
+
+
+
+class ConvSELU1D(ConvActivation):
+    """1D Convolutional layer with SELU activation and the appropriate weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        if hasattr(nn, 'SELU'):
+            # Pytorch 0.2: Use built in SELU
+            activation = nn.SELU(inplace=True)
+        else:
+            # Pytorch < 0.1.12: Use handmade SELU
+            activation = SELU()
+        super(ConvSELU1D, self).__init__(in_channels=in_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size,
+                                         dim=1,
+                                         activation=activation,
+                                         initialization=SELUWeightsZeroBias())
+
+
+class ConvSELU2D(ConvActivation):
+    """2D Convolutional layer with SELU activation and the appropriate weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        if hasattr(nn, 'SELU'):
+            # Pytorch 0.2: Use built in SELU
+            activation = nn.SELU(inplace=True)
+        else:
+            # Pytorch < 0.1.12: Use handmade SELU
+            activation = SELU()
+        super(ConvSELU2D, self).__init__(in_channels=in_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size,
+                                         dim=2,
+                                         activation=activation,
+                                         initialization=SELUWeightsZeroBias())
+
+
+class ConvSELU3D(ConvActivation):
+    """3D Convolutional layer with SELU activation and the appropriate weight initialization."""
+    def __init__(self, in_channels, out_channels, kernel_size):
+        if hasattr(nn, 'SELU'):
+            # Pytorch 0.2: Use built in SELU
+            activation = nn.SELU(inplace=True)
+        else:
+            # Pytorch < 0.1.12: Use handmade SELU
+            activation = SELU()
+        super(ConvSELU3D, self).__init__(in_channels=in_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size,
+                                         dim=3,
+                                         activation=activation,
+                                         initialization=SELUWeightsZeroBias())
+
+
+
 class GlobalConv2D(nn.Module):
     """From https://arxiv.org/pdf/1703.02719.pdf
     Main idea: we can have a bigger kernel size computationally acceptable
