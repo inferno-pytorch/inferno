@@ -2,7 +2,7 @@ import torch.nn.functional as F
 import torch.nn as nn
 from ...utils.torch_utils import where
 
-__all__ = ['SELU']
+__all__ = ['SELU','get_activation']
 _all = __all__
 
 class SELU(nn.Module):
@@ -15,3 +15,16 @@ class SELU(nn.Module):
         scale = 1.0507009873554804934193349852946
         # noinspection PyTypeChecker
         return scale * where(x >= 0, x, alpha * F.elu(x))
+
+
+def get_activation(activation):
+    # get the final output and activation activation
+    if isinstance(activation, str):
+        activation_mod = getattr(nn, activation)()
+    elif isinstance(activation, nn.Module):
+        activation_mod = activation
+    elif activation is None:
+        activation_mod = None
+    else:
+        raise NotImplementedError("Activation of type %s is not supported" % type(activation))
+    return activation_mod
