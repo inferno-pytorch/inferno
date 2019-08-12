@@ -696,7 +696,7 @@ class BNReLUDilatedConv2D(_BNReLUSomeConv,ConvActivation):
 
 class BNReLUDeconv(_BNReLUSomeConv, ConvActivation):
     """
-    BN-ReLU-Deconv layer with He weight initialization and (default) stride 1.
+    BN-ReLU-Deconv layer with He weight initialization and (default) stride 2.
     """
     def __init__(self, dim, in_channels, out_channels, kernel_size, stride=2):
         super(BNReLUDeconv, self).__init__(in_channels=in_channels,
@@ -712,7 +712,7 @@ class BNReLUDeconv(_BNReLUSomeConv, ConvActivation):
 
 class BNReLUDeconv1D(_BNReLUSomeConv, ConvActivation):
     """
-    1D BN-ReLU-Deconv layer with He weight initialization and (default) stride 1.
+    1D BN-ReLU-Deconv layer with He weight initialization and (default) stride 2.
     """
     def __init__(self, in_channels, out_channels, kernel_size, stride=2):
         super(BNReLUDeconv1D, self).__init__(in_channels=in_channels,
