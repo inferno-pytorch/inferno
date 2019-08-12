@@ -300,7 +300,7 @@ class DeconvELU2D(ConvActivation):
                                           out_channels=out_channels,
                                           kernel_size=kernel_size,
                                           dim=2,
-                                          stride=stridem
+                                          stride=stride,
                                           activation='ELU',
                                           deconv=True,
                                           initialization=OrthogonalWeightsZeroBias())
