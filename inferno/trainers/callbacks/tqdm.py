@@ -58,6 +58,8 @@ class TQDMProgressBar(Callback):
             self.outer_bar = tqdm(total=max_num_epochs, position=0, dynamic_ncols=True)
         else:
             self.outer_bar = tqdm(total=1000, position=0, dynamic_ncols=True)
+
+        self.outer_bar.update(self.trainer._epoch_count)
         self.outer_bar.set_description("Epochs")
 
     def end_of_fit(self, **_):
