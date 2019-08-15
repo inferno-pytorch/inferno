@@ -3,18 +3,10 @@ language: python
 dist: xenial
 
 python:
-  - 3.6
   - 3.7
 
 env:
   - PYTORCH_CONDA="pytorch" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
-  - PYTORCH_CONDA="pytorch=0.4.1" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
-
-# exclude hanging build
-matrix:
-  exclude:
-    - python: 3.6
-      env: PYTORCH_CONDA="pytorch" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
 
 install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
