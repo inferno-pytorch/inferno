@@ -132,7 +132,9 @@ class TestInferno(unittest.TestCase):
             .bind_loader('train', self.train_loader)\
             .bind_loader('validate', self.validate_loader)
         # Go
+        trainer.pickle_module = 'dill'
         trainer.fit()
+
 
 
 if __name__ == '__main__':
