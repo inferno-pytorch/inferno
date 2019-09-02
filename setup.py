@@ -23,7 +23,9 @@ requirements = [
     "scipy>=0.13.0",
     "h5py",
     "numpy>=1.8",
-    "scikit-image"
+    "scikit-image",
+    "torchvision",
+    "tqdm"
 ]
 
 
