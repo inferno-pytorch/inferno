@@ -24,6 +24,7 @@ from ..extensions import metrics
 from ..extensions import optimizers
 from ..extensions import criteria
 from .callbacks import CallbackEngine
+from . tensorboard_summary_writer import TensorboardSummaryWriter
 from .callbacks import Console
 from ..utils.exceptions import assert_, NotSetError, NotTorchModuleError, DeviceError
 
@@ -782,6 +783,83 @@ class Trainer(object):
     def set_target_batch_dim(self, value):
         self.target_batch_dim = value
         return self
+
+
+    @staticmethod
+    def tensorboard_summary_writer():
+        return TensorboardSummaryWriter.instance()
+
+    def setup_tensorboard_summary_writer(self, 
+        add_audio_every = None,
+        add_custom_scalars_every = None,
+        add_custom_scalars_marginchart_every = None,
+        add_custom_scalars_multilinechart_every = None,
+        add_figure_every = None,
+        add_graph_every = None,
+        add_histogram_every = None,
+        add_histogram_raw_every = None,
+        add_hparams_every = None,
+        add_image_every = None,
+        add_mesh_every = None,
+        add_pr_curve_every = None,
+        add_pr_curve_raw_every = None,
+        add_scalar_every = None,
+        add_scalars_every = None,
+        add_text_every = None,
+        add_video_every = None,
+        add_embedding_every = None,
+        log_directory=None, 
+        **kwargs):
+
+        if log_directory is None:
+            log_directory = self._log_directory
+
+        if log_directory is not None:
+            kwargs['logdir'] = log_directory
+
+        instance = Trainer.tensorboard_summary_writer()
+        instance.setup(trainer=self, **kwargs)
+
+        if add_audio_every is not None:
+            instance.add_audio_every(add_audio_every)
+        if add_custom_scalars_every is not None:
+            instance.add_custom_scalars_every(add_custom_scalars_every)
+        if add_custom_scalars_marginchart_every is not None:
+            instance.add_custom_scalars_marginchart_every(add_custom_scalars_marginchart_every)
+        if add_custom_scalars_multilinechart_every is not None:
+            instance.add_custom_scalars_multilinechart_every(add_custom_scalars_multilinechart_every)
+        if add_figure_every is not None:
+            instance.add_figure_every(add_figure_every)
+        if add_graph_every is not None:
+            instance.add_graph_every(add_graph_every)
+        if add_histogram_every is not None:
+            instance.add_histogram_every(add_histogram_every)
+        if add_histogram_raw_every is not None:
+            instance.add_histogram_raw_every(add_histogram_raw_every)
+        if add_hparams_every is not None:
+            instance.add_hparams_every(add_hparams_every)
+        if add_image_every is not None:
+            instance.add_image_every(add_image_every)
+        if add_mesh_every is not None:
+            instance.add_mesh_every(add_mesh_every)
+        if add_pr_curve_every is not None:
+            instance.add_pr_curve_every(add_pr_curve_every)
+        if add_pr_curve_raw_every is not None:
+            instance.add_pr_curve_raw_every(add_pr_curve_raw_every)
+        if add_scalar_every is not None:
+            instance.add_scalar_every(add_scalar_every)
+        if add_scalars_every is not None:
+            instance.add_scalars_every(add_scalars_every)
+        if add_text_every is not None:
+            instance.add_text_every(add_text_every)
+        if add_video_every is not None:
+            instance.add_video_every(add_video_every)
+        if add_embedding_every is not None:
+            instance.add_embedding_every(add_embedding_every)
+
+       
+         
+
 
     def build_logger(self, logger=None, log_directory=None, **kwargs):
         """
