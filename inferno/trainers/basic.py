@@ -27,6 +27,14 @@ from .callbacks import CallbackEngine
 from .callbacks import Console
 from ..utils.exceptions import assert_, NotSetError, NotTorchModuleError, DeviceError
 
+# NOTE for distributed training, we might also need
+# from apex.parallel import DistributedDataParallel as DDP
+# but I don't know where exactly to put it.
+try:
+    from apex import amp
+except ImportError:
+    amp = None
+
 
 class Trainer(object):
     """A basic trainer.
@@ -126,9 +134,41 @@ class Trainer(object):
         # Print console
         self._console = Console()
 
+        # Train with mixed precision, only works
+        # if we have apex
+        self._mixed_precision = False
+        self._apex_opt_level = 'O1'
+
         # Public
         if model is not None:
             self.model = model
+
+    @property
+    def mixed_precision(self):
+        return self._mixed_precision
+
+    # this needs to be called after model and optimizer are set
+    @mixed_precision.setter
+    def mixed_precision(self, mp):
+        if mp:
+            assert_(amp is not None, "Cannot use mixed precision training without apex library", RuntimeError)
+            assert_(self.model is not None and self._optimizer is not None,
+                    "Model and optimizer need to be set before activating mixed precision", RuntimeError)
+            # For now, we don't allow to set 'keep_batchnorm' and 'loss_scale'
+            self.model, self._optimizer = amp.initialize(self.model, self._optimizer,
+                                                         opt_level=self._apex_opt_level,
+                                                         keep_batchnorm_fp32=None)
+        self._mixed_precision = mp
+
+    @property
+    def apex_opt_level(self):
+        return self._apex_opt_level
+
+    @apex_opt_level.setter
+    def apex_opt_level(self, opt_level):
+        assert_(opt_level in ('O0', 'O1', 'O2', 'O3'),
+                "Invalid optimization level", ValueError)
+        self._apex_opt_level = opt_level
 
     @property
     def console(self):
@@ -1368,17 +1408,21 @@ class Trainer(object):
             kwargs['trainer'] = self
         if mode == 'train':
             loss = self.criterion(prediction, target, **kwargs) \
-                   if len(target) != 0  else self.criterion(prediction, **kwargs)
+                   if len(target) != 0 else self.criterion(prediction, **kwargs)
         elif mode == 'eval':
             loss = self.validation_criterion(prediction, target, **kwargs) \
-                   if len(target) != 0  else self.validation_criterion(prediction, **kwargs)
+                   if len(target) != 0 else self.validation_criterion(prediction, **kwargs)
         else:
             raise ValueError
         if backward:
             # Backprop if required
             # retain_graph option is needed for some custom
             # loss functions like malis, False per default
-            loss.backward(retain_graph=self.retain_graph)
+            if self.mixed_precision:
+                with amp.scale_loss(loss, self.optimizer) as scaled_loss:
+                    scaled_loss.backward(retain_graph=self.retain_graph)
+            else:
+                loss.backward(retain_graph=self.retain_graph)
         return prediction, loss
 
     def train_for(self, num_iterations=None, break_callback=None):
