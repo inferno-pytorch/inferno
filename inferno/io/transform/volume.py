@@ -63,6 +63,7 @@ class RandomRot3D(Transform):
         return volume
 
 
+# TODO this is obsolete
 class AdditiveRandomNoise3D(Transform):
     """ Add gaussian noise to 3d volume
 
@@ -105,7 +106,7 @@ class AdditiveNoise(Transform):
         self.sigma = sigma
 
     # TODO check if volume is tensor and use torch functions in that case
-    def volume_function(self, volume):
+    def tensor_function(self, volume):
         volume += np.random.normal(loc=0, scale=self.sigma, size=volume.shape)
         return volume
 

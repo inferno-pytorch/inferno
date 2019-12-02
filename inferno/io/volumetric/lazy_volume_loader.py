@@ -231,7 +231,7 @@ class LazyVolumeLoader(LazyVolumeLoaderBase):
             assert os.path.exists(path), path
             self.path = path
         else:
-            raise NotImplementedError
+            raise NotImplementedError("Not implemented for type %s" % type(path))
 
         if isinstance(path_in_file, dict):
             assert name is not None

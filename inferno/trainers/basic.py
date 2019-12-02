@@ -1368,7 +1368,7 @@ class Trainer(object):
             kwargs['trainer'] = self
         if mode == 'train':
             loss = self.criterion(prediction, target, **kwargs) \
-                   if len(target) != 0  else self.criterion(prediction, **kwargs) 
+                   if len(target) != 0  else self.criterion(prediction, **kwargs)
         elif mode == 'eval':
             loss = self.validation_criterion(prediction, target, **kwargs) \
                    if len(target) != 0  else self.validation_criterion(prediction, **kwargs)
@@ -1676,7 +1676,7 @@ class Trainer(object):
             'best_checkpoint.pytorch'.
         filename : str
             Overrides the default filename.
-        device : function, torch.device, string or a dict
+        map_location : function, torch.device, string or a dict
             Specify how to remap storage locations.
 
         Returns

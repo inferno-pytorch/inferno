@@ -596,5 +596,5 @@ class RandomScaleSegmentation(Transform):
                 pad_r = image_shape - new_shape - pad_l
                 padding = [(0,0)] + list(zip(pad_l, pad_r))
                 img = np.pad(img, padding, 'constant', constant_values=self.pad_const)
-                seg = np.pad(seg, padding, 'constant', constant_values=self.pad_const)     
+                seg = np.pad(seg, padding, 'constant', constant_values=self.pad_const)
         return img, seg

@@ -80,6 +80,8 @@ class Transform(object):
     # noinspection PyUnresolvedReferences
     def _apply_image_function(self, tensor, **transform_function_kwargs):
         assert pyu.has_callable_attr(self, 'image_function')
+        if isinstance(tensor, list):
+            return [self._apply_image_function(tens) for tens in tensor]
         # 2D case
         if tensor.ndim == 4:
             return np.array([np.array([self.image_function(image, **transform_function_kwargs)
@@ -106,6 +108,8 @@ class Transform(object):
     # noinspection PyUnresolvedReferences
     def _apply_volume_function(self, tensor, **transform_function_kwargs):
         assert pyu.has_callable_attr(self, 'volume_function')
+        if isinstance(tensor, list):
+            return [self._apply_volume_function(tens) for tens in tensor]
         # 3D case
         if tensor.ndim == 5:
             # tensor is bczyx
@@ -125,7 +129,7 @@ class Transform(object):
             # We're applying the volume function on the volume itself
             return self.volume_function(tensor, **transform_function_kwargs)
         else:
-            raise NotImplementedError
+            raise NotImplementedError("Volume function not implemented for ndim %i" % tensor.ndim)
 
 
 class Compose(object):
