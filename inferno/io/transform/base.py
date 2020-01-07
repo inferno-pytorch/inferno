@@ -58,7 +58,7 @@ class Transform(object):
             transformed = self.batch_function(tensors, **transform_function_kwargs)
             return pyu.from_iterable(transformed)
         elif hasattr(self, 'tensor_function'):
-            transformed = [self.tensor_function(tensor, **transform_function_kwargs)
+            transformed = [self._apply_tensor_function(tensor, **transform_function_kwargs)
                            if tensor_index in apply_to else tensor
                            for tensor_index, tensor in enumerate(tensors)]
             return pyu.from_iterable(transformed)
@@ -76,6 +76,12 @@ class Transform(object):
             return pyu.from_iterable(transformed)
         else:
             raise NotImplementedError
+
+    # noinspection PyUnresolvedReferences
+    def _apply_tensor_function(self, tensor, **transform_function_kwargs):
+        if isinstance(tensor, list):
+            return [self._apply_tensor_function(tens) for tens in tensor]
+        return self.tensor_function(tensor)
 
     # noinspection PyUnresolvedReferences
     def _apply_image_function(self, tensor, **transform_function_kwargs):

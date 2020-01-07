@@ -154,6 +154,8 @@ class Trainer(object):
             assert_(amp is not None, "Cannot use mixed precision training without apex library", RuntimeError)
             assert_(self.model is not None and self._optimizer is not None,
                     "Model and optimizer need to be set before activating mixed precision", RuntimeError)
+            # in order to support BCE loss
+            amp.register_float_function(torch, 'sigmoid')
             # For now, we don't allow to set 'keep_batchnorm' and 'loss_scale'
             self.model, self._optimizer = amp.initialize(self.model, self._optimizer,
                                                          opt_level=self._apex_opt_level,
