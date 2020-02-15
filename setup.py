@@ -34,10 +34,10 @@ setup_requirements = [
 ]
 
 test_requirements = [
-    'pytest','unittest'
+    'pytest', 'unittest'
 ]
 
-dependency_links  = [
+dependency_links = [
     'http://download.pytorch.org/whl/cu75/torch-0.2.0.post1-cp35-cp35m-manylinux1_x86_64.whl#egg=torch-0.2.0'
 ]
 
@@ -48,8 +48,10 @@ setup(
     long_description=readme + '\n\n' + history,
     author="Nasim Rahaman",
     author_email='nasim.rahaman@iwr.uni-heidelberg.de',
-    url='https://github.com/nasimrahaman/inferno',
-    packages=find_packages(where='.',exclude=["*.tests", "*.tests.*", "tests.*", "tests","__pycache__","*.pyc"]),
+    url='https://github.com/inferno-pytorch/inferno',
+    packages=find_packages(where='.', exclude=["*.tests", "*.tests.*",
+                                               "tests.*", "tests",
+                                               "__pycache__", "*.pyc"]),
     dependency_links=dependency_links,
     include_package_data=True,
     install_requires=requirements,
