@@ -130,7 +130,7 @@ class Graph(nn.Module):
         -------
         bool
         """
-        return name in self.graph.node
+        return name in self.graph.nodes
 
     def is_source_node(self, name):
         """
@@ -187,7 +187,7 @@ class Graph(nn.Module):
         list
             A list of names (str) of the output nodes.
         """
-        return [name for name, node_attributes in self.graph.node.items()
+        return [name for name, node_attributes in self.graph.nodes.items()
                 if node_attributes.get('is_output_node', False)]
 
     @property
@@ -201,7 +201,7 @@ class Graph(nn.Module):
         list
             A list of names (str) of the input nodes.
         """
-        return [name for name, node_attributes in self.graph.node.items()
+        return [name for name, node_attributes in self.graph.nodes.items()
                 if node_attributes.get('is_input_node', False)]
 
     @property

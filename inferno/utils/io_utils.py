@@ -49,7 +49,7 @@ def yaml2dict(path):
         # Forgivable mistake that path is a dict already
         return path
     with open(path, 'r') as f:
-        readict = yaml.load(f)
+        readict = yaml.load(f, Loader=yaml.FullLoader)
     return readict
 
 

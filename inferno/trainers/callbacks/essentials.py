@@ -277,9 +277,10 @@ class GradientClip(Callback):
     def after_model_and_loss_is_applied(self, **_):
         tu.clip_gradients_(self.trainer.model.parameters(), self.mode, self.norm_or_value)
 
+
 class GarbageCollection(Callback):
     """
-    Callback that triggers garbage collection at the end of every 
+    Callback that triggers garbage collection at the end of every
     training iteration in order to reduce the memory footprint of training
     """
 

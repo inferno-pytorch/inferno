@@ -42,12 +42,13 @@ def slidingwindowslices(shape, window_size, strides,
     # otherwise predict the whole volume
     if dataslice is not None:
         assert len(dataslice) == dim, "Dataslice must be a tuple with len = data dimension."
-        starts = [sl.start for sl in dataslice]
-        stops  = [sl.stop - wsize for sl, wsize in zip(dataslice, window_size)]
+        starts = [0 if sl.start is None else sl.start for sl in dataslice]
+        stops = [sh - wsize if sl.stop is None else sl.stop - wsize
+                 for sl, wsize, sh in zip(dataslice, window_size, shape)]
     else:
         starts = dim * [0]
-        stops  = [dimsize - wsize if wsize != dimsize else dimsize
-                  for dimsize, wsize in zip(shape, window_size)]
+        stops = [dimsize - wsize if wsize != dimsize else dimsize
+                 for dimsize, wsize in zip(shape, window_size)]
 
     assert all(stp > strt for strt, stp in zip(starts, stops)),\
         "%s, %s" % (str(starts), str(stops))
@@ -128,7 +129,7 @@ def slidingwindowslices_depr(shape, nhoodsize, stride=1, ds=1, window=None, igno
     nslices = [_1Dwindow(startmin, startmax, nhoodsiz, st, dsample, datalen, shuffle) if windowspec == 'x'
                else [slice(ws, ws + 1) for ws in _to_list(windowspec)]
                for startmin, startmax, datalen, nhoodsiz, st, windowspec, dsample in zip(startmins, startmaxs, shape,
-                                                                                nhoodsize, stride, window, ds)]
+                                                                                         nhoodsize, stride, window, ds)]
 
     return it.product(*nslices)
 

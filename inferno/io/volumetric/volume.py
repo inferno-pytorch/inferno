@@ -100,6 +100,7 @@ class VolumeLoader(SyncableDataset):
             assert_(all(isinstance(pad, (int, tuple, list)) for pad in self.padding),\
                 "Expect int or iterable", TypeError)
             self.padding = [[pad, pad] if isinstance(pad, int) else pad for pad in self.padding]
+            print(self.volume.shape)
             self.volume = np.pad(self.volume,
                                  pad_width=self.padding,
                                  mode=self.padding_mode)
@@ -228,7 +229,7 @@ class HDF5VolumeLoader(VolumeLoader):
         if self.data_slice is not None and slicing_config_for_name.get('is_multichannel', False):
             self.data_slice = (slice(None),) + self.data_slice
 
-        assert 'window_size' in slicing_config_for_name
+        assert 'window_size' in slicing_config_for_name, str(slicing_config_for_name)
         assert 'stride' in slicing_config_for_name
 
         # Read in volume from file (can be hdf5, n5 or zarr)
