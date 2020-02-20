@@ -9,9 +9,11 @@ Inferno
 .. image:: https://travis-ci.org/inferno-pytorch/inferno.svg?branch=master
         :target: https://travis-ci.org/inferno-pytorch/inferno
 
-.. image:: https://readthedocs.org/projects/inferno-pytorch/badge/?version=latest
-        :target: http://inferno-pytorch.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+..
+  TODO new docs shield goes here, see https://github.com/inferno-pytorch/inferno/issues/139
+  .. image:: https://readthedocs.org/projects/inferno-pytorch/badge/?version=latest
+          :target: http://inferno-pytorch.readthedocs.io/en/latest/?badge=latest
+          :alt: Documentation Status
 
 
 .. image:: http://svgshare.com/i/2j7.svg
