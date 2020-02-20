@@ -22,7 +22,7 @@ Inferno
 
 Inferno is a little library providing utilities and convenience functions/classes around 
 `PyTorch <https://github.com/pytorch/pytorch>`_. 
-It's a work-in-progress, but the latest release (0.3.1) should be fairly stable! 
+It's a work-in-progress, but the releases from v0.4 on should be fairly stable! 
 
 
 
