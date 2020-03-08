@@ -9,9 +9,11 @@ Inferno
 .. image:: https://travis-ci.org/inferno-pytorch/inferno.svg?branch=master
         :target: https://travis-ci.org/inferno-pytorch/inferno
 
-.. image:: https://readthedocs.org/projects/inferno-pytorch/badge/?version=latest
-        :target: http://inferno-pytorch.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+..
+  TODO new docs shield goes here, see https://github.com/inferno-pytorch/inferno/issues/139
+  .. image:: https://readthedocs.org/projects/inferno-pytorch/badge/?version=latest
+          :target: http://inferno-pytorch.readthedocs.io/en/latest/?badge=latest
+          :alt: Documentation Status
 
 
 .. image:: http://svgshare.com/i/2j7.svg
@@ -22,7 +24,7 @@ Inferno
 
 Inferno is a little library providing utilities and convenience functions/classes around 
 `PyTorch <https://github.com/pytorch/pytorch>`_. 
-It's a work-in-progress, but the latest release (0.3.1) should be fairly stable! 
+It's a work-in-progress, but the releases from v0.4 on should be fairly stable! 
 
 
 
