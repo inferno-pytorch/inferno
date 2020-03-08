@@ -100,7 +100,6 @@ class VolumeLoader(SyncableDataset):
             assert_(all(isinstance(pad, (int, tuple, list)) for pad in self.padding),\
                 "Expect int or iterable", TypeError)
             self.padding = [[pad, pad] if isinstance(pad, int) else pad for pad in self.padding]
-            print(self.volume.shape)
             self.volume = np.pad(self.volume,
                                  pad_width=self.padding,
                                  mode=self.padding_mode)

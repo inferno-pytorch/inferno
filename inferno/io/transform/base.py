@@ -135,7 +135,8 @@ class Transform(object):
             # We're applying the volume function on the volume itself
             return self.volume_function(tensor, **transform_function_kwargs)
         else:
-            raise NotImplementedError("Volume function not implemented for ndim %i" % tensor.ndim)
+            cname = self.__class__.__name__
+            raise NotImplementedError("Volume function not implemented for ndim %i called in %s" % (tensor.ndim, cname))
 
 
 class Compose(object):
