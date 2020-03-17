@@ -66,6 +66,7 @@ class Trainer(object):
         self._optimizer = None
         self._criterion = None
         self._retain_graph = False
+        self._backprop_every = 1
 
         # Metric evaluation
         self._metric = None
@@ -261,6 +262,32 @@ class Trainer(object):
     def retain_graph(self, value):
         assert isinstance(value, bool)
         self._retain_graph = value
+
+    @property
+    def backprop_every(self):
+        return self._backprop_every
+
+    @backprop_every.setter
+    def backprop_every(self, value):
+        self.set_backprop_every(value)
+
+    def set_backprop_every(self, num_steps):
+        """
+        Set frequency of backpropagation.
+        To use in cases of small batch sizes.
+
+        Parameters
+        ----------
+        num_steps : number of steps (iterations/batches) to backprop after
+
+        Returns
+        -------
+        Trainer
+            self
+        """
+        assert isinstance(num_steps, int)
+        self._backprop_every = num_steps
+        return self
 
     @property
     def optimizer(self):
@@ -1450,8 +1477,6 @@ class Trainer(object):
             # Call callback
             self.callbacks.call(self.callbacks.BEGIN_OF_TRAINING_ITERATION,
                                 iteration_num=iteration_num)
-            # Zero out the grads
-            self.optimizer.zero_grad()
             # No interrupts while computing - a SIGINT could shoot down the driver if
             # done at the wrong time. Not sure if this has something to do with pinned memory
             with pyu.delayed_keyboard_interrupt():
@@ -1482,8 +1507,11 @@ class Trainer(object):
             self.update_state('training_loss', thu.unwrap(loss))
             # Update state from model's state hooks
             self.update_state_from_model_state_hooks()
-            # Update parameters
-            self.optimizer.step()
+            if iteration_num % self.backprop_every == 0:
+               # Update parameters
+                self.optimizer.step()
+                # Zero out the grads
+                self.optimizer.zero_grad()
             # Call callback
             self.callbacks.call(self.callbacks.END_OF_TRAINING_ITERATION,
                                 iteration_num=iteration_num)
