@@ -1,8 +1,11 @@
 from torch.utils.data.dataset import Dataset
+import torch.multiprocessing as mp
+import numpy as np
 from . import data_utils as du
 from .base import SyncableDataset
 from ...utils.exceptions import assert_
 from ...utils import python_utils as pyu
+import random
 
 
 class Zip(SyncableDataset):
@@ -10,6 +13,7 @@ class Zip(SyncableDataset):
     Zip two or more datasets to one dataset. If the datasets implement synchronization primitives,
     they are all synchronized with the first dataset.
     """
+
     def __init__(self, *datasets, sync=False, transforms=None):
         super(Zip, self).__init__()
         assert_(len(datasets) >= 1, "Expecting one or more datasets, got none.", ValueError)
@@ -77,8 +81,10 @@ class ZipReject(Zip):
     Extends `Zip` by the functionality of rejecting samples that don't fulfill
     a specified rejection criterion.
     """
+
     def __init__(self, *datasets, sync=False, transforms=None,
-                 rejection_dataset_indices, rejection_criterion):
+                 rejection_dataset_indices, rejection_criterion,
+                 random_jump_after_reject=True):
         """
         Parameters
         ----------
@@ -98,6 +104,8 @@ class ZipReject(Zip):
             `rejection_dataset_indices` if the latter is a list, and 1 otherwise. Note that
             the order of the inputs to the `rejection_criterion` is the same as the order of
             the indices in `rejection_dataset_indices`.
+        random_jump_after_reject: bool
+            Whether to try a random index or the rejected index incremented by one after rejection.
         """
         super(ZipReject, self).__init__(*datasets, sync=sync, transforms=transforms)
         for rejection_dataset_index in pyu.to_iterable(rejection_dataset_indices):
@@ -110,7 +118,37 @@ class ZipReject(Zip):
         assert_(callable(rejection_criterion),
                 "Rejection criterion is not callable as it should be.",
                 TypeError)
-        self.rejection_criterion = rejection_criterion  # return true if fetched should be rejected
+        # return true if fetched should be rejected
+        self.rejection_criterion = rejection_criterion
+        # Array shared over processes to keep track of which indices have been rejected
+        self.rejected = mp.Array('b', len(self))
+        self.available_indices = None
+        # optional index mapping to exclude rejected indices, reducing dataset size (see remove_rejected())
+        self.index_mapping = None
+
+        self.random_jump_after_reject = random_jump_after_reject
+
+    def remove_rejected(self):
+        # remove the indices belonging to samples that were rejected from the dataset
+        # this changes the length of the dataset
+        rejected = np.array(self.rejected[:])
+        self.index_mapping = np.argwhere(1 - rejected)[:, 0]
+        self.rejected = mp.Array('b', len(self))
+        # just in case of num_workers == 0
+        self.available_indices = None
+
+    def __len__(self):
+        if hasattr(self, 'index_mapping') and self.index_mapping is not None:
+            return len(self.index_mapping)
+        else:
+
+            return super(ZipReject, self).__len__()
+
+    def next_index_to_try(self, index):
+        if self.random_jump_after_reject:
+            return np.random.randint(len(self))
+        else:
+            return (index + 1) % len(self)
 
     def fetch_from_rejection_datasets(self, index):
         rejection_fetched = [self.datasets[rejection_dataset_index][index]
@@ -124,33 +162,55 @@ class ZipReject(Zip):
         # if we have a rejection dataset, check if the rejection criterion is fulfilled
         # and update the index
         if self.rejection_dataset_indices is not None:
-            # we only fetch the dataset which has the rejection criterion
-            # and only fetch all datasets when a valid index is found
-            rejection_fetched = self.fetch_from_rejection_datasets(index_)
-            num_fetch_attempts = 0
-            while self.rejection_criterion(*rejection_fetched):
-                index_ = (index_ + 1) % len(self)
-                rejection_fetched = self.fetch_from_rejection_datasets(index_)
-                num_fetch_attempts += 1
-                if num_fetch_attempts >= len(self):
+            # at the start of each epoch, compute the available indices from the shared variable
+            if self.available_indices is None:
+                self.available_indices = set(np.argwhere(1 - np.array(self.rejected[:]))[:, 0])
+
+            reject = True
+            while reject:
+                # check if there are no potentially valid indices left
+                if not self.available_indices:
                     raise RuntimeError("ZipReject: No valid batch was found!")
+
+                # check if this index was marked as rejected before
+                if index_ not in self.available_indices:
+                    index_ = self.next_index_to_try(index_)
+                    continue
+                # check if this index was marked as rejected in any process
+                if self.rejected[index_]:
+                    self.available_indices.remove(index_)
+                    continue
+
+                # map the index, if an index_mapping has been defined (see remove_rejected())
+                mapped_index_ = index_ if self.index_mapping is None else self.index_mapping[index_]
+                # we only fetch the dataset which has the rejection criterion
+                # and only fetch all datasets when a valid index is found
+                rejection_fetched = self.fetch_from_rejection_datasets(mapped_index_)
+                # check if this batch is to be rejected
+                reject = self.rejection_criterion(*rejection_fetched)
+
+                # if so, increase the index and add it
+                if reject:
+                    self.rejected[index_] = True
+                    self.available_indices.remove(index_)
+
             # fetch all other datasets and concatenate them with the valid rejection_fetch
             fetched = []
             for dataset_index, dataset in enumerate(self.datasets):
                 if dataset_index in self.rejection_dataset_indices:
                     # Find the index in `rejection_fetched` corresponding to this dataset_index
-                    index_in_rejection_fetched = \
-                        self.rejection_dataset_indices.index(dataset_index)
+                    index_in_rejection_fetched = self.rejection_dataset_indices.index(dataset_index)
                     # ... and append to fetched
                     fetched.append(rejection_fetched[index_in_rejection_fetched])
                 else:
                     # Fetch and append to fetched
-                    fetched.append(dataset[index_])
+                    fetched.append(dataset[mapped_index_])
         else:
-            fetched = [dataset[index_] for dataset in self.datasets]
+            # map the index, if an index_mapping has been defined (see remove_rejected())
+            mapped_index_ = index_ if self.index_mapping is None else self.index_mapping[index_]
+            fetched = [dataset[mapped_index_] for dataset in self.datasets]
         # apply transforms if present
         if self.transforms is not None:
             assert_(callable(self.transforms), "`self.transforms` is not callable.", TypeError)
             fetched = self.transforms(*fetched)
         return fetched
-
