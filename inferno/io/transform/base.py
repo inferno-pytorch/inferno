@@ -58,7 +58,7 @@ class Transform(object):
             transformed = self.batch_function(tensors, **transform_function_kwargs)
             return pyu.from_iterable(transformed)
         elif hasattr(self, 'tensor_function'):
-            transformed = [self.tensor_function(tensor, **transform_function_kwargs)
+            transformed = [self._apply_tensor_function(tensor, **transform_function_kwargs)
                            if tensor_index in apply_to else tensor
                            for tensor_index, tensor in enumerate(tensors)]
             return pyu.from_iterable(transformed)
@@ -78,8 +78,16 @@ class Transform(object):
             raise NotImplementedError
 
     # noinspection PyUnresolvedReferences
+    def _apply_tensor_function(self, tensor, **transform_function_kwargs):
+        if isinstance(tensor, list):
+            return [self._apply_tensor_function(tens) for tens in tensor]
+        return self.tensor_function(tensor)
+
+    # noinspection PyUnresolvedReferences
     def _apply_image_function(self, tensor, **transform_function_kwargs):
         assert pyu.has_callable_attr(self, 'image_function')
+        if isinstance(tensor, list):
+            return [self._apply_image_function(tens) for tens in tensor]
         # 2D case
         if tensor.ndim == 4:
             return np.array([np.array([self.image_function(image, **transform_function_kwargs)
@@ -106,6 +114,8 @@ class Transform(object):
     # noinspection PyUnresolvedReferences
     def _apply_volume_function(self, tensor, **transform_function_kwargs):
         assert pyu.has_callable_attr(self, 'volume_function')
+        if isinstance(tensor, list):
+            return [self._apply_volume_function(tens) for tens in tensor]
         # 3D case
         if tensor.ndim == 5:
             # tensor is bczyx
@@ -125,7 +135,8 @@ class Transform(object):
             # We're applying the volume function on the volume itself
             return self.volume_function(tensor, **transform_function_kwargs)
         else:
-            raise NotImplementedError
+            cname = self.__class__.__name__
+            raise NotImplementedError("Volume function not implemented for ndim %i called in %s" % (tensor.ndim, cname))
 
 
 class Compose(object):

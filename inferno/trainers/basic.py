@@ -27,6 +27,14 @@ from .callbacks import CallbackEngine
 from .callbacks import Console
 from ..utils.exceptions import assert_, NotSetError, NotTorchModuleError, DeviceError
 
+# NOTE for distributed training, we might also need
+# from apex.parallel import DistributedDataParallel as DDP
+# but I don't know where exactly to put it.
+try:
+    from apex import amp
+except ImportError:
+    amp = None
+
 
 class Trainer(object):
     """A basic trainer.
@@ -58,6 +66,7 @@ class Trainer(object):
         self._optimizer = None
         self._criterion = None
         self._retain_graph = False
+        self._backprop_every = 1
 
         # Metric evaluation
         self._metric = None
@@ -126,9 +135,43 @@ class Trainer(object):
         # Print console
         self._console = Console()
 
+        # Train with mixed precision, only works
+        # if we have apex
+        self._mixed_precision = False
+        self._apex_opt_level = 'O1'
+
         # Public
         if model is not None:
             self.model = model
+
+    @property
+    def mixed_precision(self):
+        return self._mixed_precision
+
+    # this needs to be called after model and optimizer are set
+    @mixed_precision.setter
+    def mixed_precision(self, mp):
+        if mp:
+            assert_(amp is not None, "Cannot use mixed precision training without apex library", RuntimeError)
+            assert_(self.model is not None and self._optimizer is not None,
+                    "Model and optimizer need to be set before activating mixed precision", RuntimeError)
+            # in order to support BCE loss
+            amp.register_float_function(torch, 'sigmoid')
+            # For now, we don't allow to set 'keep_batchnorm' and 'loss_scale'
+            self.model, self._optimizer = amp.initialize(self.model, self._optimizer,
+                                                         opt_level=self._apex_opt_level,
+                                                         keep_batchnorm_fp32=None)
+        self._mixed_precision = mp
+
+    @property
+    def apex_opt_level(self):
+        return self._apex_opt_level
+
+    @apex_opt_level.setter
+    def apex_opt_level(self, opt_level):
+        assert_(opt_level in ('O0', 'O1', 'O2', 'O3'),
+                "Invalid optimization level", ValueError)
+        self._apex_opt_level = opt_level
 
     @property
     def console(self):
@@ -219,6 +262,32 @@ class Trainer(object):
     def retain_graph(self, value):
         assert isinstance(value, bool)
         self._retain_graph = value
+
+    @property
+    def backprop_every(self):
+        return self._backprop_every
+
+    @backprop_every.setter
+    def backprop_every(self, value):
+        self.set_backprop_every(value)
+
+    def set_backprop_every(self, num_steps):
+        """
+        Set frequency of backpropagation.
+        To use in cases of small batch sizes.
+
+        Parameters
+        ----------
+        num_steps : number of steps (iterations/batches) to backprop after
+
+        Returns
+        -------
+        Trainer
+            self
+        """
+        assert isinstance(num_steps, int)
+        self._backprop_every = num_steps
+        return self
 
     @property
     def optimizer(self):
@@ -1368,17 +1437,21 @@ class Trainer(object):
             kwargs['trainer'] = self
         if mode == 'train':
             loss = self.criterion(prediction, target, **kwargs) \
-                   if len(target) != 0  else self.criterion(prediction, **kwargs) 
+                   if len(target) != 0 else self.criterion(prediction, **kwargs)
         elif mode == 'eval':
             loss = self.validation_criterion(prediction, target, **kwargs) \
-                   if len(target) != 0  else self.validation_criterion(prediction, **kwargs)
+                   if len(target) != 0 else self.validation_criterion(prediction, **kwargs)
         else:
             raise ValueError
         if backward:
             # Backprop if required
             # retain_graph option is needed for some custom
             # loss functions like malis, False per default
-            loss.backward(retain_graph=self.retain_graph)
+            if self.mixed_precision:
+                with amp.scale_loss(loss, self.optimizer) as scaled_loss:
+                    scaled_loss.backward(retain_graph=self.retain_graph)
+            else:
+                loss.backward(retain_graph=self.retain_graph)
         return prediction, loss
 
     def train_for(self, num_iterations=None, break_callback=None):
@@ -1404,8 +1477,6 @@ class Trainer(object):
             # Call callback
             self.callbacks.call(self.callbacks.BEGIN_OF_TRAINING_ITERATION,
                                 iteration_num=iteration_num)
-            # Zero out the grads
-            self.optimizer.zero_grad()
             # No interrupts while computing - a SIGINT could shoot down the driver if
             # done at the wrong time. Not sure if this has something to do with pinned memory
             with pyu.delayed_keyboard_interrupt():
@@ -1436,8 +1507,11 @@ class Trainer(object):
             self.update_state('training_loss', thu.unwrap(loss))
             # Update state from model's state hooks
             self.update_state_from_model_state_hooks()
-            # Update parameters
-            self.optimizer.step()
+            if iteration_num % self.backprop_every == 0:
+               # Update parameters
+                self.optimizer.step()
+                # Zero out the grads
+                self.optimizer.zero_grad()
             # Call callback
             self.callbacks.call(self.callbacks.END_OF_TRAINING_ITERATION,
                                 iteration_num=iteration_num)
@@ -1676,7 +1750,7 @@ class Trainer(object):
             'best_checkpoint.pytorch'.
         filename : str
             Overrides the default filename.
-        device : function, torch.device, string or a dict
+        map_location : function, torch.device, string or a dict
             Specify how to remap storage locations.
 
         Returns

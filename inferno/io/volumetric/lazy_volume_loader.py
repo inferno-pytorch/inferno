@@ -1,5 +1,7 @@
 import numpy as np
 import os
+import pickle
+from concurrent import futures
 
 # try to load io libraries (h5py and z5py)
 try:
@@ -20,10 +22,39 @@ from . import volumetric_utils as vu
 from ...utils import python_utils as pyu
 
 
+# TODO support h5py as well
+def filter_base_sequence(input_path, input_key,
+                         window_size, stride,
+                         filter_function, n_threads):
+    with z5py.File(input_path, 'r') as f:
+        ds = f[input_key]
+        shape = list(ds.shape)
+        sequence = vu.slidingwindowslices(shape=shape,
+                                          window_size=window_size,
+                                          strides=stride,
+                                          shuffle=True,
+                                          add_overhanging=True)
+
+        def check_slice(slice_id, slice_):
+            print("Checking slice_id", slice_id)
+            data = ds[slice_]
+            if filter_function(data):
+                return None
+            else:
+                return slice_
+
+        with futures.ThreadPoolExecutor(n_threads) as tp:
+            tasks = [tp.submit(check_slice, slice_id, slice_) for slice_id, slice_ in enumerate(sequence)]
+            filtered_sequence = [t.result() for t in tasks]
+
+        filtered_sequence = [seq for seq in filtered_sequence if seq is not None]
+        return filtered_sequence
+
+
 class LazyVolumeLoaderBase(SyncableDataset):
     def __init__(self, dataset, window_size, stride, downsampling_ratio=None, padding=None,
                  padding_mode='reflect', transforms=None, return_index_spec=False, name=None,
-                 data_slice=None):
+                 data_slice=None, base_sequence=None):
         super(LazyVolumeLoaderBase, self).__init__()
         assert len(window_size) == dataset.ndim, "%i, %i" % (len(window_size), dataset.ndim)
         assert len(stride) == dataset.ndim
@@ -58,7 +89,22 @@ class LazyVolumeLoaderBase(SyncableDataset):
         else:
             raise NotImplementedError
 
-        self.base_sequence = self.make_sliding_windows()
+        if base_sequence is None:
+            self.base_sequence = self.make_sliding_windows()
+        else:
+            self.base_sequence = self.load_base_sequence(base_sequence)
+
+    @staticmethod
+    def load_base_sequence(base_sequence):
+        if isinstance(base_sequence, (list, tuple)):
+            return base_sequence
+        elif isinstance(base_sequence, str):
+            assert os.path.exists(base_sequence)
+            with open(base_sequence, 'rb') as f:
+                base_sequence = pickle.load(f)
+            return base_sequence
+        else:
+            raise ValueError("Unsupported base_sequence format, must be either listlike or str")
 
     def normalize_slice(self, data_slice):
         if data_slice is None:
@@ -185,7 +231,7 @@ class LazyVolumeLoader(LazyVolumeLoaderBase):
             assert os.path.exists(path), path
             self.path = path
         else:
-            raise NotImplementedError
+            raise NotImplementedError("Not implemented for type %s" % type(path))
 
         if isinstance(path_in_file, dict):
             assert name is not None

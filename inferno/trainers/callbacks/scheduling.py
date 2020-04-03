@@ -301,9 +301,10 @@ class AutoLR(_Scheduler):
 
     @staticmethod
     def is_significantly_less_than(x, y, min_relative_delta):
+        eps = 1.e-6
         if x > y:
             return False
-        relative_delta = abs(y - x) / abs(y)
+        relative_delta = abs(y - x) / (abs(y) + eps)
         return relative_delta > min_relative_delta
 
 
