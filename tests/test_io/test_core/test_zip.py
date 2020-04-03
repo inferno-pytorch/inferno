@@ -46,6 +46,7 @@ class ZipTest(unittest.TestCase):
 
         zipped = ZipReject(dataset_1, dataset_2, dataset_3,
                            rejection_criterion=rejection_criterion,
+                           random_jump_after_reject=False,
                            rejection_dataset_indices=[0, 1])
         fetched = zipped[0]
         self.assertSequenceEqual(fetched, [2, 1, 1])
