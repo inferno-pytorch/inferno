@@ -1,5 +1,4 @@
 import torch.nn as nn
-from torch.autograd import Variable
 from ...utils.exceptions import assert_
 
 
@@ -26,5 +25,5 @@ class WeightedMSELoss(nn.Module):
         # Get final weight by adding weight differential to a tensor with negative weights
         weights = weight_differential.add_(self.NEGATIVE_CLASS_WEIGHT)
         # `weights` should be positive if NEGATIVE_CLASS_WEIGHT is not messed with.
-        sqrt_weights = Variable(weights.sqrt_(), requires_grad=False)
+        sqrt_weights = weights.sqrt_()
         return self.mse(input * sqrt_weights, target * sqrt_weights)

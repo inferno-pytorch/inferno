@@ -24,6 +24,12 @@ class LogOutputGradients(Callback):
                 FrequencyValueError)
 
     def hook(self, module, grad_input, grad_output):
+
+        #remove hook if trainer does not exits
+        if self.trainer is None:
+            self.hook_handle.remove()
+            return
+
         if self.log_every.match(iteration_count=self.trainer.iteration_count,
                                 epoch_count=self.trainer.epoch_count,
                                 persistent=True, match_zero=True):

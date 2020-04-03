@@ -1,7 +1,6 @@
 import tensorboardX as tX
 import numpy as np
 import warnings
-from scipy.misc import toimage
 from .base import Logger
 from ....utils import torch_utils as tu
 from ....utils import python_utils as pyu
@@ -36,9 +35,9 @@ class TensorboardLogger(Logger):
         log_scalars_every : str or tuple or inferno.utils.train_utils.Frequency
             How often scalars should be logged to Tensorboard. By default, once every iteration.
         log_images_every : str or tuple or inferno.utils.train_utils.Frequency
-            How often images should be logged to Tensorboard. By default, once every iteration.
+            How often images should be logged to Tensorboard. By default, once every epoch.
         log_histograms_every : str or tuple or inferno.utils.train_utils.Frequency
-            How often histograms should be logged to Tensorboard. By default, once every iteration.
+            How often histograms should be logged to Tensorboard. By default, never.
         send_image_at_batch_indices : list or str
             The indices of the batches to be logged. An `image_batch` usually has the shape
             (num_samples, num_channels, num_rows, num_cols). By setting this argument to say
@@ -108,7 +107,7 @@ class TensorboardLogger(Logger):
     @property
     def log_images_every(self):
         if self._log_images_every is None:
-            self._log_images_every = tru.Frequency(1, 'iterations')
+            self._log_images_every = tru.Frequency(1, 'epochs')
         return self._log_images_every
 
     @log_images_every.setter
@@ -126,7 +125,7 @@ class TensorboardLogger(Logger):
     @property
     def log_histograms_every(self):
         if self._log_histograms_every is None:
-            self._log_histograms_every = tru.Frequency(1, 'iterations')
+            self._log_histograms_every = tru.Frequency('never')
         return self._log_histograms_every
 
     @log_histograms_every.setter
@@ -193,7 +192,9 @@ class TensorboardLogger(Logger):
         return self
 
     def log_object(self, tag, object_,
-                   allow_scalar_logging=True, allow_image_logging=True, allow_histogram_logging=True):
+                   allow_scalar_logging=True,
+                   allow_image_logging=True,
+                   allow_histogram_logging=True):
         assert isinstance(tag, str)
         if isinstance(object_, (list, tuple)):
             for object_num, _object in enumerate(object_):
@@ -233,6 +234,7 @@ class TensorboardLogger(Logger):
     def end_of_training_iteration(self, **_):
         log_scalars_now = self.log_scalars_now
         log_images_now = self.log_images_now
+        log_histograms_now = self.log_histograms_now
         if not log_scalars_now and not log_images_now:
             # Nothing to log, so we won't bother
             return
@@ -244,7 +246,8 @@ class TensorboardLogger(Logger):
                 continue
             self.log_object(state_key, state,
                             allow_scalar_logging=log_scalars_now,
-                            allow_image_logging=log_images_now)
+                            allow_image_logging=log_images_now,
+                            allow_histogram_logging=log_histograms_now)
 
     def end_of_validation_run(self, **_):
         # Log everything
@@ -256,7 +259,8 @@ class TensorboardLogger(Logger):
                 continue
             self.log_object(state_key, state,
                             allow_scalar_logging=True,
-                            allow_image_logging=True)
+                            allow_image_logging=True,
+                            allow_histogram_logging=False)
 
     def _tag_image(self, image, base_tag, prefix=None, instance_num=None, channel_num=None,
                    slice_num=None):

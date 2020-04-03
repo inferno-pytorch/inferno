@@ -6,6 +6,7 @@ from ...utils.train_utils import Frequency
 from ...utils.exceptions import assert_, FrequencyValueError, NotUnwrappableError
 from ...utils import python_utils as pyu
 from .base import Callback
+import gc
 
 
 class NaNDetector(Callback):
@@ -275,3 +276,12 @@ class GradientClip(Callback):
 
     def after_model_and_loss_is_applied(self, **_):
         tu.clip_gradients_(self.trainer.model.parameters(), self.mode, self.norm_or_value)
+
+class GarbageCollection(Callback):
+    """
+    Callback that triggers garbage collection at the end of every 
+    training iteration in order to reduce the memory footprint of training
+    """
+
+    def end_of_training_iteration(self, **_):
+        gc.collect()

@@ -4,7 +4,9 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
-from inferno import __version__
+import runpy
+__version__ = runpy.run_path('inferno/version.py')['__version__']
+
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -21,7 +23,9 @@ requirements = [
     "scipy>=0.13.0",
     "h5py",
     "numpy>=1.8",
-    "scikit-image"
+    "scikit-image",
+    "torchvision",
+    "tqdm"
 ]
 
 

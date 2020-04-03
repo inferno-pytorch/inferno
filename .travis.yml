@@ -3,13 +3,10 @@ language: python
 dist: xenial
 
 python:
-  - 3.6
   - 3.7
 
 env:
-  # FIXME multi-processing hangs with pytorch 1.0 and uinttest test discovery
-  # - PYTORCH_CONDA="pytorch" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
-  - PYTORCH_CONDA="pytorch=0.4.1" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
+  - PYTORCH_CONDA="pytorch" TORCHVISION_CONDA="torchvision" TORCHVISION_CHANNEL=pytorch
 
 install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
