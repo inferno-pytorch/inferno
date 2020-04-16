@@ -126,7 +126,7 @@ class CentralSlice(Transform):
 class VolumeCenterCrop(Transform):
     """ Crop patch of size `size` from the center of the volume """
     def __init__(self, size, **super_kwargs):
-        super(VolumeCenterCrop, self).__init__(**super_kwargs)
+        super().__init__(**super_kwargs)
         assert isinstance(size, (int, tuple))
         self.size = (size, size, size) if isinstance(size, int) else size
         assert len(size) == 3
