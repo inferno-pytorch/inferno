@@ -6,7 +6,7 @@ from ...utils.exceptions import assert_, DTypeError
 
 class Normalize(Transform):
     """Normalizes input to zero mean unit variance."""
-    def __init__(self, eps=1e-4, mean=None, std=None, **super_kwargs):
+    def __init__(self, eps=1e-4, mean=None, std=None, ignore_value=None, **super_kwargs):
         """
         Parameters
         ----------
@@ -23,14 +23,27 @@ class Normalize(Transform):
         self.eps = eps
         self.mean = np.asarray(mean) if mean is not None else None
         self.std = np.asarray(std) if std is not None else None
+        self.ignore_value = ignore_value
 
     def tensor_function(self, tensor):
-        mean = np.asarray(tensor.mean()) if self.mean is None else self.mean
-        std = np.asarray(tensor.std()) if self.std is None else self.std
+        # if we have a background value that we don't want to normalize
+        mask = None if self.ignore_value is None else (tensor != self.ignore_value)
+        if mask is None:
+            mean = np.asarray(tensor.mean()) if self.mean is None else self.mean
+            std = np.asarray(tensor.std()) if self.std is None else self.std
+        else:
+            mean = np.asarray(tensor[mask].mean()) if self.mean is None else self.mean
+            std = np.asarray(tensor[mask].std()) if self.std is None else self.std
         # Figure out how to reshape mean and std
         reshape_as = [-1] + [1] * (tensor.ndim - 1)
         # Normalize
-        tensor = (tensor - mean.reshape(*reshape_as))/(std.reshape(*reshape_as) + self.eps)
+        if mask is None:
+            tensor = (tensor - mean.reshape(*reshape_as)) / (std.reshape(*reshape_as) + self.eps)
+        else:
+            # if tensor is int, the normalized tensor will be in int as well
+            tensor = tensor.astype('float64')
+            tensor[mask] = ((tensor - mean.reshape(*reshape_as)) \
+                            / (std.reshape(*reshape_as) + self.eps))[mask]
         return tensor
 
 
