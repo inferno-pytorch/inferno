@@ -18,11 +18,11 @@ class RandomFlip3D(Transform):
 
     def volume_function(self, volume):
         if self.get_random_variable('flip_lr'):
-            volume = volume[:, :, ::-1]
+            volume = volume[:, :, ::-1].copy()
         if self.get_random_variable('flip_ud'):
-            volume = volume[:, ::-1, :]
+            volume = volume[:, ::-1, :].copy()
         if self.get_random_variable('flip_z'):
-            volume = volume[::-1, :, :]
+            volume = volume[::-1, :, :].copy()
         return volume
 
 
