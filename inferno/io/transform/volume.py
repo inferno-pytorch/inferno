@@ -157,6 +157,53 @@ class VolumeAsymmetricCrop(Transform):
         return volume[x1:x2, y1:y2, z1:z2]
 
 
+class VolumeRandomCrop(Transform):
+    """Crop input to a given size
+
+    If the input size is less than the given size,
+    the output size would be equal to the input size - no padding added
+    """
+    def __init__(self, output_shape, **super_kwargs):
+        super().__init__(**super_kwargs)
+        output_shape = (output_shape,) * 3 \
+            if isinstance(output_shape, int) else tuple(output_shape)
+        assert_(len(output_shape) == 3,
+                "`output_shape` must be an integer or a tuple of length 3.",
+                ValueError)
+        self.output_shape = output_shape
+
+    def build_random_variables(self, depth_leeway, height_leeway, width_leeway):
+        self.set_random_variable('depth_location',
+                                 np.random.randint(low=0, high=depth_leeway + 1))
+        self.set_random_variable('height_location',
+                                 np.random.randint(low=0, high=height_leeway + 1))
+        self.set_random_variable('width_location',
+                                 np.random.randint(low=0, high=width_leeway + 1))
+
+    def volume_function(self, volume):
+        source_depth, source_height, source_width = volume.shape
+        crop_depth, crop_height, crop_width = self.output_shape
+        depth_leeway = np.clip(source_depth - crop_depth, 0, None)
+        height_leeway = np.clip(source_height - crop_height, 0, None)
+        width_leeway = np.clip(source_width - crop_width, 0, None)
+        d_loc = self.get_random_variable('depth_location',
+                                         depth_leeway=depth_leeway,
+                                         height_leeway=height_leeway,
+                                         width_leeway=width_leeway)
+        h_loc = self.get_random_variable('height_location',
+                                         depth_leeway=depth_leeway,
+                                         height_leeway=height_leeway,
+                                         width_leeway=width_leeway)
+        w_loc = self.get_random_variable('width_location',
+                                         depth_leeway=depth_leeway,
+                                         height_leeway=height_leeway,
+                                         width_leeway=width_leeway)
+        volume = volume[d_loc:(d_loc + crop_depth),
+                        h_loc:(h_loc + crop_height),
+                        w_loc:(w_loc + crop_width)]
+        return volume
+
+
 class Slices2Channels(Transform):
     """ Needed for training 2D network with slices above/below as additional channels
         For the input data transforms one dimension (x, y or z) into channels
@@ -341,7 +388,7 @@ class CropPad2Divisible(Transform):
                     if not (pad or diff[1] == 0) else slice(None, None)
                     for diff, pad in zip(diffs, to_pad)]
         volume = np.pad(volume, pad_width=padding, mode=self.mode, **self.padding_kwargs)
-        volume = volume[cropping]
+        volume = volume[tuple(cropping)]
 
         return volume
 
